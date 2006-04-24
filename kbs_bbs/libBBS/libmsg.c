@@ -5,7 +5,6 @@
 #include <assert.h>
 
 #define MAXMESSAGE 5
-int getuinfopid(void);
 /*
 int write_peer(bbsmsg_t * msgbuf)
 {
@@ -556,6 +555,17 @@ void msgmail(char *did, const char *buf)
 	}
 
 	return ;
+}
+
+/* this function should be killed */
+static int getuinfopid()
+{
+#ifdef BBSMAIN
+    return uinfo.pid;
+#else                           /*  */
+    return 1;
+
+#endif                          /*  */
 }
 
 int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t* session)

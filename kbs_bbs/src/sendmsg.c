@@ -511,7 +511,7 @@ void r_msg()
     if(now==-1) now = count-1;
     else {
         load_msghead(1, getCurrentUser()->userid, now, &head);
-        while(head.topid!=getuinfopid()&&now<count-1){
+        while(head.topid!=uinfo.pid&&now<count-1){
             now = get_unreadmsg(getCurrentUser()->userid);
             load_msghead(1, getCurrentUser()->userid, now, &head);
         };

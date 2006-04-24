@@ -729,17 +729,6 @@ struct user_info *t_search(const char *sid, int pid)
     return data.result;
 }
 
-int getuinfopid()
-{
-
-#ifdef BBSMAIN
-    return uinfo.pid;
-
-#else                           /*  */
-    return 1;
-
-#endif                          /*  */
-}
 int cmpinames(const char *userid, const char *uv)
 {                               /* added by Luzi 1997.11.28 */
     return !strcasecmp(userid, uv);

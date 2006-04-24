@@ -135,7 +135,6 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
 
 /* defined in stuff.c */
 	int calc_numofsig();
-    int getuinfopid(ARG_VOID);
     int add_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, mailgroup_t * user);
     int delete_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, int pos);
     int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user);
