@@ -957,23 +957,13 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
 #endif
 
 /* Add by SmallPig */
+/* 注意此函数不检查权限，caller 须保证发帖的合法性 */
 int post_cross(struct userec *user, const struct boardheader *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session)
 {                               /* (自动生成文件名) 转贴或自动发信 */
     struct fileheader postfile;
     char filepath[STRLEN];
     char buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
     int aborted, local_article;
-
-    if (!mode && !haspostperm(user, toboard->filename)) {
-#ifdef BBSMAIN
-        move(1, 0);
-        prints("您尚无权限在 %s 发表文章.\n", toboard->filename);
-        prints("如果您尚未注册，请在个人工具箱内详细注册身份\n");
-        prints("未通过身份注册认证的用户，没有发表文章的权限。\n");
-        prints("谢谢合作！ :-) \n");
-#endif
-        return -1;
-    }
 
     memset(&postfile, 0, sizeof(postfile));
 
@@ -1035,10 +1025,14 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
 }
 
 
+/* 注意此函数不检查权限，caller 须保证发帖的合法性 */
 int post_file(struct userec *user, const char *fromboard, const char *filename, const char *nboard, const char *posttitle, int Anony, int mode, session_t* session)
 /* 将某文件 POST 在某版 */
 {
     const struct boardheader *toboard;
+    if (mode == 0) {
+        return -1; // 对此有意见者找 atppp 单挑 20060425
+    }
     if (getbid(nboard, &toboard) <= 0) {       /* 搜索要POST的版 ,判断是否存在该版 */
         return -1;
     }
