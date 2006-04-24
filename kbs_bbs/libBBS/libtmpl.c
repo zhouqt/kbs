@@ -1,5 +1,11 @@
 #include "bbs.h"
 
+/*
+ * returns:
+ * -1: some error
+ * -2: tmpl version updated. needs term relogin and www restart
+ * >=0: number of tmpls
+ */
 int orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 		/***********
 		 * mode 0: 用户看，不显示有斑竹权限的
@@ -31,14 +37,8 @@ int orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 	}
 	while( read(fd, &tmpl, sizeof( struct s_template )) == sizeof(struct s_template) ){
 		if( tmpl.version > TMPL_NOW_VERSION ){
-#ifdef BBSMAIN
-			clear();
-			move(3,0);
-			prints("模板程序已经更新过，请您重新登录，谢谢");
-			pressreturn();
-#endif
 			close(fd);
-			return -1;
+			return -2;
 		}
 		if( mode == 0 && ( tmpl.flag & TMPL_BM_FLAG ) ) {
 			lseek( fd, sizeof(struct s_content) * tmpl.content_num , SEEK_CUR );

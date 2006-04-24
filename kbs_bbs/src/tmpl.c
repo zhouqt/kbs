@@ -21,6 +21,12 @@ int tmpl_init(int mode){
 
 	if(ret >= 0) template_num = ret;
 
+    if (ret == -2) {
+		clear();
+		move(3,0);
+		prints("模板程序已经更新过，请您重新登录，谢谢");
+		pressreturn();
+    }
 	return ret;
 
 }

@@ -543,9 +543,8 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
 }
 
 /* by ylsdd 
-   unlink action is taked within cancelpost if in mail mode,
-   otherwise this item is added to the file '.DELETED' under
-   the board's directory, the filename is not changed. 
+   this item is added to the file '.DELETED' under
+   the board's directory,
    Unlike the fb code which moves the file to the deleted
    board.
 */
@@ -554,14 +553,6 @@ void cancelpost(const char *board, const char *userid, struct fileheader *fh, in
     char oldpath[PATHLEN];
     char newpath[PATHLEN];
     time_t now = time(NULL);
-
-#ifdef BBSMAIN
-    if (uinfo.mode == RMAIL) {
-        sprintf(oldpath, "mail/%c/%s/%s", toupper(session->currentuser->userid[0]), session->currentuser->userid, fh->filename);
-        my_unlink(oldpath);
-        return;
-    }
-#endif
 
 /*
     sprintf(oldpath, "/board/%s/%s.html", board, fh->filename);
