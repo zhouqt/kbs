@@ -27,7 +27,10 @@
 
 int d_board()
 {
-    char bname[STRLEN];
+    char bname[STRLEN+1];
+    char buf[STRLEN];
+    const struct boardheader *bh;
+    int bid;
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -37,11 +40,39 @@ int d_board()
     stand_title("删除讨论区");
     make_blist(0);
     move(1, 0);
-    namecomplete("请输入讨论区: ", genbuf);
-    if (genbuf[0] == '\0')
+    namecomplete("请输入讨论区: ", bname);
+    if (bname[0] == '\0')
         return 0;
-    strcpy(bname, genbuf);
-    if (delete_board(bname, getSession()) != 0)
+
+    if ((bid = getbid(bname, &bh)) == 0) {
+        move(2, 0);
+        prints("不正确的讨论区");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    
+
+    move(1, 0);
+    prints("删除讨论区 '%s'.", bh->filename);
+    clrtoeol();
+    getdata(2, 0, "(Yes, or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
+    if (genbuf[0] != 'Y' && genbuf[0] != 'y') {
+        move(2, 0);
+        prints("取消删除....\n");
+        pressreturn();
+        clear();
+        return 0;
+    }
+
+    getdata(3, 0, "移除精华区 [y/N]: ", genbuf, 4, DOECHO, NULL, true);
+    if (genbuf[0] == 'Y' || genbuf[0] == 'y')
+    {
+        edit_group(&bcache[bid], NULL);
+    }
+
+    if (delete_board(bid, getSession()) != 0)
         return 0;
 #if 0
         sprintf(genbuf, "boards/%s", bname);
@@ -49,6 +80,11 @@ int d_board()
         sprintf(genbuf, "vote/%s", bname);
         f_rm(genbuf);
 #endif
+
+    /* this should be in delete_board function ? */
+    sprintf(buf, "删除讨论区：%s", bh->filename);
+    securityreport(buf, NULL, NULL);
+
     move(4, 0);
     prints("本讨论区已经删除...\n");
     pressreturn();

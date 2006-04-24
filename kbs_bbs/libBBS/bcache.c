@@ -370,69 +370,31 @@ const struct boardheader *getboard(int num)
     return NULL;
 }
 
-int delete_board(char *boardname, session_t* session)
+int delete_board(int bid, session_t* session)
 {
-    int bid, i;
-    char buf[1024];
+    int i;
     int fd;
 
-    bid = getbnum(boardname);
-    if (bid == 0) {
-#ifdef BBSMAIN
-        move(2, 0);
-        prints("不正确的讨论区");
-        clrtoeol();
-        pressreturn();
-        clear();
-#endif                          /* 
-                                 */
+    if (bid <= 0 || bid > MAXBOARD) {
         return -1;
     }
-    bid--;
-    strcpy(boardname, bcache[bid].filename);
-#ifdef BBSMAIN
-    move(1, 0);
-    prints("删除讨论区 '%s'.", bcache[bid].filename);
-    clrtoeol();
-    getdata(2, 0, "(Yes, or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
-    if (genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
-        move(2, 0);
-        prints("取消删除....\n");
-        pressreturn();
-        clear();
-        return -1;
-    }
-
-    getdata(3, 0, "移除精华区 [y/N]: ", genbuf, 4, DOECHO, NULL, true);
-    if (genbuf[0] == 'Y' || genbuf[0] == 'y')
-    {
-            edit_group(&bcache[bid], NULL);
-    }
-
-    sprintf(buf, "删除讨论区：%s", bcache[bid].filename);
-    securityreport(buf, NULL, NULL);
-#endif
-    sprintf(buf, " << '%s'被 %s 删除 >>", bcache[bid].filename, session->currentuser->userid);
 
     fd = bcache_lock();
-    bid = getbnum(boardname);
-    if (bid == 0)
-        return -1;              /* maybe delete by other people */
-    bid--;
-    if (brdshm->numboards == bid + 1) {
-        if (bid == 0)
+
+    if (brdshm->numboards == bid) {
+        if (bid == 1)
             brdshm->numboards = 0;
         else
-            for (i = bid - 1; i >= 0; i--)
-                if (bcache[i].filename[0]) {
-                    brdshm->numboards = i + 1;
+            for (i = bid - 1; i > 0; i--)
+                if (bcache[i-1].filename[0]) {
+                    brdshm->numboards = i;
                     break;
                 }
     }
-    memset(&bcache[bid], 0, sizeof(struct boardheader));
-    strcpy(bcache[bid].title, buf);
-    bcache[bid].level = PERM_SYSOP;
-    brdshm->bstatus[bid].toptitle = 0;
+    memset(&bcache[bid-1], 0, sizeof(struct boardheader));
+    snprintf(bcache[bid-1].title, STRLEN, " << '%s'被 %s 删除 >>", bcache[bid-1].filename, session->currentuser->userid);
+    bcache[bid-1].level = PERM_SYSOP;
+    brdshm->bstatus[bid-1].toptitle = 0;
     bcache_unlock(fd);
     return 0;
 }
