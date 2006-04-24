@@ -391,11 +391,6 @@ extern long ti;
 extern int KEY_ESC_arg;
 /* ============================================ */
 
-#ifdef BBSMAIN
-extern void Net_Sleep(int);
-#define Sleep(n) Net_Sleep((n))
-#endif /* BBSMAIN */
-
 #define MAX_IGNORE      300     /* ignore-users' count */
 #define NUMBUFFER       80      /* number of records to preload. ylsdd */
 

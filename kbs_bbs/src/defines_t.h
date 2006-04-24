@@ -1,7 +1,9 @@
 /*  这个文件是用来保存telnet部分的函数和变量声明
 
 */
-#ifdef BBSMAIN
+#ifndef _DEFINES_T_H_
+#define _DEFINES_T_H_
+
 #include "select.h"
 
 #ifdef INTERNET_EMAIL
@@ -99,6 +101,7 @@ int MaxLen(struct word*,int);
 void SortNameList(int);
 
 /* newmain_single.c */
+void Net_Sleep(int times);
 void showsysinfo(char * fn);
 extern int talkrequest;
 int count_user();
@@ -310,4 +313,4 @@ void * ip_len2mask (int bitlen, void *vmask);
 struct in6_addr * ip_mask(const struct in6_addr * addr, const struct in6_addr * mask, struct in6_addr * out);
 #endif
 
-#endif
+#endif /* _DEFINES_T_H_ */

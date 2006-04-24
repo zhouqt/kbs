@@ -1109,9 +1109,6 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
     setbfile(buf, boardname, DOT_DIR);
 
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
-#ifdef BBSMAIN
-        perror(buf);
-#endif
         err = 1;
     }
     /*
@@ -1145,10 +1142,6 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
         bbslog("3error", "Posting '%s' on '%s': append_record failed!", fh->title, boardname);
         setbfile(buf, boardname, fh->filename);
         my_unlink(buf);
-#ifdef BBSMAIN
-        pressreturn();
-        clear();
-#endif
         return -1;
     }
     updatelastpost(boardname);
