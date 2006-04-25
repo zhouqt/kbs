@@ -23,7 +23,8 @@
 
 #include "bbs.h"
 #include "read.h" 
-#define         INTERNET_PRIVATE_EMAIL
+
+#define INTERNET_PRIVATE_EMAIL
 
 int G_SENDMODE = false;
 int gShowSize = false;
@@ -329,8 +330,10 @@ int do_send(char *userid, char *title, char *q_file)
     char ans[4], include_mode = 'Y';
 
     int internet_mail = 0;
+#ifdef INTERNET_PRIVATE_EMAIL
     char tmp_fname[256];
     int noansi;
+#endif
     struct userec *user;
     extern char quote_title[120];
     int ret;
@@ -583,8 +586,11 @@ int do_send(char *userid, char *title, char *q_file)
 
                 prints("请稍候, 信件传递中...\n");
                 res = bbs_sendmail(tmp_fname, title, userid, isbig5, noansi,getSession());
-
-                newbbslog(BBSLOG_USER, "mailed %s %s", userid, title);
+                if (res) {
+                    res = -1;
+                } else {
+                    newbbslog(BBSLOG_USER, "mailed %s %s", userid, title);
+                }
                 break;
             }
         }
@@ -2289,6 +2295,7 @@ int doforward(char *direct, struct fileheader *fh)
         prints("转寄信件给 %s, 请稍候....\n", receiver);
 
         return_no = bbs_sendmail(fname, title, receiver, isbig5, noansi,getSession());
+        if (return_no) return_no = -2;
     }
     if (return_no==0)
         newbbslog(BBSLOG_USER, "forwarded file to %s", receiver);

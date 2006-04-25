@@ -606,7 +606,7 @@ void print_recipient_status(smtp_recipient_t recipient, const char *mailbox, voi
     const smtp_status_t *status;
 
     status = smtp_recipient_status(recipient);
-#ifdef BBSMAIN
+#if 0
     prints("mail to %s: %d %s\n", mailbox, status->code, status->text);
 #endif
 }
@@ -701,14 +701,17 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noans
      */
     smtp_start_session(smtpsession);
     status = smtp_message_transfer_status(message);
-#ifdef BBSMAIN
+#if 0
     prints("return code:%d(%s)\n", status->code, status->text);
-#elif 0
+#endif
+#if 0
 	if (status->code != 250)
 	bbslog("3error", "mail return code %d(%s)\n", status->code, status->text);
-#endif                          /* 
-                                 */
-    smtp_enumerate_recipients(message, print_recipient_status, NULL);
+#endif
+
+    /* disabled by atppp 20060424 */
+    //smtp_enumerate_recipients(message, print_recipient_status, NULL);
+    
     /*
      * Free resources consumed by the program.
      */
