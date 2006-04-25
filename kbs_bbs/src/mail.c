@@ -2123,7 +2123,8 @@ int doforward(char *direct, struct fileheader *fh)
     int return_no;
     char tmp_buf[200];
     int y = 5;
-    int noansi;
+    int noansi, mailout = 0;
+    char *ptrX;
 
     clear();
     if (address[0] == '\0') {
@@ -2136,43 +2137,54 @@ int doforward(char *direct, struct fileheader *fh)
         }
     }
 
-    if (chkusermail(getCurrentUser()) >= 2) {
-        move(1, 0);
-        prints("你的信箱已经超出限额，无法转寄信件。\n");
-        pressreturn();
-        return -4;
-    }
-
     prints("请直接按 Enter 接受括号内提示的地址, 或者输入其他地址\n");
     prints("(如要转信到自己的BBS信箱,请直接输入你的ID作为地址即可)\n");
     prints("把 %s 的《%s》转寄给:", fh->owner, fh->title);
     sprintf(genbuf, "[%s]: ", address);
     getdata(3, 0, genbuf, receiver, 70, DOECHO, NULL, true);
-    if (receiver[0] == '\0') {
-        sprintf(genbuf, "确定将文章寄给 %s 吗? (Y/N) [Y]: ", address);
-        getdata(3, 0, genbuf, receiver, 3, DOECHO, NULL, true);
-        if (receiver[0] == 'n' || receiver[0] == 'N')
-            return 1;
-        strncpy(receiver, address, STRLEN);
-    } else {
+    if (receiver[0] != '\0') {
         strncpy(address, receiver, STRLEN);
-        /*
-         * 确认地址是否正确 added by dong, 1998.10.1
-         */
-        sprintf(genbuf, "确定将文章寄给 %s 吗? (Y/N) [Y]: ", address);
-        getdata(3, 0, genbuf, receiver, 3, DOECHO, NULL, true);
-        if (receiver[0] == 'n' || receiver[0] == 'N')
-            return 1;
-        strncpy(receiver, address, STRLEN);
     }
+    /*
+     * 确认地址是否正确 added by dong, 1998.10.1
+     */
+    sprintf(genbuf, "确定将文章寄给 %s 吗? (Y/N) [Y]: ", address);
+    getdata(3, 0, genbuf, receiver, 3, DOECHO, NULL, true);
+    if (receiver[0] == 'n' || receiver[0] == 'N')
+        return 1;
+    strncpy(receiver, address, STRLEN);
+
     if (invalidaddr(receiver))
         return -2;
-    if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL))
-        if (!strstr(receiver, "@") && !strstr(receiver, ".")) {
+
+    /*
+     * ptrX = strstr(receiver, ".bbs@smth.org");
+     * @smth.org @zixia.net 取到前面的用户即可
+     */
+    ptrX = strstr(receiver, email_domain());
+
+    /*
+     * disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@");
+     */
+    if (ptrX && (ptrX > receiver) && '@' == *(ptrX - 1))
+        *(ptrX - 1) = 0;
+
+    
+    mailout = (strstr(receiver, "@") || strstr(receiver, "."));
+    if (!mailout) {
+        /* F 到站外不检查信件是否超额 atppp 20060424 */
+        if (chkusermail(getCurrentUser()) >= 2) {
+            move(1, 0);
+            prints("你的信箱已经超出限额，无法转寄信件。\n");
+            pressreturn();
+            return -4;
+        }
+        if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
             prints("你尚无权限转寄信件给站内其它用户。");
             pressreturn();
             return -22;
         }
+    }
 
 	gettmpfilename(fname, "forward");
     //sprintf(fname, "tmp/forward/%s.%05d", getCurrentUser()->userid, getpid());
@@ -2201,24 +2213,9 @@ int doforward(char *direct, struct fileheader *fh)
     }
 
 
-    {                           /* Leeward 98.04.27: better:-) */
 
-        char *ptrX;
 
-        /*
-         * ptrX = strstr(receiver, ".bbs@smth.org");
-         * @smth.org @zixia.net 取到前面的用户即可
-         */
-        ptrX = strstr(receiver, (const char *) email_domain());
-
-        /*
-         * disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@");
-         */
-        if (ptrX && '@' == *(ptrX - 1))
-            *(ptrX - 1) = 0;
-    }
-
-    if (!strstr(receiver, "@") && !strstr(receiver, ".")) {     /* sending local file need not uuencode or convert to big5... */
+    if (!mailout) {     /* sending local file need not uuencode or convert to big5... */
         struct userec *lookupuser;
 
         prints("转寄信件给 %s, 请稍候....\n", receiver);
