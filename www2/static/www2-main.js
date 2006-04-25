@@ -134,6 +134,29 @@ function getCookie(name, def){
 	return def;
 }
 
+var kbsAds = false;
+function getAds(i,l,n) {
+	var ret = "";
+	if (!kbsAds) {
+		kbsAds = true;
+		ret += "<iframe width='0' height='0' src='images/img.gif' frameborder='0' scrolling='no' id='hfad' name='hfad'></iframe>";
+	}
+	ret += "<a href='" + l + "' target='_blank' onclick='recordAds(" + n + ")'><img src='/images/ads/" + i + "' border='0'/></a>";
+	return ret;
+}
+function writeAds(i,l,n) {
+	document.write(getAds(i,l,n));
+}
+function recordAds(n) {
+	var c = getCookie('kbsAds', '');
+	var cc = '|' + c + '|';
+	if (cc.indexOf('|' + n + '|') != -1) return;
+	window.frames['hfad'].document.location.href = 'http://dev.kcn.cn/adsense?' + n;
+	var expire = new Date();
+	expire.setTime(expire.getTime() + 3600000 * 24 * 30);
+	document.cookie = 'kbsAds=' + (c?(c+'|'+n):n) + ';path=/;expires=' + expire.toGMTString();
+}
+
 function saveParaCookie(v, mask) {
 	var ex = '';
 	if (!isLogin()) {
@@ -923,7 +946,7 @@ docWriter.prototype.f = function(rss,related,isclub) {
 	var i,ret = '<div class="oper smaller">';
 	if (this.ftype != dir_modes["ORIGIN"]) {
 		ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“同主题”链接\');">同主题模式</a>] ';
-    } else if (this.ftype) {
+	} else if (this.ftype) {
 		ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“普通模式”链接\');">普通模式</a>] ';
 	}
 	ret += '[<a href="bbsnot.php?board=' + this.board + '">进版画面</a>] ';
@@ -943,6 +966,17 @@ docWriter.prototype.f = function(rss,related,isclub) {
 		ret += '<br/>来这个版的人常去的其他版面：';
 		for (i=0;i<related.length;i++) {
 			ret += '[<a class="b3" href="bbsdoc.php?board=' + related[i] + '"><font class="b3">' + related[i] + '</font></a>]';
+		}
+	}
+	var allAds = [['TrafficInfo','http://www.kooxoo.com/?fromid=smthpic01','smth_piao.gif',300],
+				  ['Travel','http://www.kooxoo.com/?fromid=smthpic02','smth_lvyou.gif',301],
+				  ['HouseRent','http://www.kooxoo.com/?fromid=smthpic03','smth_house.gif',302],
+				  ['HouseSeek','http://www.kooxoo.com/?fromid=smthpic04','smth_rent.gif',303]];
+	for (i=0;i<allAds.length;i++) {
+		var ad = allAds[i];
+		if (this.board == ad[0]) {
+			ret += "<div><center>" + getAds(ad[2],ad[1],ad[3]) + "</center></div>";
+			break;
 		}
 	}
 	if (isBM(this.bid)) {
