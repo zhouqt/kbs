@@ -159,7 +159,7 @@ int mode;
     /*
      * try to send the msg 
      */
-    result = sendmsgfunc(uin, msgstr, mode, getSession());
+    result = sendmsgfunc(uin, msgstr, mode, uinfo.pid, getSession());
 
     switch (result) {
     case 1:                    /* success */
@@ -202,7 +202,7 @@ int mode;
     /*
      * resend the message 
      */
-    result = sendmsgfunc(uin, buf, mode, getSession());
+    result = sendmsgfunc(uin, buf, mode, uinfo.pid, getSession());
 
     switch (result) {
     case 1:                    /* success */
@@ -640,7 +640,7 @@ void r_msg()
                             }
                             else
 #endif
-                                i = sendmsgfunc(uin, buf, 4, getSession());
+                                i = sendmsgfunc(uin, buf, 4, uinfo.pid, getSession());
                         }
                         buf[0]=0;
                         if(i==1) strcpy(buf, "\033[1m帮你送出讯息了\033[m");

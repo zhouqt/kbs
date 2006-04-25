@@ -557,18 +557,7 @@ void msgmail(char *did, const char *buf)
 	return ;
 }
 
-/* this function should be killed */
-static int getuinfopid()
-{
-#ifdef BBSMAIN
-    return uinfo.pid;
-#else                           /*  */
-    return 1;
-
-#endif                          /*  */
-}
-
-int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t* session)
+int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode, int srcpid, session_t* session)
 {
     char uident[STRLEN];
     struct user_info *uin;
@@ -608,7 +597,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
     head.sent = 0;
     head.mode = mode;
     strncpy(head.id, session->currentuser->userid, IDLEN+2);
-    head.frompid = getuinfopid();
+    head.frompid = srcpid;
     head.topid = uin->pid;
     memcpy(&head2, &head, sizeof(struct msghead));
     head2.sent = 1;
@@ -827,7 +816,7 @@ int wait_for_result(session_t* session)
 
     count=0;
     while(!session->smsresult) {
-#ifdef BBSMAIN
+#ifdef BBSMAIN_DISABLED_BY_ATPPP
         move(t_lines-1, 0);
         clrtoeol();
         prints("·¢ËÍÖÐ....%d%%", count*100/30);
@@ -844,14 +833,14 @@ int wait_for_result(session_t* session)
         sleep(1);
         count++;
         if(count>30) {
-#ifdef BBSMAIN
+#ifdef BBSMAIN_DISABLED_BY_ATPPP
             move(t_lines-1, 0);
             clrtoeol();
 #endif
             return -1;
         }
     }
-#ifdef BBSMAIN
+#ifdef BBSMAIN_DISABLED_BY_ATPPP
     move(t_lines-1, 0);
     clrtoeol();
 #endif

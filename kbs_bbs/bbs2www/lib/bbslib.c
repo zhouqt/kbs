@@ -98,7 +98,7 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
     if (strcasecmp(uin->userid, destid))
         return -1;
     strcpy(getSession()->MsgDesUid, uin->userid);
-    return sendmsgfunc(uin, msg, 2, getSession());
+    return sendmsgfunc(uin, msg, 2, 1, getSession());
 }
 
 int isfriend(char *id)

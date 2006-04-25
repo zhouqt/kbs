@@ -573,7 +573,7 @@ void unlock_sem_check(int lockid);
     void mail_msg(struct userec* user,session_t* session);
     int clear_msg(char *uident);
     int addto_msglist(int utmpnum, char *userid);
-    int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t* session);
+    int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode, int srcpid, session_t* session);
     int canmsg(struct userec *fromuser, struct user_info *uin);
     int can_override(char *userid, char *whoasks);
     int delfrom_msglist(int utmpnum, char *userid);
