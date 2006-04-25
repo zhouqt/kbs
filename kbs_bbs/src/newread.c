@@ -905,6 +905,112 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     return 0;
 }
 
+int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraarg)
+{
+    extern int scr_cols;
+    struct read_arg* arg=(struct read_arg*)conf->arg;
+    int count;
+    char newdirect[PATHLEN];
+    struct fileheader dummy_curfh;
+    struct super_filter_query_arg q_arg;
+
+    static char query[180]="";
+
+    if (!strcmp(getCurrentUser()->userid, "guest")) {
+        return FULLUPDATE;
+    }
+    
+    clear();
+    prints("                  超强文章选择\n\n");
+    move(5,0);
+    prints("变量: no(文章号) m(保留) g(文摘) b(m&&g) noreply(不可回复) sign(标记)\n"
+           "      del(删除) \033[1;31ma(附件)\033[0m unread(未读) percent(百分号)\n"
+           "      title(标题) author(作者)\n"
+           "函数: sub(s1,s2)第一个字符串在第二个中的位置,如果不存在返回0\n"
+           "      len(s)字符串长度\n"
+           "举例: 我要查询所有bad写的标记是b的文章:\n"
+           "              author=='bad'&&b                   作者是bad且b\n"
+           "      我要查询所有不可回复并且未读的文章:\n"
+           "              noreply&&unread                    不可回复且未读\n"
+           "      我要查询所有1000-2000范围内带附件的文章:\n"
+           "              (no>=1000)&&(no<=2000)&&\033[1;31ma\033[0m          文章号大等于1000 且 文章号小等于2000 且 附件\n"
+           "      我要查询标题长度在5-10之间的文章:\n"
+           "              len(title)>=5&&len(title)<=10      标题的长度大等于5 且 标题的长度小等于10\n"
+           "      我要查询标题里含有faint的文章:\n"
+           "              sub('faint',title)                 标题包含faint\n"
+           "      我要查询标题里包含hehe并且位置在最后的文章:\n"
+           "              sub('hehe',title)==len(title)-3    标题包含hehe是标题的长度减3\n"
+           "      我要查询......自己动手查吧,hehe"
+    );
+    multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", query, sizeof(query), 20, 0, 0);
+    if(!query[0]) 
+        return FULLUPDATE;
+    if (arg->mode==DIR_MODE_AUTHOR||arg->mode==DIR_MODE_TITLE) {
+        unlink(arg->direct);
+    }
+#if 0
+    newbbslog(BBSLOG_USER, "SUPER_FILTER %s", query);
+#endif
+    setbdir(DIR_MODE_SUPERFITER, newdirect, currboard->filename);
+
+    q_arg.array = NULL;
+    q_arg.array_size = 0;
+    q_arg.boardname = currboard->filename;
+    if (curfh == NULL) {
+        memset(&dummy_curfh, 0, sizeof(dummy_curfh));
+        q_arg.curfh = &dummy_curfh;
+    } else {
+        q_arg.curfh = curfh;
+    }
+    q_arg.isbm = chk_currBM(currBM, getCurrentUser());
+    q_arg.write_file = newdirect;
+    q_arg.query = query;
+
+    count = query_super_filter(-1, &q_arg);
+
+    if (count == -1) {
+        return FULLUPDATE;
+    } else if (count < 0) {
+        move(3, 0);
+        clrtoeol();
+        prints("表达式错误 [%d]", -count);
+        refresh();
+        sleep(1);
+        return FULLUPDATE;
+    }
+    else if(count==0) {
+        move(3, 0);
+        clrtoeol();
+        prints("一个都没有找到....");
+        refresh();
+        sleep(1);
+        return FULLUPDATE;
+    }
+/*    else if (chk_currBM(currBM, getCurrentUser())) {
+        char ans[4];
+        int i,j,k;
+        int fflag;
+        int y,x;
+        move(3, 0);
+        clrtoeol();
+        prints("找到 %d 篇文章(0-退出, 1-保留标记m, 2-删除标记t, 3-不可回复标记;) [0]", count);
+        getyx(&y, &x);
+        getdata(y, x, 0, ans, 3, 1, 0, 1);
+        if(ans[0]>='1'&&ans[0]<='3') {
+            struct fileheader f;
+            k=ans[0]-'0';
+            if(ans[0]=='1') fflag=FILE_MARK_FLAG;
+            else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
+            else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
+            for(i=0;i<count;i++)
+                change_post_flag(currBM, getCurrentUser(), digestmode, currboard, i+1, &f, currdirect, fflag, 0);
+        }
+    }*/
+    strcpy(arg->direct, newdirect);
+    arg->newmode=DIR_MODE_SUPERFITER;
+    return NEWDIRECT;
+}
+
 static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo, bool down, char* query)
 {
     int now; // 1-based
