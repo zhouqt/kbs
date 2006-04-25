@@ -3489,28 +3489,9 @@ int Import_post(struct _select_def* conf,struct fileheader *fileinfo,void* extra
             return FULLUPDATE;
     }
 
-#if 0
-    /*
-     * oldbug 2003.08.01
-     */
-    if (arg->mode == DIR_MODE_DELETED|| arg->mode == DIR_MODE_JUNK){
-            char *p;
-            int i;
-            if ((p = strrchr(fileinfo->title, '-')) != NULL) {
-                *p = 0;
-                for (i = strlen(fileinfo->title) - 1; i >= 0; i--) {
-                    if (fileinfo->title[i] != ' ')
-                        break;
-                    else
-                        fileinfo->title[i] = 0;
-                }
-            }
-    }
-#endif
-
     /* etnlegend, 2006.03.31, 这地方那么弄是不 nice 的... */
     p=NULL;
-    if((arg->mode&(DIR_MODE_DELETED|DIR_MODE_JUNK))&&(p=strrchr(fileinfo->title,'-')))
+    if((arg->mode==DIR_MODE_DELETED||arg->mode==DIR_MODE_JUNK)&&(p=strrchr(fileinfo->title,'-')))
         *p=0;
 
     /*
@@ -3519,13 +3500,13 @@ int Import_post(struct _select_def* conf,struct fileheader *fileinfo,void* extra
     if (a_Import(NULL, currboard->filename, fileinfo, false, arg->direct, conf->pos)==0) {
         if (!(fileinfo->accessed[0] & FILE_IMPORTED)) {
             /* etnlegend, 2006.03.31, 版主们越来越难伺候了... */
-            if(!((arg->mode&(DIR_MODE_DELETED|DIR_MODE_JUNK))
+            if(!((arg->mode==DIR_MODE_DELETED||arg->mode==DIR_MODE_JUNK)
                 ||(arg->mode==DIR_MODE_NORMAL&&(conf->pos>arg->filecount)))){
                 ret=set_article_flag(conf, fileinfo, FILE_IMPORT_FLAG);
             }
         }
     }
-    if((arg->mode&(DIR_MODE_DELETED|DIR_MODE_JUNK))&&p)
+    if((arg->mode==DIR_MODE_DELETED||arg->mode==DIR_MODE_JUNK)&&p)
         *p='-';
     return ret;
 }
