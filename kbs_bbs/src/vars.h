@@ -1,3 +1,6 @@
+#ifndef KBS_VARS_H_INCLUDED
+#define KBS_VARS_H_INCLUDED
+
 /* define variable used by whole project */
 
 #ifndef SMTH_API
@@ -59,4 +62,6 @@ extern void* smsbuf;
 extern const char secname[SECNUM][2][20];
 
 SMTH_API int msg_count;
+
+#endif /* ! KBS_VARS_H_INCLUDED */
 
