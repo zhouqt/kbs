@@ -212,15 +212,7 @@ char *nextword(const char **str, char *buf, int sz)
 
 void attach_err(int shmkey, char *name)
 {
-#ifdef BBSMAIN
-    prints("Error! %s error! key = %x.\n", name, shmkey);
-    oflush();
-#else
-    char buf[256];
-
-    sprintf(buf, "Error! %s error! key = %x.", name, shmkey);
-    perror(buf);
-#endif
+    bbslog("3system","shm %s attach error! key = %x.", name, shmkey);
     exit(1);
 }
 
