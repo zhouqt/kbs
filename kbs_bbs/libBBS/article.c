@@ -2496,9 +2496,11 @@ static long ea_parse(int fd,struct ea_attach_info *ai){
                             }
                         }
                     }while(ret>0);
-                    if(ret==-1||(length+ai[count].length)>end||!(count<MAXATTACHMENTCOUNT-1))
+                    if(ret==-1||(length+ai[count].length)>end)
                         break;
                     length=lseek(fd,ai[count].size,SEEK_CUR);count++;
+                    if(!(count<MAXATTACHMENTCOUNT))
+                        break;
                 }
                 else
                     break;
