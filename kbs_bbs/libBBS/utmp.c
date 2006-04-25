@@ -606,13 +606,16 @@ void clear_utmp2(int uent)
     struct user_info zeroinfo;
     struct userec* user;
 
-#ifdef BBSMAIN
     if (!uent) {
+        bbslog("3system", "UTMP:clear uent == 0 entry");
+#if 0
         if (!CHECK_UENT(uinfo.uid))
             return;
         uent = getSession()->utmpent;
-    }
 #endif
+        return;
+    }
+
     if (!utmpshm->uinfo[uent - 1].active) { //atppp 20051217
         bbslog("3system", "UTMP:clear inactive entry [%d]", uent);
     //    return;
