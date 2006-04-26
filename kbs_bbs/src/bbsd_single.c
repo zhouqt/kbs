@@ -658,7 +658,7 @@ static int bbs_standalone_main(char* argv){
 }
 int main(int argc,char **argv){
     int ret,inetd,port;
-    inetd=0;port=0;
+    inetd=0;port=23;
     while((ret=getopt(argc,argv,"idhp:"))!=-1){
         switch(ret){
             case 'i':
