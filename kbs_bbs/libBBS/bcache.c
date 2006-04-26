@@ -596,7 +596,7 @@ int board_regenspecial(const char *board, int mode, char *index)
     }
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
-        bbslog("3user", "recopen err %s:%s", newdirect,strerror(errno));
+        bbslog("user", "recopen err %s:%s", newdirect,strerror(errno));
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
