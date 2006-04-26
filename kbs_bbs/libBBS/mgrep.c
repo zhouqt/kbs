@@ -18,6 +18,7 @@
 #define W_DELIM	   128
 #define L_DELIM    10
 
+/* please kill these BBSMAIN crap ! */
 #ifdef BBSMAIN
 //extern void prints(char *fmt, ...);
 #define printf prints
@@ -95,9 +96,7 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
     while ((num_read = read(fp, patt_img->buf + length, BLOCKSIZE)) > 0) {
         length = length + num_read;
         if (length > MAXPATFILE) {
-#ifdef BBSMAIN
-            prints("maximum pattern file size is %d\n", MAXPATFILE);
-#endif
+            bbslog("3error", "maximum pattern file size is %d", MAXPATFILE);
             return -1;
         }
     }
@@ -120,9 +119,7 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
         p++;
     }
     if (p > max_num) {
-#ifdef BBSMAIN
-        prints("maximum number of patterns is %d\n", max_num);
-#endif
+        bbslog("3error", "maximum number of patterns is %d", max_num);
         return -1;
     }
     for (i = 1; i < 20; i++)
@@ -149,9 +146,7 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
             patt_img->p_size = p;
     }
     if (patt_img->p_size == 0) {
-#ifdef BBSMAIN
-        prints("the pattern file is empty\n");
-#endif
+        bbslog("3error", "the pattern file is empty");
         return -1;
     }
     if (length > 400 && patt_img->p_size > 2)
