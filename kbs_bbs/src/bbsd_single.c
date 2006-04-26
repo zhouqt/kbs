@@ -145,9 +145,9 @@ static inline int get_load(double *load){
 #else /* ! HAVE_GETLOADAVG && ! LINUX */
     struct statstime rsts;
     rstat("localhost",&rsts);
-    load[0]=rs.avenrun[0]/0.00390625;
-    load[1]=rs.avenrun[1]/0.00390625;
-    load[2]=rs.avenrun[2]/0.00390625;
+    load[0]=(rs.avenrun[0]*0.00390625); /* div by 256 */
+    load[1]=(rs.avenrun[1]*0.00390625);
+    load[2]=(rs.avenrun[2]*0.00390625);
 #endif /* HAVE_GETLOADAVG */
 }
 #endif /* LOAD_LIMIT */
