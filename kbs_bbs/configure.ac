@@ -188,7 +188,7 @@ AC_FUNC_STRFTIME
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([alarm atexit bcopy bzero dup2 flock ftruncate getcwd gethostbyaddr gethostbyname gethostname \
-                inet_aton inet_ntoa inet_pton isascii isblank memchr memmem memset mkdir munmap rmdir \
+                getloadavg inet_aton inet_ntoa inet_pton isascii isblank memchr memmem memset mkdir munmap rmdir \
                 select socket strcasecmp strcasestr strchr strdup strerror strncasecmp strpbrk strrchr strsep \
                 strstr strtol usleep utime])
 AC_CHECK_TYPES(bool)
