@@ -210,6 +210,7 @@
 	
 	<a href='javascript:changemn("board");' target="_self"><img id="imgboard" src="images/close.gif" class="pm" alt="+"
 	></a><a href="bbssec.php"><script type="text/javascript">putImage('i_board.gif','class="sfolder"');</script>分类讨论区</a><br/>
+	<img src="images/open.gif" class="pm" alt="-"><a href="bbsfav.php?x"><script type="text/javascript">putImage('i_newsec.gif','class="sfolder"');</script>新分类讨论区</a><br />
 	<div class="pp" id="divboard">
 <?php
 	display_board_list();
