@@ -514,22 +514,24 @@ static int start_daemon(int inetd,int port){
     }
     else{
         sprintf(buf,"var/bbsd.%d.pid",port);
-        switch(fork()){
-            case -1:
-                exit(2);
-            case 0:
-                break;
-            default:
-                exit(0);
-        }
-        setsid();
-        switch(fork()){
-            case -1:
-                exit(2);
-            case 0:
-                break;
-            default:
-                exit(0);
+        if(!no_fork){
+            switch(fork()){
+                case -1:
+                    exit(2);
+                case 0:
+                    break;
+                default:
+                    exit(0);
+            }
+            setsid();
+            switch(fork()){
+                case -1:
+                    exit(2);
+                case 0:
+                    break;
+                default:
+                    exit(0);
+            }
         }
         if((fd=open(buf,O_RDWR|O_CREAT|O_TRUNC,0660))==-1)
             exit(2);
