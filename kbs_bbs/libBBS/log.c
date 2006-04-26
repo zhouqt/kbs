@@ -131,11 +131,14 @@ int bbslog(const char *from, const char *fmt, ...)
         prio = from[0] - '0';
         from++;
     }
-/* temp disable bbslog*/
-#ifdef BBSMAIN
-    if (prio == 0 && strcasecmp(from, "boardusage"))
+
+    /* disable unimportant log. atppp 20060426 
+     * 以前是 BBSMAIN 下不记录 prio == 0 的 log
+     * 现在是所有情况都不记录了，反正也没什么有用的东东
+     */
+    if (prio == 0)
         return 0;
-#endif
+
     if (strlen(from) > 16)
         return -3;
     if (!fmt || !*fmt)
