@@ -367,7 +367,7 @@ void unlock_sem_check(int lockid);
     int set_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm);
     int del_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm);
     int get_user_club_perm(const struct userec *user,const struct boardheader *board,int write_perm);
-    int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm,struct boardheader *bh,session_t *session);
+    int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm,const struct boardheader *bh,session_t *session);
 
 /* define in article.c */
 

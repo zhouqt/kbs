@@ -645,7 +645,7 @@ int check_board_delete_read_perm(const struct userec *arg_user,const struct boar
 
 void readtitle(struct _select_def* conf)
 {                               /* 版内 显示文章列表 的 title */
-    struct boardheader bp;
+    const struct boardheader *bp;
     struct BoardStatus * bs;
     char header[STRLEN*2], title[STRLEN];
     char readmode[10];
@@ -653,9 +653,9 @@ void readtitle(struct _select_def* conf)
     int bnum;
     struct read_arg* arg=(struct read_arg*)conf->arg;
 
-    bnum = getboardnum(currboard->filename,&bp);
+    bnum = getbid(currboard->filename,&bp);
     bs = getbstatus(bnum);
-    memcpy(currBM, bp.BM, BM_LEN - 1);
+    memcpy(currBM, bp->BM, BM_LEN - 1);
     if (currBM[0] == '\0' || currBM[0] == ' ') {
         strcpy(header, "诚征版主中");
     } else {
@@ -709,10 +709,10 @@ void readtitle(struct _select_def* conf)
         strcpy(title, "[您的信箱超过容量,不能再收信!]");
     else if (chkmailflag)       /* 信件检查 */
         strcpy(title, "[您有信件]");
-    else if ((bp.flag & BOARD_VOTEFLAG))       /* 投票检查 */
+    else if ((bp->flag & BOARD_VOTEFLAG))       /* 投票检查 */
         sprintf(title, "投票中，按 V 进入投票");
     else
-        strcpy(title, bp.title + 13);
+        strcpy(title, bp->title + 13);
 
     showtitle(header, title);   /* 显示 第一行 */
     update_endline();
@@ -2052,7 +2052,7 @@ int set_board_rule(struct boardheader *bh, int flag)
 	int pos;
 	struct boardheader newbh;
 
-	pos = getboardnum(bh->filename, NULL);
+	pos = getbid(bh->filename, NULL);
 	if(!pos) return -1;
 
     memcpy(&newbh,bh,sizeof(struct boardheader));
@@ -3195,10 +3195,10 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 
 #ifdef COMMEND_ARTICLE
     int bnum;
-    struct boardheader bp;
+    const struct boardheader *bp;
 
-    bnum = getboardnum(COMMEND_ARTICLE,&bp);
-    if( bnum && chk_currBM(bp.BM, getCurrentUser()) )
+    bnum = getbid(COMMEND_ARTICLE,&bp);
+    if( bnum && chk_currBM(bp->BM, getCurrentUser()) )
 		mode |= 0x2 ;
 #endif
     if (fileinfo==NULL)

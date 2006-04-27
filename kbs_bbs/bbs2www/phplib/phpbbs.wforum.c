@@ -408,7 +408,7 @@ PHP_FUNCTION(bbs_searchtitle)
     char *board,*title, *title2, *title3,*author;
     int bLen,tLen,tLen2,tLen3,aLen;
     long date,mmode,attach,maxreturn; /* date < 0 search for threads whose original post time is within (-date) days. - atppp 20040727 */
-    boardheader_t bh;
+    const struct boardheader *bh;
     char dirpath[STRLEN];
     int fd;
     struct stat buf;
@@ -420,7 +420,6 @@ PHP_FUNCTION(bbs_searchtitle)
     zval * element;
     int is_bm;
     char flags[5];
-    const struct boardheader *bp;
     zval* columns[3];
     bool is_original_date=false;
     struct wwwthreadheader** resultList;
@@ -438,20 +437,13 @@ PHP_FUNCTION(bbs_searchtitle)
     }
     if (date > 9999)
         date = 9999;
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_FALSE;
-    }
-    resultList  = emalloc(maxreturn * sizeof(struct wwwthreadheader *));
-    if (resultList == NULL) {   
-        RETURN_LONG(-211);   
-    } 
 
-    is_bm = is_BM(bp, getCurrentUser());
-    if (getboardnum(board, &bh) == 0)
+    if (getbid(board, &bh) == 0)
         RETURN_LONG(-1); //"错误的讨论区";
-    if (!check_read_perm(getCurrentUser(), &bh))
+    if (!check_read_perm(getCurrentUser(), bh))
         RETURN_LONG(-2); //您无权阅读本版;
-    setbdir(DIR_MODE_WEB_THREAD, dirpath, bh.filename);
+    is_bm = is_BM(bh, getCurrentUser());
+    setbdir(DIR_MODE_WEB_THREAD, dirpath, bh->filename);
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
         RETURN_LONG(-3);   
     ldata.l_type = F_RDLCK;
@@ -468,6 +460,12 @@ PHP_FUNCTION(bbs_searchtitle)
         close(fd);
         RETURN_LONG(-201);
     }
+
+    resultList  = emalloc(maxreturn * sizeof(struct wwwthreadheader *));
+    if (resultList == NULL) {   
+        RETURN_LONG(-211);   
+    } 
+
     total = buf.st_size / sizeof(struct wwwthreadheader);
 
     if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &ptr, &buf.st_size)) != 1) {
@@ -527,11 +525,11 @@ PHP_FUNCTION(bbs_searchtitle)
 			MAKE_STD_ZVAL(columns[j] );
 			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
 		}
-        make_article_flag_array(flags, &(resultList[i]->origin), getCurrentUser(), bp->filename, is_bm);
+        make_article_flag_array(flags, &(resultList[i]->origin), getCurrentUser(), bh->filename, is_bm);
 		array_init(columns[0] );
 		bbs_make_article_array(columns[0], &(resultList[i]->origin), flags, sizeof(flags));
 
-        make_article_flag_array(flags, &(resultList[i]->lastreply), getCurrentUser(), bp->filename, is_bm);
+        make_article_flag_array(flags, &(resultList[i]->lastreply), getCurrentUser(), bh->filename, is_bm);
 		array_init(columns[1] );
 		bbs_make_article_array(columns[1], &(resultList[i]->lastreply), flags, sizeof(flags));
 		ZVAL_LONG(columns[2],resultList[i]->articlecount);

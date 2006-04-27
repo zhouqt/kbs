@@ -32,8 +32,6 @@ struct tm t;
 
 int fillbcache(struct boardheader *fptr,int idx,void* arg)
 {
-
-    struct boardheader bp;
 	int bnum;
     struct BoardStatus * bs;
 	char sql[500];
@@ -41,7 +39,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     if (check_see_perm(NULL, fptr)==0 || strlen(fptr->filename) == 0)
         return 0;
 
-    bnum = getboardnum(fptr->filename,&bp);
+    bnum = getbid(fptr->filename,NULL);
     bs = getbstatus(bnum);
 
 	sprintf(sql, "INSERT INTO bonline VALUES ( NULL, '%s', '%d', '%d', \"%d-%d-%d\", '%d', '%d' );",

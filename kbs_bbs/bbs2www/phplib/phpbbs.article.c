@@ -95,7 +95,7 @@ PHP_FUNCTION(bbs_get_records_from_id)
 	}*/
     setbdir(mode, dirpath, bp->filename);
     if(mode == DIR_MODE_ZHIDING){
-        struct BoardStatus* bs=getbstatus(getboardnum(bp->filename,NULL));
+        struct BoardStatus* bs=getbstatus(getbid(bp->filename,NULL));
         num=0;
         for (i=0;i<bs->toptitle;i++) {
             if (bs->topfh[i].id==id) {
@@ -592,7 +592,7 @@ PHP_FUNCTION(bbs_search_articles)
     char *board,*title, *title2, *title3,*author;
     int bLen,tLen,tLen2,tLen3,aLen;
     long date,mmode,origin,attach;
-    boardheader_t bh;
+    const struct boardheader *bh;
 	char dirpath[STRLEN];
 	int fd;
 	struct stat buf;
@@ -620,11 +620,11 @@ PHP_FUNCTION(bbs_search_articles)
         RETURN_FALSE;
     }
     is_bm = is_BM(bp, getCurrentUser());
-    if (getboardnum(board, &bh) == 0)
+    if (getbid(board, &bh) == 0)
         RETURN_LONG(-1); //"错误的讨论区";
-    if (!check_read_perm(getCurrentUser(), &bh))
+    if (!check_read_perm(getCurrentUser(), bh))
         RETURN_LONG(-2); //您无权阅读本版;
-    setbdir(DIR_MODE_NORMAL, dirpath, bh.filename);
+    setbdir(DIR_MODE_NORMAL, dirpath, bh->filename);
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
         RETURN_LONG(-3);   
     ldata.l_type = F_RDLCK;

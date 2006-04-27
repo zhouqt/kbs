@@ -1552,7 +1552,7 @@ int get_user_club_perm(const struct userec *user,const struct boardheader *board
     else
         return (user->club_write_rights[(board->clubnum-1)>>5]&(1<<((board->clubnum-1)&0x1F)));
 }
-int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm,struct boardheader *bh,session_t *session){
+int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm,const struct boardheader *bh,session_t *session){
     FILE *fp;
     char fn[256],title[256];
     sprintf(fn,"tmp/club_notify_%ld_%d",time(NULL),(int)getpid());

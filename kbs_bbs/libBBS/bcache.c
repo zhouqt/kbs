@@ -83,7 +83,7 @@ int updatelastpost(const char *board)
 {
     int pos;
 
-    pos = getboardnum(board,NULL);       /* board name --> board No. */
+    pos = getbid(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
         getlastpost(board, &brdshm->bstatus[pos - 1].lastpost, &brdshm->bstatus[pos - 1].total);
         return 0;
@@ -95,7 +95,7 @@ int setboardmark(const char *board, int i)
 {
     int pos;
 
-    pos = getboardnum(board,NULL);       /* board name --> board No. */
+    pos = getbid(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
     	 int j;
     	 j=brdshm->bstatus[pos - 1].updatemark;
@@ -110,7 +110,7 @@ int setboardorigin(const char *board, int i)
 {
     int pos;
 
-    pos = getboardnum(board,NULL);       /* board name --> board No. */
+    pos = getbid(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
     	 int j;
     	 j=brdshm->bstatus[pos - 1].updateorigin;
@@ -125,7 +125,7 @@ int setboardtitle(const char *board, int i)
 {
     int pos;
 
-    pos = getboardnum(board,NULL);       /* board name --> board No. */
+    pos = getbid(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
     	 int j;
     	 j=brdshm->bstatus[pos - 1].updatetitle;
@@ -154,7 +154,7 @@ int get_nextid(const char* boardname)
 {
     int ret;
 
-    ret=getboardnum(boardname,NULL);
+    ret=getbid(boardname,NULL);
     if (ret!=0) {
         ret=get_nextid_bid(ret);
     } else
@@ -680,7 +680,7 @@ int add_bm(struct userec *user,const struct boardheader *bh,int pos,int bms_log)
     char buf[256];
     memcpy(&newbh,bh,sizeof(struct boardheader));
     sprintf(buf,"%s %s",newbh.BM,user->userid);
-    if(!(pos>0)&&!(pos=getboardnum(newbh.filename,NULL)))
+    if(!(pos>0)&&!(pos=getbid(newbh.filename,NULL)))
         return 1;
     if(strlen(buf)<BM_LEN){
         sprintf(newbh.BM,"%s",buf+((buf[0]==' ')?1:0));
@@ -709,7 +709,7 @@ int del_bm(struct userec *user,const struct boardheader *bh,int pos,int concurre
     char buf[256],*p;
     memcpy(&newbh,bh,sizeof(struct boardheader));
     sprintf(buf," %s ",user->userid);
-    if(!(pos>0)&&!(pos=getboardnum(newbh.filename,NULL)))
+    if(!(pos>0)&&!(pos=getbid(newbh.filename,NULL)))
         return 1;
     do{
         if(!(p=strstr(newbh.BM,buf))&&!((p=strstr(newbh.BM,buf+1))==newbh.BM)){

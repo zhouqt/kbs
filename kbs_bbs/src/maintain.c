@@ -331,7 +331,7 @@ int m_newbrd()
     strcpy(vbuf, "vote/");
     strcat(vbuf, newboard.filename);
     setbpath(buf, newboard.filename);
-    if (getboardnum(newboard.filename, NULL) > 0) {
+    if (getbid(newboard.filename, NULL) > 0) {
         prints("\n错误：讨论区已经存在\n");
         pressreturn();
         clear();
@@ -360,7 +360,7 @@ int m_newbrd()
         clear();
         return -1;
     }
-    bid = getboardnum(newboard.filename, NULL);
+    bid = getbid(newboard.filename, NULL);
     if (bid == 0) {
         prints("\n系统错误：请联系技术站务处理...\n");
         pressreturn();
@@ -904,7 +904,7 @@ int m_editbrd(void){
                 WAIT_RETURN;clear();
                 return -1;
             }
-            pos=getboardnum(buf,NULL);
+            pos=getbid(buf,NULL);
             if(!pos){
                 move(4,0);prints("错误的讨论区名称!");
                 WAIT_RETURN;clear();
@@ -1219,7 +1219,7 @@ int modify_board(int bid) {
                 if(!*buf||!strcmp(buf,newbh.filename))
                     break;
                 /*目的讨论区已经存在*/
-                if(strcasecmp(buf,bh.filename)&&getboardnum(buf,NULL)>0){
+                if(strcasecmp(buf,bh.filename)&&getbid(buf,NULL)>0){
                     move(2,0);clrtoeol();getdata(2,2,"\033[1;31m错误: 此讨论区已经存在!\033[m",buf,1,NOECHO,NULL,true);
                     break;
                 }
@@ -3313,7 +3313,7 @@ int edit_board_delete_read_perm(void){
             }
             while(fgets(buf,256,fp)){
                 buf[strlen(buf)-1]=0;
-                if(!(i=getboardnum(buf,NULL)))
+                if(!(i=getbid(buf,NULL)))
                     continue;
                 i--;
                 ((unsigned char*)p)[i>>3]|=(1<<(i&0x07));

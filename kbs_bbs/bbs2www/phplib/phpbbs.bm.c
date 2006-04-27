@@ -6,7 +6,7 @@ struct usernode {
 };
     
 struct clubarg {
-    struct boardheader *brd;
+    const struct boardheader *brd;
     int mode;
     struct usernode *ulheader, *ulcurrent;
 };
@@ -252,7 +252,7 @@ PHP_FUNCTION(bbs_denyusers)
     int  board_len;
     zval *element,*denyusers;
     
-    struct boardheader brd;
+    const struct boardheader *brd;
     FILE *fp;
     char path[80], buf[256], buf2[100];
     char *id, *nick;
@@ -266,12 +266,12 @@ PHP_FUNCTION(bbs_denyusers)
     if(array_init(denyusers) != SUCCESS)
         RETURN_LONG(-1);
 	
-	if (getboardnum(board, &brd) == 0)
+	if (getbid(board, &brd) == 0)
         RETURN_LONG(-2);
-    if (!check_read_perm(getCurrentUser(), &brd))
+    if (!check_read_perm(getCurrentUser(), brd))
         RETURN_LONG(-2);
-    strcpy(board,brd.filename);
-    if (!is_BM(&brd, getCurrentUser()))
+    strcpy(board,brd->filename);
+    if (!is_BM(brd, getCurrentUser()))
         RETURN_LONG(-3);
     
     sprintf(path, "boards/%s/deny_users", board);
@@ -331,7 +331,7 @@ PHP_FUNCTION(bbs_denyadd)
     int  board_len,userid_len,exp_len;
     long  denyday,manual_deny;
     int autofree;
-    struct boardheader brd;
+    const struct boardheader *brd;
     struct userec *lookupuser;
     char buf[256];
     struct tm *tmtime;
@@ -342,12 +342,12 @@ PHP_FUNCTION(bbs_denyadd)
     if (ac != 5 || zend_parse_parameters(5 TSRMLS_CC, "sssll", &board, &board_len, &userid ,&userid_len ,&exp ,&exp_len ,&denyday ,&manual_deny) == FAILURE) 
 		    WRONG_PARAM_COUNT;
     
-    if (getboardnum(board, &brd) == 0)
+    if (getbid(board, &brd) == 0)
         RETURN_LONG(-1);
-    if (!check_read_perm(getCurrentUser(), &brd))
+    if (!check_read_perm(getCurrentUser(), brd))
         RETURN_LONG(-1);
-    strcpy(board,brd.filename);
-    if (!is_BM(&brd, getCurrentUser()))
+    strcpy(board,brd->filename);
+    if (!is_BM(brd, getCurrentUser()))
         RETURN_LONG(-2);
     if (getuser(userid,&lookupuser)==0)
         RETURN_LONG(-3);
@@ -398,7 +398,7 @@ PHP_FUNCTION(bbs_denyadd)
         getCurrentUser() = &saveuser;
         sprintf(buffer, "%s被取消在%s版的发文权限", userid, board);
 
-        if ((HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !chk_BM_instr(brd.BM, getCurrentUser()->userid)) {
+        if ((HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !chk_BM_instr(brd->BM, getCurrentUser()->userid)) {
             my_flag = 0;
             fprintf(fn, "寄信人: SYSOP (System Operator) \n");
             fprintf(fn, "标  题: %s\n", buffer);
@@ -473,19 +473,19 @@ PHP_FUNCTION(bbs_denydel)
 {
     char *board,*userid;
     int  board_len,userid_len;
-    struct boardheader brd;
+    const struct boardheader *brd;
    
     int ac = ZEND_NUM_ARGS();
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &board_len, &userid ,&userid_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
     
-    if (getboardnum(board, &brd) == 0)
+    if (getbid(board, &brd) == 0)
         RETURN_LONG(-1);
-    if (!check_read_perm(getCurrentUser(), &brd))
+    if (!check_read_perm(getCurrentUser(), brd))
         RETURN_LONG(-1);
-    strcpy(board,brd.filename);
-    if (!is_BM(&brd, getCurrentUser()))
+    strcpy(board,brd->filename);
+    if (!is_BM(brd, getCurrentUser()))
         RETURN_LONG(-2);
         
     if (deny_me(userid, board)) {
@@ -575,16 +575,14 @@ static int CompareNameCase(const void *v1,const void *v2){
 
 static void clubread_FreeAll(struct usernode *ulheader, char **userarray)
 {
-    struct usernode *ulcurrent;
-    ulcurrent = ulheader->next;
+    struct usernode *ulnext;
     while(ulheader)
     {
+        ulnext = ulheader->next;
     	if(ulheader->userid)
     	    efree(ulheader->userid);
         efree(ulheader);
-        ulheader = ulcurrent;
-        if(ulheader)
-            ulcurrent = ulheader->next;
+        ulheader = ulnext;
     }
     if(userarray)
         efree(userarray);
@@ -609,7 +607,7 @@ PHP_FUNCTION(bbs_club_read)
     char *bname;
     long clubmode, start, num;
     zval *userlist;
-    struct boardheader brd;
+    const struct boardheader *brd;
     int i, bname_len, count;
     struct clubarg clubflag;
     char **userarray, **t;
@@ -623,21 +621,21 @@ PHP_FUNCTION(bbs_club_read)
         RETURN_LONG(0);
     if(array_init(userlist) != SUCCESS)
         RETURN_LONG(-1);
-    if (getboardnum(bname, &brd) == 0)
+    if (getbid(bname, &brd) == 0)
         RETURN_LONG(-2);
-    if (!check_read_perm(getCurrentUser(), &brd))
+    if (!check_read_perm(getCurrentUser(), brd))
         RETURN_LONG(-2);
-    strcpy(bname, brd.filename);
-    if (!is_BM(&brd, getCurrentUser()))
+    strcpy(bname, brd->filename);
+    if (!is_BM(brd, getCurrentUser()))
         RETURN_LONG(-3);
-    if(!(brd.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd.clubnum>0)||(brd.clubnum>MAXCLUB))
+    if(!(brd->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd->clubnum>0)||(brd->clubnum>MAXCLUB))
         RETURN_LONG(-4);
-    if( !((brd.flag & BOARD_CLUB_READ) && (brd.flag & BOARD_CLUB_WRITE)) )
-        clubmode = brd.flag & BOARD_CLUB_WRITE;
+    if( !((brd->flag & BOARD_CLUB_READ) && (brd->flag & BOARD_CLUB_WRITE)) )
+        clubmode = brd->flag & BOARD_CLUB_WRITE;
     
     userarray = NULL;
     ulheader = ulcurrent = NULL;
-    clubflag.brd = &brd;
+    clubflag.brd = brd;
     clubflag.mode = clubmode;
     clubflag.ulheader = ulheader;
     clubflag.ulcurrent = ulcurrent;
@@ -686,21 +684,21 @@ PHP_FUNCTION(bbs_club_flag)
 {
     char *bname;
     int bname_len;
-    struct boardheader brd;
+    const struct boardheader *brd;
     
     if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &bname, &bname_len) != SUCCESS)
         WRONG_PARAM_COUNT;
         
-    if (getboardnum(bname, &brd) == 0)
+    if (getbid(bname, &brd) == 0)
         RETURN_LONG(-1);
-    if (!check_read_perm(getCurrentUser(), &brd))
+    if (!check_read_perm(getCurrentUser(), brd))
         RETURN_LONG(-1);
-    strcpy(bname, brd.filename);
-    if(!(brd.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd.clubnum>0)||(brd.clubnum>MAXCLUB))
+    strcpy(bname, brd->filename);
+    if(!(brd->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd->clubnum>0)||(brd->clubnum>MAXCLUB))
         RETURN_LONG(0);
-    if (brd.flag & BOARD_CLUB_READ)
+    if (brd->flag & BOARD_CLUB_READ)
     {
-        if (brd.flag & BOARD_CLUB_WRITE)
+        if (brd->flag & BOARD_CLUB_WRITE)
         {
             RETURN_LONG(3);
         }
@@ -709,7 +707,7 @@ PHP_FUNCTION(bbs_club_flag)
             RETURN_LONG(1);
         }
     }
-    else if (brd.flag & BOARD_CLUB_WRITE)
+    else if (brd->flag & BOARD_CLUB_WRITE)
     {
         RETURN_LONG(2);
     }
@@ -750,22 +748,22 @@ PHP_FUNCTION(bbs_club_write)
     int bname_len, clubop_len, info_len;
     long mode;
     struct userec *user;
-    struct boardheader brd;
+    const struct boardheader *brd;
     
     if (ZEND_NUM_ARGS() != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssls", &bname, &bname_len, &clubop, &clubop_len, &mode, &info, &info_len) != SUCCESS)
         WRONG_PARAM_COUNT;
         
-    if (getboardnum(bname, &brd) == 0)
+    if (getbid(bname, &brd) == 0)
         RETURN_LONG(-1);
-    if (!check_read_perm(getCurrentUser(), &brd))
+    if (!check_read_perm(getCurrentUser(), brd))
         RETURN_LONG(-1);
-    strcpy(bname, brd.filename);
-    if (!is_BM(&brd, getCurrentUser()))
+    strcpy(bname, brd->filename);
+    if (!is_BM(brd, getCurrentUser()))
         RETURN_LONG(-2);
-    if(!(brd.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd.clubnum>0)||(brd.clubnum>MAXCLUB))
+    if(!(brd->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd->clubnum>0)||(brd->clubnum>MAXCLUB))
         RETURN_LONG(-3);
-    if( !((brd.flag & BOARD_CLUB_READ) && (brd.flag & BOARD_CLUB_WRITE)) )
-        mode = brd.flag & BOARD_CLUB_WRITE;
+    if( !((brd->flag & BOARD_CLUB_READ) && (brd->flag & BOARD_CLUB_WRITE)) )
+        mode = brd->flag & BOARD_CLUB_WRITE;
         
     line = &clubop[1];
     switch(clubop[0])
@@ -777,10 +775,10 @@ PHP_FUNCTION(bbs_club_write)
         RETURN_LONG(0);
     case '-':
         trimstr(line);
-        if(!getuser(line,&user)||!get_user_club_perm(user,&brd,mode))
+        if(!getuser(line,&user)||!get_user_club_perm(user,brd,mode))
             RETURN_LONG(0);
-        if(!del_user_club_perm(user,&brd,mode)){
-            club_maintain_send_mail(user->userid,info,1,mode,&brd,getSession());
+        if(!del_user_club_perm(user,brd,mode)){
+            club_maintain_send_mail(user->userid,info,1,mode,brd,getSession());
         }
         break;
     case '+':
@@ -788,10 +786,10 @@ PHP_FUNCTION(bbs_club_write)
     default:
         line--;
         trimstr(line);
-        if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,&brd,mode))
+        if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,brd,mode))
             RETURN_LONG(0);
-        if(!set_user_club_perm(user,&brd,mode)){
-            club_maintain_send_mail(user->userid,info,0,mode,&brd,getSession());
+        if(!set_user_club_perm(user,brd,mode)){
+            club_maintain_send_mail(user->userid,info,0,mode,brd,getSession());
         }
         break;
     }

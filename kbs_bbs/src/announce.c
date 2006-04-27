@@ -548,7 +548,7 @@ int level;
 {
     char bname[STRLEN], bpath[STRLEN];
     struct stat st;
-    struct boardheader fhdr;
+    const struct boardheader *fhdr;
     int num;
 
     if (key == NULL) {
@@ -561,14 +561,14 @@ int level;
         return 0;
     if (!(st.st_mode & S_IFDIR))
         return 0;
-    if ((num = getboardnum(key, &fhdr)) == 0)
+    if ((num = getbid(key, &fhdr)) == 0)
         return 0;
 
 
-    if (check_read_perm(getCurrentUser(), &fhdr) == 0)
+    if (check_read_perm(getCurrentUser(), fhdr) == 0)
         return 0;
 
-    sprintf(bname,"0Announce/groups/%s",fhdr.ann_path);
+    sprintf(bname,"0Announce/groups/%s",fhdr->ann_path);
     a_menu("", bname, level, 0, NULL);
     return 1;
 }

@@ -228,9 +228,8 @@ int show_boardinfo(const char *bname)
     switch(toupper(ch)) {
     case 'A':
 	{
-   		struct boardheader bh;
 		int i,ret;
-   		i=getboardnum(bname, &bh);
+   		i=getbid(bname, NULL);
    		if (i<=0)
             return 1;
         if((ret=fav_select_path()) >= 0)
@@ -686,10 +685,10 @@ static int fav_onselect(struct _select_def *conf)
     if ((ptr->dir == 1)||((arg->favmode)&&(ptr->flag&BOARD_GROUP))) {        /* added by bad 2002.8.3*/
         return SHOW_SELECT;
     } else {
-        struct boardheader bh;
+        const struct boardheader *bh;
         int tmp;
 
-        if (getboardnum(ptr->name, &bh) != 0 && check_read_perm(getCurrentUser(), &bh)) {
+        if (getbid(ptr->name, &bh) != 0 && check_read_perm(getCurrentUser(), bh)) {
             int bid;
 	    int returnmode;
             bid = getbnum(ptr->name);
@@ -1008,7 +1007,6 @@ static int fav_key(struct _select_def *conf, int command)
             int i = 0, ret;
             extern int in_do_sendmsg;
             extern int super_select_board(char*);
-    		struct boardheader bh;
 
         	if (BOARD_FAV == arg->yank_flag && arg->favmode==1) {
             	move(0, 0);
@@ -1032,7 +1030,7 @@ static int fav_key(struct _select_def *conf, int command)
 			}else{
 				if(!ptr->name || !ptr->name[0])
 					return SHOW_CONTINUE;
-    			i=getboardnum(ptr->name, &bh);
+    			i=getbid(ptr->name, NULL);
     			if (i<=0)
                 	return SHOW_CONTINUE;
 

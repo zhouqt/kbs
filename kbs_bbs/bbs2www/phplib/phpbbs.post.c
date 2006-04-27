@@ -841,10 +841,9 @@ PHP_FUNCTION(bbs_doforward)
 {
     char *board,*filename, *tit, *target;
     int board_len,filename_len,tit_len,target_len;
-    boardheader_t bh;
+    const struct boardheader *bh;
 	char fname[STRLEN];
 	long big5,noansi;
-    const struct boardheader *bp;
 	char title[512];
 	struct userec *u;
     int ret;
@@ -866,15 +865,12 @@ PHP_FUNCTION(bbs_doforward)
         noansi=0;
     }
 
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_LONG(-9);
-    }
-    if (getboardnum(board, &bh) == 0)
+    if (getbid(board, &bh) == 0)
         RETURN_LONG(-11); //"错误的讨论区";
-    if (!check_read_perm(getCurrentUser(), &bh))
+    if (!check_read_perm(getCurrentUser(), bh))
         RETURN_LONG(-11); //您无权阅读本版;
 
-    setbfile(fname, bp->filename, filename);
+    setbfile(fname, bh->filename, filename);
 
     if( !file_exist(fname) )
         RETURN_LONG(-7);

@@ -908,7 +908,7 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
     postfile.o_id = fileinfo->id;
     postfile.o_groupid = fileinfo->groupid;
     postfile.o_reid = fileinfo->reid;
-    postfile.o_bid = getboardnum(fromboard, NULL);
+    postfile.o_bid = getbid(fromboard, NULL);
     //strncpy(postfile.o_board, fromboard, STRLEN- BM_LEN);
     //postfile.o_board[STRLEN-BM_LEN-1]=0;
 
@@ -2105,7 +2105,7 @@ int add_top(struct fileheader *fileinfo, const char *boardname, int flag)
     }
     link(newpath, path);
     append_record(dirpath, &top, sizeof(top));
-    board_update_toptitle(getboardnum(boardname, NULL), true);
+    board_update_toptitle(getbid(boardname, NULL), true);
     return 0;
 }
 
