@@ -17,7 +17,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
         return 0;
     }
 
-        if (safe_mmapfile_handle(fd2, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size) == 0) {
+        if (safe_mmapfile_handle(fd2, PROT_READ | PROT_WRITE, MAP_SHARED, &ptr, &buf.st_size) == 0) {
             close(fd2);
             return 0;
         }
@@ -31,7 +31,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
     end_mmapfile((void *) ptr, buf.st_size, -1);
     close(fd2);
 
-    bs=getbstatus(getbid(bh->filename));
+    bs=getbstatus(getbid(bh->filename,NULL));
 	if(bs)
     	bs->nowid= iid + 1;
 
