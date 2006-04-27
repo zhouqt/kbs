@@ -307,14 +307,12 @@ int get_manageable_bids(struct userec *user, char *buf, int buflen)
 
 
 
-int getbnum(const char *bname)
+int getbnum_safe(const char *bname, session_t *session)
 {
     register int i;
 
     for (i = 0; i < brdshm->numboards; i++)
-#ifdef BBSMAIN
-        if (check_read_perm(getCurrentUser(),&bcache[i]))
-#endif
+        if (check_read_perm(session->currentuser,&bcache[i]))
             if (!strncasecmp(bname, bcache[i].filename, STRLEN))
                 return i + 1;
     return 0;
@@ -338,7 +336,7 @@ const struct boardheader *getbcache(const char *bname)
 {
     int i;
 
-    i = getbnum(bname);
+    i = getbid(bname,NULL);
     if (i == 0)
         return NULL;
     return &bcache[i - 1];
@@ -405,7 +403,7 @@ int add_board(struct boardheader *newboard)
     int ret=-1;
 
     fd = bcache_lock();
-    if ((bid = getbnum("")) <= 0)
+    if ((bid = getbid("",NULL)) <= 0)
         if (brdshm->numboards < MAXBOARD)
             bid = brdshm->numboards + 1;
     if (bid > 0) {
@@ -498,7 +496,7 @@ int board_setreadonly(const char *board, int readonly)
     struct boardheader *bh;
     int bid;
 
-    bid = getbnum(board);
+    bid = getbid(board,NULL);
     if (bid == 0)
         return 0;
     bh = &bcache[bid - 1];

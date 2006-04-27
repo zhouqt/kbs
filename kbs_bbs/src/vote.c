@@ -348,7 +348,7 @@ int b_close(struct boardheader *fh,void* arg)
     int end;
 
     currboard= fh;
-    currboardent=getbnum(fh->filename);
+    currboardent=getbid(fh->filename,NULL);
     setcontrolfile();
     end = get_num_records(controlfile, sizeof(currvote));
     for (vnum = end; vnum >= 1; vnum--) {

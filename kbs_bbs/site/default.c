@@ -501,7 +501,7 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
 
 /* board permissions control */
 #ifdef USE_DEFAULT_READ_PERM
-int check_read_perm(struct userec *user, const struct boardheader *board)
+int check_read_perm(const struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
@@ -531,7 +531,7 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 #endif /* USE_DEFAULT_READ_PERM */
 
 #ifdef USE_DEFAULT_SEE_PERM
-int check_see_perm(struct userec* user,const struct boardheader* board)
+int check_see_perm(const struct userec* user,const struct boardheader* board)
 {
     if (board == NULL)
         return 0;

@@ -529,7 +529,7 @@ char *showuserip(struct userec *user, char *ip)
 }
 
 /* board permissions control */
-int check_read_perm(struct userec *user, const struct boardheader *board)
+int check_read_perm(const struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
@@ -563,7 +563,7 @@ if(!strcmp(board->filename,"Hate") ){
     return 0;
 }
 
-int check_see_perm(struct userec* user,const struct boardheader* board)
+int check_see_perm(const struct userec* user,const struct boardheader* board)
 {
     if (board == NULL)
         return 0;

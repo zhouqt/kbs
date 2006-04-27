@@ -270,7 +270,7 @@ void unlock_sem_check(int lockid);
 /* define in bcache.c */
 	void flush_bcache(); /* 同步bcache*/
     void board_setcurrentuser(int idx,int num); /*设置在线用户计数*/
-    int getbnum(const char *bname);
+    int getbnum_safe(const char *bname, session_t *session);
     void resolve_boards(ARG_VOID);
     int get_boardcount(ARG_VOID);
     const struct boardheader *getbcache(const char *bname);
@@ -357,8 +357,8 @@ void unlock_sem_check(int lockid);
     int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int deldeny(struct userec *user, char *board, char *uident, int notice_only, session_t* session);       /* 删除 禁止POST用户 */
-    int check_read_perm(struct userec *user, const struct boardheader *board);
-    int check_see_perm(struct userec *user, const struct boardheader *board);
+    int check_read_perm(const struct userec *user, const struct boardheader *board);
+    int check_see_perm(const struct userec *user, const struct boardheader *board);
     int is_outgo_board(const char *board);
     int poststatboard(const char *board);
     int is_emailpost_board(const char *board);

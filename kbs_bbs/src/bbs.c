@@ -231,7 +231,7 @@ int get_a_boardname(char *bname, char *prompt)
         return 0;
     }
     /*---	Modified by period	2000-10-29	---*/
-    if (getbnum(bname) <= 0)
+    if (getbid(bname,NULL) <= 0)
         /*---	---*/
     {
         move(1, 0);
@@ -611,7 +611,7 @@ int check_board_delete_read_perm(const struct userec *arg_user,const struct boar
         return 0;
     if(st.st_mtime<board->createtime)
         return 0;
-    if(!(bid=getbnum(board->filename)))
+    if(!(bid=getbnum_safe(board->filename,getSession())))
         return 0;
     bid--;
     if(!((bid>>3)<st.st_size))
@@ -1677,7 +1677,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	}
 
     setbpath(bpath,bname);
-    if(!dashd(bpath)||!(bid=getbnum(bname))){
+    if(!dashd(bpath)||!(bid=getbnum_safe(bname,getSession()))){
         move(2,0);clrtoeol();
         prints("\033[1;37m%s\033[0;33m<ENTER>\033[m","错误的讨论区名称...");
         WAIT_RETURN;
@@ -1726,7 +1726,7 @@ int board_query()
 	make_blist(0);
 	namecomplete(NULL, bname);
 	if(*bname!='\0') {
-        bid = getbnum(bname);
+        bid = getbnum_safe(bname,getSession());
         if (bid == 0)
     	{
             move(2, 0);
@@ -5096,7 +5096,7 @@ int Read()
         return -1;
     }
     in_mail = false;
-    bid = getbnum(currboard->filename);
+    bid = getbnum_safe(currboard->filename,getSession());
 
     currboardent=bid;
     currboard=(struct boardheader*)getboard(bid);

@@ -927,7 +927,7 @@ int m_editbrd(void){
             WAIT_RETURN;clear();
             return -1;
         }
-        pos = getbnum(buf);
+        pos = getbnum_safe(buf,getSession());
         if(!pos){
             move(2,0);prints("错误的讨论区名称!");
             WAIT_RETURN;clear();
@@ -1454,7 +1454,7 @@ int modify_board(int bid) {
                 if(*buf==' ')
                     newbh.group=0;
                 else{
-                    i=getbnum(buf);
+                    i=getbnum_safe(buf,getSession());
                     if(!i){
                         move(13,0);clrtoeol();getdata(13,2,"\033[1;31m错误: 输入的讨论区不存在!\033[m",buf,1,NOECHO,NULL,true);
                         break;

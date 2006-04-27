@@ -1297,7 +1297,7 @@ void showtitle(const char *title, const char *mid){
 	    sprintf(note, "ÌÖÂÛÇø [%s]", currboard->filename);
     else {
         int bid;
-        bid = getbnum(DEFAULTBOARD);
+        bid = getbnum_safe(DEFAULTBOARD, getSession());
         if (bid==0) {
             bid=1; //try to get the first board
         }
@@ -1382,13 +1382,6 @@ void docmdtitle(char *title, char *prompt)
     int chkmailflag = 0;
 	int chksmsmsg = 0;
 
-/*    if (getbnum(DEFAULTBOARD)) 
-    {
-        bp = getbcache( DEFAULTBOARD );
-        memcpy( bmstr, bp->BM, BM_LEN-1 );
-    }else
-         strcpy(bmstr," ");
-*/
     chkmailflag = chkmail();
 #ifdef SMS_SUPPORT
 	chksmsmsg = chk_smsmsg(0, getSession());

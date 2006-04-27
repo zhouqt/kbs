@@ -438,7 +438,7 @@ char *path;
 	    pathslice = strtok_r( NULL , pathdelim , &savept);
 	    pathnum ++ ;
 	}
-	objectbid = getbnum(pathslice);
+	objectbid = getbnum_safe(pathslice, getSession());
 	if (!objectbid) return 0; //不可见版面 ? - atppp 20051118
 	objectboard = getboard(objectbid);
 	if (chk_currBM(objectboard->BM, getCurrentUser()))
@@ -1456,7 +1456,7 @@ void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos
 	board[0]='\0';
 
     ann_get_board(m->path, board, sizeof(board));
-	if(board[0] =='\0' || (bid=getbnum(board))==0){
+	if(board[0] =='\0' || (bid=getbnum_safe(board,getSession()))==0){
       snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s/%s&ap=%ld",
         get_my_webdomain(0),m->path+10, m->item[m->now]->fname,attachpos);
 	  return;

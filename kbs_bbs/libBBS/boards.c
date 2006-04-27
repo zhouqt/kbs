@@ -189,9 +189,12 @@ void load_myboard1(struct userec *user, struct favbrd_struct *brdlist, int * brd
 			brdlist[0].father = -1;
             while(!feof(fp)) {
                 int k;
+                const struct boardheader *bh;
                 if(fscanf(fp, "%s", bn)<1) break;
-                k=getbnum(bn);
+                k=getbid(bn,&bh);
                 if(k) {
+                    if (!check_see_perm(user,bh)) continue;
+
 					if(brdlist[0].bnum < MAXBOARDPERDIR){
 						brdlist[0].bid[brdlist[0].bnum]=k-1;
 						brdlist[0].bnum++;
@@ -803,7 +806,7 @@ int brc_initial(const char *userid, const char *boardname,session_t* session)
 
     if (boardname == NULL)
         return 0;
-    bid = getbnum(boardname);
+    bid = getbid(boardname,NULL);
     if (bid == 0)
         return 0;
 #if USE_TMPFS==1
@@ -1063,13 +1066,16 @@ int deny_me(const char *user,const char *board)
 int haspostperm(const struct userec *user,const char *bname)
 {                               /* 判断在 bname版 是否有post权 */
     register int i;
+    const struct boardheader *bh;
 
     /*
      * if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1; change by KCN 2000.09.01 
      */
-    if ((i = getbnum(bname)) == 0)
+    if ((i = getbid(bname, &bh)) == 0)
         return 0;
-    if (bcache[i-1].flag&BOARD_GROUP) //目录先不能写
+    if (!check_read_perm(user, bh))
+        return 0;
+    if (bh->flag&BOARD_GROUP) //目录先不能写
         return 0;
 
     if (!HAS_PERM(user, PERM_POST)) {
@@ -1091,13 +1097,13 @@ int haspostperm(const struct userec *user,const char *bname)
             return 1;
         return 0;
     }                           /* stephen 2000.10.27 */
-    if (HAS_PERM(user, (bcache[i - 1].level & ~PERM_NOZAP) & ~PERM_POSTMASK)) {
-        if (bcache[i - 1].flag & BOARD_CLUB_WRITE) {    /*俱乐部 */
+    if (HAS_PERM(user, (bh->level & ~PERM_NOZAP) & ~PERM_POSTMASK)) {
+        if (bh->flag & BOARD_CLUB_WRITE) {    /*俱乐部 */
             if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
                 return 1;
-            if (bcache[i - 1].clubnum <= 0 || bcache[i - 1].clubnum > MAXCLUB)
+            if (bh->clubnum <= 0 || bh->clubnum > MAXCLUB)
                 return 0;
-            if (user->club_write_rights[(bcache[i - 1].clubnum - 1) >> 5] & (1 << ((bcache[i - 1].clubnum - 1) & 0x1f)))
+            if (user->club_write_rights[(bh->clubnum - 1) >> 5] & (1 << ((bh->clubnum - 1) & 0x1f)))
                 return 1;
             else
                 return 0;

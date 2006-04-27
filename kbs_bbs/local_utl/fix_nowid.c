@@ -31,7 +31,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
     end_mmapfile((void *) ptr, buf.st_size, -1);
     close(fd2);
 
-    bs=getbstatus(getbnum(bh->filename));
+    bs=getbstatus(getbid(bh->filename));
 	if(bs)
     	bs->nowid= iid + 1;
 

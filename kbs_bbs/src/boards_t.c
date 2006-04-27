@@ -686,12 +686,10 @@ static int fav_onselect(struct _select_def *conf)
         return SHOW_SELECT;
     } else {
         const struct boardheader *bh;
-        int tmp;
+        int tmp, bid;
 
-        if (getbid(ptr->name, &bh) != 0 && check_read_perm(getCurrentUser(), bh)) {
-            int bid;
-	    int returnmode;
-            bid = getbnum(ptr->name);
+        if ((bid = getbid(ptr->name, &bh)) != 0 && check_read_perm(getCurrentUser(), bh)) {
+            int returnmode;
 
             currboardent=bid;
             currboard=(struct boardheader*)getboard(bid);
@@ -976,7 +974,7 @@ static int fav_key(struct _select_def *conf, int command)
 
             CreateNameList();   /*  free list memory. */
             if (*bname)
-                i = getbnum(bname);
+                i = getbnum_safe(bname,getSession());
             if (i==0)
                 return SHOW_REFRESH;
         	ret = fav_add_board(i, arg->favmode, getSession()->favnow);
@@ -1022,7 +1020,7 @@ static int fav_key(struct _select_def *conf, int command)
 
             	CreateNameList();   /*  free list memory. */
             	if (*bname)
-                	i = getbnum(bname);
+                	i = getbnum_safe(bname,getSession());
             	if (i==0)
 					return SHOW_REFRESH;
 
