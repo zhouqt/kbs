@@ -134,11 +134,11 @@ function getCookie(name, def){
 	return def;
 }
 
-var kbsAds = false;
+var kbsAd = false;
 function getAds(i,l,n) {
 	var ret = "";
-	if (!kbsAds) {
-		kbsAds = true;
+	if (!kbsAd) {
+		kbsAd = true;
 		ret += "<iframe width='0' height='0' src='images/img.gif' frameborder='0' scrolling='no' id='hfad' name='hfad'></iframe>";
 	}
 	ret += "<a href='" + l + "' target='_blank' onclick='recordAds(" + n + ")'><img src='/images/ads/" + i + "' border='0'/></a>";
@@ -148,13 +148,24 @@ function writeAds(i,l,n) {
 	document.write(getAds(i,l,n));
 }
 function recordAds(n) {
-	var c = getCookie('kbsAds', '');
-	var cc = '|' + c + '|';
-	if (cc.indexOf('|' + n + '|') != -1) return;
+	var cc = getCookie('kbsAd', '');
+	if (cc.length > 0) cc = cc.split(',');
+	else cc = new Array();
+	var i, now = (new Date()).getTime();
+	for(i=0;i<cc.length-1;i+=2) {
+		if (cc[i] == n) {
+			if (cc[i+1] > now - 1800000) return;
+			cc[i+1] = now;
+			break;
+		}
+	}
+	if (i >= cc.length - 1) {
+		cc.push(n); cc.push(now);
+	}
 	window.frames['hfad'].document.location.href = 'http://dev.kcn.cn/adsense?' + n;
 	var expire = new Date();
-	expire.setTime(expire.getTime() + 3600000 * 24 * 30);
-	document.cookie = 'kbsAds=' + (c?(c+'|'+n):n) + ';path=/;expires=' + expire.toGMTString();
+	expire.setTime(expire.getTime() + 1800000);
+	document.cookie = 'kbsAd=' + cc.join(',') + ';path=/;expires=' + expire.toGMTString();
 }
 
 function saveParaCookie(v, mask) {
