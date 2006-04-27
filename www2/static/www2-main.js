@@ -151,7 +151,7 @@ function recordAds(n) {
 	var cc = getCookie('kbsAd', '');
 	if (cc.length > 0) cc = cc.split(',');
 	else cc = new Array();
-	var i, now = ((new Date()).getTime()) / 1000;
+	var i, now = Math.parseInt((new Date()).getTime() / 1000);
 	for(i=0;i<cc.length-1;i+=2) {
 		if (cc[i] == n) {
 			if (cc[i+1] > now - 1800) return;
