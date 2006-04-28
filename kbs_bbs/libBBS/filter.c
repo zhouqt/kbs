@@ -9,7 +9,7 @@ extern void releasepf(void* patternbuf);
 static char* badword_img=NULL;
 static time_t badimg_time;
 static off_t badword_img_size;
-int build_badwordimage()
+static int build_badwordimage()
 {
     int fp,imgfp;
     void* pattern_buf;

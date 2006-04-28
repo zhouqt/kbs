@@ -18,15 +18,16 @@
 #define W_DELIM	   128
 #define L_DELIM    10
 
-/* please kill these BBSMAIN crap ! */
-#ifdef BBSMAIN
-//extern void prints(char *fmt, ...);
+
+#undef I_WANT_TO_DEBUG_MGREP_CRAP
+#ifdef I_WANT_TO_DEBUG_MGREP_CRAP
 #define printf prints
 #ifdef putchar
 #undef putchar
 #define putchar outc
 #endif
-#endif
+#endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
+
 
 #include "bbs.h"
 struct pat_list {
@@ -238,7 +239,9 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
     register unsigned char *qx;
     register struct pat_list *p;
     unsigned char *lastout;
+#ifdef I_WANT_TO_DEBUG_MGREP_CRAP
     int OUT = 0;
+#endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
 
     textend = text + end;
     m1 = m - 1;
@@ -279,6 +282,7 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
                             while (*text != '\n')
                                 text++;
                         } else {
+#ifdef I_WANT_TO_DEBUG_MGREP_CRAP
                             if (!INVERSE) {
                                 if (FNAME)
                                     printf("%s: ", session->CurrentFileName);
@@ -301,6 +305,7 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
                                 while (*(++text) != '\n');
                                 lastout = text + 1;
                             }
+#endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
                         }
 /*
 				else {
@@ -324,9 +329,11 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
         }
         text = text + shift;
     }
+#ifdef I_WANT_TO_DEBUG_MGREP_CRAP
     if (INVERSE && !ONLYCOUNT)
         while (lastout <= textend)
             putchar(*lastout++);
+#endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
 }
 
 static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img, session_t* session)
@@ -336,7 +343,9 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
     register struct pat_list *p;
     register int pat_index;
     int MATCHED = 0;
+#ifdef I_WANT_TO_DEBUG_MGREP_CRAP
     int OUT = 0;
+#endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
     unsigned char *lastout;
     unsigned char *qx;
 
@@ -365,6 +374,7 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
                     while (*text != '\n')
                         text++;
                 } else {
+#ifdef I_WANT_TO_DEBUG_MGREP_CRAP
                     if (FNAME)
                         printf("%s: ", session->CurrentFileName);
                     if (!INVERSE) {
@@ -387,6 +397,7 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
                         lastout = text + 1;
                         MATCHED = 1;
                     }
+#endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
                 }
             }
             if (MATCHED)
@@ -394,9 +405,11 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
         }
         MATCHED = 0;
     }                           /* while */
+#ifdef I_WANT_TO_DEBUG_MGREP_CRAP
     if (INVERSE && !ONLYCOUNT)
         while (lastout <= textend)
             putchar(*lastout++);
+#endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
 }
 
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* patt_img)
