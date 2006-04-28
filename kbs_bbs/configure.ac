@@ -30,7 +30,7 @@ case "${host}" in
         OSTYPE="GENERIC"
         ;;        
 esac              
-CFLAGS="$CFLAGS -Wpointer-arith -D$OSTYPE"
+CFLAGS="$CFLAGS -D$OSTYPE"
 
 AH_TOP([
 #ifndef KBS_CONFIG_H_INCLUDED
@@ -238,7 +238,7 @@ AC_PROG_YACC
 m4_include(config.lib)
 
 if test "$GCC" = "yes"; then
-  CFLAGS="$CFLAGS -Wall"
+  CFLAGS="$CFLAGS -Wpointer-arith -Wall"
 fi
 
 # Checks for libraries.
