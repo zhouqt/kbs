@@ -229,7 +229,7 @@ int check_IP_lists(
 #ifndef HAVE_IPV6_SMTH
     unsigned int IP2
 #else /* HAVE_IPV6_SMTH */
-    struct in6_addr_sip
+    struct in6_addr sip
 #endif /* ! HAVE_IPV6_SMTH */
 ){
     FILE *fp;
@@ -362,9 +362,9 @@ int check_IP_lists(
             return 1;
     }
     for(i=0;i<MAXLIST;i++){
-        if(!ip_cmp(rip,proxys[i].ip))
+        if(!ip_cmp(rip,proxies[i].ip))
             break;
-        if(!ip_cmp(sip,proxys[i].ip))
+        if(!ip_cmp(sip,proxies[i].ip))
             return 0;
     }
     for(i=0;i<MAXLIST;i++){

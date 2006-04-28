@@ -178,8 +178,8 @@ typedef u_longlong_t u_int64_t;
 
 #ifdef HAVE_IPV6_SMTH
 #define IPBITS   128
-#define ip_cmp(x, y) memcmp(&(struct in6_addr)x, &(struct in6_addr)y, sizeof(struct in6_addr))
-#define ip_cpy(x, y) memcpy(&(struct in6_addr)x, &(struct in6_addr)y, sizeof(struct in6_addr))
+#define ip_cmp(x, y) memcmp(&x, &y, sizeof(struct in6_addr))
+#define ip_cpy(x, y) memcpy(&x, &y, sizeof(struct in6_addr))
 #else /* HAVE_IPV6_SMTH */
 #define IPBITS   32
 #define ip_cmp(x, y) ((uint32_t)x!=(uint32_t)y)
