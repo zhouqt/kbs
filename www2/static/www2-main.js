@@ -151,7 +151,7 @@ function recordAds(n) {
 	var cc = getCookie('kbsAd', '');
 	if (cc.length > 0) cc = cc.split(',');
 	else cc = new Array();
-	var i, now = Math.parseInt((new Date()).getTime() / 1000);
+	var i, now = parseInt((new Date()).getTime() / 1000);
 	for(i=0;i<cc.length-1;i+=2) {
 		if (cc[i] == n) {
 			if (cc[i+1] > now - 1800) return;
@@ -955,13 +955,7 @@ docWriter.prototype.t = function() {
 };
 docWriter.prototype.f = function(rss,related,isclub) {
 	var i,ret = '<div class="oper smaller">';
-	if (this.ftype != dir_modes["ORIGIN"]) {
-		ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“同主题”链接\');">同主题模式</a>] ';
-	} else if (this.ftype) {
-		ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“普通模式”链接\');">普通模式</a>] ';
-	}
 	ret += '[<a href="bbsnot.php?board=' + this.board + '">进版画面</a>] ';
-	ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“查询”链接\');">版内查询</a>] ';
 	ret += '[<a href="bbsshowvote.php?board=' + this.board + '">版内投票</a>] ';
 	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
 	if (this.normalB && !this.man) {
