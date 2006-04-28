@@ -35,16 +35,15 @@ EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 	config.sample install-sh ChangeLog \
 	idea.c
 
-BBSD_SRCS = bbs.c record.c delete.c stuff.c mail.c register.c \
+BBSD_SRCS = bbs.c delete.c mail.c register.c \
            xyz.c talk.c comm_lists.c namecomplete.c chat.c \
-           maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
+           maintain.c edit.c more.c help.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
-	   bm.c list.c goodbye.c bbsd_single.c lvars.c select.c libann.c\
-	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c site.c\
-	   filter.c mgrep.c definekey.c default.c calltime.c super_filter.c \
-	   libtmpl.c tmpl.c msg_manager.c addr_manage.c libpc.c personal_corp.c \
-	   newread.c newhelp.c
+           bm.c list.c goodbye.c bbsd_single.c select.c \
+           newmain_single.c newio.c newterm.c \
+           definekey.c calltime.c tmpl.c msg_manager.c\
+           addr_manage.c personal_corp.c newread.c newhelp.c
+
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
 CC="@LIBTOOL@"
@@ -52,7 +51,7 @@ CCLD="@CC@"
 AM_MAKEFLAGS="@MAKEFLAG@"
 sshbbsd_SOURCES = $(SSHD_SRCS) $(BBSD_SRCS)
 
-sshbbsd_LDADD = ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
+sshbbsd_LDADD = ../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
 #sshbbsd_DEPENDENCIES = @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
 AM_CFLAGS=-I. -I../src -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
 sshbbsd_LDFLAGS=-export-dynamic
