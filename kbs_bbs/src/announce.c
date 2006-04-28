@@ -866,9 +866,9 @@ void a_copypaste(MENU *pm,int mode){
     if(stat(path,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)))
         ACP_ANY_RETURN("源文件或目录不存在...");
     if(type==PASTE_COPY)
-        snprintf(genbuf,STRLEN,"复制方式粘贴%s %s, 确认? (C-复制/L-链接/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
+        snprintf(genbuf,STRLEN,"复制方式粘贴%s %.30s, 确认? (C-复制/L-链接/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
     else
-        snprintf(genbuf,STRLEN,"剪切方式粘贴%s %s, 确认? (Y/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
+        snprintf(genbuf,STRLEN,"剪切方式粘贴%s %.38s, 确认? (Y/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
     getdata(t_lines-1,0,genbuf,ans,2,DOECHO,NULL,true);
     ans[0]=toupper(ans[0]);copy=0;
     if(ans[0]=='Y'||(type==PASTE_COPY&&ans[0]=='C')){
