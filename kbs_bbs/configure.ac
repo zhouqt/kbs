@@ -30,7 +30,7 @@ case "${host}" in
         OSTYPE="GENERIC"
         ;;        
 esac              
-CFLAGS="$CFLAGS -D$OSTYPE"
+CFLAGS="$CFLAGS -Wpointer-arith -D$OSTYPE"
 
 AH_TOP([
 #ifndef KBS_CONFIG_H_INCLUDED
