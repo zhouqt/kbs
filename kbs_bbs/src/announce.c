@@ -958,7 +958,7 @@ void a_delete(MENU *pm){
     if(stat(path,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)))
         unlink(path);
     else{
-        sprintf(genbuf,"确认删除该%s? (Y/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件");
+        sprintf(genbuf,"\033[1;37m确认删除该%s? (Y/N) [N]: \033[m",S_ISDIR(st.st_mode)?"目录":"文件");
         getdata(t_lines-1,0,genbuf,ans,2,DOECHO,NULL,true);
         if(toupper(ans[0])!='Y'){
             pm->page=9999;
