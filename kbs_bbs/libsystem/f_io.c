@@ -48,7 +48,7 @@ static int f_append_file(const char *src,const char *dst,int mode){
         return -4;
     }
     while((len=read(sfd,buf,READ_BUFFER_SIZE))>0){
-        for(p=buf,ret=0;len>0&&ret!=-1;p+=ret,len-=ret)
+        for(p=buf,ret=0;len>0&&ret!=-1;vpm(p,ret),len-=ret)
             ret=write(dfd,p,len);
         if(len)
             break;
@@ -133,7 +133,7 @@ int f_cat(const char *file,const char *str){
     const void *p;
     if((fd=open(file,O_WRONLY|O_CREAT|O_APPEND,FMASK))==-1)
         return -1;
-    for(p=str,len=strlen(str),ret=0;len>0&&ret!=-1;p+=ret,len-=ret)
+    for(p=str,len=strlen(str),ret=0;len>0&&ret!=-1;vpm(p,ret),len-=ret)
         ret=write(fd,p,len);
     close(fd);
     return len;

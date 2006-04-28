@@ -603,9 +603,6 @@ extern struct sms_shm_head *head;
 
 #define GIVEUPINFO_PERM_COUNT   6       /* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
 
-/* etnlegend, 2006.04.28, void * mover */
-#define vpm(vptr,voff)          ((vptr)=(((unsigned char*)(vptr))+((voff)/sizeof(unsigned char))))
-
 /* etnlegend, 2006.04.20, 区段删除核心 */
 #define DELETE_RANGE_BASE_MODE_TOKEN    0x01        /* 文章列表, 删除拟删文章 */
 #define DELETE_RANGE_BASE_MODE_RANGE    0x02        /* 文章列表和信件列表, 普通区段删除 */

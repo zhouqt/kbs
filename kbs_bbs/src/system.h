@@ -15,6 +15,10 @@
 
 #include "kbs_config.h"
 
+/* etnlegend, 2006.04.28, void * movers */
+#define vpo(vptr,voff)          (((unsigned char*)(vptr))+((voff)/sizeof(unsigned char)))
+#define vpm(vptr,voff)          ((vptr)=((void*)(vpo((vptr),(voff)))))
+
 #ifndef HAVE_STRSEP
 char* strsep(char **strptr,const char *delim);
 #endif

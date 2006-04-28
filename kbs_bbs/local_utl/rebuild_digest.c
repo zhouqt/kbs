@@ -3,7 +3,7 @@ static ssize_t data_write(int fd,const void *data,size_t size){
     size_t len;
     ssize_t ret;
     const void *p;
-    for(ret=0,p=data,len=size;len>0&&ret!=-1;p+=ret,len-=ret)
+    for(ret=0,p=data,len=size;len>0&&ret!=-1;vpm(p,ret),len-=ret)
         ret=write(fd,p,len);
     return ret;
 }

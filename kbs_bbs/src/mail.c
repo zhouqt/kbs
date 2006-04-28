@@ -1562,7 +1562,7 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
         close(fd);
         if(map==MAP_FAILED)
             MAIL_ADD_IGNORE_RETURN;
-        for(p=map;ret>0;p+=MAIL_ADD_IGNORE_ITEMSZ,ret--)
+        for(p=map;ret>0;vpm(p,MAIL_ADD_IGNORE_ITEMSZ),ret--)
             if(!strcmp(p,fh->owner))
                 break;
         munmap(map,st.st_size);
