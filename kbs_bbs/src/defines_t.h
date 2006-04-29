@@ -283,6 +283,7 @@ int choose_board(int newflag, const char *boardprefix,int group,int yank_flag);
 /* 选择 版， readnew或readboard */
 
 /* bm.c*/
+void trimstr(char*);
 int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg); /* 禁止POST用户名单 维护主函数 */
 int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int delete_range(struct _select_def*,struct fileheader*,void*);

@@ -3313,6 +3313,7 @@ int edit_board_delete_read_perm(void){
             }
             while(fgets(buf,256,fp)){
                 buf[strlen(buf)-1]=0;
+                trimstr(buf);
                 if(!(i=getbid(buf,NULL)))
                     continue;
                 i--;

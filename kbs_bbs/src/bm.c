@@ -534,16 +534,15 @@ static int func_dump_users(char *userid,void *varg){
 static int func_clear_send_mail(char *userid,void *varg){
     return club_maintain_send_mail(userid,(char*)(((void**)varg)[0]),1,(*(int*)(((void**)varg)[1])),currboard,getSession());
 }
-static void trimstr(char *s){
+void trimstr(char *s){
     char *p;
-    if(s){
-        for(p=s+strlen(s)-1;!(p<s)&&(*p==32);p--)
-            continue;
-        *(p+1)=0;
-        for(p=s;*p==32;p++)
-            continue;
-        memmove(s,p,(strlen(p)+1)*sizeof(char));
-    }
+    if(!s||!*s)
+        return;
+    for(p=(s+(strlen(s)-1));!(p<s)&&(*p==' ');p--)
+        continue;
+    for(*(p+1)=0,p=s;*p==' ';p++)
+        continue;
+    memmove(s,p,((strlen(p)+1)*sizeof(char)));
     return;
 }
 typedef int (*APPLY_USERS_FUNC) (int(*)(struct userec*,void*),void*);
