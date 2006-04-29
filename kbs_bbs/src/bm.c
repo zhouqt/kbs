@@ -1225,8 +1225,14 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
         type,arg.id_from,arg.id_to);
     prints("%s",buf);
     delete_range_read(ans,1,"ynYN");
-    if(toupper(ans[0])!='Y')
-        DELETE_RANGE_QUIT(++line,"操作取消...");
+    switch(ans[0]){
+        case 'Y':
+            mode|=DELETE_RANGE_BASE_MODE_OVERM;
+        case 'y':
+            break;
+        default:
+            DELETE_RANGE_QUIT(++line,"操作取消...");
+    }
     ret=delete_range_base(ident,src,dst,arg.id_from,arg.id_to,mode,NULL,&st_src);
     if(ret==0x21){
         move(line++,4);

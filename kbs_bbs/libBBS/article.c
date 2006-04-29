@@ -2974,20 +2974,16 @@ int delete_range_base(
 #define DRBP_DST        (vdir_dst&&(*vdir_dst)&&!(vmode&(DELETE_RANGE_BASE_MODE_MPDEL|DELETE_RANGE_BASE_MODE_CLEAR)))
 #define DRBP_RSRC       do{munmap(pm,st_src.st_size);fcntl(fd_src,F_SETLKW,&lck_clr);close(fd_src);}while(0)
 #define DRBP_RDST       do{fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_dst);}while(0)
-/* 用于减少循环内条件判断的位运算方法 ... Trust Me! */
-#if ((DELETE_RANGE_BASE_MODE_TOKEN-1)&FILE_DEL) == FILE_DEL
-#define DRBP_T_R        (DELETE_RANGE_BASE_MODE_TOKEN/FILE_DEL)
-#define DRBP_T_G(f)     (((f)->accessed[1]&FILE_DEL)*DRBP_T_R)
-#else /* ((DELETE_RANGE_BASE_MODE_TOKEN-1)&FILE_DEL) == FILE_DEL */
-#define DRBP_T_R        (FILE_DEL/DELETE_RANGE_BASE_MODE_TOKEN)
-#define DRBP_T_G(f)     (((f)->accessed[1]&FILE_DEL)/DRBP_T_R)
-#endif /* ((DELETE_RANGE_BASE_MODE_TOKEN-1)&FILE_DEL) == FILE_DEL */
-#define DRBP_TOKEN(f)   (vmode&(DRBP_T_G(f)^DELETE_RANGE_BASE_MODE_TOKEN))
 #ifndef DELETE_RANGE_RESERVE_DIGEST
-#define DRBP_UNDEL(f)   (((f)->accessed[0]&(FILE_MARKED|FILE_PERCENT))|DRBP_TOKEN(f))
+#define DRBP_MARKS(f)   ((f)->accessed[0]&(FILE_MARKED|FILE_PERCENT))
 #else /* DELETE_RANGE_RESERVE_DIGEST */
-#define DRBP_UNDEL(f)   (((f)->accessed[0]&(FILE_MARKED|FILE_PERCENT|FILE_DIGEST))|DRBP_TOKEN(f))
+#define DRBP_MARKS(f)   ((f)->accessed[0]&(FILE_MARKED|FILE_PERCENT|FILE_DIGEST))
 #endif /* DELETE_RANGE_RESERVE_DIGEST */
+#define DRBP_TOKEN(f)   ((f)->accessed[1]&FILE_DEL)
+#define DRBP_CHK_T      (vmode&DELETE_RANGE_BASE_MODE_TOKEN)
+#define DRBP_CHK_F      (DELETE_RANGE_BASE_MODE_TOKEN|DELETE_RANGE_BASE_MODE_MPDEL)
+#define DRBP_CHK_M      (!((vmode&DELETE_RANGE_BASE_MODE_OVERM)&&(vmode&DRBP_CHK_F)))
+#define DRBP_UNDEL(f)   ((DRBP_CHK_T&&!DRBP_TOKEN(f))||(DRBP_CHK_M&&DRBP_MARKS(f)))
 #define DRBP_TSET(n)    do{tab[((n)>>3)]|=(1<<((n)&0x07));}while(0)
 #define DRBP_TGET(n)    (tab[((n)>>3)]&(1<<((n)&0x07)))
     static const struct flock lck_set={F_WRLCK,SEEK_SET,0,0,0};
@@ -3266,21 +3262,23 @@ int delete_range_base(
             DRBP_RSRC;
             return 0x90;
     }
-#undef DRBP_MODE
-#undef DRBP_LEN
 #undef DRBP_CSRC
-#undef DRBP_CDST
 #undef DRBP_MAIL
 #undef DRBP_DST
 #undef DRBP_RSRC
 #undef DRBP_RDST
-#undef DRBP_T_R
-#undef DRBP_T_G
+#undef DRBP_MARKS
 #undef DRBP_TOKEN
+#undef DRBP_CHK_T
+#undef DRBP_CHK_F
+#undef DRBP_CHK_M
 #undef DRBP_UNDEL
 #undef DRBP_TSET
 #undef DRBP_TGET
 }
+
+#undef DRBP_MODE
+#undef DRBP_LEN
 
 /* --END--, etnlegend, 2006.04.19, 区段删除核心 */
 
