@@ -899,7 +899,7 @@ docWriter.prototype.t = function() {
 			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['SHARP'] + ');">切换#</a>]<br>';
 			ret += '其他操作： [<a href="javascript:if(confirm(\'确定要删除吗？\')){mansubmit(' + bbsman_modes['DEL'] + ');}">删除</a>]';
 			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['NOREPLY'] + ');">切换不可回复</a>]';
-			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['MARK'] + ');">置底</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['ZHIDING'] + ');">置底</a>]';
 			if (www2dev) {
 				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['ANNOUNCE'] + ');">收精华区</a>]<br>';
 				ret += '暂 存 档： [<a href="bbsimport.php" target="_blank">看暂存档</a>]';
