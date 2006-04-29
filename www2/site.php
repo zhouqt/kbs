@@ -15,7 +15,8 @@ define("AUTO_BMP2PNG_THRESHOLD", 100000); // requires ImageMagick and safe_mode 
 // 界面方案的名称
 $style_names = array(
 	"蓝色经典",
-	"冬雪皑皑"
+	"冬雪皑皑",
+	"猪猪猪的泡泡"
 );
 
 // 这个暂时这样.............
