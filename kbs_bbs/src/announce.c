@@ -377,7 +377,7 @@ MENU *pm;
         snprintf(fname,STRLEN,"%s",pm->item[n]->fname);
         snprintf(genbuf,MAXPATH,"%s/%s",pm->path,fname);
 
-        if(lstat(genbuf,&st)==-1||!(st.st_mode&(S_IFDIR|S_IFREG|S_IFLNK))){
+        if(lstat(genbuf,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)|S_ISLNK(st.st_mode))){
             st.st_mode=0;
             st.st_mtime=time(NULL);
         }
@@ -402,9 +402,9 @@ MENU *pm;
                     snprintf(kind,32,"%s","[\033[0;36m文件\033[m]");
                     break;
                 case S_IFLNK:
-                    if(stat(genbuf,&st)==-1||!(st.st_mode&(S_IFDIR|S_IFREG)))
+                    if(stat(genbuf,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)))
                         snprintf(kind,32,"%s","[\033[0;32m错误\033[m]");
-                    else if(st.st_mode&S_IFDIR)
+                    else if(S_ISDIR(st.st_mode))
                         snprintf(kind,32,"%s","[\033[0;33m目录\033[m]");
                     else
                         snprintf(kind,32,"%s","[\033[0;33m文件\033[m]");
@@ -581,7 +581,7 @@ int level;
     setbpath(bpath, key);
     if ((*key == '\0') || (stat(bpath, &st) == -1))     /* 判断board是否存在 */
         return 0;
-    if (!(st.st_mode & S_IFDIR))
+    if (!S_ISDIR(st.st_mode))
         return 0;
     if ((num = getbid(key, &fhdr)) == 0)
         return 0;
