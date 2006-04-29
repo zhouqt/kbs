@@ -336,7 +336,7 @@ MENU *pm;
 {
     struct stat st;
     struct tm *pt;
-    char title[MAXPATH], kind[20];
+    char title[MAXPATH], kind[32];
     char fname[STRLEN];
     char ch;
     char buf[MAXPATH], genbuf[MAXPATH];
@@ -370,42 +370,64 @@ MENU *pm;
     if (pm->num == 0)
         prints("      << 目前没有文章 >>\n");
     for (n = pm->page; n < pm->page + BBS_PAGESIZE && n < pm->num; n++) {
-        strncpy(title, pm->item[n]->title, STRLEN * 2 - 1);
-        snprintf(fname, STRLEN, "%s", pm->item[n]->fname);
-        snprintf(genbuf, MAXPATH, "%s/%s", pm->path, fname);
-        if (a_fmode_show == 2) {
-            ch = (dashf(genbuf) ? ' ' : (dashd(genbuf) ? '/' : ' '));
-            fname[10] = '\0';
-        } else {
-            if (dashf(genbuf) || dashd(genbuf)) {
-                stat(genbuf, &st);
-                mtime = st.st_mtime;
-            } else
-                mtime = time(0);
 
-            pt = localtime(&mtime);
-            sprintf(fname, "\033[1m%04d\033[m.\033[1m%02d\033[m.\033[1m%02d\033[m", pt->tm_year + 1900, pt->tm_mon + 1, pt->tm_mday);
-            ch = ' ';
+        /* etnlegend, 2006.04.29, 天哪这原来都是什么写法... */
+
+        snprintf(title,2*STRLEN,"%s",pm->item[n]->title);
+        snprintf(fname,STRLEN,"%s",pm->item[n]->fname);
+        snprintf(genbuf,MAXPATH,"%s/%s",pm->path,fname);
+
+        if(lstat(genbuf,&st)==-1||!(st.st_mode&(S_IFDIR|S_IFREG|S_IFLNK))){
+            st.st_mode=0;
+            st.st_mtime=time(NULL);
         }
-        if (pm->item[n]->host != NULL) {
-            strcpy(kind, "[\033[33m连线\033[m]");
-        } else if (dashf(genbuf)) {
-            strcpy(kind, "[\033[36m文件\033[m]");
-        } else if (dashd(genbuf)) {
-            strcpy(kind, "[目录]");
-        } else {
-            strcpy(kind, "[\033[32m错误\033[m]");
+
+        if(a_fmode_show==2){
+            ch=(S_ISDIR(st.st_mode)?'/':' ');
+            fname[10]=0;
         }
-        if (!strncmp(title, "[目录] ", 7) || !strncmp(title, "[文件] ", 7)
-            || !strncmp(title, "[连线] ", 7))
-            sprintf(genbuf, "%-s %-55.55s%-s%c", kind, title + 7, fname, ch);
+        else{
+            mtime=st.st_mtime;
+            pt=localtime(&mtime);
+            sprintf(fname,"\033[1;37m%04d.%02d.%02d\033[m",(pt->tm_year+1900),(pt->tm_mon+1),pt->tm_mday);
+            ch=' ';
+        }
+
+        if(!(pm->item[n]->host)){
+            switch(st.st_mode&S_IFMT){
+                case S_IFDIR:
+                    snprintf(kind,32,"%s","[\033[0;37m目录\033[m]");
+                    break;
+                case S_IFREG:
+                    snprintf(kind,32,"%s","[\033[0;36m文件\033[m]");
+                    break;
+                case S_IFLNK:
+                    if(stat(genbuf,&st)==-1||!(st.st_mode&(S_IFDIR|S_IFREG)))
+                        snprintf(kind,32,"%s","[\033[0;32m错误\033[m]");
+                    else if(st.st_mode&S_IFDIR)
+                        snprintf(kind,32,"%s","[\033[0;33m目录\033[m]");
+                    else
+                        snprintf(kind,32,"%s","[\033[0;33m文件\033[m]");
+                    break;
+                default:
+                    snprintf(kind,32,"%s","[\033[0;32m错误\033[m]");
+                    break;
+            }
+        }
         else
-            sprintf(genbuf, "%-s %-55.55s%-s%c", kind, title, fname, ch);
-        strncpy(title, genbuf, STRLEN * 2 - 1);
-        if (pm->item[n]->attachpos)
-            prints("  %3d @%s\n", n + 1, title);
+            snprintf(kind,32,"%s","[\033[0;33m连线\033[m]");
+
+        if (!strncmp(title,"[目录] ",7)||!strncmp(title,"[文件] ",7)||!strncmp(title,"[连线] ",7))
+            sprintf(genbuf,"%-s %-55.55s%-s%c",kind,&title[7],fname,ch);
         else
-            prints("  %3d  %s\n", n + 1, title);
+            sprintf(genbuf,"%-s %-55.55s%-s%c",kind,title,fname,ch);
+
+        snprintf(title,2*STRLEN,"%s",genbuf);
+        sprintf(genbuf,"  %3d %c%s\n",(n+1),(!(pm->item[n]->attachpos)?' ':'@'),title);
+        prints("%s",genbuf);
+
+        /* --END--, etnlegend, 2006.04.29, 天哪这都是什么写法... */
+
     }
     clrtobot();
     move(t_lines - 1, 0);
