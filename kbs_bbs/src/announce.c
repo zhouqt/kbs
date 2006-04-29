@@ -377,7 +377,7 @@ MENU *pm;
         snprintf(fname,STRLEN,"%s",pm->item[n]->fname);
         snprintf(genbuf,MAXPATH,"%s/%s",pm->path,fname);
 
-        if(lstat(genbuf,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)|S_ISLNK(st.st_mode))){
+        if(lstat(genbuf,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)||S_ISLNK(st.st_mode))){
             st.st_mode=0;
             st.st_mtime=time(NULL);
         }
