@@ -982,14 +982,14 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
 static inline int delete_range_select(struct _select_def *conf){
     struct delete_range_arg *arg=(struct delete_range_arg*)conf->arg;
     char buf[16];
-    if((arg->type==menu_sub)&&(conf->pos==4)){
-        move(arg->items[3].y,arg->items[3].x);
+    if((arg->type==menu_sub)&&(conf->pos==1)){
+        move(arg->items[0].y,arg->items[0].x);
         clrtoeol();
         delete_range_read(buf,arg->fw,"0123456789");
         if(!buf[0])
             return SHOW_REFRESH;
         arg->id_from=atoi(buf);
-        move(arg->items[3].y,arg->items[3].x+(arg->fw+3));
+        move(arg->items[0].y,arg->items[0].x+(arg->fw+3));
         prints("\033[1;37m%s \033[m","→");
         delete_range_read(buf,arg->fw,"0123456789");
         if(!buf[0])
@@ -1038,13 +1038,13 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
     fw[0]=strlen(buf);
     sprintf(buf,"%d",total);
     fw[1]=strlen(buf);
-    sprintf(menustr[0],"\033[1;37m全部         [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m",
-        fw[0],1,fw[1],total);
+    sprintf(menustr[0],"%s","指定删除区域");
     sprintf(menustr[1],"\033[1;37m当前位置向前 [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m",
         fw[0],1,fw[1],current);
     sprintf(menustr[2],"\033[1;37m当前位置向后 [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m",
         fw[0],current,fw[1],total);
-    sprintf(menustr[3],"%s","指定删除区域");
+    sprintf(menustr[3],"\033[1;37m全部         [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m",
+        fw[0],1,fw[1],total);
     memset(arg,0,sizeof(struct delete_range_arg));
     arg->items=sel;
     arg->type=menu_sub;
@@ -1066,8 +1066,6 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
         return -1;
     switch(conf.pos){
         case 1:
-            arg->id_from=1;
-            arg->id_to=total;
             break;
         case 2:
             arg->id_from=1;
@@ -1078,6 +1076,8 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
             arg->id_to=total;
             break;
         case 4:
+            arg->id_from=1;
+            arg->id_to=total;
             break;
         default:
             return -1;
@@ -1120,16 +1120,16 @@ static inline int delete_range_interface_main_menu(void){
     conf.key_command=delete_range_key;
     if((ret=list_select_loop(&conf))!=SHOW_SELECT)
         return -1;
-    switch(sel[conf.pos-1].hotkey){
-        case '0':
+    switch(conf.pos){
+        case 1:
             return DELETE_RANGE_BASE_MODE_TOKEN;
-        case '1':
+        case 2:
             return DELETE_RANGE_BASE_MODE_RANGE;
-        case '2':
+        case 3:
             return DELETE_RANGE_BASE_MODE_FORCE;
-        case '3':
+        case 4:
             return DELETE_RANGE_BASE_MODE_MPDEL;
-        case '4':
+        case 5:
             return DELETE_RANGE_BASE_MODE_CLEAR;
         default:
             return -1;
