@@ -717,18 +717,6 @@ PHP_FUNCTION(bbs_club_flag)
     }
 }
 
-static void trimstr(char *s){
-    char *p;
-    if(s){
-        for(p=s+strlen(s)-1;!(p<s)&&(*p==32);p--)
-            continue;
-        *(p+1)=0;
-        for(p=s;*p==32;p++)
-            continue;
-        memmove(s,p,(strlen(p)+1)*sizeof(char));
-    }
-    return;
-}
 
 /* modify user's club perm, by pig2532
 parameters:

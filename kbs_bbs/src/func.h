@@ -231,6 +231,7 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
     char * filter_upload_filename(char *s);
     char * filter_control_char(char *s);
     char *strnzhcpy(char *dest, const char *src, size_t n);
+    void trimstr(char*);
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)

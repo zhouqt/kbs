@@ -2437,3 +2437,14 @@ char *strnzhcpy(char *dest, const char *src, size_t n) {
 	return dst;
 }
 
+void trimstr(char *s){
+    char *p;
+    if(!s||!*s)
+        return;
+    for(p=(s+(strlen(s)-1));!(p<s)&&(*p==' ');p--)
+        continue;
+    for(*(p+1)=0,p=s;*p==' ';p++)
+        continue;
+    memmove(s,p,((strlen(p)+1)*sizeof(char)));
+    return;
+}
