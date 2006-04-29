@@ -16,6 +16,9 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
+ * Revision 1.11  2006/04/29 19:52:04  atppp
+ * em?
+ *
  * Revision 1.10  2006/04/29 19:50:12  atppp
  * this seems to be a warning
  *
@@ -143,7 +146,7 @@ int ssh_write(int fd, const void *buf, size_t count)
 }
 static Buffer NetworkBuf;
 void ProcessOnePacket(int wait);
-size_t ssh_read(int fd, void *buf, size_t count)
+ssize_t ssh_read(int fd, void *buf, size_t count)
 {
     int retlen = 0;
 

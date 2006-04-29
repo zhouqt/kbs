@@ -6,7 +6,7 @@
 
 unsigned long ssh_crc32(const unsigned char *buf,unsigned int len);
 int ssh_write(int fd,const void *buf,size_t count);
-size_t ssh_read(int fd,void *buf,size_t count);
+ssize_t ssh_read(int fd,void *buf,size_t count);
 int ssh_select(int n,fd_set *readfds,fd_set *writefds,fd_set *exceptfds,struct timeval *timeout);
 int ssh_init(void);
 int bbs_entry(void);
