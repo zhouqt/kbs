@@ -1190,7 +1190,7 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
         return DONOTHING;
     clear();
     move(0,0);
-    prints("\033[1;32m%s \033[1;33m%s\033[m","[区段删除选单]","<Enter>键选择/<ESC>键退出");
+    prints("\033[1;32m%s \033[1;33m%s\033[m","[区段删除选单]","<Enter>键选择/<Esc>键退出");
     if(uinfo.mode==RMAIL)
         modify_user_mode(MAIL);
     if((ret=delete_range_interface_main_menu())==-1)
