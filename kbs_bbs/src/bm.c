@@ -903,7 +903,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
 
 struct delete_range_arg{
     struct _select_item *items;
-    enum delete_range_type{menu_main,menu_sub} type;
+    enum delete_range_type{menu_main,menu_sub,menu_sub_safe} type;
     int fw;
     int id_from;
     int id_to;
@@ -941,6 +941,10 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
                 }
                 continue;
             case KEY_ESC:
+                if(!i){
+                    buf[i]=0;
+                    break;
+                }
                 move(row,col+1);
                 for(i=0;i<len;i++)
                     prints(DELETE_RANGE_READ_FORMAT,KEY_SP);
@@ -970,14 +974,14 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
 static inline int delete_range_select(struct _select_def *conf){
     struct delete_range_arg *arg=(struct delete_range_arg*)conf->arg;
     char buf[16];
-    if((arg->type==menu_sub)&&(conf->pos==1)){
-        move(arg->items[0].y,arg->items[0].x);
+    if(((arg->type==menu_sub)&&(conf->pos==4))||((arg->type==menu_sub_safe)&&(conf->pos==1))){
+        move(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x);
         clrtoeol();
         delete_range_read(buf,arg->fw,"0123456789");
         if(!buf[0])
             return SHOW_REFRESH;
         arg->id_from=atoi(buf);
-        move(arg->items[0].y,arg->items[0].x+(arg->fw+3));
+        move(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x+(arg->fw+3));
         prints("\033[1;37m%s \033[m","→");
         delete_range_read(buf,arg->fw,"0123456789");
         if(!buf[0])
@@ -1007,16 +1011,17 @@ static inline int delete_range_key(struct _select_def *conf,int key){
     return SHOW_CONTINUE;
 }
 
-static inline int delete_range_interface_sub_menu(int current,int total,struct delete_range_arg *arg){
+static inline int delete_range_interface_sub_menu(int mode,int current,int total,struct delete_range_arg *arg){
     struct _select_item sel[5];
     struct _select_def conf;
     POINT pts[4];
     char menustr[4][128],buf[16];
-    int fw[2];
-    sel[0].x=32;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data=menustr[0];
+    int safe,fw[2];
+    safe=!(mode&(DELETE_RANGE_BASE_MODE_TOKEN|DELETE_RANGE_BASE_MODE_CLEAR));
+    sel[0].x=32;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data=menustr[(safe?0:3)];
     sel[1].x=32;sel[1].y=3;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data=menustr[1];
     sel[2].x=32;sel[2].y=4;sel[2].hotkey='2';sel[2].type=SIT_SELECT;sel[2].data=menustr[2];
-    sel[3].x=32;sel[3].y=5;sel[3].hotkey='3';sel[3].type=SIT_SELECT;sel[3].data=menustr[3];
+    sel[3].x=32;sel[3].y=5;sel[3].hotkey='3';sel[3].type=SIT_SELECT;sel[3].data=menustr[(safe?3:0)];
     sel[4].x=-1;sel[4].y=-1;sel[4].hotkey=-1;sel[4].type=0;sel[4].data=NULL;
     pts[0].x=sel[0].x;pts[0].y=sel[0].y;
     pts[1].x=sel[1].x;pts[1].y=sel[1].y;
@@ -1035,7 +1040,7 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
         fw[0],1,fw[1],total);
     memset(arg,0,sizeof(struct delete_range_arg));
     arg->items=sel;
-    arg->type=menu_sub;
+    arg->type=(safe?menu_sub_safe:menu_sub);
     arg->fw=fw[1];
     memset(&conf,0,sizeof(struct _select_def));
     conf.item_count=4;
@@ -1054,6 +1059,10 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
         return -1;
     switch(conf.pos){
         case 1:
+            if(!safe){
+                arg->id_from=1;
+                arg->id_to=total;
+            }
             break;
         case 2:
             arg->id_from=1;
@@ -1064,8 +1073,10 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
             arg->id_to=total;
             break;
         case 4:
-            arg->id_from=1;
-            arg->id_to=total;
+            if(safe){
+                arg->id_from=1;
+                arg->id_to=total;
+            }
             break;
         default:
             return -1;
@@ -1179,7 +1190,7 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
         return DONOTHING;
     clear();
     move(0,0);
-    prints("\033[1;32m%s\033[m","[区段删除选单]");
+    prints("\033[1;32m%s \033[1;33m%s\033[m","[区段删除选单]","<Enter>键选择/<ESC>键退出");
     if(uinfo.mode==RMAIL)
         modify_user_mode(MAIL);
     if((ret=delete_range_interface_main_menu())==-1)
@@ -1204,7 +1215,7 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
         default:
             DELETE_RANGE_QUIT(line,"发生未知错误, 操作取消...");
     }
-    if(delete_range_interface_sub_menu(current,total,&arg)==-1)
+    if(delete_range_interface_sub_menu(mode,current,total,&arg)==-1)
         DELETE_RANGE_QUIT(line,"操作取消...");
     if(uinfo.mode==MAIL)
         modify_user_mode(RMAIL);
