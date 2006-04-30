@@ -34,11 +34,11 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title" align="center">
+	<div align="center"><table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title" align="center">
         <tr> 
           <td>&nbsp;&nbsp;本日热点话题讨论</td>
         </tr>
-	</table>
+	</table></div>
 	<table border="0" cellpadding="0" cellspacing="0" class="HotTable" align="center">
 <?php
 # shift through the array
@@ -150,11 +150,11 @@ while($board = array_shift($boards))
 	$sec_boards_num[$secid]++;
 }
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title" align="center">
+	<div align="center"><table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title" align="center">
         <tr> 
           <td>&nbsp;&nbsp;分类精彩讨论区</td>
         </tr>
-	</table>
+	</table></div>
 		<table border="0" cellpadding="0" cellspacing="0" class="SecTable" align="center">
 <?php
 	for ($i = 0; $i < BBS_SECNUM; $i++)
@@ -340,11 +340,11 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title" align="center">
+	<div align="center"><table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title" align="center">
         <tr> 
           <td>&nbsp;&nbsp;推荐文章</td>
         </tr>
-	</table>
+	</table></div>
 
 	<table border="0" cellpadding="0" cellspacing="0" class="RecommendTable" align="center">
 	<tr><td height=10 colspan=2></td></tr>
