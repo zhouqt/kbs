@@ -845,6 +845,7 @@ void a_copypaste(MENU *pm,int mode){
     do{
 #define ACP_FGETS(len) if(!fgets(genbuf,((len)+1),fp)||!genbuf[0]||genbuf[0]=='\n'){type=PASTE_ERROR;continue;}
 #define ACP_DUMPS(dst,src,len) do{snprintf((dst),(len),"%s",(src));if((p=strchr((dst),'\n'))){*p=0;}}while(0)
+        ap=0;
         ACP_FGETS(2);
         if(!isdigit(genbuf[0])){
             type=PASTE_ERROR;
