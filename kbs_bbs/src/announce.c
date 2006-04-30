@@ -356,7 +356,7 @@ MENU *pm;
     } else
         strncpy(genbuf, pm->mtitle, MAXPATH);
     if (strlen(genbuf) <= 80)
-        sprintf(buf, "%*s", (80 - strlen(genbuf)) / 2, "");
+        sprintf(buf, "%*s", (int)( (80 - strlen(genbuf)) / 2 ), "");
     else
         strcpy(buf, "");
     prints("\033[44m%s%s%s\033[m\n", buf, genbuf, buf);
