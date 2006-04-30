@@ -1264,8 +1264,13 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
     }
     move(++line,4);
     if(!ret){
-        if(!mail)
+        if(!mail){
+            if((mode&DELETE_RANGE_BASE_MODE_FORCE)
+                ||((mode&DELETE_RANGE_BASE_MODE_OVERM)&&(mode&DELETE_RANGE_BASE_MODE_TOKEN)))
+                setboardmark(ident,1);
             setboardorigin(ident,1);
+            updatelastpost(ident);
+        }
         prints("\033[1;32m%s\033[0;33m<Enter>\033[m","²Ù×÷Íê³É!");
         WAIT_RETURN;
         return DIRCHANGED;
