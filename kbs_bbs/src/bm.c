@@ -917,6 +917,7 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
 #define KEY_CR 13
 #define KEY_LF 10
 #define KEY_BS 8
+    extern int ingetdata;
     int i,row,col;
     getyx(&row,&col);
     prints(DELETE_RANGE_READ_FORMAT,DELETE_RANGE_READ_BORDER_L);
@@ -925,6 +926,7 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
     prints(DELETE_RANGE_READ_FORMAT,DELETE_RANGE_READ_BORDER_R);
     move(row,col+1);
     i=0;
+    ingetdata=1;
     while(!(i>len)){
         buf[i]=igetkey();
         switch(buf[i]){
@@ -961,6 +963,7 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
         prints(DELETE_RANGE_READ_FORMAT,buf[i]);
         i++;
     }
+    ingetdata=0;
     return i;
 #undef DELETE_RANGE_READ_FORMAT
 #undef DELETE_RANGE_READ_BORDER_L
