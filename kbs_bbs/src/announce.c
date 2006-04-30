@@ -828,7 +828,7 @@ void a_copypaste(MENU *pm,int mode){
     long ap;
     size_t len;
     enum {PASTE_ERROR,PASTE_CUT,PASTE_COPY} type;
-#define ACP_ANY_RETURN(msg) do{prints("\033[1;37m%s\033[0;33m<Any>\033[m",(msg));igetch();pm->page=9999;return;}while(0)
+#define ACP_ANY_RETURN(msg) do{prints("\033[1;37m%s\033[0;33m<Any>\033[m",(msg));igetkey();pm->page=9999;return;}while(0)
     move(t_lines-1,0);clrtoeol();
     sethomefile(genbuf,getCurrentUser()->userid,".CP");
     if(!(fp=fopen(genbuf,(!(mode==0||mode==1)?"r":"w"))))
