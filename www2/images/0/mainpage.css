@@ -145,6 +145,7 @@ table.recommend_title {
 	padding: 0px;
 	height: 18px;
 	border: 1px solid #0066CC;
+	width: 97%;
     background-repeat: no-repeat;
     background-color: #DEF3FF;
     background-image: url('lan2.gif');
@@ -160,6 +161,7 @@ table.hot_title {
 	padding: 0px;
 	height: 18px;
 	border: 1px solid #0066CC;
+	width: 97%;
     background-repeat: no-repeat;
     background-color: #DEF3FF;
     background-image: url('lan1.gif');
@@ -175,6 +177,7 @@ table.type_title {
 	padding: 0px;
 	height: 18px;
 	border: 1px solid #0066CC;
+	width: 97%;
     background-repeat: no-repeat;
     background-color: #DEF3FF;
     background-image: url('lan3.gif');

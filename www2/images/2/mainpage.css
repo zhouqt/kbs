@@ -145,6 +145,8 @@ table.recommend_title {
 	padding: 0px;
 	height: 25px;
 	font-weight: bold;
+	width: 97%;
+	border: 0px;
     background-repeat: no-repeat;
     background-color: #F6F6F6;
     background-image: url('lan2.gif');
@@ -160,6 +162,8 @@ table.hot_title {
 	padding: 0px;
 	height: 25px;
 	font-weight: bold;
+	width: 97%;
+	border: 0px;
     background-repeat: no-repeat;
     background-color: #F6F6F6;
     background-image: url('lan1.gif');
@@ -175,6 +179,8 @@ table.type_title {
 	padding: 0px;
 	height: 25px;
 	font-weight: bold;
+	width: 97%;
+	border: 0px;
     background-repeat: no-repeat;
     background-color: #F6F6F6;
     background-image: url('lan3.gif');
@@ -229,5 +235,5 @@ li.rec {
 	vertical-align: top;
 }
 .vline {
-	background-color: #0066CC;
+	background-color: #999999;
 }

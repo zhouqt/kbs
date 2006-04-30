@@ -146,6 +146,8 @@ table.recommend_title {
 	font-size: 12px;
 	color: #222222;
 	height: 30px;
+	width: 97%;
+	border: 0px;
     background-image: url('ht.gif');
 }
 table.recommend_title td {
@@ -158,6 +160,8 @@ table.hot_title {
 	font-size: 12px;
 	color: #222222;
 	height: 30px;
+	width: 97%;
+	border: 0px;
     background-image: url('ht.gif');
 }
 table.hot_title td {
@@ -170,6 +174,8 @@ table.type_title {
 	font-size: 12px;
 	color: #222222;
 	height: 30px;
+	width: 97%;
+	border: 0px;
     background-image: url('ht.gif');
 }
 table.type_title td {

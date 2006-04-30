@@ -34,7 +34,7 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<div align="center"><table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title" align="center">
+	<div align="center"><table cellpadding="0" cellspacing="0" class="hot_title">
         <tr> 
           <td>&nbsp;&nbsp;本日热点话题讨论</td>
         </tr>
@@ -150,7 +150,7 @@ while($board = array_shift($boards))
 	$sec_boards_num[$secid]++;
 }
 ?>
-	<div align="center"><table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title" align="center">
+	<div align="center"><table cellpadding="0" cellspacing="0" class="type_title">
         <tr> 
           <td>&nbsp;&nbsp;分类精彩讨论区</td>
         </tr>
@@ -340,7 +340,7 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<div align="center"><table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title" align="center">
+	<div align="center"><table cellpadding="0" cellspacing="0" class="recommend_title">
         <tr> 
           <td>&nbsp;&nbsp;推荐文章</td>
         </tr>
