@@ -5,7 +5,7 @@ qmail2bbs_SOURCES= qmail2bbs.c qp_conv.c
 #qmailpost_SOURCES= qmailpost.c qp_conv.c
 LDADD=-lBBS -lsystem -L../libBBS -L../libsystem
 CLEANFILES=@EXTRA_CLEAN@
-AM_CFLAGS=-I$(top_builddir)/src
+AM_CFLAGS=-I$(top_srcdir)/src
 
 #install-exec-local:
 #	cp -f bbsmail mailgate.pl $(bindir)

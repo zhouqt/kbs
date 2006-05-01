@@ -11,5 +11,5 @@ bin_PROGRAMS = poststat static usage Xhtml Bhtml listonline \
 EXTRA_DIST = urlencode.c
 EXTRA_PROGRAMS = 
 LDADD=-lBBS -lsystem -L../libBBS -L../libsystem
-AM_CFLAGS= -I$(top_builddir)/src
+AM_CFLAGS= -I$(top_srcdir)/src
 CLEANFILES=@EXTRA_CLEAN@

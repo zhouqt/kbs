@@ -12,7 +12,7 @@ bbsd_SOURCES=bbs.c delete.c mail.c register.c \
 	   addr_manage.c personal_corp.c newread.c newhelp.c
 noinst_HEADERS = ann.h bbs.h chat.h defines_t.h edit.h func.h \
            md5.h modes.h screen.h struct.h system.h \
-           systemexp.h uhashgen.h vars.h vote.h webmsg.h select.h default.h ansi.h output.h \
+           systemexp.h uhashgen.h vars.h vote.h webmsg.h select.h ansi.h output.h \
            calltime.h tmpl.h read.h service.h var.h
 LDADD=$(top_builddir)/libBBS/.libs/libBBS.a $(top_builddir)/libsystem/.libs/libsystem.a \
       $(top_builddir)/rzsz/.libs/libzmodem.a

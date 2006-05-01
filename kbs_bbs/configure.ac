@@ -59,7 +59,7 @@ AC_ARG_ENABLE(admin,
                           enable admin  support(need admin package)],
 [
 	if test "$enableval" = "yes" ; then
-	        if test -d admin; then
+	        if test -d $srcdir/admin; then
                     AC_CONFIG_FILES(admin/Makefile)
                     BBSSUBDIRS="$BBSSUBDIRS admin"
 	        else
@@ -73,7 +73,7 @@ AC_ARG_ENABLE(innbbsd,
                           enable innbbsd  support(need innbbsd package)],
 [
 	if test "$enableval" = "yes" ; then
-	        if test -d innbbsd; then
+	        if test -d $srcdir/innbbsd; then
                     BBS_LIB_ICONV
                     AC_CONFIG_FILES(innbbsd/Makefile
                                     innbbsd/linkinnd.sh)
@@ -89,7 +89,7 @@ AC_ARG_ENABLE(ssh,
                           enable ssh bbsd  support(need sshbbsd package)],
 [
   if test "$enableval" = "yes" ; then
-		if test -d sshbbsd; then
+		if test -d $srcdir/sshbbsd; then
 			AC_CONFIG_SUBDIRS(sshbbsd)
             BBSSUBDIRS="$BBSSUBDIRS sshbbsd"
 		else
@@ -107,7 +107,7 @@ AC_ARG_ENABLE(www,
                           enable web support(need bbs2www package)],
 [
 	if test "$enableval" = "yes" ; then
-		if test -d bbs2www; then
+		if test -d $srcdir/bbs2www; then
             AC_CONFIG_FILES([bbs2www/Makefile
                              bbs2www/lib/Makefile
                              bbs2www/phplib/Makefile
@@ -218,11 +218,7 @@ SITEDIR=site])
 if test -f $srcdir/site/$BBSSITE.c; then
 	SITEDIR=site
 else
-#  if test -f $srcdir/sites/$BBSSITE.c; then
-#	SITEDIR=sites
-#  else
         AC_MSG_ERROR([ERROR! Unknown site $BBSSITE, see site/])
-#  fi
 fi
 AC_SUBST(BBSSITE)
 
@@ -243,15 +239,15 @@ fi
 
 # Checks for libraries.
 AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
-		src/site.h:$SITEDIR/$BBSSITE.h
+		site.h:$SITEDIR/$BBSSITE.h
 		libBBS/default.c:$SITEDIR/default.c
-		src/default.h:$SITEDIR/default.h
+		default.h:$SITEDIR/default.h
 		)
 
 ORIGIN_LIBTOOL=$LIBTOOL
 AC_SUBST(ORIGIN_LIBTOOL)
 AC_SUBST(SED)
-abssrcdir=`cd $srcdir && pwd`
+abssrcdir=`pwd`
 LIBTOOL="$abssrcdir/wrapper.sh"
 AC_SUBST(abssrcdir)
 AC_CONFIG_FILES([Makefile
