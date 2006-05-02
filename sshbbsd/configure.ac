@@ -1376,17 +1376,9 @@ AH_TEMPLATE([_POSIX_SOURCE],
 			[Define if you need to in order for stat and other things to work.])
 
 m4_include(../config.lib)
-OLDPWD=`pwd`
-cd ../src
-BBSOBJS=
-for i in *.c; do
-	AC_CONFIG_LINKS($i:../src/$i)
-	BBSOBJS="$BBSOBJS `echo $i|sed 's/.c$/.o/'`"
-done
-cd $OLDPWD
 
 if test -f "../wrapper.sh"; then
-abssrcdir=`cd $srcdir && pwd`
+abssrcdir=`pwd`
 LIBTOOL="$abssrcdir/../wrapper.sh"
 MAKEFLAG="-s"
 else
@@ -1400,6 +1392,5 @@ AC_SUBST(CONFOBJS)
 AC_SUBST(SSHCONFOBJS)
 AC_SUBST(SSHDCONFOBJS)
 AC_SUBST(SSHINSTALLMODE)
-AC_SUBST(BBSOBJS)
 
 AC_OUTPUT(Makefile)

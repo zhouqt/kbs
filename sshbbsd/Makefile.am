@@ -35,14 +35,14 @@ EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 	config.sample install-sh ChangeLog \
 	idea.c
 
-BBSD_SRCS = bbs.c delete.c mail.c register.c \
-           xyz.c talk.c comm_lists.c namecomplete.c chat.c \
-           maintain.c edit.c more.c help.c \
-           screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
-           bm.c list.c goodbye.c bbsd_single.c select.c \
-           newmain_single.c newio.c newterm.c \
-           definekey.c calltime.c tmpl.c msg_manager.c\
-           addr_manage.c personal_corp.c newread.c newhelp.c
+BBSD_SRCS = $(srcdir)/../src/bbs.c $(srcdir)/../src/delete.c $(srcdir)/../src/mail.c $(srcdir)/../src/register.c \
+           $(srcdir)/../src/xyz.c $(srcdir)/../src/talk.c $(srcdir)/../src/comm_lists.c $(srcdir)/../src/namecomplete.c \
+           $(srcdir)/../src/chat.c $(srcdir)/../src/maintain.c $(srcdir)/../src/edit.c $(srcdir)/../src/more.c $(srcdir)/../src/help.c \
+           $(srcdir)/../src/screen.c $(srcdir)/../src/userinfo.c $(srcdir)/../src/vote.c $(srcdir)/../src/announce.c $(srcdir)/../src/sendmsg.c $(srcdir)/../src/boards_t.c\
+           $(srcdir)/../src/bm.c $(srcdir)/../src/list.c $(srcdir)/../src/goodbye.c $(srcdir)/../src/bbsd_single.c $(srcdir)/../src/select.c \
+           $(srcdir)/../src/newmain_single.c $(srcdir)/../src/newio.c $(srcdir)/../src/newterm.c \
+           $(srcdir)/../src/definekey.c $(srcdir)/../src/calltime.c $(srcdir)/../src/tmpl.c $(srcdir)/../src/msg_manager.c\
+           $(srcdir)/../src/addr_manage.c $(srcdir)/../src/personal_corp.c $(srcdir)/../src/newread.c $(srcdir)/../src/newhelp.c
 
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
@@ -53,7 +53,7 @@ sshbbsd_SOURCES = $(SSHD_SRCS) $(BBSD_SRCS)
 
 sshbbsd_LDADD = ../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
 #sshbbsd_DEPENDENCIES = @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
-AM_CFLAGS=-I. -I../src -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
+AM_CFLAGS=-I. -I$(top_srcdir)/../src -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
 sshbbsd_LDFLAGS=-export-dynamic
 
 # Creates /etc/ssh_host_key
