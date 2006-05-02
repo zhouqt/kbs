@@ -20,4 +20,4 @@ libdir=${prefix}/service
 AM_CFLAGS = -DBBSMAIN -I$(top_srcdir)/src
 CLEANFILES=@EXTRA_CLEAN@
 install-data-local:
-	cp -f definekey.* ansihelp.txt $(libdir)
+	cp -f $(srcdir)/definekey.* $(srcdir)/ansihelp.txt $(libdir)
