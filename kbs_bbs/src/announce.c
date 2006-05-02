@@ -978,16 +978,15 @@ void a_delete(MENU *pm){
     move(t_lines-2,0);clrtobot();
     prints("\033[1;37m%s\033[m",genbuf);
     snprintf(path,PATHLEN,"%s/%s",pm->path,pm->item[pm->now]->fname);
-    if(stat(path,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)))
-        unlink(path);
-    else{
-        sprintf(genbuf,"\033[1;37m确认删除该%s? (Y/N) [N]: \033[m",S_ISDIR(st.st_mode)?"目录":"文件");
+    if(!lstat(path,&st)&&(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)||S_ISLNK(st.st_mode))){
+        sprintf(genbuf,"\033[1;37m确认删除该%s? (Y/N) [N]: \033[m",
+            (S_ISLNK(st.st_mode)?"链接":(S_ISDIR(st.st_mode)?"目录":"文件")));
         getdata(t_lines-1,0,genbuf,ans,2,DOECHO,NULL,true);
         if(toupper(ans[0])!='Y'){
             pm->page=9999;
             return;
         }
-        S_ISDIR(st.st_mode)?my_f_rm(path):my_unlink(path);
+        S_ISLNK(st.st_mode)?unlink(path):(S_ISDIR(st.st_mode)?my_f_rm(path):my_unlink(path));
     }
     free(pm->item[pm->now]);
     pm->num--;
