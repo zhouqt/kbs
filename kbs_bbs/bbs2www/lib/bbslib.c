@@ -315,7 +315,7 @@ static int www_free_guest_entry(int idx)
 
 void www_data_detach()
 {
-    shmdt(wwwguest_shm);
+    shmdt((void*)wwwguest_shm);
     wwwguest_shm = NULL;
 }
 
