@@ -80,5 +80,5 @@ case $optarg in
   echo " [Othering $args]"
     ;;
 esac
-@SHELL@ @abssrcdir@/libtool $args
+@SHELL@ @abssrcdir@/libtool --silent $args
 fi
