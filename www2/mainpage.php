@@ -520,7 +520,7 @@ while($board = array_shift($boards))
     <td colspan="5" height="8"></td>
   </tr>
   <tr>
-    <td width="80%">
+    <td width="80%" valign="top">
 <?php
 	gen_commend_html();
 ?>
