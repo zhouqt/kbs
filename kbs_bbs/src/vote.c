@@ -62,23 +62,6 @@ char *str;
     bbslog("user","%s",buf);
 }
 
-void makevdir(bname)
-char *bname;
-{
-    struct stat st;
-    char buf[STRLEN];
-
-    sprintf(buf, "vote/%s", bname);
-    if (stat(buf, &st) != 0)
-        mkdir(buf, 0755);
-}
-
-void setvfile(buf, bname, filename)
-char *buf, *bname, *filename;
-{
-    sprintf(buf, "vote/%s/%s", bname, filename);
-}
-
 void setcontrolfile()
 {
     setvfile(controlfile, currboard->filename, "control");

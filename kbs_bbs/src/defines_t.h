@@ -151,8 +151,6 @@ void RemoveAppendedSpace(char *ptr);
 int b_notes_edit();
 int b_banner_edit();
 int vote_results(char* bname);
-void makevdir(char *bname);
-void setvfile(char *buf, char *bname, char *filename);
 int b_closepolls();
 int vote_flag(char *bname, char val, int mode);
 

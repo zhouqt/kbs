@@ -587,62 +587,6 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     return FULLUPDATE;
 }
 
-/* etnlegend, 2005.11.27, 判断某一特定用户是否可以阅读某一特定版面的回收站 */
-int check_board_delete_read_perm(const struct userec *arg_user,const struct boardheader *arg_board){
-    const struct userec *user;
-    const struct boardheader *board;
-    struct stat st;
-    struct flock lc;
-    char buf[256];
-    int bid,fd,ret;
-    void *p;
-    user=(!arg_user?getCurrentUser():arg_user);
-    board=(!arg_board?currboard:arg_board);
-    if(!user||!board)
-        return 0;
-    if(!HAS_PERM(user,PERM_BOARDS)
-#ifdef HAVE_CUSTOM_USER_TITLE
-        ||!user->title
-#endif
-        )
-        return 0;
-    sethomefile(buf,user->userid,"board_delete_read");
-    if(stat(buf,&st)||!S_ISREG(st.st_mode))
-        return 0;
-    if(st.st_mtime<board->createtime)
-        return 0;
-    if(!(bid=getbnum_safe(board->filename,getSession())))
-        return 0;
-    bid--;
-    if(!((bid>>3)<st.st_size))
-        return 0;
-    if((fd=open(buf,O_RDONLY,0644))==-1)
-        return 0;
-    lc.l_type=F_RDLCK;
-    lc.l_whence=SEEK_SET;
-    lc.l_start=0;
-    lc.l_len=0;
-    lc.l_pid=0;
-    if(fcntl(fd,F_SETLK,&lc)!=-1){
-        if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED)
-            ret=0;
-        else{
-            ret=(((unsigned char*)p)[bid>>3]&(1<<(bid&0x07)));
-            munmap(p,st.st_size);
-        }
-        lc.l_type=F_UNLCK;
-        lc.l_whence=SEEK_SET;
-        lc.l_start=0;
-        lc.l_len=0;
-        lc.l_pid=0;
-        fcntl(fd,F_SETLKW,&lc);
-    }
-    else
-        ret=0;
-    close(fd);
-    return ret;
-}
-
 void readtitle(struct _select_def* conf)
 {                               /* 版内 显示文章列表 的 title */
     const struct boardheader *bp;
@@ -663,7 +607,7 @@ void readtitle(struct _select_def* conf)
 #ifdef OPEN_BMONLINE
 		if (1)
 #else
-        if(chk_currBM(currBM,getCurrentUser())||check_board_delete_read_perm(NULL,NULL))
+        if(chk_currBM(currBM,getCurrentUser())||check_board_delete_read_perm(getCurrentUser(),currboard))
 #endif
         {
             char *p1, *p2;
@@ -1758,23 +1702,14 @@ int digest_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extra
     return NEWDIRECT;
 }
 
-/*stephen : check whether current useris in the list of "jury" 2001.11.1*/
-int isJury()
-{
-    char buf[STRLEN];
-
-    if (!HAS_PERM(getCurrentUser(), PERM_JURY))
-        return 0;
-    makevdir(currboard->filename);
-    setvfile(buf, currboard->filename, "jury");
-    return seek_in_file(buf, getCurrentUser()->userid);
-}
 
 int deleted_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
 /* Allow user in file "jury" to see deleted area. stephen 2001.11.1 */
-    if(!chk_currBM(currBM,getCurrentUser())&&!check_board_delete_read_perm(NULL,NULL)&&!isJury()){
+    if(!chk_currBM(currBM,getCurrentUser())
+     &&!check_board_delete_read_perm(getCurrentUser(),currboard)
+     &&!isJury(getCurrentUser(),currboard)){
         return DONOTHING;
     }
 

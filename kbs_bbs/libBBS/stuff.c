@@ -442,11 +442,29 @@ char *setbpath(char *buf, const char *boardname)
     strcat(buf, boardname);
     return buf;
 }
+
 char *setbfile(char *buf,const char *boardname,const char *filename)
 {                               /* 取某版下文件 */
     sprintf(buf, "boards/%s/%s", boardname, filename);
     return buf;
 }
+
+void makevdir(const char *bname)
+{
+    struct stat st;
+    char buf[STRLEN];
+
+    sprintf(buf, "vote/%s", bname);
+    if (stat(buf, &st) != 0)
+        mkdir(buf, 0755);
+}
+
+void setvfile(char *buf, const char *bname, const char *filename)
+{
+    sprintf(buf, "vote/%s/%s", bname, filename);
+}
+
+
 void RemoveMsgCountFile(const char *userID)
 {
     char fname[STRLEN];

@@ -161,6 +161,8 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
     int dashd(const char *fname);
     int seek_in_file(const char* filename, const char* seekstr);
 	char *setbdir(enum BBS_DIR_MODE digestmode, char *buf,const  char *boardname);
+	void makevdir(const char *bname);
+	void setvfile(char *buf, const char *bname, const char *filename);
     int my_system(const char *cmdstring);
     char *modestring(char* buf,int mode, int towho, int complete, char *chatid);
     int countexp(struct userec *udata);
@@ -357,6 +359,8 @@ void unlock_sem_check(int lockid);
     int haspostperm(const struct userec *user,const char *bname);  /* 判断在 bname版 是否有post权 */
     int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
+    int isJury(const struct userec *user, const struct boardheader *board);
+    int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board);
     int deldeny(struct userec *user, char *board, char *uident, int notice_only, session_t* session);       /* 删除 禁止POST用户 */
     int check_read_perm(const struct userec *user, const struct boardheader *board);
     int check_see_perm(const struct userec *user, const struct boardheader *board);

@@ -1145,6 +1145,76 @@ int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user)
     return chk_BM_instr(BMstr, user->userid);
 }
 
+
+/*stephen : check whether current useris in the list of "jury" 2001.11.1*/
+int isJury(const struct userec *user, const struct boardheader *board)
+{
+    char buf[STRLEN];
+
+    if (!HAS_PERM(user, PERM_JURY))
+        return 0;
+    makevdir(board->filename);
+    setvfile(buf, board->filename, "jury");
+    return seek_in_file(buf, user->userid);
+}
+
+
+/* etnlegend, 2005.11.27, 判断某一特定用户是否可以阅读某一特定版面的回收站 */
+int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board){
+    struct stat st;
+    struct flock lc;
+    char buf[256];
+    int bid,fd,ret;
+    void *p;
+
+    if(!user||!board)
+        return 0;
+    if(!HAS_PERM(user,PERM_BOARDS)
+#ifdef HAVE_CUSTOM_USER_TITLE
+        ||!user->title
+#endif
+        )
+        return 0;
+    sethomefile(buf,user->userid,"board_delete_read");
+    if(stat(buf,&st)||!S_ISREG(st.st_mode))
+        return 0;
+    if(st.st_mtime<board->createtime)
+        return 0;
+    if(!(bid=getbid(board->filename,NULL)))
+        return 0;
+    bid--;
+    if(!((bid>>3)<st.st_size))
+        return 0;
+    if((fd=open(buf,O_RDONLY,0644))==-1)
+        return 0;
+    lc.l_type=F_RDLCK;
+    lc.l_whence=SEEK_SET;
+    lc.l_start=0;
+    lc.l_len=0;
+    lc.l_pid=0;
+    if(fcntl(fd,F_SETLK,&lc)!=-1){
+        if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED)
+            ret=0;
+        else{
+            ret=(((unsigned char*)p)[bid>>3]&(1<<(bid&0x07)));
+            munmap(p,st.st_size);
+        }
+        lc.l_type=F_UNLCK;
+        lc.l_whence=SEEK_SET;
+        lc.l_start=0;
+        lc.l_len=0;
+        lc.l_pid=0;
+        fcntl(fd,F_SETLKW,&lc);
+    }
+    else
+        ret=0;
+    close(fd);
+    return ret;
+}
+
+
+
+
 int deldeny(struct userec *user, char *board, char *uident, int notice_only,session_t* session)
 {                               /* 删除 禁止POST用户 */
     char fn[STRLEN];
