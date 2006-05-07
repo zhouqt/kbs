@@ -1792,7 +1792,10 @@ int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid,
 
 	*srcpid = head.frompid;
 	*sndtime = head.time;
-    strncpy(srcid, head.id, IDLEN+2);
+    if(head.mode == 3)
+    	strncpy(srcid, "Õ¾³¤¹ã²¥", IDLEN+2);
+    else
+        strncpy(srcid, head.id, IDLEN+2);
     srcid[IDLEN] = '\0';
     strncpy(msg, buf, MSG_LEN);
     msg[MSG_LEN] = '\0';
