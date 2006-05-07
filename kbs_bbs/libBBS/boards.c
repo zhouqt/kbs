@@ -1212,8 +1212,9 @@ static int check_board_delete_read_perm_core(const struct userec *user,const str
     return ret;
 }
 
-int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board){
-    return (chk_currBM(board->BM, user) || check_board_delete_read_perm_core(user,board) || isJury(user, board));
+int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board, int jury){
+    return (chk_currBM(board->BM, user) || check_board_delete_read_perm_core(user,board)
+         || (jury && isJury(user, board)));
 }
 
 

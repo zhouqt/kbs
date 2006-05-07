@@ -607,7 +607,7 @@ void readtitle(struct _select_def* conf)
 #ifdef OPEN_BMONLINE
 		if (1)
 #else
-        if(check_board_delete_read_perm(getCurrentUser(),currboard))
+        if(check_board_delete_read_perm(getCurrentUser(),currboard,0))
 #endif
         {
             char *p1, *p2;
@@ -1707,7 +1707,7 @@ int deleted_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
 
-    if(!check_board_delete_read_perm(getCurrentUser(),currboard)){
+    if(!check_board_delete_read_perm(getCurrentUser(),currboard,1)){
         return DONOTHING;
     }
 
