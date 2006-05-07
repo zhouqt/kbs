@@ -17,7 +17,14 @@ var ta = new tabWriter(1,'main wide fixed',0,[['序号','6%','center'],['时间','20
 	foreach( $msgs as $msg ){
 ?>
 ta.r('<?php echo date("Y/m/j H:i:s", $msg["TIME"]);?>','<?php
-if($msg["SENT"]) echo '<a href="bbssendmsg.php?destid='.$msg["ID"].'">收</a>'; else echo '发';?>','<?php echo $msg["ID"];?>','<?php
+if($msg["SENT"]) {
+	if($msg["MODE"] == 3)
+		echo '收';
+	else
+		echo '<a href="bbssendmsg.php?destid='.$msg["ID"].'">收</a>'; 
+}
+else
+	echo '发';?>','<?php echo ($msg["MODE"]==3)?"站长广播":$msg["ID"];?>','<?php
 echo htmlformat($msg["content"],true);?> ');
 <?php
 	}

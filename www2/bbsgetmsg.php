@@ -13,8 +13,9 @@
 <bgsound src="/sound/msg.wav">
 <div id="msgs">
 <?php echo $srcid; ?> (<?php echo strftime("%b %e %H:%M", $sndtime); ?>): <?php echo htmlspecialchars($msgbuf); ?> 
-(<a target="f3" href="bbssendmsg.php?destid=<?php echo $srcid; ?>&destutmp=<?php echo $srcutmpnum; ?>">[回讯息]</a> 
-<a href="bbsgetmsg.php?refresh">[忽略]</a>)
+(<?php if($srcid != "站长广播") { ?>
+<a target="f3" href="bbssendmsg.php?destid=<?php echo $srcid; ?>&destutmp=<?php echo $srcutmpnum; ?>">[回讯息]</a> 
+<?php } ?><a href="bbsgetmsg.php?refresh">[忽略]</a>)
 </div>
 <?php
 			$frameheight = 25;
