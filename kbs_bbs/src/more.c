@@ -566,8 +566,8 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         *ty = LINE_ATTACHMENT;
         p = p0;
         /* 上一行为附件的行的size=1,因此-1获得真正的attach开始*/
-	 if (oldty==LINE_ATTACHMENT) p--;
-	 /*  跳过attachment前面的PAD */
+        if (oldty==LINE_ATTACHMENT) p--;
+        /*  跳过attachment前面的PAD */
         p += ATTACHMENT_SIZE;
 
         /* 跳过文件名*/
@@ -577,21 +577,23 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         p++;
         memcpy(&att_size, p, sizeof(int));
         *s = ntohl(att_size) + p - p0 + sizeof(int);
-	if (oldty==LINE_ATTACHMENT) { /*上次是附件，下一行是附件连接行*/
-          *ty=LINE_ATTACHLINK;
-          *s--;
-	}
-	else {
-          if ((*s>size)||(*s<0))
-              *s=size;
-	  else
-	      *s=1;
-	}
+        if (oldty==LINE_ATTACHMENT) { /*上次是附件，下一行是附件连接行*/
+            *ty=LINE_ATTACHLINK;
+            /* ??
+             * (*s)--;
+             */
+        } else {
+            if ((*s>size)||(*s<0))
+                *s=size;
+            else
+	            *s=1;
+        }
     } else {
+        /* ??
         if (p0[*s-1]=='\0')
-		*s++;
+            (*s)++;
+        */
     }
-
     return 0;
 }
 

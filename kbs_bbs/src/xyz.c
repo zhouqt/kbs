@@ -555,10 +555,9 @@ int get_favread()
 	    f_cp(dpath,mypath,0);
 
 #if USE_TMPFS == 1
-        if(getSession()->brc_cache_entry){
-#else
-        if(1){
+        if(getSession()->brc_cache_entry)
 #endif
+        {
 		    memset(getSession()->brc_cache_entry,0,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
 		    brc_initial(getCurrentUser()->userid,DEFAULTBOARD,getSession());
 		    if(currboard)

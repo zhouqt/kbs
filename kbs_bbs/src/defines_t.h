@@ -268,7 +268,6 @@ void do_move(int destcol, int destline, void (*outc) (char));
 
 /* xyz.c */
 int find_ip( const char *ip, int flag, char *result);
-int do_exec(char *com, char *wd);
 int showperminfo(struct _select_def *conf, int i);
 unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int numbers, int (*show) (struct _select_def *, int), int (*select) (struct _select_def *));
 int fhselect(struct _select_def* conf,struct fileheader *fh,long flag);
