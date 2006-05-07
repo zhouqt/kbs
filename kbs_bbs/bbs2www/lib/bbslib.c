@@ -642,7 +642,12 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
     if (stay > 7200)
         stay = 7200;
 #endif
-    user->stay += stay;
+    if(stay < 300) {
+        if (user->numlogins > 0)
+            user->numlogins--;
+    } else {
+        user->stay += stay;
+    }
     user->exittime = time(0);
     if (strcmp(user->userid, "guest")) {
         newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, getSession()->utmpent, useridx);
