@@ -607,7 +607,7 @@ void readtitle(struct _select_def* conf)
 #ifdef OPEN_BMONLINE
 		if (1)
 #else
-        if(chk_currBM(currBM,getCurrentUser())||check_board_delete_read_perm(getCurrentUser(),currboard))
+        if(check_board_delete_read_perm(getCurrentUser(),currboard))
 #endif
         {
             char *p1, *p2;
@@ -1706,10 +1706,8 @@ int digest_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extra
 int deleted_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
-/* Allow user in file "jury" to see deleted area. stephen 2001.11.1 */
-    if(!chk_currBM(currBM,getCurrentUser())
-     &&!check_board_delete_read_perm(getCurrentUser(),currboard)
-     &&!isJury(getCurrentUser(),currboard)){
+
+    if(!check_board_delete_read_perm(getCurrentUser(),currboard)){
         return DONOTHING;
     }
 

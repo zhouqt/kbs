@@ -358,8 +358,7 @@ void unlock_sem_check(int lockid);
     int deny_me(const char *user,const char *board);       /* 判断用户 是否被禁止在当前版发文章 */
     int haspostperm(const struct userec *user,const char *bname);  /* 判断在 bname版 是否有post权 */
     int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
-    int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
-    int isJury(const struct userec *user, const struct boardheader *board);
+    int chk_currBM(const char BMstr[STRLEN - 1], const struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board);
     int deldeny(struct userec *user, char *board, char *uident, int notice_only, session_t* session);       /* 删除 禁止POST用户 */
     int check_read_perm(const struct userec *user, const struct boardheader *board);

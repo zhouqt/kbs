@@ -1131,7 +1131,7 @@ int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2])
 }
 
 
-int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user)
+int chk_currBM(const char BMstr[STRLEN - 1], const struct userec *user)
         /*
          * 根据输入的版主名单 判断user是否有版主 权限 
          */
@@ -1147,7 +1147,7 @@ int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user)
 
 
 /*stephen : check whether current useris in the list of "jury" 2001.11.1*/
-int isJury(const struct userec *user, const struct boardheader *board)
+static int isJury(const struct userec *user, const struct boardheader *board)
 {
     char buf[STRLEN];
 
@@ -1160,7 +1160,7 @@ int isJury(const struct userec *user, const struct boardheader *board)
 
 
 /* etnlegend, 2005.11.27, 判断某一特定用户是否可以阅读某一特定版面的回收站 */
-int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board){
+static int check_board_delete_read_perm_core(const struct userec *user,const struct boardheader *board){
     struct stat st;
     struct flock lc;
     char buf[256];
@@ -1212,7 +1212,9 @@ int check_board_delete_read_perm(const struct userec *user,const struct boardhea
     return ret;
 }
 
-
+int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board){
+    return (chk_currBM(board->BM, user) || check_board_delete_read_perm_core(user,board) || isJury(user, board));
+}
 
 
 int deldeny(struct userec *user, char *board, char *uident, int notice_only,session_t* session)
