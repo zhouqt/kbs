@@ -115,6 +115,7 @@ char *timetostr(i)
     return str;
 }
 
+#ifndef NEWSMTH
 static int get_seccode_index(char prefix)
 {
     int i;
@@ -160,6 +161,7 @@ static void gen_board_rank_xml(int brdcount, struct binfo *bi)
     fprintf(fp, "</BoardList>\n");
     fclose(fp);
 }
+#endif /* ! NEWSMTH */
 
 int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
 {
