@@ -265,6 +265,19 @@ int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
 		numboards --;
     return 0;
 }
+// kxn: rotate more logs
+static int rotatelog(const char *basename, int rotatecount)
+{
+	int i;
+	char buffer[255],buffer1[255];
+	for (i=rotatecount;i>0;i--)
+	{
+		snprintf(buffer,255,"%s.%d",basename,i-1);
+		snprintf(buffer1,255,"%s.%d",basename,i);
+		rename(buffer,buffer1);
+	}
+	return 0;
+}
 
 int main(void){
 	char path[256];
@@ -306,6 +319,8 @@ int main(void){
 
     strcpy(weeklogfile, BBSHOME "/boardusage.week");
 
+	/* rotate log*/
+	rotatelog(BBSHOME "/boardusage.log", 20);
 	/*生成今日数据*/
 	system("killall -USR2 bbslogd");
 	/* bbslogd完成比较慢，休息一会再去处理 */
@@ -368,7 +383,12 @@ int main(void){
 
 	/*每周四计算完后，清楚这周记录，并备份boardusage.week */
 	sprintf(buf, "%s/%d/%d/%d_%d.boardusage.week.bak", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
-	if( t.tm_wday == 3 )
+	if( t.tm_wday == 3 ){
 		f_mv(weeklogfile, buf);
+        post_file(NULL, "", buf3, "BBSLists", "上周各板使用状况统计图", 0, 1, getSession());
+        post_file(NULL, "", buf4, "BBSLists", "上周各板使用状况统计表（以总阅读人次排序）", 0, 1, getSession());
+        post_file(NULL, "", buf1, "BBSLists", "上周各板使用状况统计表（以总使用时间排序）", 0, 1, getSession());
+        post_file(NULL, "", buf2, "BBSLists", "上周各板使用状况统计表（以平均使用时间排序）", 0, 1, getSession());
+	}
     return 0;
 }
