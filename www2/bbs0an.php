@@ -36,9 +36,9 @@ document.write('<tr><td align="center" colspan="5">该精华区目录没有文章。</td></
 		else
 			$col2 = '&nbsp;';
 		if ($url)
-			$col2 .= '<a href="'.$url.'">'.htmlformat($article['TITLE']).' </a>';
+			$col2 .= '<a href="'.$url.'">'.htmljsformat($article['TITLE']).' </a>';
 		else
-			$col2 .= htmlformat($article['TITLE']).' ';
+			$col2 .= htmljsformat($article['TITLE']).' ';
 		$bm = explode(' ',trim($article['BM']));
 		$bm = $bm[0];
 		$col3 = $bm?'<a href="bbsqry.php?userid='.$bm.'">'.$bm.'</a>':'&nbsp;';

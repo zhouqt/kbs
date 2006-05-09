@@ -492,12 +492,12 @@ function bbs_add_super_fav ($title, $url='', $type=0) {
 }
 
 
-function htmlformat($str,$multi=false) {
+function htmljsformat($str,$multi=false) {
 	$str = str_replace(' ','&nbsp;',htmlspecialchars($str,ENT_QUOTES));
 	if ($multi) {
 		$str = str_replace(array("\r\n","\n","\r")," <br/> ",$str);
 	}
-	return $str;    
+	return addslashes($str);
 }
 
 function bbs_get_quote($filename)

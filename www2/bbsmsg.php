@@ -25,7 +25,7 @@ if($msg["SENT"]) {
 }
 else
 	echo '·¢';?>','<?php echo ($msg["MODE"]==3)?"Õ¾³¤¹ã²¥":$msg["ID"];?>','<?php
-echo htmlformat($msg["content"],true);?> ');
+echo htmljsformat($msg["content"],true);?> ');
 <?php
 	}
 ?>
