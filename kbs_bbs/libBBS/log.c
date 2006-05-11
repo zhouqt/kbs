@@ -120,6 +120,7 @@ static void logatexit()
 
 int bbslog(const char *from, const char *fmt, ...)
 {
+    static int in_bbslog = 0;
     logconfig *pconf;
     int prio;
     char buf[512];
@@ -146,6 +147,11 @@ int bbslog(const char *from, const char *fmt, ...)
 
     va_start(v, fmt);
     vsprintf(buf, fmt, v);
+    if (in_bbslog) {
+        fprintf(stderr, "%s", buf);
+        exit(1);
+    }
+    in_bbslog = 1;
 
 
     pconf = logconf;
@@ -182,7 +188,8 @@ int bbslog(const char *from, const char *fmt, ...)
         close(pconf->fd);
         pconf->fd = -1;
     }
-
+    
+    in_bbslog = 0;
     return 0;
 }
 
