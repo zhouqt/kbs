@@ -31,6 +31,7 @@ int d_board()
     char buf[STRLEN];
     const struct boardheader *bh;
     int bid;
+    struct boardheader oldbh;
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -53,7 +54,7 @@ int d_board()
         return 0;
     }
     
-
+    memcpy(&oldbh, bh, sizeof(struct boardheader));
     move(1, 0);
     prints("删除讨论区 '%s'.", bh->filename);
     clrtoeol();
@@ -69,7 +70,7 @@ int d_board()
     getdata(3, 0, "移除精华区 [y/N]: ", genbuf, 4, DOECHO, NULL, true);
     if (genbuf[0] == 'Y' || genbuf[0] == 'y')
     {
-        edit_group(&bcache[bid], NULL);
+        edit_group(&oldbh, NULL);
     }
 
     if (delete_board(bid, getSession()) != 0)
@@ -82,7 +83,7 @@ int d_board()
 #endif
 
     /* this should be in delete_board function ? */
-    sprintf(buf, "删除讨论区：%s", bh->filename);
+    sprintf(buf, "删除讨论区：%s", oldbh.filename);
     securityreport(buf, NULL, NULL);
 
     move(4, 0);
