@@ -551,12 +551,6 @@ void login_query()
                 exit(1);
             }
             getdata(0, 0, "\033[1m\033[37m"PASSWD_PROMPT": \033[m", passbuf, 39, NOECHO, NULL, true);
-#ifdef NINE_BUILD
-            if(!strcmp(getSession()->fromhost, "10.9.0.1")||!strcmp(getSession()->fromhost, "10.9.30.133")) {
-		getdata(0, 0, "", buf, 20, NOECHO, NULL, true);
-                if (buf[0]) strcpy(getSession()->fromhost, buf);
-            }
-#endif
 
             if (!checkpasswd2(passbuf, getCurrentUser())) {
                 if(passbuf[0])
@@ -588,7 +582,8 @@ void login_query()
         }
     }
 #else
-    getdata(0, 0, "\n按 [RETURN] 继续", genbuf, 10, NOECHO, NULL, true);
+    prints("\n%s 欢迎您使用ssh方式访问。", getCurrentUser()->userid);
+    getdata(0, 0, "按 [RETURN] 继续", genbuf, 10, NOECHO, NULL, true);
 #endif //SSHBBS
 
 #ifdef CHECK_CONNECT
