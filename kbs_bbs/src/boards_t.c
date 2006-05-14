@@ -1105,8 +1105,8 @@ static int fav_key(struct _select_def *conf, int command)
                 if (bname[0]) {
                     changeFavBoardDirEname(ptr->tag, bname, getSession());
                     save_favboard(arg->favmode, getSession());
-                    return SHOW_REFRESH;
-                }
+		}
+                return SHOW_REFRESH;
             }
         }
         break;
@@ -1121,12 +1121,14 @@ static int fav_key(struct _select_def *conf, int command)
             if (ptr->dir == 1 && ptr->tag >= 0) {
                 move(0, 0);
                 clrtoeol();
-                getdata(0, 0, "输入讨论区目录名: ", bname, 41, DOECHO, NULL, true);
+		strncpy(bname, ptr->title, 41);
+		bname[41] = '\0';
+                getdata(0, 0, "输入讨论区目录名: ", bname, 41, DOECHO, NULL, false);
                 if (bname[0]) {
                     changeFavBoardDir(ptr->tag, bname, getSession());
                     save_favboard(arg->favmode, getSession());
-                    return SHOW_REFRESH;
-                }
+		}
+                return SHOW_REFRESH;
             }
         }
         break;
