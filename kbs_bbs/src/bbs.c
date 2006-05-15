@@ -2640,7 +2640,6 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         ooo = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ooo - '0') >= 0 && ooo - '0' <= 9) {
             int ii = atoi(ans);
-            if (ii > 99) ii = 0;
             if (ii <= getSession()->currentmemo->ud.signum)
                 getCurrentUser()->signature = ii;
         } else if ((ooo == 'S' || ooo == 'Y' || ooo == 'N' || ooo == 'A' || ooo == 'R') && replymode) {
