@@ -318,10 +318,8 @@ static int gen_board_online_list(int bid,struct inc_container *ic){
     int i,uid_guest;
     if(!ic)
         return 1;
-    if(!(uid_guest=searchuser("guest")))
-        return 2;
     if(inc_container_init(ic,sizeof(struct bol_arg)))
-        return 3;
+        return 2;
     for(ui_list=get_utmpent(1),i=0;i<USHM_SIZE;i++){
         if(ui_list[i].active&&ui_list[i].currentboard==bid){
             data.uid=ui_list[i].uid;
@@ -331,21 +329,23 @@ static int gen_board_online_list(int bid,struct inc_container *ic){
 #endif /* ! HAVE_IPV6_SMTH */
             if(inc_container_append(ic,sizeof(struct bol_arg),&data)){
                 inc_container_free(ic);
-                return 4;
+                return 3;
             }
         }
     }
-    resolve_guest_table();
-    for(i=0;i<MAX_WWW_GUEST;i++){
-        if((wwwguest_shm->use_map[(i>>5)]&(1<<(i&0x1F)))&&(wwwguest_shm->guest_entry[i].currentboard==bid)){
-            data.uid=uid_guest;
-            data.mode=WEBEXPLORE;
+    if((uid_guest=searchuser("guest"))){
+        resolve_guest_table();
+        for(i=0;i<MAX_WWW_GUEST;i++){
+            if((wwwguest_shm->use_map[(i>>5)]&(1<<(i&0x1F)))&&(wwwguest_shm->guest_entry[i].currentboard==bid)){
+                data.uid=uid_guest;
+                data.mode=WEBEXPLORE;
 #ifndef HAVE_IPV6_SMTH
-            snprintf(data.from,IPLEN,"%s",inet_ntoa(wwwguest_shm->guest_entry[i].fromip));
+                snprintf(data.from,IPLEN,"%s",inet_ntoa(wwwguest_shm->guest_entry[i].fromip));
 #endif /* ! HAVE_IPV6_SMTH */
-            if(inc_container_append(ic,sizeof(struct bol_arg),&data)){
-                inc_container_free(ic);
-                return 5;
+                if(inc_container_append(ic,sizeof(struct bol_arg),&data)){
+                    inc_container_free(ic);
+                    return 5;
+                }
             }
         }
     }
