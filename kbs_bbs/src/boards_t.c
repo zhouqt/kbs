@@ -312,7 +312,6 @@ struct bol_arg{
     char from[IPLEN];
 #endif /* ! HAVE_IPV6_SMTH */
 };
-typedef enum { bol_mode, bol_from } bol_class;
 static int gen_board_online_list(int bid,struct inc_container *ic){
     const struct user_info *ui_list;
     struct bol_arg data;
