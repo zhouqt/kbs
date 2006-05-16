@@ -882,7 +882,7 @@ int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
 int giveup_addpost(char *userid){
     struct userec *user;
     int i,s[GIVEUPINFO_PERM_COUNT];
-    if(!(getuser(userid,user)))
+    if(!(getuser(userid,&user)))
         return 0;
     get_giveupinfo(user,s);
     s[1]=-(1+(!s[1]?(time(NULL)/86400):((s[1]<0)?(-s[1]):s[1])));
