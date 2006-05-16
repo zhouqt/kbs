@@ -263,6 +263,173 @@ int show_boardinfo(const char *bname)
     return 1;
 }
 
+/* etnlegend, 2005.10.31, 查询在版用户 */
+struct inc_container{
+    void *vp;
+    int size;
+    int curr;
+};
+static int inc_container_init(struct inc_container *ic,size_t item_size){
+#define INCLIST_INIT_SIZE 32
+    if(!ic)
+        return 1;
+    if(!(ic->vp=malloc(INCLIST_INIT_SIZE*item_size)))
+        return 2;
+    ic->size=INCLIST_INIT_SIZE;
+    ic->curr=0;
+    return 0;
+#undef INCLIST_INIT_SIZE
+}
+static int inc_container_step(struct inc_container *ic,size_t item_size){
+    void *vp;
+    if(!ic)
+        return 1;
+    if(!(vp=realloc(ic->vp,((2*ic->size)*item_size))))
+        return 2;
+    ic->vp=vp;
+    ic->size*=2;
+    return 0;
+}
+static int inc_container_append(struct inc_container *ic,size_t item_size,void *data){
+    if(!ic)
+        return 1;
+    if(!(ic->curr<ic->size)&&inc_container_step(ic,item_size))
+        return 2;
+    memmove(vpo(ic->vp,(ic->curr*item_size)),data,item_size);
+    ic->curr++;
+    return 0;
+}
+static int inc_container_free(struct inc_container *ic){
+    if(!ic)
+        return 1;
+    free(ic->vp);
+    return 0;
+}
+struct bol_arg{
+    int uid;
+    int mode;
+#ifndef HAVE_IPV6_SMTH
+    char from[IPLEN];
+#endif /* ! HAVE_IPV6_SMTH */
+};
+typedef enum { bol_mode, bol_from } bol_class;
+static int gen_board_online_list(int bid,struct inc_container *ic){
+    const struct user_info *ui_list;
+    struct bol_arg data;
+    int i,uid_guest;
+    if(!ic)
+        return 1;
+    if(!(uid_guest=searchuser("guest")))
+        return 2;
+    if(inc_container_init(ic,sizeof(struct bol_arg)))
+        return 3;
+    for(ui_list=get_utmpent(1),i=0;i<USHM_SIZE;i++){
+        if(ui_list[i].active&&ui_list[i].currentboard==bid){
+            data.uid=ui_list[i].uid;
+            data.mode=ui_list[i].mode;
+#ifndef HAVE_IPV6_SMTH
+            snprintf(data.from,IPLEN,"%s",ui_list[i].from);
+#endif /* ! HAVE_IPV6_SMTH */
+            if(inc_container_append(ic,sizeof(struct bol_arg),&data)){
+                inc_container_free(ic);
+                return 4;
+            }
+        }
+    }
+    resolve_guest_table();
+    for(i=0;i<MAX_WWW_GUEST;i++){
+        if((wwwguest_shm->use_map[(i>>5)]&(1<<(i&0x1F)))&&(wwwguest_shm->guest_entry[i].currentboard==bid)){
+            data.uid=uid_guest;
+            data.mode=WEBEXPLORE;
+#ifndef HAVE_IPV6_SMTH
+            snprintf(data.from,IPLEN,"%s",inet_ntoa(wwwguest_shm->guest_entry[i].fromip));
+#endif /* ! HAVE_IPV6_SMTH */
+            if(inc_container_append(ic,sizeof(struct bol_arg),&data)){
+                inc_container_free(ic);
+                return 5;
+            }
+        }
+    }
+    return 0;
+}
+static int show_board_online_list(struct inc_container *ic,int class){
+#define SHOW_ONLINE_LIST_ROWS (t_lines-5)
+    extern int ingetdata;
+    struct bol_arg *p;
+    char buf[128],c;
+    const char *userid;
+    int n,page,size,pos_f,pos_l,cols;
+    page=0;
+    cols=(!class?3:2);
+    size=SHOW_ONLINE_LIST_ROWS*cols;
+    p=(struct bol_arg*)(ic->vp);
+    do{
+        clear();
+        move(0,0);
+        pos_f=page*size;
+        pos_l=(pos_f+size>ic->curr)?ic->curr:(pos_f+size);
+        prints("\033[1;32m[版面在线列表: 共 \033[1;33m%d\033[1;32m 位用户"
+            "/当前第 \033[1;33m%d - %d\033[1;32m 位]\033[m",ic->curr,pos_f+(pos_l>pos_f?1:0),pos_l);
+        for(n=pos_f;n<pos_l;n++){
+            sprintf(buf,"\033[1;37m%s \033[1;36m<%s>\033[m",
+            (userid=getuserid2(p[n].uid))?userid:"<非法用户>",(!class?ModeType(p[n].mode):p[n].from));
+            move((2+(n-pos_f)%SHOW_ONLINE_LIST_ROWS),(((n-pos_f)/SHOW_ONLINE_LIST_ROWS)*(72/cols)));
+            prints("%s",buf);
+        }
+        move(t_lines-2,0);
+        sprintf(buf,"\033[1;32m按 \033[1;33m<Esc>\033[1;32m 退出或 \033[%d;33m<Enter>/<N>\033[1;32m 向后翻页"
+            "或 \033[%d;33m<P>\033[1;32m 向前翻页: ",(pos_l==ic->curr?0:1),(!pos_f?0:1));
+        prints("%s",buf);
+        ingetdata=1;
+        do{
+            c=igetkey();
+            switch(c){
+                case KEY_ESC:
+                    break;
+                case '\n':
+                case '\r':
+                case 'n':
+                case 'N':
+                    if(pos_l==ic->curr){
+                        if(c=='\n'||c=='\r'){
+                            c=KEY_ESC;
+                            break;
+                        }
+                        continue;
+                    }
+                    page++;
+                    break;
+                case 'p':
+                case 'P':
+                    if(!pos_f)
+                        continue;
+                    page--;
+                    break;
+                default:
+                    continue;
+            }
+            break;
+        }
+        while(true);
+        ingetdata=0;
+    }
+    while(c!=KEY_ESC);
+    return 0;
+#undef SHOW_ONLINE_LIST_ROWS
+}
+int func_board_online_list(const char *name,int class){
+    struct inc_container ic;
+    int bid;
+    if(!(bid=getbid(name,NULL)))
+        return 1;
+    if(gen_board_online_list(bid,&ic))
+        return 2;
+    show_board_online_list(&ic,class);
+    inc_container_free(&ic);
+    return 0;
+}
+/* END - etnlegend, 2005.10.31, 查询在版用户 */
+
 /* etnlegend, 2005.10.16, 查询版主更新 */
 int query_bm_core(const char *userid,int limited){
     struct userec *user;
@@ -858,7 +1025,22 @@ static int fav_key(struct _select_def *conf, int command)
             show_boardinfo(ptr->name);
             modify_user_mode(oldmode);
         }
+		return SHOW_REFRESH;
+    /* etnlegend, 2005.10.31, 查询在版用户 */
+    case ':':
+        if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||ptr->dir)
+            break;
+        else{
+            char ans[4];
+#ifndef HAVE_IPV6_SMTH
+            getdata(t_lines-1,0,"\033[1;37m以状态[M]/来源[F]显示 [M]: \033[m",ans,2,DOECHO,NULL,true);
+#else /* ! HAVE_IPV6_SMTH */
+            ans[0]=0;
+#endif /* HAVE_IPV6_SMTH */
+            func_board_online_list(ptr->name,(toupper(ans[0])=='F'));
+        }
         return SHOW_REFRESH;
+    /* END - etnlegend, 2005.10.31, 查询在版用户 */
     case '/':                  /*搜索board */
         {
             int tmp, num;
