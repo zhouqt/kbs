@@ -622,7 +622,7 @@ static int dicting=0;
 #ifdef NEW_HELP
 static int f1ing=0;
 #endif
-bool ingetdata=false;
+int ingetdata=false;
 
 extern void mailscr();
 

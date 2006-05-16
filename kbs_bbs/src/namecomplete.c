@@ -195,7 +195,7 @@ char *prompt, *data;
     int ch;
     int count = 0;
     int clearbot = false;
-    extern bool ingetdata;
+    extern int ingetdata;
 
     ingetdata = true;
     if (scrint) {
@@ -438,7 +438,7 @@ int cwnum, key, pos;
 int usercomplete(prompt, data)
 char *prompt, *data;
 {
-    extern bool ingetdata;
+    extern int ingetdata;
     ingetdata = true;
     if (scrint) {
         char *cwbuf, *cwlist, *temp;

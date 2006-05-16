@@ -399,7 +399,7 @@ static int search_board(int *num, struct _select_def *conf, int key)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
     int n, ch, tmpn = false;
-    extern bool ingetdata;
+    extern int ingetdata;
     ingetdata = true;
 
     *num=0;
