@@ -31,6 +31,8 @@
 
 /*Add by SmallPig*/
 
+extern int ingetdata;
+
 int listdeny(int page)
 {                               /* Haohmaru.12.18.98.为那些变态得封人超过一屏的版主而写 */
     FILE *fp;
@@ -619,6 +621,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
         }
         move(1,0);
         prints("%s",echo);
+        ingetdata=1;
         do{
             ans[1]=0;
             switch(ans[0]=igetkey()){
@@ -643,6 +646,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             }
         }
         while(!ans[1]);
+        ingetdata=0;
         ans[0]=toupper(ans[0]);
         if(ans[0]==32){
             if(!curr){
@@ -917,7 +921,6 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
 #define KEY_CR 13
 #define KEY_LF 10
 #define KEY_BS 8
-    extern int ingetdata;
     int i,row,col;
     getyx(&row,&col);
     prints(DELETE_RANGE_READ_FORMAT,DELETE_RANGE_READ_BORDER_L);
