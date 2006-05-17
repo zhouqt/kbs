@@ -843,8 +843,8 @@ void a_copypaste(MENU *pm,int mode){
         ACP_ANY_RETURN((!mode?"复制标识完成, 但在粘贴后方可删除源文件或目录!":"剪切标识完成, 但在粘贴后方可删除源文件或目录!"));
     }
     do{
-#define ACP_FGETS(len) if(!fgets(genbuf,((len)+1),fp)||!genbuf[0]||genbuf[0]=='\n'){type=PASTE_ERROR;continue;}
-#define ACP_DUMPS(dst,src,len) do{snprintf((dst),(len),"%s",(src));if((p=strchr((dst),'\n'))){*p=0;}}while(0)
+#define ACP_FGETS(len) if(!fgets(genbuf,((len)+1),fp)||!genbuf[0]||genbuf[0]=='\r'||genbuf[0]=='\n'){type=PASTE_ERROR;continue;}
+#define ACP_DUMPS(dst,src,len) do{snprintf((dst),(len),"%s",(src));if((p=strpbrk((dst),"\r\n"))){*p=0;}}while(0)
         ap=0;
         ACP_FGETS(2);
         if(!isdigit(genbuf[0])){
