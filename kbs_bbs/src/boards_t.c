@@ -351,22 +351,32 @@ static int show_board_online_list(struct inc_container *ic,int class){
     struct bol_arg *p;
     char buf[128],c;
     const char *userid;
-    int n,page,size,pos_f,pos_l,cols;
+    int n,page,size,pos_f,pos_l,cols,curr_row,curr_col;
     page=0;
-    cols=(!class?3:2);
-    size=SHOW_ONLINE_LIST_ROWS*cols;
+    cols=(!class?3:
+#ifndef HAVE_IPV6_SMTH
+        2
+#else /* ! HAVE_IPV6_SMTH */
+        1
+#endif /* HAVE_IPV6_SMTH */
+    );
+    size=(SHOW_ONLINE_LIST_ROWS*cols);
     p=(struct bol_arg*)(ic->vp);
     do{
         clear();
         move(0,0);
-        pos_f=page*size;
+        pos_f=(page*size);
         pos_l=(pos_f+size>ic->curr)?ic->curr:(pos_f+size);
         prints("\033[1;32m[版面在线列表: 共 \033[1;33m%d\033[1;32m 位用户"
             "/当前第 \033[1;33m%d - %d\033[1;32m 位]\033[m",ic->curr,pos_f+(pos_l>pos_f?1:0),pos_l);
         for(n=pos_f;n<pos_l;n++){
             sprintf(buf,"\033[1;37m%s \033[1;36m<%s>\033[m",
             (userid=getuserid2(p[n].uid))?userid:"<非法用户>",(!class?ModeType(p[n].mode):p[n].from));
-            move((2+(n-pos_f)%SHOW_ONLINE_LIST_ROWS),(((n-pos_f)/SHOW_ONLINE_LIST_ROWS)*(72/cols)));
+            curr_row=(2+(n-pos_f)%SHOW_ONLINE_LIST_ROWS);
+            curr_col=(((n-pos_f)/SHOW_ONLINE_LIST_ROWS)*(72/cols));
+            if(!(curr_col<72))
+                break;
+            move(curr_row,curr_col);
             prints("%s",buf);
         }
         move(t_lines-2,0);
