@@ -374,8 +374,6 @@ static int show_board_online_list(struct inc_container *ic,int class){
             (userid=getuserid2(p[n].uid))?userid:"<非法用户>",(!class?ModeType(p[n].mode):p[n].from));
             curr_row=(2+(n-pos_f)%SHOW_ONLINE_LIST_ROWS);
             curr_col=(((n-pos_f)/SHOW_ONLINE_LIST_ROWS)*(72/cols));
-            if(!(curr_col<72))
-                break;
             move(curr_row,curr_col);
             prints("%s",buf);
         }
