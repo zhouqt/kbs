@@ -308,9 +308,7 @@ static int inc_container_free(struct inc_container *ic){
 struct bol_arg{
     int uid;
     int mode;
-#ifndef HAVE_IPV6_SMTH
     char from[IPLEN];
-#endif /* ! HAVE_IPV6_SMTH */
 };
 static int gen_board_online_list(int bid,struct inc_container *ic){
     const struct user_info *ui_list;
@@ -324,9 +322,7 @@ static int gen_board_online_list(int bid,struct inc_container *ic){
         if(ui_list[i].active&&ui_list[i].currentboard==bid){
             data.uid=ui_list[i].uid;
             data.mode=ui_list[i].mode;
-#ifndef HAVE_IPV6_SMTH
             snprintf(data.from,IPLEN,"%s",ui_list[i].from);
-#endif /* ! HAVE_IPV6_SMTH */
             if(inc_container_append(ic,sizeof(struct bol_arg),&data)){
                 inc_container_free(ic);
                 return 3;
@@ -339,9 +335,7 @@ static int gen_board_online_list(int bid,struct inc_container *ic){
             if((wwwguest_shm->use_map[(i>>5)]&(1<<(i&0x1F)))&&(wwwguest_shm->guest_entry[i].currentboard==bid)){
                 data.uid=uid_guest;
                 data.mode=WEBEXPLORE;
-#ifndef HAVE_IPV6_SMTH
                 snprintf(data.from,IPLEN,"%s",inet_ntoa(wwwguest_shm->guest_entry[i].fromip));
-#endif /* ! HAVE_IPV6_SMTH */
                 if(inc_container_append(ic,sizeof(struct bol_arg),&data)){
                     inc_container_free(ic);
                     return 5;
@@ -1031,11 +1025,7 @@ static int fav_key(struct _select_def *conf, int command)
             break;
         else{
             char ans[4];
-#ifndef HAVE_IPV6_SMTH
             getdata(t_lines-1,0,"\033[1;37m以状态[M]/来源[F]显示 [M]: \033[m",ans,2,DOECHO,NULL,true);
-#else /* ! HAVE_IPV6_SMTH */
-            ans[0]=0;
-#endif /* HAVE_IPV6_SMTH */
             func_board_online_list(ptr->name,(toupper(ans[0])=='F'));
         }
         return SHOW_REFRESH;
