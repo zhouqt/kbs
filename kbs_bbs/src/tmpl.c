@@ -379,6 +379,35 @@ static int tmpl_key(struct _select_def *conf, int key)
 				return SHOW_QUIT;
         }
         break;
+    /* etnlegend, 2006.05.19, move templates... */
+    case 'm':
+        do{
+            struct a_template temp;
+            char ans[4];
+            int i,pos;
+            getdata(t_lines-1,0,"请输入希望移动到的位置序号: ",ans,4,DOECHO,NULL,true);
+            trimstr(ans);
+            if(!isdigit(ans[0]))
+                break;
+            pos=atoi(ans);
+            pos=((pos<1)?1:((pos>template_num)?template_num:pos));
+            if(pos==conf->pos)
+                break;
+            memcpy(&temp,&ptemplate[conf->pos-1],sizeof(struct a_template));
+            if(pos>conf->pos){
+                for(i=(conf->pos-1);i<(pos-1);i++)
+                    memcpy(&ptemplate[i],&ptemplate[i+1],sizeof(struct a_template));
+            }
+            else{
+                for(i=(conf->pos-1);i>(pos-1);i--)
+                    memcpy(&ptemplate[i],&ptemplate[i-1],sizeof(struct a_template));
+            }
+            memcpy(&ptemplate[pos-1],&temp,sizeof(struct a_template));
+            tmpl_save();
+        }
+        while(0);
+        return SHOW_DIRCHANGE;
+    /* END - etnlegend, 2006.05.19, move templates ... */
 	case 't' :
 		{
 			char newtitle[60];
