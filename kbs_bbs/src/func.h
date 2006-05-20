@@ -14,7 +14,6 @@ extern "C" {
     char *c_exp(int exp);
     char *c_perf(int perf);
 	int def_list(long long XX);
-	char *get_my_webdomain(int force);
 
 int query_super_filter_mmap(struct fileheader *allfh, int start, int total, int down, struct super_filter_query_arg *q_arg);
 int query_super_filter(int fd, struct super_filter_query_arg *q_arg);
@@ -104,7 +103,6 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     void resolve_utmp(ARG_VOID);
     void detach_utmp(ARG_VOID);
     int getnewutmpent(struct user_info *up, int is_www);
-    int real_getnewutmpent(struct user_info *up);
 #define CHECK_UENT(uident) ((getSession()->utmpent > 0 && getSession()->utmpent <= USHM_SIZE ) && \
 			(utmpshm->uinfo[ getSession()->utmpent - 1 ].uid==(uident)))
 #define UPDATE_UTMP(field,entp) { if (CHECK_UENT((entp).uid)) \
@@ -122,16 +120,10 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     struct user_info *get_utmpent(int utmpnum);
     int get_utmpent_num(struct user_info *uent);        /* return utmp number */
 
-    int t_cmpuids(int uid, struct user_info *up);
     int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount,const char *userid, void *arg);
     int getfriendstr(struct userec *user, struct user_info *puinfo,session_t* session);
     int myfriend(int uid, char *fexp,session_t* session);
     bool hisfriend(int uid, struct user_info *him);
-
-/* defined in newio.c */
-    void output(const char *s, int len);
-typedef int (*select_func)(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,struct timeval *timeout);
-typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
 
 /* defined in stuff.c */
 	int calc_numofsig();
@@ -190,7 +182,6 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
     void RemoveMsgCountFile(const char *userID);
     int bad_user_id(const char *userid);      /* 检查.badname是否允许注册的 */
     int valid_ident(const char *ident);       /* 检查合法的ident */
-    int getunifopid(ARG_VOID);
     struct user_info *t_search(const char *sid, int pid);
     int cmpinames(const char *userid, const char *uv);
     int cmpfnames(const char *userid, const struct friends *uv);
@@ -339,7 +330,6 @@ void unlock_sem_check(int lockid);
 	void load_wwwboard(struct favbrd_struct *brdlist, int * brdlist_t);
 
     int brc_initial(const char *userid, const char *boardname,session_t* session);
-    char *brc_putrecord(char *ptr, char *name, int num, int *list);
     int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, int sort,const char **input_namelist,session_t* session);
 
 #if USE_TMPFS==1
@@ -576,11 +566,9 @@ void unlock_sem_check(int lockid);
     int get_msgcount(int id, char *uident);
     void mail_msg(struct userec* user,session_t* session);
     int clear_msg(char *uident);
-    int addto_msglist(int utmpnum, char *userid);
     int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode, int srcpid, session_t* session);
     int canmsg(struct userec *fromuser, struct user_info *uin);
     int can_override(char *userid, char *whoasks);
-    int delfrom_msglist(int utmpnum, char *userid);
     int msg_can_sendmsg(struct userec* user,char *userid, int utmpnum);
     int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, time_t *sndtime, char *msg);
     int conv_csv_to_al(char *fname,session_t * session);
@@ -648,7 +636,6 @@ int pc_logs(struct pc_logs *pn);
 
     int safe_kill(int x, int y);
 
-    void main_bbs(int convit, char *argv);
     void get_mail_limit(struct userec *user, int *sumlimit, int *numlimit);
 
 /* bbs_sendmail.c */
@@ -705,8 +692,6 @@ int orig_tmpl_init(char * board, int mode, struct a_template ** ptemp);
 int orig_tmpl_free(struct a_template ** pptemp, int temp_num);
 int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board);
 
-/* zmodem */
-    int zsend_file(char *filename, char *title);
 #define FILENAME2POSTTIME(x) (atoi(((char*)x)+2))
 
 /* filter */
@@ -719,9 +704,6 @@ int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board);
 void *memmem(register const void *s, size_t slen, register const void *p, 
 		size_t plen);
 #endif /* ! HAVE_MEMMEM */
-
-/* calltime.c */
-time_t calc_calltime(int mode);
 
 /* xml.c */
 char *encode_xml(char *buf, const char *str, size_t buflen);

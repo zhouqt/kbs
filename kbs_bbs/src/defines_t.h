@@ -72,9 +72,14 @@ void add_io(int fd, int timeout);
 void add_flush(void (*flushfunc) ());
 int igetch();
 int num_in_buf();
+void output(const char *s, int len);
+typedef int (*select_func)(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,struct timeval *timeout);
+typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
 
 /* xyz.c*/
 int modify_user_mode(int mode);
+/* zmodem */
+int zsend_file(char *filename, char *title);
 
 /* more.c */
 int ansimore(char *filename, int promptend);
@@ -146,6 +151,7 @@ int sequential_read2(int ent);
 void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user);
 void setqtitle(char *stitle);
 void RemoveAppendedSpace(char *ptr);
+char *get_my_webdomain(int force);
 
 /*vote.c*/
 int b_notes_edit();
@@ -188,6 +194,7 @@ int num_user_logins(char *uid);
 int listfilecontent(char *fname);
 int m_send(char* userid);
 int m_sendnull(); /* m_send的一个封装*/
+int t_cmpuids(int uid, struct user_info *up);
 
 /* delete.c */
 int kick_user(int uid, char *userid, struct user_info *userinfo);
@@ -309,5 +316,11 @@ int choose_tmpl(char *title, char *fname);
 void * ip_len2mask (int bitlen, void *vmask);
 struct in6_addr * ip_mask(const struct in6_addr * addr, const struct in6_addr * mask, struct in6_addr * out);
 #endif
+
+/* bbsd_single.c */
+void main_bbs(int convit, char *argv);
+
+/* calltime.c */
+time_t calc_calltime(int mode);
 
 #endif /* _DEFINES_T_H_ */
