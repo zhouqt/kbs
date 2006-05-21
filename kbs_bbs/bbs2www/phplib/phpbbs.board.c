@@ -125,7 +125,7 @@ static void assign_favdir_zval(zval * array, struct newpostdata *brd)
     add_assoc_string(array, "NAME", (char *)brd->name, 1);
     add_assoc_string(array, "DESC", (char *)brd->title, 1);
     add_assoc_string(array, "CLASS", "", 1);
-    add_assoc_string(array, "BM", "", 1);
+    add_assoc_string(array, "BM", (char *)brd->BM, 1);
     add_assoc_long(array, "ARTCNT", 0);
     add_assoc_long(array, "UNREAD", 0);
     add_assoc_long(array, "ZAPPED", 0);
