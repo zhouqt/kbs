@@ -77,7 +77,6 @@ o.t();
 //-->
 </script>
 <?php
-print_r($boards);
 	if (!$XX) {
 ?>
 <div class="oper"><form action=bbsfav.php>тЖ╪сд©б╪: <input name=dname size=24 maxlength=20 type=text value="">
