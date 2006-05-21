@@ -61,7 +61,7 @@ var o = new brdWriter(<?php echo $list_father; ?>, <?php echo $select; ?>, '<?ph
 		if ($board["BID"] == -1) continue;
 		if ($board["FLAG"] == -1 ) {
 ?>
-o.f(<?php echo $board["BID"];?>,'<?php echo addslashes($board["DESC"]); ?> ',<?php echo $board["NPOS"]; ?>);
+o.f(<?php echo $board["BID"];?>,'<?php echo addslashes($board["DESC"]); ?> ',<?php echo $board["NPOS"]; ?>,'<?php echo $XX?$board["BM"]:""; ?>');
 <?php
 		} else {
 			$isGroup = ($board["FLAG"]&BBS_BOARD_GROUP) ? "true" : "false";
@@ -77,6 +77,7 @@ o.t();
 //-->
 </script>
 <?php
+print_r($boards);
 	if (!$XX) {
 ?>
 <div class="oper"><form action=bbsfav.php>Ôö¼ÓÄ¿Â¼: <input name=dname size=24 maxlength=20 type=text value="">

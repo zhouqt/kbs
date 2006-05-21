@@ -1198,12 +1198,13 @@ function brdWriter(father, select, fix) {
 	this.index = 0;
 	this.kbsrc = new Array();
 }
-brdWriter.prototype.f = function(select, desc, npos) {
+brdWriter.prototype.f = function(select, desc, npos, name) {
 	this.index++;
 	var ret = '<tr class="' + (this.index%2?"even":"odd") + '"><td class="center">' + this.index + '</td>';
 	ret += '<td> ' + putImageCode('groupgroup.gif','alt="＋" title="版面组"') + '</td>';
-	ret += '<td><a href="bbsfav.php?select=' + select + this.fix + '">' + htmlize(desc) + '</a></td>';
-	ret += '<td class="center">[目录]</td><td colspan="4"> </td>';
+	ret += '<td><a href="bbsfav.php?select=' + select + this.fix + '">' + htmlize(this.fix?name:desc) + '</a></td>';
+	if (!this.fix) desc = '';
+	ret += '<td class="center">[目录]</td><td colspan="4">' + desc + ' </td>';
 	if (!this.fix) ret += '<td class="center"><a href="bbsfav.php?select=' + this.select + '&deldir=' + npos + '">删除</a></td>';
 	ret += '</tr>';
 	document.write(ret);
