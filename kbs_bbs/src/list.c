@@ -287,6 +287,7 @@ int do_userlist()
         }
         uentp = *(user_record[i + page]);
         if (!uentp.active || !uentp.pid || uentp.logintime > update_time) {
+            clrtoeol();
             prints(" %4d °¡,ÎÒ¸Õ×ß\n", i + 1 + page);
             continue;
         }

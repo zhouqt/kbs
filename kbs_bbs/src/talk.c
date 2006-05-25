@@ -1560,6 +1560,7 @@ int t_monitor()
     bbslog("user","%s","monitor");
     modify_user_mode(MONITOR);
     ulistpage = 0;
+    fill_userlist();
     do_list("探视民情");
     set_alarm(M_INT * idle_count, 0, sig_catcher, NULL);
     while (true) {
@@ -1575,6 +1576,7 @@ int t_monitor()
                 friendmode = false;
             else
                 friendmode = true;
+            fill_userlist();
             do_list("探视民情");
         }
         else
