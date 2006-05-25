@@ -893,6 +893,7 @@ void a_copypaste(MENU *pm,int mode){
     else
         snprintf(genbuf,STRLEN,"剪切方式粘贴%s %.38s, 确认? (Y/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
     getdata(t_lines-1,0,genbuf,ans,2,DOECHO,NULL,true);
+    move(t_lines-1,0);clrtoeol();
     ans[0]=toupper(ans[0]);copy=0;
     if(ans[0]=='Y'||(type==PASTE_COPY&&ans[0]=='C')){
         if(!(type==PASTE_CUT&&!rename(path,newpath))){
