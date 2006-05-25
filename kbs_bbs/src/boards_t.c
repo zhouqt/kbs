@@ -1432,6 +1432,43 @@ static int fav_key(struct _select_def *conf, int command)
             return SHOW_REFRESH;
         }
         break;
+
+    /* etnlegend, 2006.05.25, 个人定制区支持项目移动 ... */
+    case 'M':
+        if(arg->yank_flag==BOARD_FAV){
+#define FAV_M_MSG(str)                                          \
+    do{                                                         \
+        move(t_lines-1,4);                                      \
+        clrtoeol();                                             \
+        prints("\033[1;31m%s\033[0;33m<Enter>\033[m",(str));    \
+        WAIT_RETURN;                                            \
+        return SHOW_REFRESH;                                    \
+    }while(0)
+            int path,item,favid;
+            if(arg->favmode==2||arg->favmode==3)
+                FAV_M_MSG("项目移动操作仅在个人定制区模式中有效...");
+            if((path=fav_select_path())==-1)
+                FAV_M_MSG("取消操作...");
+            if(path==getSession()->favnow)
+                FAV_M_MSG("目标目录为当前目录...");
+            item=getSession()->favbrd_list[getSession()->favnow].bid[(ptr->dir?ptr->pos:ptr->tag)];
+            if(ptr->dir){
+                for(favid=path;favid>0;favid=FavGetFather(favid,getSession()))
+                    if(favid==(-item))
+                        FAV_M_MSG("目标目录为待移目录或其子目录...");
+                getSession()->favbrd_list[(-item)].father=path;
+            }
+            DelFavBoard(item,getSession());
+            if(!IsFavBoard(item,getSession(),arg->favmode,path))
+                addFavBoard(item,getSession(),arg->favmode,path);
+            save_favboard(arg->favmode,getSession());
+            arg->reloaddata=true;
+            return SHOW_DIRCHANGE;
+#undef FAV_M_MSG
+        }
+        break;
+    /* END -- etnlegend, 2006.05.25, 个人定制区支持项目移动 ... */
+
     case 'd':
         if (BOARD_FAV == arg->yank_flag) {
 
@@ -1454,6 +1491,7 @@ static int fav_key(struct _select_def *conf, int command)
             }
             return SHOW_REFRESH;
         }
+        break;
     case 'y':
         if (arg->yank_flag < BOARD_FAV) {
                                 /*--- Modified 4 FavBoard 2000-09-11	---*/
