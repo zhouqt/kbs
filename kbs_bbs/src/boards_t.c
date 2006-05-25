@@ -110,54 +110,134 @@ struct newpostdata *ptr;
 #endif
 }
 
+
 /* Select the fav path
 seperated by pig2532@newsmth */
-static int fav_select_path()
-{
-    int k;
 
-	load_myboard(getSession(), 0);
 
-    if( getSession()->mybrd_list_t < 2) {
-        move(2,0);
-        if (askyn("加入个人定制区？",0)!=1)
-            return -1;
-		return 0;
-    }
-    else {
-        struct _select_item *sel;
-        char root[18]="定制区主目录";
-        clear();
-        move(3, 3);
-        prints("请选择加入到定制区哪个目录");
-        sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (getSession()->mybrd_list_t +1));
-        sel[0].x = 3;
-        sel[0].y = 6;
-        sel[0].hotkey = '0';
-        sel[0].type = SIT_SELECT;
-        sel[0].data = root;
-        for(k=1;k< getSession()->mybrd_list_t ;k++){
-                sel[k].x = 3;
-                sel[k].y = 6+k;
-                sel[k].hotkey = '0'+k;
-                sel[k].type = SIT_SELECT;
-                sel[k].data = getSession()->mybrd_list[k].title;
-        }
-        sel[k].x = -1;
-        sel[k].y = -1;
-        sel[k].hotkey = -1;
-        sel[k].type = 0;
-        sel[k].data = NULL;
-        k = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
-        free(sel);
-        if(k>=0 && k < getSession()->mybrd_list_t ) {
-			return k;
-            //SetFav(k, getSession());
-        }
-        else
-            return -1;
-    }
+/* etnlegend, 2006.05.25, 选择个人定制区目录更新, 主要是 MULTIPAGE 和 HOTKEY ... */
+
+#define FSP_TITLE_ROW 2
+#define FSP_ROW (FSP_TITLE_ROW+2)
+#define FSP_COL 4
+#define FSP_LINES (t_lines-(FSP_ROW+2))
+
+static int fsp_select(struct _select_def *conf){
+    return SHOW_SELECT;
 }
+
+static int fsp_show(struct _select_def *conf,int index){
+    outs((((struct _select_item*)(conf->arg))[index-1]).data);
+    return SHOW_CONTINUE;
+}
+
+static int fsp_key(struct _select_def *conf,int key){
+    int index;
+    if(key==KEY_ESC)
+        return SHOW_QUIT;
+    for(index=0;index<FSP_LINES;index++){
+        if(toupper(key)==toupper((((struct _select_item*)(conf->arg))[(conf->page_pos-1)+index]).hotkey)){
+            conf->new_pos=(conf->page_pos+index);
+            return SHOW_SELCHANGE;
+        }
+    }
+    return SHOW_CONTINUE;
+}
+
+static int fsp_refresh(struct _select_def *conf){
+    clear();
+    move(FSP_TITLE_ROW,FSP_COL);
+    prints("\033[1;32m%s \033[1;33m[%s]\033[m",
+        "请选择个人定制区目录","<Enter>键选择/<Esc>键取消");
+    return SHOW_CONTINUE;
+}
+
+static int fav_select_path(void){
+#define FSP_FREE()                      \
+    do{                                 \
+        struct _select_item *cur;       \
+        if(!sel)                        \
+            break;                      \
+        if(pts)                         \
+            free(pts);                  \
+        for(cur=sel;cur->data;cur++)    \
+            free(cur->data);            \
+        free(sel);                      \
+    }while(0)
+#define FSP_MALLOC(ptr,size)            \
+    do{                                 \
+        if(!((ptr)=malloc(size))){      \
+            FSP_FREE();                 \
+            return -1;                  \
+        }                               \
+        if((void*)ptr==(void*)sel)      \
+            memset(ptr,0,size);         \
+    }while(0)
+#define FSP_MENUSTR_SIZE 80
+#define FSP_HOTKEY(index) ((((index%FSP_LINES)<10)?'0':('A'-10))+(index%FSP_LINES))
+    struct _select_def conf;
+    struct _select_item *sel;
+    POINT *pts;
+    char ans[4];
+    int index,ret;
+    load_myboard(getSession(),0);
+    if(getSession()->mybrd_list_t<2){
+        move(FSP_TITLE_ROW,FSP_COL);
+        clrtoeol();
+        getdata(FSP_TITLE_ROW,FSP_COL,"加入个人定制区? [y/N]: ",ans,2,DOECHO,NULL,true);
+        return ((toupper(ans[0])=='Y')?0:-1);
+    }
+    sel=NULL;
+    pts=NULL;
+    FSP_MALLOC(sel,((getSession()->mybrd_list_t+1)*sizeof(struct _select_item)));
+    FSP_MALLOC(pts,(getSession()->mybrd_list_t*sizeof(POINT)));
+    for(index=0;index<getSession()->mybrd_list_t;index++){
+        FSP_MALLOC(sel[index].data,FSP_MENUSTR_SIZE);
+        sel[index].x=FSP_COL;
+        sel[index].y=(FSP_ROW+index);
+        sel[index].type=SIT_SELECT;
+        sel[index].hotkey=FSP_HOTKEY(index);
+        snprintf(sel[index].data,FSP_MENUSTR_SIZE,"[\033[1;36m%c\033[m] %s",sel[index].hotkey,
+            (!index?"个人定制区主目录":getSession()->mybrd_list[index].title));
+        pts[index].x=sel[index].x;
+        pts[index].y=sel[index].y;
+    }
+    sel[index].x=-1;
+    sel[index].y=-1;
+    sel[index].type=0;
+    sel[index].hotkey=-1;
+    sel[index].data=NULL;
+    memset(&conf,0,sizeof(struct _select_def));
+    conf.item_count=getSession()->mybrd_list_t;
+    conf.item_per_page=FSP_LINES;
+    conf.flag=LF_LOOP|LF_MULTIPAGE;
+    conf.prompt="◆";
+    conf.item_pos=pts;
+    conf.arg=sel;
+    conf.title_pos.x=-1;
+    conf.title_pos.y=-1;
+    conf.pos=1;
+    conf.page_pos=1;
+    conf.on_select=fsp_select;
+    conf.show_data=fsp_show;
+    conf.key_command=fsp_key;
+    conf.show_title=fsp_refresh;
+    ret=list_select_loop(&conf);
+    FSP_FREE();
+    return ((ret==SHOW_SELECT)?(conf.pos-1):-1);
+#undef FSP_FREE
+#undef FSP_MALLOC
+#undef FSP_MENUSTR_SIZE
+#undef FSP_HOTKEY
+}
+
+#undef FSP_TITLE_ROW
+#undef FSP_ROW
+#undef FSP_COL
+#undef FSP_LINES
+
+/* END -- etnlegend, 2006.05.25, 选择个人定制区目录更新, 主要是 MULTIPAGE 和 HOTKEY ... */
+
 
 /* Add board to fav
 seperated by pig2532@newsmth
@@ -205,6 +285,7 @@ int show_boardinfo(const char *bname)
 			(bp->flag & BOARD_ATTACH) ? "" : "不",
 			(bp->flag & BOARD_NOREPLY) ? "不" : "");
 
+    /* etnlegend, 查询版面限制属性显示 ... */
     if(HAS_PERM(getCurrentUser(),PERM_SYSOP)){
         move(15,0);
         prints("\033[1;33m邀请限制\033[m: %s%s\n",
@@ -220,6 +301,8 @@ int show_boardinfo(const char *bname)
             (unsigned char)bp->title_level);
 #endif
     }
+    /* END -- etnlegend, 查询版面限制属性显示 ... */
+
     move(t_lines - 1, 0);
     prints("\033[m\033[44m        添加到个人定制区[\033[1;32ma\033[m\033[44m]");
     clrtoeol();
