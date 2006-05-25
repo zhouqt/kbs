@@ -786,13 +786,12 @@ PHP_FUNCTION(bbs_set_onboard)
 */
 PHP_FUNCTION(bbs_load_favboard)
 {
-        int ac = ZEND_NUM_ARGS();
-        long select;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
+        long select, mode=1;
+        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &select, &mode) ==FAILURE) {
                 WRONG_PARAM_COUNT;
         }
 		getSession()->mybrd_list_t = 0;
-        load_favboard(1, getSession());
+        load_favboard(mode, getSession());
         if(select>=0 && select<favbrd_list_t)
         {
                 SetFav(select, getSession());
