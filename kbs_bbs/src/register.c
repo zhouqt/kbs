@@ -178,12 +178,13 @@ int invalid_realmail(userid, email, msize)
     int msize;
 {
     FILE *fn;
-    const char *emailfile;
     char ans[4], fname[STRLEN];
     char genbuf[STRLEN];
 
+/*
     if ((emailfile = sysconf_str("EMAILFILE")) == NULL)
         return 0;
+*/
 
     if (strchr(email, '@') && valid_ident(email))
         return 0;
