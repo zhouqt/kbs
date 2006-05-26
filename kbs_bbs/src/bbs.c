@@ -552,7 +552,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
            }
 	    if (i==0){
                 move(2, 0);
-	        prints("ÎÄÕÂÁÐ±í·¢Éú±ä»¯£¬È¡Ïû");
+	        prints("ÄÕÂÁÐ±í·¢Éú±ä»¯£¬È¡Ïû");
 		move(2,0);
 		pressreturn();
 		return FULLUPDATE;
@@ -2012,19 +2012,22 @@ int set_board_rule(struct boardheader *bh, int flag)
 int read_hot_info()
 {
     char ans[4];
-	char *rule=NULL;
-	char prompt[80];
+	char prompt[STRLEN];
     move(t_lines - 1, 0);
     clrtoeol();
-#ifdef NEWSMTH
-	if (uinfo.mode == READING) rule = " 6)ÖÎ°æ·½Õë";
-#endif
+    snprintf(prompt,STRLEN,"Ñ¡Ôñ: 1)Ê®´ó»°Ìâ "
 #ifdef HAPPY_BBS
-	snprintf(prompt, sizeof(prompt), "%s%s%s", "Ñ¡Ôñ: 1)Ê®´ó»°Ìâ 2)ÏµÄÚÈÈµã 3)½üÆÚÈÈµã 4)ÏµÍ³ÈÈµã 5)ÈÕÀúÈÕ¼Ç",
+        "2)ÏµÄÚÈÈµã "
 #else
-	snprintf(prompt, sizeof(prompt), "%s%s%s", "Ñ¡Ôñ: 1)Ê®´ó»°Ìâ 2)Ê®´ó×£¸£ 3)½üÆÚÈÈµã 4)ÏµÍ³ÈÈµã 5)ÈÕÀúÈÕ¼Ç",
+        "2)Ê®´ó×£¸£ "
 #endif
-			rule?rule:"", "[1]: ");
+        "3)½üÆÚÈÈµã 4)ÏµÍ³ÈÈµã 5)ÈÕÀúÈÕ¼Ç %s[1]: ",
+#ifdef NEWSMTH
+        ((uinfo.mode==READING)?"6)ÖÎ°æ·½Õë ":"")
+#else
+        ""
+#endif
+        );
     getdata(t_lines - 1, 0, prompt, ans, 3, DOECHO, NULL, true);
     switch (ans[0])
 	{
@@ -2047,7 +2050,7 @@ int read_hot_info()
 	{
 		char fpath[256];
 		struct stat st;
-		if(!rule)
+		if(uinfo.mode!=READING)
 			break;
 		if(!(currboard->flag & BOARD_RULES) && !HAS_PERM(getCurrentUser(),PERM_SYSOP) && (getCurrentUser()->title==0) && !chk_currBM(currBM, getCurrentUser()) ){
 			clear();
