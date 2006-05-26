@@ -255,7 +255,21 @@ struct public_data {
     /* etnlegend, 2006.03.06, userscore sampling ... */
     unsigned int us_sample[32];
 
-    char unused[796];
+    /* etnlegend, 2006.05.26, select read top10 ... */
+    time_t top_timestamp;
+    struct topheader{
+        int bid;
+        unsigned int gid;
+    } top[10];
+
+    char unused[
+    /* etnlegend, 2006.05.26, align to 1024 ... poor time_t */
+#ifndef OS_64BIT
+        712
+#else /* OS_64BIT */
+        704
+#endif /* OS_64BIT */
+    ];
 
 #ifdef FLOWBANNER
 	int bannercount;
