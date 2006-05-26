@@ -5094,7 +5094,7 @@ int Read()
 
 /* etnlegend, 2006.05.26, ÔÄ¶ÁÊ®´ó ... */
 
-#if NULL
+#ifdef ECORE
 
 static int read_top_post(/**/){
     //
