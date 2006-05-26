@@ -913,7 +913,7 @@ struct delete_range_arg{
     int id_to;
 };
 
-static inline int delete_range_read(char *buf,int len,const char *valid){
+static int delete_range_read(char *buf,int len,const char *valid){
 #define DELETE_RANGE_READ_FORMAT    "\033[1;32;42m%c\033[m"
 #define DELETE_RANGE_READ_BORDER_L  '['
 #define DELETE_RANGE_READ_BORDER_R  ']'
@@ -977,7 +977,7 @@ static inline int delete_range_read(char *buf,int len,const char *valid){
 #undef KEY_BS
 }
 
-static inline int delete_range_select(struct _select_def *conf){
+static int delete_range_select(struct _select_def *conf){
     struct delete_range_arg *arg=(struct delete_range_arg*)conf->arg;
     char buf[16];
     if(((arg->type==menu_sub)&&(conf->pos==4))||((arg->type==menu_sub_safe)&&(conf->pos==1))){
@@ -997,14 +997,14 @@ static inline int delete_range_select(struct _select_def *conf){
     return SHOW_SELECT;
 }
 
-static inline int delete_range_show(struct _select_def *conf,int index){
+static int delete_range_show(struct _select_def *conf,int index){
     struct _select_item *item=&(((struct delete_range_arg*)conf->arg)->items[index-1]);
     move(item->y,item->x);
     prints("\033[1;37m[\033[1;36m%c\033[1;37m] %s\033[m",item->hotkey,item->data);
     return SHOW_CONTINUE;
 }
 
-static inline int delete_range_key(struct _select_def *conf,int key){
+static int delete_range_key(struct _select_def *conf,int key){
     struct delete_range_arg *arg=(struct delete_range_arg*)conf->arg;
     int index;
     if(key==KEY_ESC)
@@ -1017,7 +1017,7 @@ static inline int delete_range_key(struct _select_def *conf,int key){
     return SHOW_CONTINUE;
 }
 
-static inline int delete_range_interface_sub_menu(int mode,int current,int total,struct delete_range_arg *arg){
+static int delete_range_interface_sub_menu(int mode,int current,int total,struct delete_range_arg *arg){
     struct _select_item sel[5];
     struct _select_def conf;
     POINT pts[4];
@@ -1090,7 +1090,7 @@ static inline int delete_range_interface_sub_menu(int mode,int current,int total
     return 0;
 }
 
-static inline int delete_range_interface_main_menu(void){
+static int delete_range_interface_main_menu(void){
     struct _select_item sel[6];
     struct _select_def conf;
     struct delete_range_arg arg;
