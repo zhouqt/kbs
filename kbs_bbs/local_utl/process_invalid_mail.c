@@ -54,15 +54,15 @@ static int gen_dirs(void){                      /* 生成所有可能有效 DIR 名称 */
 }
 
 static int map_dir(int index){                  /* 处理 DIR 映像操作 */
-    static const struct flock lck_set={F_WRLCK,SEEK_SET,0,0,0};
-    static const struct flock lck_remove={F_UNLCK,SEEK_SET,0,0,0};
+    static const struct flock lck_set={.l_type=F_WRLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
+    static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     static struct stat st;
     static int dir_mapped,fd;
     static void *p_map;
     if(dir_mapped){
         munmap(p_map,st.st_size);
         ftruncate(fd,(count*sizeof(struct fileheader)));
-        fcntl(fd,F_SETLKW,&lck_remove);
+        fcntl(fd,F_SETLKW,&lck_clr);
         close(fd);
         dir_mapped=0;
     }
@@ -82,7 +82,7 @@ static int map_dir(int index){                  /* 处理 DIR 映像操作 */
         return 4;
     }
     if((p_map=mmap(NULL,st.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0))==MAP_FAILED){
-        fcntl(fd,F_SETLKW,&lck_remove);
+        fcntl(fd,F_SETLKW,&lck_clr);
         close(fd);
         return 5;
     }
@@ -94,14 +94,14 @@ static int map_dir(int index){                  /* 处理 DIR 映像操作 */
 }
 
 static int map_dir_dry(int index){
-    static const struct flock lck_set={F_RDLCK,SEEK_SET,0,0,0};
-    static const struct flock lck_remove={F_UNLCK,SEEK_SET,0,0,0};
+    static const struct flock lck_set={.l_type=F_WRLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
+    static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     static struct stat st;
     static int dir_mapped,fd;
     static void *p_map;
     if(dir_mapped){
         munmap(p_map,st.st_size);
-        fcntl(fd,F_SETLKW,&lck_remove);
+        fcntl(fd,F_SETLKW,&lck_clr);
         close(fd);
         dir_mapped=0;
     }
@@ -121,7 +121,7 @@ static int map_dir_dry(int index){
         return 4;
     }
     if((p_map=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED){
-        fcntl(fd,F_SETLKW,&lck_remove);
+        fcntl(fd,F_SETLKW,&lck_clr);
         close(fd);
         return 5;
     }

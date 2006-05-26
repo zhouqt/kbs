@@ -2986,8 +2986,8 @@ int delete_range_base(
 #define DRBP_UNDEL(f)   ((DRBP_CHK_T&&!DRBP_TOKEN(f))||(DRBP_CHK_M&&DRBP_MARKS(f)))
 #define DRBP_TSET(n)    do{tab[((n)>>3)]|=(1<<((n)&0x07));}while(0)
 #define DRBP_TGET(n)    (tab[((n)>>3)]&(1<<((n)&0x07)))
-    static const struct flock lck_set={F_WRLCK,SEEK_SET,0,0,0};
-    static const struct flock lck_clr={F_UNLCK,SEEK_SET,0,0,0};
+    static const struct flock lck_set={.l_type=F_WRLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
+    static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     struct userec *user;
     struct fileheader *src,*dst;
     struct stat st_src,st_dst;
