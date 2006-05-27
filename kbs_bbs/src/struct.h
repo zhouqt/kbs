@@ -255,7 +255,7 @@ struct public_data {
     /* etnlegend, 2006.03.06, userscore sampling ... */
     unsigned int us_sample[32];
 
-    char unuse[796];
+    char unused[796];
 
 #ifdef FLOWBANNER
 	int bannercount;
