@@ -159,6 +159,11 @@ function showBoardStaticsTop($boardArr, $is_bm, $ftype=false){
 	<a href="boarddoc.php?name=<?php echo $boardArr['NAME']; ?>&amp;ftype=1" title=查看本版文摘区><font color=#FF00FF><B>文摘区</B></font></a> 
 <?php
 	}
+	if ($dir_modes["MARK"] != $ftype) {
+?>
+	<a href="boarddoc.php?name=<?php echo $boardArr['NAME']; ?>&amp;ftype=3" title=查看本版保留区><font color=#FF00FF><B>保留区</B></font></a> 
+<?php
+	}
 ?>
 &nbsp;&nbsp;<img src=pic/team2.gif align=absmiddle>
 <?php 
@@ -321,6 +326,9 @@ function getModenameIfAllowed($ftype, &$sorted) {
 		case $dir_modes["ORIGIN"]:
 			$sorted = true;
 			return "原作区";
+		case $dir_modes["MARK"]:
+			$sorted = true;
+			return "保留区";
 		default:
 			return false;
 	}

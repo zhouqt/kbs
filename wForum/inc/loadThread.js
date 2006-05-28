@@ -30,11 +30,11 @@ function setSecCookie(sec, flag, isShow) {
 	document.cookie = szCookieName + escape(ssb) + '; Expires=' + expTime.toGMTString();
 }
 
-function loadBoardFollow(sec, isFav, isLoading, isHide, isFold){
+function loadBoardFollow(sec, isFav, isLoading, isHide, isFold, fix){
 	targetTip = getRawObject("followTip" + sec);
 	if (isLoading){
 		targetTip.style.display = '';
-		str = "loadsec.php?sec=" + sec;
+		str = "loadsec.php?sec=" + sec + (fix?"&x":"");
 		if (isFav) str += "&fav=1";
 		if (isFold) str += "&fold=1";
 		window.frames["hiddenframe"].document.location.href = str;
@@ -48,7 +48,7 @@ function loadBoardFollow(sec, isFav, isLoading, isHide, isFold){
 
 	eval("boards = boards" + sec + ";");
 	
-	targetDiv.innerHTML = showSec(isFold, isFav, boards, sec, isHide);
+	targetDiv.innerHTML = showSec(isFold, isFav, boards, sec, isHide, fix);
 	setSecCookie(isFav ? -1 : sec, isFold, true);
 	setSecCookie(isFav ? -1 : sec, isHide, false);
 	if (isHide || !isFold) {
@@ -69,9 +69,9 @@ function toogleHide(sec) {
 	eval("foldflag = foldflag" + sec + ";");
 	eval("curfold = curfold" + sec + ";");
 	if (curfold == 0) {
-		loadBoardFollow(sec, false, (foldflag == 0), false, false);
+		loadBoardFollow(sec, false, (foldflag == 0), false, false, false);
 	} else {
-		loadBoardFollow(sec, false, false, true, false);
+		loadBoardFollow(sec, false, false, true, false, false);
 	}
 }
 
@@ -79,19 +79,19 @@ function loadSecFollow(sec) {
 	eval("foldflag = foldflag" + sec + ";");
 	eval("curfold = curfold" + sec + ";");
 	if (curfold == 2) {
-		loadBoardFollow(sec, false, false, false, false);
+		loadBoardFollow(sec, false, false, false, false, false);
 	} else {
-		loadBoardFollow(sec, false, (foldflag <= curfold), false, (curfold == 1));
+		loadBoardFollow(sec, false, (foldflag <= curfold), false, (curfold == 1), false);
 	}
 }
 
-function loadFavFollow() {
+function loadFavFollow(fix) {
 	eval("foldflag = foldflag" + j_select + ";");
 	eval("curfold = curfold" + j_select + ";");
 	if (curfold == 2) {
-		loadBoardFollow(j_select, true, false, false, false);
+		loadBoardFollow(j_select, true, false, false, false, fix);
 	} else {
-		loadBoardFollow(j_select, true, (foldflag == 1), false, true);
+		loadBoardFollow(j_select, true, (foldflag == 1), false, true, fix);
 	}
 }
 
@@ -119,7 +119,7 @@ function BoardS(isBoardGroup, isFavGroup, boardName, boardDesc, todayNum, nArtic
 	return new Board(isBoardGroup, isFavGroup, 0, boardName, boardDesc, 0,0,0,0,0,todayNum, nArticles, 0, npos, bid, currentusers);
 }
 
-function showSec(isFold, isFav, boards, secNum, isHide) {
+function showSec(isFold, isFav, boards, secNum, isHide, fix) {
 	str = '<table cellspacing=1 cellpadding=0 align=center class=TableBorder1 style="width:100%">';
 	if (isHide) {
 		// str += '<TR><TD class=TableBody1>&nbsp;版面列表已关闭 [<a href="#" onclick="loadSecFollow('+secNum+')" title="展开版面列表">展开</a>]</td></tr>';
@@ -141,7 +141,7 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 				if (!boards[i].isFavGroup) {
 					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc + '</font></a>';
 				} else {
-					str += '<a href="favboard.php?select=' + boards[i].bid + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>';
+					str += '<a href="favboard.php?select=' + boards[i].bid + (fix?'&x':'') + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>';
 				}
 				str += '</td><td width=40 rowspan=2 align=center class=TableBody1></td><td width=200 rowspan=2 class=TableBody1>';
 				if (boards[i].isFavGroup || boards[i].isBoardGroup) {
@@ -165,8 +165,9 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 				}
 				str += '</TD></TR></TBODY></TABLE></td>';
 				str += '<TD width=1 bgcolor=#7a437a></TD><td class=TableBody1 align=center width=30>';
-				if (!isFav) {
-					str += '<a href="favboard.php?bname=' + boards[i].boardName + '" title="收藏本版面到收藏夹顶层目录"><img border=0 src="pic/fav.gif"></a>';
+				if (!isFav||fix) {
+					if(!boards[i].isFavGroup)
+						str += '<a href="favboard.php?bname=' + boards[i].boardName + '" title="收藏本版面到收藏夹顶层目录"><img border=0 src="pic/fav.gif"></a>';
 				} else if (!boards[i].isFavGroup) {
 					str += '<a href="favboard.php?select=' + j_select + '&delete=' + boards[i].npos + '" title="从收藏中删除该版面"><img border=0 src="pic/del.gif"></a>';
 				} else {
@@ -188,7 +189,7 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc;
 					str += '&nbsp;[' + boards[i].boardName + ']</font></a>';
 				} else {
-					str += '<a href="favboard.php?select=' + boards[i].bid + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>';
+					str += '<a href="favboard.php?select=' + boards[i].bid + (fix?'&x':'') + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>';
 				}
 				str += '</td></tr><tr>';
 				if (boards[i].isBoardGroup || boards[i].isFavGroup) {

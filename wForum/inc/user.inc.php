@@ -48,7 +48,7 @@ function getSecFoldCookie($secNum, $isShow = true) {
 }
 
 function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
-	global $yank;
+	global $yank, $XX;
 	global $section_nums;
 ?>
 <script language="JavaScript">
@@ -66,7 +66,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 			else $flag = $yank;
 			$boards = bbs_getboards($section_nums[$secNum], $group, $flag);
 		} else {
-			$boards = bbs_fav_boards($select, 1);
+			$boards = bbs_fav_boards($select, $XX?2:1);
 			if ($boards == FALSE) {
 	    		//foundErr("读取版列表失败");
 			}
@@ -164,7 +164,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
  * isFold: true when show detailed boards list.
  */
 function showSecs($secNum,$group,$isFold,$isFav = false,$isHide = false) {
-	global $section_names;
+	global $section_names, $XX;
 ?>
 <table cellspacing=0 cellpadding=0 align=center width="97%" class=TableBorder1>
 <TR><Th height=25 align=left id=TableTitleLink>&nbsp;
@@ -197,25 +197,25 @@ function showSecs($secNum,$group,$isFold,$isFav = false,$isHide = false) {
 		$select = $secNum; //代码相似性 :D
 		if ($isFold) {
 ?>
-<img src="pic/nofollow.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow()" border=0 title="折叠版面列表">
+<img src="pic/nofollow.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow(<?php echo $XX?"true":"false"; ?>)" border=0 title="折叠版面列表">
 <?php
 		} else {
 ?>
-<img src="pic/plus.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow()" border=0 title="展开版面列表">
+<img src="pic/plus.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow(<?php echo $XX?"true":"false"; ?>)" border=0 title="展开版面列表">
 <?php
 		}
-?>
-用户收藏夹
-<?php
+		echo $XX?"新分类讨论区":"用户收藏夹";
 		if ($select != 0) {
 			$list_father = bbs_get_father($select);
 ?>
-&nbsp;[<a href="favboard.php?select=<?php echo $list_father; ?>">回到上一级</a>]
+&nbsp;[<a href="favboard.php?select=<?php echo $list_father; ?><?php echo $XX?"&x":""; ?>">回到上一级</a>]
 <?php
 		}
+		if(!$XX) {
 ?>
 &nbsp;[<a href="modifyfavboards.php?select=<?php echo $select; ?>">管理本收藏夹目录</a>]
 <?php
+		}
 	}
 ?>
 </th></tr>
@@ -226,7 +226,7 @@ function showSecs($secNum,$group,$isFold,$isFav = false,$isHide = false) {
 <TR><Td id="followSpan<?php echo $secNum; ?>">
 <script language="JavaScript">
 <!--
-	str = showSec(<?php echo ($isFold ? 1 : 0); ?>, <?php echo ($isFav ? 1 : 0); ?>, boards, <?php echo $secNum ?>, <?php echo ($isHide ? 1 : 0); ?>);
+	str = showSec(<?php echo ($isFold ? 1 : 0); ?>, <?php echo ($isFav ? 1 : 0); ?>, boards, <?php echo $secNum ?>, <?php echo ($isHide ? 1 : 0); ?>, <?php echo $XX?"true":"false"; ?>);
 	document.write(str);
 //-->
 </script>
