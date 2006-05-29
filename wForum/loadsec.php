@@ -12,10 +12,16 @@ is_numeric($secNum) or exit(0);
 if (isset($_GET['fold'])) $isFold = true;
 else $isFold = false;
 
+if (isset($_GET["x"]))
+	$XX = true;
+else
+	$XX = false;
+
 if ( isset($_GET['fav']) ) {
 	$fav = true;
-	if ($loginok != 1) exit(0);
-	if (bbs_load_favboard($secNum) == -1) {
+	if(!$XX)
+		if ($loginok != 1) exit(0);
+	if (bbs_load_favboard($secNum, $XX?2:1) == -1) {
 		exit(0);
 	}
 } else {
@@ -41,7 +47,7 @@ html_init();
 <script language="javascript">
 <!--
 	parent.boards<?php echo $secNum; ?> = boards;
-	parent.loadBoardFollow(<?php echo $secNum ?>, <?php echo ($fav ? 1 : 0); ?>, false, false, <?php echo ($isFold ? 1 : 0); ?>);
+	parent.loadBoardFollow(<?php echo $secNum ?>, <?php echo ($fav ? 1 : 0); ?>, false, false, <?php echo ($isFold ? 1 : 0); ?>, <?php echo $XX?"true":"false"; ?>);
 	parent.foldflag<?php echo $secNum; ?> = <?php echo ($isFold ? 2 : 1); ?>;
 //-->
 </script>
