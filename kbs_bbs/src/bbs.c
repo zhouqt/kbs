@@ -231,7 +231,7 @@ int get_a_boardname(char *bname, char *prompt)
         return 0;
     }
     /*---	Modified by period	2000-10-29	---*/
-    if (getbid(bname,NULL) <= 0)
+    if (getbnum_safe(bname,getSession()) <= 0)
         /*---	---*/
     {
         move(1, 0);
