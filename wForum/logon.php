@@ -84,6 +84,17 @@ function doLogon(){
 		$time=time()+31536000; //365*24*60*60 sec
 		break;
 	}
+
+	if ($data["userid"] != "guest") {
+		$wwwparameters = bbs_getwwwparameters();
+		setcookie("WWWPARAMS",$wwwparameters,0,"/");
+		$mbids = bbs_bm_get_manageable_bids();
+		if ($mbids) {
+			setcookie("MANAGEBIDS", $mbids,0,"/");
+		}
+		header("Set-KBSRC: " . $data["userid"]);
+	}
+
 	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],0,COOKIE_PATH,COOKIE_DOMAIN);
 	setcookie(COOKIE_PREFIX."UTMPNUM",$num,0,COOKIE_PATH,COOKIE_DOMAIN);
 	setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],$time,COOKIE_PATH,COOKIE_DOMAIN);
