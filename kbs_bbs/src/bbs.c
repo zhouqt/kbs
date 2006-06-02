@@ -481,6 +481,17 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         return FULLUPDATE;
     }
 #endif
+    if (!haspostperm(getCurrentUser(), bname)) {
+        move(3, 0);
+        clrtobot();
+        prints("您尚无权限在 %s 发表文章.\n", bname);
+        prints("如果您尚未注册，请在个人工具箱内详细注册身份\n");
+        prints("未通过身份注册认证的用户，没有发表文章的权限。\n");
+        prints("谢谢合作！ :-) \n");
+        pressreturn();
+        clear();
+        return FULLUPDATE;
+    }
 
         /* Leeward 98.01.13 检查转贴者在其欲转到的版面是否被禁止了 POST 权 */
 
