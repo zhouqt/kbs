@@ -347,6 +347,9 @@ void unlock_sem_check(int lockid);
     int checkreadonly(const char *board);     /* 判断是不是只读版面 */
     int deny_me(const char *user,const char *board);       /* 判断用户 是否被禁止在当前版发文章 */
     int haspostperm(const struct userec *user,const char *bname);  /* 判断在 bname版 是否有post权 */
+#ifdef NEWSMTH
+    int check_score_level(const struct userec *user,const struct boardheader *bh);
+#endif /* NEWSMTH */
     int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char BMstr[STRLEN - 1], const struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board, int jury);

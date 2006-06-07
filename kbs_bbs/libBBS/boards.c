@@ -1097,22 +1097,26 @@ int haspostperm(const struct userec *user,const char *bname)
             return 1;
         return 0;
     }                           /* stephen 2000.10.27 */
-    if (HAS_PERM(user, (bh->level & ~PERM_NOZAP) & ~PERM_POSTMASK)) {
-        if (bh->flag & BOARD_CLUB_WRITE) {    /*¾ãÀÖ²¿ */
-            if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
-                return 1;
-            if (bh->clubnum <= 0 || bh->clubnum > MAXCLUB)
-                return 0;
-            if (user->club_write_rights[(bh->clubnum - 1) >> 5] & (1 << ((bh->clubnum - 1) & 0x1f)))
-                return 1;
-            else
-                return 0;
+    if(HAS_PERM(user,(bh->level&~(PERM_NOZAP|PERM_POSTMASK)))){
+        if(bh->flag&BOARD_CLUB_WRITE){
+            if(!HAS_PERM(user,PERM_SYSOP)){
+                if(!(bh->clubnum>0)||bh->clubnum>MAXCLUB)
+                    return 0;
+                if(!(user->club_write_rights[(bh->clubnum-1)>>5]&(1<<((bh->clubnum-1)&0x1f))))
+                    return 0;
+            }
         }
         return 1;
-    } else
-        return 0;
+    }
+    return 0;
     //if (bcache[i-1].title_level&&(bcache[i-1].title_level!=user->title)) return 0;
 }
+
+#ifdef NEWSMTH
+int check_score_level(const struct userec *user,const struct boardheader *bh){
+    return (chk_currBM(bh->BM,user)||!(user->score_user<bh->score_level));
+}
+#endif /* NEWSMTH */
 
 int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2])
 {

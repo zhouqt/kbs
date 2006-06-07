@@ -464,6 +464,9 @@ function atomic_post() {
 		case -9:
 			atomic_error("系统内部错误, 请迅速通知站务人员, 谢谢!");
 			break;
+        case -21:
+            atomic_error("您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
+            break;
 		}
 		atomic_header();
 		$url = "?act=board&board=" . $atomic_board;

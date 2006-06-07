@@ -493,6 +493,20 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         return FULLUPDATE;
     }
 
+    if(!(bh=getbcache(bname)))
+        return FULLUPDATE;
+
+#ifdef NEWSMTH
+    if(!check_score_level(getCurrentUser(),bh)){
+        move(3,0);
+        clrtobot();
+        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m",
+            "您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
+        WAIT_RETURN;
+        return FULLUPDATE;
+    }
+#endif
+
         /* Leeward 98.01.13 检查转贴者在其欲转到的版面是否被禁止了 POST 权 */
 
 
@@ -504,7 +518,6 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
             if(!(ans[0]=='y'||ans[0]=='Y'))
                 return FULLUPDATE;
         }
-        bh=getbcache(bname);
         if ((fileinfo->attachment!=0)&&!(bh->flag&BOARD_ATTACH)) {
             move(3, 0);
             clrtobot();
@@ -2544,6 +2557,16 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         pressreturn();
         clear();
         return FULLUPDATE;
+#ifdef NEWSMTH
+    }
+    else if(!check_score_level(getCurrentUser(),currboard)){
+        move(3,0);
+        clrtobot();
+        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m",
+            "您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
+        WAIT_RETURN;
+        return FULLUPDATE;
+#endif /* NEWSMTH */
     } else if (deny_me(getCurrentUser()->userid, currboard->filename)) { /* 版主禁止POST 检查 */
 		if( !HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
         	move(3, 0);

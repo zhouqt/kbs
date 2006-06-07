@@ -120,6 +120,9 @@ function bbswappost($board, $title, $content, $reid)
   case -9:
     echo "系统内部错误, 请迅速通知站务人员, 谢谢!<br/>";
     break;
+  case -21:
+    echo "您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章!<br/>";
+    break;
   default:
     echo "发文成功<br/>";
   }

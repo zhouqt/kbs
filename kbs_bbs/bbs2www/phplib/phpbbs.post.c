@@ -373,6 +373,13 @@ PHP_FUNCTION(bbs_postarticle)
         RETURN_LONG(-3); //标题为NULL
     if (true == checkreadonly(board) || !haspostperm(getCurrentUser(), board))
         RETURN_LONG(-4); //此讨论区是唯读的, 或是您尚无权限在此发表文章.
+
+#ifdef NEWSMTH
+    if(!check_score_level(getCurrentUser(),brd)){
+        RETURN_LONG(-21);
+    }
+#endif /* NEWSMTH */
+
     if (deny_me(getCurrentUser()->userid, board) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
         RETURN_LONG(-5); //很抱歉, 你被版务人员停止了本版的post权利.
 

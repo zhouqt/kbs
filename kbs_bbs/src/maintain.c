@@ -936,23 +936,24 @@ int m_editbrd(void){
     }
     return modify_board(pos);
 }
-int modify_board(int bid) {
+int modify_board(int bid){
+#define MB_ITEMS 24
     FILE *fp;
-    struct _select_item sel[24];
+    struct _select_item sel[MB_ITEMS+1];
     struct _select_def conf;
     struct _simple_select_arg arg;
-    POINT pts[23];
+    POINT pts[MB_ITEMS];
     struct boardheader bh,newbh;
-    char buf[EB_BUF_LEN],src[EB_BUF_LEN],dst[EB_BUF_LEN],menustr[23][EB_BUF_LEN],orig[23][EB_BUF_LEN],*ptr;
+    char buf[EB_BUF_LEN],src[EB_BUF_LEN],dst[EB_BUF_LEN],menustr[MB_ITEMS][EB_BUF_LEN],orig[MB_ITEMS][EB_BUF_LEN],*ptr;
     int i,loop,section,currpos,ret;
     unsigned int annstat,change,error;
     const struct boardheader *bhptr=NULL;
-    const char menuldr[23][16]={
+    const char *menuldr[MB_ITEMS]={
         "[1]讨论区名称:","[2]讨论区管理:","[3]讨论区说明:","[4]讨论区分区:","[5]讨论区分类:",
         "[6]转信标签  :","[7]讨论区描述:","[8]匿名讨论区:","[9]统计文章数:","[A]统计十大  :",
         "[B]目录讨论区:","[C]所属目录  :","[D]向外转信  :","[E]上传附件  :","[F]E-mail发文:",
         "[G]不可回复  :","[H]读限制Club:","[I]写限制Club:","[J]隐藏Club  :","[K]精华区位置:",
-        "[L]权限限制  :","[M]身份限制  :","[Q][退出]    :"
+        "[L]权限限制  :","[M]身份限制  :","[N]积分限制  :","[Q][退出]    :"
     };
     change=0;loop=1;
     /*选择讨论区*/
@@ -976,7 +977,7 @@ int modify_board(int bid) {
     /*获取讨论区数据并构造菜单显式*/
     memcpy(&newbh,&bh,sizeof(struct boardheader));
     /*菜单定位*/
-    for(i=0;i<23;i++){
+    for(i=0;i<MB_ITEMS;i++){
         if(i<13){
             sel[i].x=2;
             sel[i].y=i+2;
@@ -984,6 +985,14 @@ int modify_board(int bid) {
         else if(i<19){
             sel[i].x=42;
             sel[i].y=i-4;
+        }
+        else if(i==22){
+            sel[i].x=42;
+            sel[i].y=17;
+        }
+        else if(i==MB_ITEMS-1){
+            sel[i].x=2;
+            sel[i].y=18;
         }
         else{
             sel[i].x=2;
@@ -1082,24 +1091,32 @@ int modify_board(int bid) {
         "无效选项",
 #endif
         (unsigned char)bh.title_level);
+    /*积分限制*/
+    sel[22].hotkey='N';
+#ifdef NEWSMTH
+    sprintf(menustr[22],"%-15s%s <%d>",menuldr[22],(bh.score_level?"发表限制":"无限制"),bh.score_level);
+#else /* NEWSMTH */
+    sprintf(menustr[22],"%-15s%s <%d>",menuldr[22],"无效选项",bh.score_level);
+#endif /* NEWSMTH */
     /*退出*/
-    sel[22].hotkey='Q';
-    sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m":"未修改");
-    sel[23].x=-1;sel[23].y=-1;sel[23].type=0;sel[23].hotkey=-1;sel[23].data=NULL;
+    sel[MB_ITEMS-1].hotkey='Q';
+    sprintf(menustr[MB_ITEMS-1],"%-15s%s",menuldr[MB_ITEMS-1],change?"\033[1;31m已修改\033[m":"未修改");
+    sel[MB_ITEMS].x=-1;sel[MB_ITEMS].y=-1;sel[MB_ITEMS].type=0;sel[MB_ITEMS].hotkey=-1;sel[MB_ITEMS].data=NULL;
     /*备份*/
-    memcpy(orig,menustr,23*EB_BUF_LEN*sizeof(char));
-    currpos=23;
+    memcpy(orig,menustr,MB_ITEMS*EB_BUF_LEN*sizeof(char));
+    currpos=MB_ITEMS;
     /*修改版面属性*/
     while(loop){
-        move(1,0);clrtobot();
+        move(1,0);
+        clrtobot();
         move(23,0);
-        prints("  单项恢复老设定[选项前按\033[1;32m~\033[m]    删除设定[\033[1;32m输入单个空格\033[m]    取消[\033[1;32mESC\033[m]");
+        prints("  单项恢复原设定[选项前按\033[1;32m~\033[m]    删除设定[\033[1;32m输入空格\033[m]    取消[\033[1;32mESC\033[m]");
         /*构造select结构*/
         arg.items=sel;
         arg.flag=SIF_SINGLE;
         bzero(&conf,sizeof(struct _select_def));
-        conf.item_count=23;
-        conf.item_per_page=23;
+        conf.item_count=MB_ITEMS;
+        conf.item_per_page=MB_ITEMS;
         conf.flag=LF_LOOP;
         conf.prompt="◆";
         conf.item_pos=pts;
@@ -1112,13 +1129,14 @@ int modify_board(int bid) {
         conf.show_data=editbrd_show;
         conf.key_command=editbrd_key;
         /*选择*/
-        sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m (按 \033[1;32m~\033[m 恢复所有老设定)":"未修改");
+        sprintf(menustr[MB_ITEMS-1],"%-15s%s",menuldr[MB_ITEMS-1],
+            change?"\033[1;31m已修改\033[m (按 \033[1;32m~\033[m 恢复所有老设定)":"未修改");
         ret=list_select_loop(&conf);
         currpos=conf.pos;
         /*返回SHOW_QUIT时*/
         if(ret==SHOW_QUIT){
             /*取消单项修改*/
-            if(lastkey==KEY_CANCEL&&((change&(1<<(currpos-1)))||currpos==23)){
+            if(lastkey==KEY_CANCEL&&((change&(1<<(currpos-1)))||currpos==MB_ITEMS)){
                 switch(currpos-1){
                     /*讨论区名称或精华区位置*/
                     case 0:
@@ -1187,10 +1205,18 @@ int modify_board(int bid) {
                         change&=~(1<<21);
 #endif
                         break;
-                    /*全部重置*/
+                    /*积分限制*/
                     case 22:
+#ifdef NEWSMTH
+                        newbh.score_level=bh.score_level;
+                        sprintf(menustr[22],"%s",orig[22]);
+                        change&=~(1<<22);
+#endif /* NEWSMTH */
+                        break;
+                    /*全部重置*/
+                    case MB_ITEMS-1:
                         memcpy(&newbh,&bh,sizeof(struct boardheader));
-                        memcpy(menustr,orig,23*EB_BUF_LEN*sizeof(char));
+                        memcpy(menustr,orig,MB_ITEMS*EB_BUF_LEN*sizeof(char));
                         section=(annstat&0x020000)?-1:(annstat&0xFFFF);
                         change=0;
                         break;
@@ -1716,8 +1742,41 @@ int modify_board(int bid) {
                 }
 #endif
                 break;
-            /*退出*/
+            /*积分限制*/
             case 22:
+#ifdef NEWSMTH
+                move(17,42);clrtoeol();getdata(17,42,"请输入积分限制: ",buf,8,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                trimstr(buf);
+                if(!buf[0]){
+                    newbh.score_level=0;
+                }
+                else{
+                    for(i=0;buf[i];i++)
+                        if(!isdigit(buf[i]))
+                            break;
+                    if(buf[i]){
+                        move(17,42);clrtoeol();getdata(17,42,"\033[1;31m错误: 非法的积分值!\033[m",buf,1,DOECHO,NULL,true);
+                        break;
+                    }
+                    newbh.score_level=atoi(buf);
+                }
+                /*标记修改状态*/
+                if(newbh.score_level!=bh.score_level){
+                    sprintf(menustr[22],"%-15s\033[1;32m%s\033[m <%d>",menuldr[22],
+                        (newbh.score_level?"发表限制":"无限制"),newbh.score_level);
+                    change|=(1<<22);
+                }
+                else{
+                    sprintf(menustr[22],"%s",orig[22]);
+                    change&=~(1<<22);
+                }
+#endif /* NEWSMTH */
+                break;
+            /*退出*/
+            case MB_ITEMS-1:
                 if(change){
                     /*冲突检测及确认*/
                     if(change&(1<<0)){
@@ -1783,7 +1842,7 @@ int modify_board(int bid) {
     error|=edit_group(&bh,&newbh);
     set_board(bid,&newbh,&bh);
     /*生成安全审核和日志*/
-    sprintf(src,"tmp/edit_board_log_%ld_%d",time(NULL), (int)getpid());
+    sprintf(src,"tmp/edit_board_log_%ld_%d",time(NULL),(int)getpid());
     if(!(fp=fopen(src,"w"))){
         sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,(change&(1<<0))?32:0,newbh.filename);
         securityreport(buf,NULL,NULL);
@@ -1792,7 +1851,7 @@ int modify_board(int bid) {
         sprintf(buf,"修改讨论区属性: %s%c-> %s",bh.filename,(change&(1<<0))?32:0,newbh.filename);
         write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
         fprintf(fp,"\033[1;33m[讨论区 <id=%d> 属性修改明细]\033[m\n\n",bid);
-        for(i=0;i<22;i++){
+        for(i=0;i<MB_ITEMS-1;i++){
             if(change&(1<<i))
                 fprintf(fp,"  %s\n  \033[1;32m%s\033[m\n\n",orig[i],menustr[i]);
         }
@@ -1805,6 +1864,7 @@ int modify_board(int bid) {
     move(20,2);prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
     WAIT_RETURN;clear();
     return 0;
+#undef MB_ITEMS
 }
 #undef KEY_CANCEL
 #undef EB_BUF_LEN

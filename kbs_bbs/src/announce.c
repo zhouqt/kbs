@@ -1637,6 +1637,9 @@ MENU *father;
                 clear();
                 move(1, 0);
                 if (get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
+#ifdef NEWSMTH
+                    const struct boardheader *bh;
+#endif /* NEWSMTH */
                     move(1, 0);
                     clrtoeol();
                     if (deny_me(getCurrentUser()->userid, bname)) {
@@ -1659,6 +1662,15 @@ MENU *father;
                         me.page = 9999;
                         break;
                     }
+#ifdef NEWSMTH
+                    if(!(bh=getbcache(bname))||!check_score_level(getCurrentUser(),bh)){
+                        move(1,0);
+                        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m",
+                            "您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
+                        WAIT_RETURN;
+                        break;
+                    }
+#endif /* NEWSMTH */
                     sprintf(tmp, "你确定要转贴到 %s 版吗", bname);
                     if (askyn(tmp, 0) == 1) {
                         post_file(getCurrentUser(), "", fname, bname, me.item[me.now]->title, 0, 2, getSession());

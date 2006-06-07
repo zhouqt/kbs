@@ -996,7 +996,11 @@ int user_vote(int num)
     int votevalue;
     int aborted = false, pos;
 
-    if (!haspostperm(getCurrentUser(),currboard->filename))
+    if(!haspostperm(getCurrentUser(),currboard->filename)
+#ifdef NEWSMTH
+        ||!check_score_level(getCurrentUser(),currboard)
+#endif /* NEWSMTH */
+        )
 	    return -1;
     move(t_lines - 2, 0);
     get_record(controlfile, &currvote, sizeof(struct votebal), num);

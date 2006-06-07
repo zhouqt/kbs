@@ -92,6 +92,9 @@ if($_POST["board"])
 		case -9:
 			html_error_quit("系统内部错误, 请迅速通知站务人员, 谢谢!");
 			break;
+        case -21:
+            html_error_quit("您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
+            break;
 	}
 ?>
 <br /><br /><br />
