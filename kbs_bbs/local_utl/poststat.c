@@ -191,6 +191,8 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
     char BoardName[100][13];
     char buf[40];
 
+    struct top_header curr_top[10];
+
 /* ---------------------------------------------- */
     /*
      * sort top 100 issue and save results            
@@ -228,6 +230,9 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
         printf("i : %d, j: %d \n", i, j);
 #endif
         real = 0;
+
+        memset(curr_top,0,(10*sizeof(struct top_header)));
+
         for (i = 0; i < j && real < mytop[mytype]; i++) {
             strcpy(buf, ctime(&top[i].date));
             buf[20] = NULL;
@@ -271,11 +276,35 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
                         p, top[i].number, surfix_bless[(real - 1) * 2], real, (real - 1) / 2 + 1, fh.title, fh.owner, surfix_bless[(real - 1) * 2 + 1]);
             else
 #endif
-                fprintf(fp,
-                        "\033[37m第\033[31m%3d\033[37m 名 \033[37m信区 : \033[33m%-16s\033[37m【\033[32m%s\033[37m】\033[36m%4d \033[37m人\033[35m%16s\n"
-                        "     \033[37m标题 : \033[44m\033[37m%-60.60s\033[m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, fh.owner, fh.title);
+            {
+                fprintf(fp,"\033[37m第\033[31m%3d\033[37m 名 \033[37m信区 : \033[33m%-16s\033[37m【\033[32m%s\033[37m】"
+                    "\033[36m%4d \033[37m人\033[35m%16s\n     \033[37m标题 : \033[44m\033[37m%-60.60s\033[m\n",
+                    (!mytype?real:(i+1)),top[i].board,p,top[i].number,fh.owner,fh.title);
+
+                /* etnlegend, 2006.05.28, 阅读十大 ... */
+                if(!mytype&&i<10){
+                    curr_top[i].bid=getbid(top[i].board,NULL);
+                    curr_top[i].gid=top[i].groupid;
+                }
+
+            }
         }
 
+        if(!mytype){
+            const struct boardheader *bh;
+            char path[PATHLEN];
+            int k;
+            for(k=0;k<10;k++){
+                if(!(bh=getboard(publicshm->top[k].bid)))
+                    continue;
+                snprintf(path,PATHLEN,"boards/%s/.TOP.%u",bh->filename,publicshm->top[k].gid);
+                unlink(path);
+            }
+            setpublicshmreadonly(0);
+            memcpy(publicshm->top,curr_top,(10*sizeof(struct top_header)));
+            publicshm->top_version++;
+            setpublicshmreadonly(1);
+        }
 
 #ifdef BLESS_BOARD
         if (mytype == 4)

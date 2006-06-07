@@ -2020,6 +2020,7 @@ int set_board_rule(struct boardheader *bh, int flag)
 }
 #endif
 
+static int select_top(void);
 int read_hot_info()
 {
     char ans[4];
@@ -2104,7 +2105,15 @@ int read_hot_info()
 #endif
 	case '1':
 	default:
-		show_help("etc/posts/day");
+
+/* etnlegend, 2006.05.30, 阅读十大 ... */
+
+#ifdef NEWSMTH
+        select_top();
+#else /* NEWSMTH */
+        show_help("etc/posts/day");
+#endif /* NEWSMTH */
+
     }
     return FULLUPDATE;
 }
@@ -5101,4 +5110,552 @@ int Read()
     UPDATE_UTMP(currentboard,uinfo);
     return returnmode;
 }
+
+/* etnlegend, 2006.05.28, 阅读十大 ... */
+
+#ifdef NEWSMTH
+
+static void read_top_title(struct _select_def *conf){
+    struct BoardStatus *bs;
+    char header[PATHLEN],title[STRLEN],BM[BM_LEN],*p,*q;
+    int chkmailflag,bid,online;
+    if(!(bid=getbid(currboard->filename,NULL))||!(bs=getbstatus(bid)))
+        return;
+    if(!(currboard->BM[0]))
+        sprintf(header,"诚征版主中");
+    else{
+        snprintf(BM,BM_LEN,"%s",currboard->BM);
+        if(
+#ifdef OPEN_BMONLINE
+            1
+#else /* OPEN_BMONLINE */
+            check_board_delete_read_perm(getCurrentUser(),currboard,0)
+#endif /* OPEN_BMONLINE */
+            ){
+            sprintf(header,"%s","版主: ");
+            q=&header[strlen(header)];
+            for(online=0,p=strtok(BM," ");p;p=strtok(NULL," ")){
+                if(apply_utmp(NULL,1,p,NULL)){
+                    if(!online){
+                        sprintf(q,"%s","\033[32m");
+                        q=&header[strlen(header)];
+                        online=1;
+                    }
+                }
+                else{
+                    if(online){
+                        sprintf(q,"%s","\033[33m");
+                        q=&header[strlen(header)];
+                        online=0;
+                    }
+                }
+                sprintf(q,"%s ",p);
+                q=&header[strlen(header)];
+            }
+            sprintf(q,"%s","\033[m");
+        }
+    }
+    chkmailflag=chkmail();
+    if(chkmailflag==2)
+        sprintf(title,"%s","[您的信箱超过容量,不能再收信!]");
+    else if(chkmailflag)
+        sprintf(title,"%s","[您有信件]");
+    else
+        sprintf(title,"%s",&(currboard->title[13]));
+    showtitle(header,title);
+    update_endline();
+    move(1, 0);
+    clrtoeol();
+    sprintf(genbuf,"%s\033[m",DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?(
+        "\033[1;31m[十大模式] \033[1;37m离开[\033[1;32m←\033[1;37m,\033[1;32me\033[1;37m] "
+        "选择[\033[1;32m↑\033[1;37m,\033[1;32m↓\033[1;37m] 阅读[\033[1;32m→\033[1;37m,\033[1;32mr\033[1;37m] "
+        "帮助[\033[1;32mh\033[1;37m] 同主题[\033[1;32m^X\033[1;37m,\033[1;32mp\033[1;37m] "
+        "同作者[\033[1;32m^U\033[1;37m,\033[1;32m^H\033[1;37m]"):(
+        "\033[31m[十大模式] \033[37m离开[\033[1;32m←\033[37m,\033[32me\033[37m] "
+        "选择[\033[32m↑\033[37m,\033[32m↓\033[37m] 阅读[\033[32m→\033[37m,\033[32mr\033[37m] "
+        "帮助[\033[32mh\033[37m] 同主题[\033[32m^X\033[37m,\033[32mp\033[37m] "
+        "同作者[\033[32m^U\033[37m,\033[32m^H\033[37m]"));
+    prints("%s",genbuf);
+    move(2, 0);
+    setfcolor(WHITE,1);
+    setbcolor(BLUE);
+    clrtoeol();
+    sprintf(genbuf,"%-80.80s","  编号   刊 登 者     日  期  文章标题");
+    prints("%s",genbuf);
+    sprintf(title,"在线: %-4d [十大模式]",bs->currentusers);
+    move(2,-(strlen(title)+1));
+    prints("%s",title);
+    resetcolor();
+    return;
+}
+
+static char* read_top_ent(char *buf,int num,struct fileheader *fh,struct fileheader *read_fh,struct _select_def *conf){
+    char date[8],title[48],threadprefix[2][16],threadsuffix[16],*highstr;
+    int type,isreply,isthread,attachch;
+    time_t ftime;
+    type=get_article_flag(fh,getCurrentUser(),currboard->filename,0,NULL,getSession());
+    if((ftime=get_posttime(fh))>740000000)
+        snprintf(date,7,"%s",ctime(&ftime+4));
+    else
+        date[0]=0;
+    attachch=((fh->attachment)?'@':' ');
+	strnzhcpy(title,fh->title,45);
+    isthread=(read_fh&&read_fh->groupid==fh->groupid);
+    isreply=((fh->groupid!=fh->id)&&(!strncasecmp(title,"Re: ",4)||!strncmp(title,"回复: ",6)));
+    highstr=DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?"1;":"";
+	if(isthread){
+        sprintf(threadprefix[0],"\033[%s%dm",highstr,(isreply?36:33));
+        sprintf(threadprefix[1],"\033[%s%dm.",highstr,(isreply?36:33));
+        sprintf(threadsuffix,"%s","\033[m");
+	}else{
+		threadprefix[0][0]=0;
+        threadprefix[1][0]=' ';
+        threadprefix[1][1]=0;
+		threadsuffix[0]=0;
+	}
+    sprintf(buf," %s%4d%s %c %-12.12s %s%s%c%s%s%s ",threadprefix[0],num,threadsuffix,type,fh->owner,date,
+        threadprefix[1],attachch,(isreply?"":FIRSTARTICLE_SIGN" "),title,threadsuffix);
+    return buf;
+}
+
+static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *varg){
+    struct read_arg *arg;
+    char buf[PATHLEN],*p;
+    int key,repeat;
+    if(!fh||(fh->owner[0]=='-'))
+        return DONOTHING;
+    snprintf(buf,PATHLEN,"%s",read_getcurrdirect(conf));
+    if(!(p=strrchr(buf,'/')))
+        return DONOTHING;
+    *++p=0;
+    clear();
+    snprintf(p,(PATHLEN-(p-buf)),"%s",fh->filename);
+    snprintf(quote_board,BOARDNAMELEN,"%s",currboard->filename);
+    snprintf(quote_title,ARTICLE_TITLE_LEN,"%s",fh->title);
+    snprintf(quote_user,OWNER_LEN,"%s",fh->owner);
+    register_attach_link(board_attach_link,fh);
+    key=ansimore_withzmodem(buf,false,fh->title);
+    register_attach_link(NULL,NULL);
+#ifdef HAVE_BRC_CONTROL
+    brc_add_read(fh->id,currboardent,getSession());
+#endif /* HAVE_BRC_CONTROL */
+    arg=(struct read_arg*)conf->arg;
+    move(t_lines-1,0);
+    clrtoeol();
+    switch(arg->readmode){
+        case READ_THREAD:
+            sprintf(genbuf,"%s","\033[36;44m[十大模式] \033[31;44m[同主题阅读]\033[33;44m "
+                "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ ");
+            break;
+        case READ_AUTHOR:
+            sprintf(genbuf,"%s","\033[36;44m[十大模式] \033[31;44m[同作者阅读]\033[33;44m "
+                "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ ");
+            break;
+        default:
+            sprintf(genbuf,"%s","\033[36;44m[十大模式] \033[31;44m[阅读文章]\033[33;44m "
+                "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ | 同主题 ^X,p ");
+            break;
+    }
+    prints(DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?"\033[1m%s\033[m":"%s\033[m",genbuf);
+    resetcolor();
+    setreadpost(conf,fh);
+    if(!(key==KEY_RIGHT||key==KEY_PGUP||key==KEY_UP||key==KEY_DOWN)&&(!(key>0)||!strchr("RrEexp",key))){
+        do{
+            repeat=0;
+            switch((key=igetkey())){
+                case KEY_LEFT:
+                case 'Q':
+                case 'q':
+                case KEY_REFRESH:
+                    break;
+                case KEY_DOWN:
+                case KEY_PGDN:
+                case ' ':
+                case 'j':
+                case 'n':
+                    return READ_NEXT;
+                case KEY_UP:
+                case KEY_PGUP:
+                case 'k':
+                case 'l':
+                    return READ_PREV;
+                case KEY_RIGHT:
+                case 'p':
+                case Ctrl('X'):
+                case Ctrl('S'):
+                case Ctrl('U'):
+                case Ctrl('H'):
+                    if(arg->readmode!=READ_NORMAL)
+                        return READ_NEXT;
+                    move(t_lines-1,0);
+                    clrtoeol();
+                    sprintf(genbuf,"%s",
+                        (key==Ctrl('U')||key==Ctrl('H'))?
+                        "\033[36;44m[十大模式] \033[31;44m[同作者阅读]\033[33;44m "
+                        "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ ":
+                        "\033[36;44m[十大模式] \033[31;44m[同主题阅读]\033[33;44m "
+                        "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ "
+                        );
+                    prints(DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?"\033[1m%s\033[m":"%s\033[m",genbuf);
+                    arg->readmode=((key==Ctrl('U')||key==Ctrl('H'))?READ_AUTHOR:READ_THREAD);
+                    arg->oldpos=((key==KEY_RIGHT||key==Ctrl('X')||key==Ctrl('H'))?conf->pos:0);
+                    repeat=1;
+                    break;
+                case Ctrl('A'):
+                    clear();
+                    read_showauthor(conf,fh,NULL);
+                    return READ_NEXT;
+                case Ctrl('Z'):
+                case 'H':
+                    r_lastmsg();
+                    break;
+                case 'Z':
+                case 'z':
+                    if(HAS_PERM(getCurrentUser(),PERM_PAGE)){
+                        read_sendmsgtoauthor(conf,fh,NULL);
+                        return READ_NEXT;
+                    }
+                    break;
+                case 'u':
+                    clear();
+                    modify_user_mode(QUERY);
+                    t_query(NULL);
+                    break;
+                case 'L':
+                    if(uinfo.mode==LOOKMSGS)
+                        return DONOTHING;
+                    show_allmsgs();
+                    break;
+                case 'O':
+                case 'o':
+                    if(HAS_PERM(getCurrentUser(),PERM_BASIC)){
+                        t_friends();
+                    }
+                    break;
+                case 'U':
+                    return board_query();
+                case Ctrl('O'):
+                    clear();
+                    read_addauthorfriend(conf,fh,NULL);
+                    return READ_NEXT;
+                case '~':
+                    if(HAS_PERM(getCurrentUser(),PERM_ADMIN)){
+                        clear();
+                        read_showauthorinfo(conf,fh,NULL);
+                        return READ_NEXT;
+                    }
+                    break;
+                case Ctrl('W'):
+                    clear();
+                    read_showauthorBM(conf,fh,NULL);
+                    return READ_NEXT;
+                case Ctrl('D'):
+                    zsend_attach(conf->pos,fh,read_getcurrdirect(conf));
+                    break;
+                case Ctrl('Y'):
+                    read_zsend(conf,fh,NULL);
+                    break;
+                case '!':
+                    Goodbye();
+                    break;
+                case Ctrl('N'):
+                    list_select_add_key(conf,Ctrl('N'));
+                    break;
+            }
+        }
+        while(repeat);
+    }
+    if(arg->oldpos!=0){
+        conf->new_pos=arg->oldpos;
+	    arg->oldpos=0;
+	    list_select_add_key(conf,KEY_REFRESH);
+        arg->readmode=READ_NORMAL;
+        return SELCHANGE;
+    }
+    return FULLUPDATE;
+}
+
+static struct key_command read_top_comms[]={
+    {'r',(READ_KEY_FUNC)read_top_post,NULL},
+    {Ctrl('A'),(READ_KEY_FUNC)read_showauthor,NULL},
+    {'K',(READ_KEY_FUNC)skip_post,NULL},
+    {Ctrl('C'),(READ_KEY_FUNC)do_cross,NULL},
+    {'v',(READ_KEY_FUNC)read_callfunc0,(void*)i_read_mail},
+    {'=',(READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
+    {'^',(READ_KEY_FUNC)jumpReID,NULL},
+    {'z',(READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
+    {'p',(READ_KEY_FUNC)thread_read,(void*)SR_READ},
+#ifdef INTERNET_EMAIL
+    {'F',(READ_KEY_FUNC)mail_forward,NULL},
+#endif
+    {']',(READ_KEY_FUNC)thread_read,(void*)SR_NEXT},
+    {'[',(READ_KEY_FUNC)thread_read,(void*)SR_PREV},
+    {'c',(READ_KEY_FUNC)clear_new_flag,NULL},
+    {'f',(READ_KEY_FUNC)clear_all_new_flag,NULL},
+    {'n',(READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
+    {'\\',(READ_KEY_FUNC)thread_read,(void*)SR_LAST},
+    {'a',(READ_KEY_FUNC)auth_search,(void*)false},
+    {'A',(READ_KEY_FUNC)auth_search,(void*)true},
+    {'/',(READ_KEY_FUNC)title_search,(void*)false},
+    {'?',(READ_KEY_FUNC)title_search,(void*)true},
+    {'\'',(READ_KEY_FUNC)post_search,(void*)false},
+    {'\"',(READ_KEY_FUNC)post_search,(void*)true},
+    {'h',(READ_KEY_FUNC)mainreadhelp,NULL},
+    {Ctrl('X'),(READ_KEY_FUNC)thread_read,(void*)SR_READX},
+    {Ctrl('U'),(READ_KEY_FUNC)author_read,(void*)SR_READ},
+    {Ctrl('H'),(READ_KEY_FUNC)author_read,(void*)SR_READX}, 
+    {',',(READ_KEY_FUNC)read_splitscreen,NULL},
+    {Ctrl('Q'),(READ_KEY_FUNC)showinfo,NULL},
+    {'~',(READ_KEY_FUNC)read_showauthorinfo,NULL},
+    {Ctrl('W'),(READ_KEY_FUNC)read_showauthorBM,NULL},
+    {Ctrl('O'),(READ_KEY_FUNC)read_addauthorfriend,NULL},
+    {'!',(READ_KEY_FUNC)read_callfunc0,(void*)Goodbye},
+#ifdef PERSONAL_CORP
+    {'y',(READ_KEY_FUNC)read_importpc,NULL},
+#endif
+    {0,NULL}
+};
+
+static int read_top(int index,int force){
+#define RT_INTERVAL 60
+#define RT_INTERVAL_FORCE 180
+    static const struct flock lck_set={.l_type=F_WRLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
+    static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
+    struct stat st_dir,st_top;
+    const struct fileheader *ptr;
+    char top[PATHLEN],dir[PATHLEN];
+    int bid,ret,fd,count,i,u_mode,save_currboardent,save_uinfo_currentboard,missing;
+#ifdef NEW_HELP
+    int save_helpmode;
+#endif /* NEW_HELP */
+    unsigned int gid;
+    ssize_t length,writen;
+    time_t read_begin,read_end;
+    void *vp;
+    const void *data;
+    save_currboardent=currboardent;
+    save_uinfo_currentboard=uinfo.currentboard;
+    bid=publicshm->top[index].bid;
+    gid=publicshm->top[index].gid;
+    currboardent=bid;
+    if(!(currboard=(struct boardheader*)getboard(bid)))
+        return -1;
+    if(currboard->flag&BOARD_GROUP)
+        return -2;
+    in_mail=false;
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
+#endif /* HAVE_BRC_CONTROL */
+    board_setcurrentuser(uinfo.currentboard,-1);
+    uinfo.currentboard=currboardent;
+    UPDATE_UTMP(currentboard,uinfo);
+    board_setcurrentuser(uinfo.currentboard,1);
+#ifdef NEW_HELP
+    save_helpmode=helpmode;
+    helpmode=HELP_ARTICLE;
+#endif /* NEW_HELP */
+    snprintf(dir,PATHLEN,"boards/%s/.DIR",currboard->filename);
+    if(stat(dir,&st_dir)==-1||!S_ISREG(st_dir.st_mode))
+        return -3;
+    snprintf(top,PATHLEN,"boards/%s/.TOP.%u",currboard->filename,gid);
+    ret=stat(top,&st_top);
+    if(!((missing=(ret==-1&&errno==ENOENT))||(!ret&&S_ISREG(st_top.st_mode))))
+        return -4;
+#define RT_UPDATE (\
+    ((st_top.st_mtime+RT_INTERVAL)<st_dir.st_mtime)||\
+    ((st_top.st_mtime<st_dir.st_mtime)&&((st_top.st_mtime+RT_INTERVAL_FORCE)<time(NULL)))\
+    )
+    do{
+        if(force||missing||RT_UPDATE){
+            if((fd=open(dir,O_RDONLY,0644))==-1)
+                return -5;
+            vp=mmap(NULL,st_dir.st_size,PROT_READ,MAP_SHARED,fd,0);
+            close(fd);
+            if(vp==MAP_FAILED)
+                return -6;
+            if((fd=open(top,
+                ((!force&&!missing)?(O_WRONLY|O_CREAT):(O_WRONLY|O_CREAT|O_TRUNC)),
+                0644))==-1){
+                munmap(vp,st_dir.st_size);
+                return -7;
+            }
+            if(fcntl(fd,F_SETLKW,&lck_set)==-1){
+                close(fd);
+                munmap(vp,st_dir.st_size);
+                return -8;
+            }
+            if(!force&&!missing){
+                if(fstat(fd,&st_top)==-1){
+                    fcntl(fd,F_SETLKW,&lck_clr);
+                    close(fd);
+                    munmap(vp,st_dir.st_size);
+                    return -9;
+                }
+                if(!RT_UPDATE){
+                    fcntl(fd,F_SETLKW,&lck_clr);
+                    close(fd);
+                    munmap(vp,st_dir.st_size);
+                    continue;
+                }
+                if(ftruncate(fd,0)==-1){
+                    fcntl(fd,F_SETLKW,&lck_clr);
+                    close(fd);
+                    munmap(vp,st_dir.st_size);
+                    unlink(top);
+                    return -10;
+                }
+            }
+            for(ptr=((const struct fileheader*)vp),
+                count=(st_dir.st_size/sizeof(struct fileheader)),
+                i=0;i<count;i++){
+                if(ptr[i].groupid==gid){
+                    for(data=&ptr[i],length=sizeof(struct fileheader),writen=0;
+                        writen!=-1&&length>0;vpm(data,writen),length-=writen){
+                        writen=write(fd,data,length);
+                    }
+                    if(writen==-1){
+                        fcntl(fd,F_SETLKW,&lck_clr);
+                        close(fd);
+                        munmap(vp,st_dir.st_size);
+                        unlink(top);
+                        return -11;
+                    }
+                }
+            }
+            fcntl(fd,F_SETLKW,&lck_clr);
+            close(fd);
+            munmap(vp,st_dir.st_size);
+        }
+    }
+    while(0);
+#undef RT_UPDATE
+    u_mode=uinfo.mode;
+    read_begin=time(NULL);
+    ret=new_i_read(DIR_MODE_TOP10,top,read_top_title,(READ_ENT_FUNC)read_top_ent,read_top_comms,sizeof(struct fileheader));
+    read_end=time(NULL);
+    modify_user_mode(u_mode);
+#ifdef NEW_HELP
+    helpmode=save_helpmode;
+#endif /* NEW_HELP */
+    newbbslog(BBSLOG_BOARDUSAGE,"%-20s Stay: %5ld",currboard->filename,(read_end-read_begin));
+    bmlog(getCurrentUser()->userid,currboard->filename,0,(read_end-read_begin));
+    bmlog(getCurrentUser()->userid,currboard->filename,1,1);
+    board_setcurrentuser(uinfo.currentboard,-1);
+    uinfo.currentboard=save_uinfo_currentboard;
+    UPDATE_UTMP(currentboard,uinfo);
+    board_setcurrentuser(uinfo.currentboard,1);
+    currboardent=save_currboardent;
+    currboard=((struct boardheader*)getboard(save_currboardent));
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
+#endif /* HAVE_BRC_CONTROL */
+    return ret;
+#undef RT_INTERVAL
+#undef RT_INTERVAL_FORCE
+}
+
+static int select_top(void){
+#define ST_UPDATE_TOPINFO()                                                             \
+    do{                                                                                 \
+        version=publicshm->top_version;                                                 \
+        for(total=0;total<10;total++){                                                  \
+            if(!(publicshm->top[total].bid)||!(publicshm->top[total].gid)){             \
+                break;                                                                  \
+            }                                                                           \
+        }                                                                               \
+        if(!total||(stat("etc/posts/day",&st)==-1||!S_ISREG(st.st_mode))){              \
+            move(t_lines-1,0);                                                          \
+            clrtoeol();                                                                 \
+            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","目前十大热门话题不存在!");    \
+            WAIT_RETURN;                                                                \
+            return -1;                                                                  \
+        }                                                                               \
+    }while(0)
+    struct stat st;
+    int total,index,key,valid_key,old_index,update;
+    unsigned int version;
+    index=0;
+    update=1;
+    ST_UPDATE_TOPINFO();
+    do{
+        if(update){
+            ansimore("etc/posts/day",0);
+            move(t_lines-2,8);
+            prints("%s","\033[1;33m定位\033[1;37m[\033[1;32mUP\033[1;37m,\033[1;32mDOWN\033[1;37m,"
+                "\033[1;32mHOME\033[1;37m,\033[1;32mEND\033[1;37m]/\033[1;33m退出\033[1;37m[\033[1;32mESC\033[1;37m,"
+                "\033[1;32mLEFT\033[1;37m,\033[1;32mQ\033[1;37m]/\033[1;33m选择\033[1;37m[\033[1;32mENTER\033[1;37m,"
+                "\033[1;32mRIGHT\033[1;37m,\033[1;32mSPACE\033[1;37m]\033[m");
+            update=0;
+        }
+        move((3+2*index),1);
+        prints("\033[1;33m%s\033[m","◆");
+        do{
+            valid_key=1;
+            old_index=-1;
+            if(version!=publicshm->top_version){
+                ST_UPDATE_TOPINFO();
+                update=1;
+            }
+            else{
+                switch(toupper(key=igetkey())){
+                    case KEY_DOWN:
+                        old_index=index++;
+                        if(index==total)
+                            index=0;
+                        break;
+                    case KEY_UP:
+                        old_index=index--;
+                        if(index==-1)
+                            index=(total-1);
+                        break;
+                    case KEY_LEFT:
+                    case KEY_ESC:
+                    case 'Q':
+                        return 0;
+                    case KEY_HOME:
+                        if(index!=0){
+                            old_index=index;
+                            index=0;
+                        }
+                        else
+                            valid_key=0;
+                        break;
+                    case KEY_END:
+                        if(index!=(total-1)){
+                            old_index=index;
+                            index=(total-1);
+                        }
+                        else
+                            valid_key=0;
+                        break;
+                    case KEY_RIGHT:
+                    case '\r':
+                    case '\n':
+                    case ' ':
+                        if(read_top(index,0)<0){
+                            move(t_lines-1,4);
+                            clrtoeol();
+                            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","获取十大信息时发生错误!");
+                            WAIT_RETURN;
+                        }
+                        update=1;
+                        break;
+                    default:
+                        valid_key=0;
+                        break;
+                }
+            }
+        }
+        while(!valid_key);
+        if(old_index!=-1){
+            move((3+2*old_index),1);
+            prints("%s","  ");
+        }
+    }
+    while(1);
+}
+
+#endif /* NEWSMTH */
+
+/* END -- etnlegend, 2006.05.30, 阅读十大 ... */
 

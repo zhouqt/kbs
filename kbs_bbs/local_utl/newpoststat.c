@@ -411,6 +411,8 @@ void writestat(int mytype)
 	char curfile[256];
 	FILE *fp;
 
+    struct top_header curr_top[10];
+
     sprintf(curfile, "etc/posts/%s", myfile[mytype]);
     if ((fp = fopen(curfile, "w")) != NULL) {
 #ifdef BLESS_BOARD
@@ -420,6 +422,8 @@ void writestat(int mytype)
         else
 #endif
             fprintf(fp, "                \033[34m-----\033[37m=====\033[41m 本%s \033[m=====\033[34m-----\033[m\n\n", mytitle[mytype]);
+
+        memset(curr_top,0,(10*sizeof(struct top_header)));
 
         for (i = 0; i < topnum; i++) {
 
@@ -436,9 +440,34 @@ void writestat(int mytype)
                         p, top[i].number, surfix_bless[(i+1) * 2], i+1, (i) / 2 + 1, top[i].title, top[i].userid, surfix_bless[(i+1) * 2 + 1]);
             else
 #endif
-                fprintf(fp,
-                        "\033[37m第\033[31m%3d\033[37m 名 \033[37m信区 : \033[33m%-16s\033[37m【\033[32m%s\033[37m】\033[36m%4d \033[37m人\033[35m%16s\n"
-                        "     \033[37m标题 : \033[44m\033[37m%-60.60s\033[m\n", i + 1, top[i].board, p, top[i].number, top[i].userid, top[i].title);
+            {
+                fprintf(fp,"\033[37m第\033[31m%3d\033[37m 名 \033[37m信区 : \033[33m%-16s\033[37m【\033[32m%s\033[37m】"
+                    "\033[36m%4d \033[37m人\033[35m%16s\n     \033[37m标题 : \033[44m\033[37m%-60.60s\033[m\n",
+                    (i+1),top[i].board,p,top[i].number,top[i].userid,top[i].title);
+
+                /* etnlegend, 2006.05.28, 阅读十大 ... */
+                if(!mytype&&i<10){
+                    curr_top[i].bid=getbid(top[i].board,NULL);
+                    curr_top[i].gid=top[i].groupid;
+                }
+
+            }
+        }
+
+        if(!mytype){
+            const struct boardheader *bh;
+            char path[PATHLEN];
+            int k;
+            for(k=0;k<10;k++){
+                if(!(bh=getboard(publicshm->top[k].bid)))
+                    continue;
+                snprintf(path,PATHLEN,"boards/%s/.TOP.%u",bh->filename,publicshm->top[k].gid);
+                unlink(path);
+            }
+            setpublicshmreadonly(0);
+            memcpy(publicshm->top,curr_top,(10*sizeof(struct top_header)));
+            publicshm->top_version++;
+            setpublicshmreadonly(1);
         }
 
 #ifdef BLESS_BOARD

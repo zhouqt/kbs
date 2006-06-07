@@ -27,7 +27,7 @@ int getPos(int mode,char* direct,struct boardheader* bh)
     char* key;
     
     ptr=read_pos_head;
-    if (mode==DIR_MODE_MAIL)
+    if(mode==DIR_MODE_MAIL||mode==DIR_MODE_TOP10)
         key=direct;
     else if (mode==DIR_MODE_FRIEND)
         key=NULL;
@@ -54,7 +54,7 @@ void savePos(int mode,char* direct,int pos,struct boardheader* bh)
     char* key;
     
     ptr=read_pos_head;
-    if (mode==DIR_MODE_MAIL)
+    if(mode==DIR_MODE_MAIL||mode==DIR_MODE_TOP10)
         key=direct;
     else if (mode==DIR_MODE_FRIEND)
         key=NULL;

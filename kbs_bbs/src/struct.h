@@ -255,7 +255,14 @@ struct public_data {
     /* etnlegend, 2006.03.06, userscore sampling ... */
     unsigned int us_sample[32];
 
-    char unused[796];
+    /* etnlegend, 2006.05.28, ÔÄ¶ÁÊ®´ó ... */
+    unsigned int top_version;
+    struct top_header{
+        int bid;
+        unsigned int gid;
+    } top[10];
+
+    char unused[712];
 
 #ifdef FLOWBANNER
 	int bannercount;
