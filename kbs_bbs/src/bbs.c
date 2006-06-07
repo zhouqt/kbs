@@ -2020,7 +2020,10 @@ int set_board_rule(struct boardheader *bh, int flag)
 }
 #endif
 
+#ifdef NEWSMTH
 static int select_top(void);
+#endif /* NEWSMTH */
+
 int read_hot_info()
 {
     char ans[4];
