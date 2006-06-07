@@ -368,6 +368,16 @@ const struct boardheader *getboard(int num)
     return NULL;
 }
 
+static int clearclubreadright(struct userec* user, struct boardheader* bh){
+    user->club_read_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
+    return 0;
+}
+
+static int clearclubwriteright(struct userec* user, struct boardheader* bh){
+    user->club_write_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
+    return 0;
+}
+
 int delete_board(int bid, session_t* session)
 {
     int i;
@@ -389,6 +399,8 @@ int delete_board(int bid, session_t* session)
                     break;
                 }
     }
+    apply_users((int(*)(struct userec*,void*))clearclubreadright,(void*)&bcache[bid-1]);
+    apply_users((int(*)(struct userec*,void*))clearclubwriteright,(void*)&bcache[bid-1]);
     memset(&bcache[bid-1], 0, sizeof(struct boardheader));
     snprintf(bcache[bid-1].title, STRLEN, " << '%s'±» %s É¾³ý >>", bcache[bid-1].filename, session->currentuser->userid);
     bcache[bid-1].level = PERM_SYSOP;
@@ -415,18 +427,6 @@ int add_board(struct boardheader *newboard)
     }
     bcache_unlock(fd);
     return ret;
-}
-
-static int clearclubreadright(struct userec* user, struct boardheader* bh)
-{
-    user->club_read_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
-    return 0;
-}
-
-static int clearclubwriteright(struct userec* user, struct boardheader* bh)
-{
-    user->club_write_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
-    return 0;
 }
 
 int set_board(int bid,struct boardheader *board,struct boardheader *oldbh)

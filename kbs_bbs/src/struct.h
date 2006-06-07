@@ -160,7 +160,7 @@ struct boardheader {            /* This structure is used to hold data in */
     } board_data;
     time_t createtime;
 /*    int toptitle; move to board status */
-    int unused;
+    unsigned int score_level;
     char ann_path[128];
     int group; /*所属目录*/
     char title_level; /* 设定用户需要什么title可见这个版面*/
