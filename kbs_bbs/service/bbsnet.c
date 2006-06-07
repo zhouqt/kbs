@@ -522,6 +522,10 @@ int bbsnet_selchange(struct _select_def* conf,int new_pos)
 {
     move(20,0);
     clrtoeol();
+    if(new_pos<1)
+        new_pos=conf->item_count;
+    if(new_pos>conf->item_count)
+        new_pos=1;
     prints("¨U\x1b[1mµ¥Î»:\x1b[1;33m%-18s\x1b[m  Õ¾Ãû:\x1b[1;33m%s\x1b[m",
         host2[new_pos-1],
         host1[new_pos-1]);
