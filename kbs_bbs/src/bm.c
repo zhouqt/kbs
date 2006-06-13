@@ -571,6 +571,8 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
     need_refresh=1;
     count=0;
     page=0;
+    head=NULL;
+    start=NULL;
     while(1){
         if(need_refresh){
             CreateNameList();
