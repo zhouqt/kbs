@@ -399,8 +399,19 @@ int delete_board(int bid, session_t* session)
                     break;
                 }
     }
-    apply_users((int(*)(struct userec*,void*))clearclubreadright,(void*)&bcache[bid-1]);
-    apply_users((int(*)(struct userec*,void*))clearclubwriteright,(void*)&bcache[bid-1]);
+
+    if(bcache[bid-1].flag&BOARD_CLUB_READ){
+        if(bcache[bid-1].clubnum>0&&!(bcache[bid-1].clubnum>MAXCLUB)){
+            apply_users((int(*)(struct userec*,void*))clearclubreadright,(void*)&bcache[bid-1]);
+        }
+    }
+
+    if(bcache[bid-1].flag&BOARD_CLUB_WRITE){
+        if(bcache[bid-1].clubnum>0&&!(bcache[bid-1].clubnum>MAXCLUB)){
+            apply_users((int(*)(struct userec*,void*))clearclubwriteright,(void*)&bcache[bid-1]);
+        }
+    }
+
     memset(&bcache[bid-1], 0, sizeof(struct boardheader));
     snprintf(bcache[bid-1].title, STRLEN, " << '%s'±» %s É¾³ý >>", bcache[bid-1].filename, session->currentuser->userid);
     bcache[bid-1].level = PERM_SYSOP;
