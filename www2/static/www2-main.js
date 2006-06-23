@@ -419,7 +419,6 @@ function footerStart() {
 				top.f3.location.href = "bbsmailbox.php?path=.DIR&title=%CA%D5%BC%FE%CF%E4";
 			}
 			top.hasMsgBox = false;
-			newmailnotice();
 		}*/
 		newmailnotice();
 	}
