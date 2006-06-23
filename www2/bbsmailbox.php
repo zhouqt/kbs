@@ -108,8 +108,8 @@ if(top.window['f4'])
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
 </p>
 <form action="bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
-<table width="95%" cellspacing="0" cellpadding="5" border="1">
-	<tr>
+<table width="95%" cellspacing="1" cellpadding="5" border="0" bgcolor="#666666">
+	<tr bgcolor="#00BFFF">
 		<td class="mt2" width="30">已读</td>
 		<td class="mt2" width="30">选中</td>
 		<td class="mt2" width="30">序号</td>
@@ -129,13 +129,19 @@ if(top.window['f4'])
 	}
 	else
 	{
+		$bgcs = false;
 		for ($i = 0; $i < $num; $i++)
 		{
+			$bgcs = !$bgcs;
+			if(stristr($maildata[$i]["FLAGS"],"N"))
+				$newmail = true;
+			else
+				$newmail = false;
 ?>
-<tr>
+<tr bgcolor="<?php echo $newmail?"#98FB98":($bgcs?"#F0FFFF":"E0FFFF"); ?>">
 	<td class="mt3">
 	<?php 
-		if(stristr($maildata[$i]["FLAGS"],"N"))
+		if($newmail)
 			echo "<img src='images/nmail.gif' alt='未读邮件' border='0'>";
 		else
 			echo "<img src='images/omail.gif' alt='已读邮件' border='0'>";
