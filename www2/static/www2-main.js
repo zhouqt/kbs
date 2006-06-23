@@ -410,16 +410,18 @@ function footerStart() {
 	gTimer.refresh();
 	
 	if (hasMail) {
-		if (typeof top.hasMsgBox == "undefined") {
+		/*if (typeof top.hasMsgBox == "undefined") {
 			top.hasMsgBox = false;
 		}
 		if (!top.hasMsgBox) {
 			top.hasMsgBox = true;
-			if(confirm("您有新邮件，现在查收？")) {
+			/*if(confirm("您有新邮件，现在查收？")) {
 				top.f3.location.href = "bbsmailbox.php?path=.DIR&title=%CA%D5%BC%FE%CF%E4";
 			}
 			top.hasMsgBox = false;
-		}
+			newmailnotice();
+		}*/
+		newmailnotice();
 	}
 	gTimer.refreshTime = (new Date()).getTime() + 540000;
 }

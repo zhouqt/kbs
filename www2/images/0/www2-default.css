@@ -532,3 +532,9 @@ body.wtoogle {
 #kbsrcInfo {
 	display: none;
 }
+
+#mailnotice {
+	padding-left: 20px;
+	font-weight: bold;
+	color: #FF0000;
+}

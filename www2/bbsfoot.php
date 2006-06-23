@@ -26,6 +26,17 @@ alertmsg();
 <?php
 	}
 ?>
+	function newmailnotice() {
+		var thespan = document.getElementById('mailnotice');
+		if(thespan.style.display == '')
+			thespan.style.display = 'none';
+		else
+			thespan.style.display = '';
+		if(hasMail)
+			setTimeout('newmailnotice();', 800);
+		else
+			thespan.style.display = 'none';
+	}
 //-->
 </script>
 <body><div class="footer">时间[<span id="divTime"></span>] 在线[<?php echo bbs_getonlinenumber(); ?>]
@@ -41,5 +52,5 @@ echo "信箱[<a href=\"bbsmailbox.php?path=.DIR&title=收件箱\" target=\"f3\">";
 	}
 ?>
 停留[<span id="divStay"></span>]
-</div></body>
+<span id="mailnotice" style="display:none">您有信件</span></div></body>
 </html>

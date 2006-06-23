@@ -73,6 +73,14 @@ function bbsconfirm(url,infor){
 		}
 	return false;
 }
+<?php
+	if($mail_path == ".DIR") {
+?>
+if(top.window['f4'])
+	top.window['f4'].hasMail = 0;
+<?php
+	}
+?>
 -->
 </script>
 <div class="mail">
