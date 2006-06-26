@@ -368,7 +368,6 @@ PHP_FUNCTION(bbs_update_uinfo)
 
 PHP_FUNCTION(bbs_session_modify_user_mode)
 {
-#ifdef HAVE_WEB_USER_MODE
     long mode;
     int ac = ZEND_NUM_ARGS();
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &mode) == FAILURE) {
@@ -378,7 +377,6 @@ PHP_FUNCTION(bbs_session_modify_user_mode)
         getSession()->currentuinfo->mode = mode;
         RETURN_LONG(0);
     }
-#endif
     RETURN_LONG(-1);
 }
 
