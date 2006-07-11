@@ -355,7 +355,7 @@ function pc_is_admin($currentuser,$pc)
 	{
 		return pc_is_member($pc,$currentuser["userid"]);
 	}
-	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
+	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TS_TIME"] > $currentuser["firstlogin"] && $currentuser["firstlogin"])
 		return TRUE;
 	else
 		return FALSE;
@@ -463,7 +463,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 	if (!$userid && !$uid)
 		return FALSE;
 	if($userid)
-		$query = "SELECT * FROM users WHERE `username`= '".addslashes($userid)."'  LIMIT 0,1;";
+		$query = "SELECT *,UNIX_TIMESTAMP(`createtime`) 'ts_createtime' FROM users WHERE `username`= '".addslashes($userid)."'  LIMIT 0,1;";
 	else
 		$query = "SELECT * FROM users WHERE `uid` = '".intval($uid)."' LIMIT 0,1;";
 	$result = mysql_query($query,$link);
@@ -481,6 +481,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"DESC" => html_format($rows[description]),
 			"THEM" => $pcThem,
 			"TIME" => $rows[createtime],
+			"TS_TIME" => $rows[ts_createtime],
 			"VISIT" => $rows[visitcount],
 			"CREATED" => $rows[createtime],
 			"MODIFY" => $rows[modifytime],
