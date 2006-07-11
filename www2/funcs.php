@@ -527,9 +527,9 @@ function powered_by_smth()
 </STYLE>
 <TABLE CLASS="PoweredBySmth">
 <TR><TD>
-Powered By <A HREF="http://dev.smth.org" TARGET="_blank">SmthBBS</A>
+Powered By <A HREF="http://dev.kcn.cn/" TARGET="_blank">KBS_BBS</A>
 </TD></TR><TR><TD>
-<A HREF="http://dev.smth.org" TARGET="_blank"><IMG SRC="/images/poweredby.gif" BORDER="0" ALT="Powered By SmthBBS" /></A>
+<A HREF="http://dev.kcn.cn/" TARGET="_blank"><IMG SRC="/images/poweredby.gif" BORDER="0" ALT="Powered By KBS_BBS" /></A>
 </TD></TR>
 </TABLE>
 <?php    

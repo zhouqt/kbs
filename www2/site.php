@@ -7,6 +7,7 @@ define("QUOTED_LINES", BBS_QUOTED_LINES);             //web 回文保留的引文行数
 define("SITE_NEWSMTH", 1);
 define("RUNNINGTIME", 1);                             //底部显示页面运行时间
 define("AUTO_BMP2PNG_THRESHOLD", 100000); // requires ImageMagick and safe_mode off
+define("HAVE_PC", 1);
 
 if (!defined("BBS_HAVE_BLOG"))
 	define("BBS_HAVE_BLOG", 1); // pig2532 ymsw
