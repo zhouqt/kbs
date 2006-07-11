@@ -446,8 +446,8 @@ function pc_del_friend($id,$uid)
 function pc_db_connect()
 {
 	GLOBAL $db;
-	@$link = mysql_connect($db["HOST"],$db["USER"],$db["PASS"]) or die("无法连接到服务器!");
-	@mysql_select_db($db["NAME"],$link);
+	$link = mysql_connect($db["HOST"],$db["USER"],$db["PASS"]) or die("无法连接到服务器!");
+	mysql_select_db($db["NAME"],$link);
 	return $link;
 }
 
