@@ -525,7 +525,7 @@ function powered_by_smth()
 .PoweredBySmth A:hover {text-decoration: underline;}
 -->
 </STYLE>
-<TABLE CLASS="PoweredBySmth">
+<TABLE CLASS="PoweredBySmth" align="center">
 <TR><TD>
 Powered By <A HREF="http://dev.kcn.cn/" TARGET="_blank">KBS_BBS</A>
 </TD></TR><TR><TD>
