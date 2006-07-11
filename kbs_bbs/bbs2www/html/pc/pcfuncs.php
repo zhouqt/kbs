@@ -245,7 +245,7 @@ function pc_is_friend($userid,$uid)
 		$fp = $file["FP"];
 		while(!feof($fp))
 		{
-			$line = trim(fgets($fp,12));	
+			$line = trim(fgets($fp,13));	
 			if(strtolower($line)==strtolower($userid))
 			{
 				pc_friend_file_close($fp);
