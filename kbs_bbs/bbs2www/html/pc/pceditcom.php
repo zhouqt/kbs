@@ -25,27 +25,27 @@
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
-			if(strtolower($rows[username])==strtolower($currentuser["userid"]) || pc_is_manager($currentuser))
+			if(strtolower($rows["username"])==strtolower($currentuser["userid"]) || pc_is_manager($currentuser))
 			{
 				$query = "DELETE FROM comments WHERE `cid` = '".$cid."' LIMIT 1;";
 				mysql_query($query,$link);
-				$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ;";
+				$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows["nid"]."' ;";
 				mysql_query($query,$link);
 			}
 			else
 			{
-				$query = "SELECT `uid` FROM users WHERE `username` = '".$currentuser["userid"]."' AND `uid` = '".$rows[uid]."' LIMIT 0 , 1;";
+				$query = "SELECT `uid` FROM users WHERE `username` = '".$currentuser["userid"]."' AND `uid` = '".$rows["uid"]."' LIMIT 0 , 1;";
 				$result = mysql_query($query,$link);
 				if($rows1 = mysql_fetch_array($result))
 				{
 					$query = "DELETE FROM comments WHERE `cid` = '".$cid."' LIMIT 1;";
 					mysql_query($query,$link);
-					$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ;";
+					$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows["nid"]."' ;";
 					mysql_query($query,$link);
 				}
 				@mysql_free_result($result);
 			}
-			pc_return("pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all");
+			pc_return("pccon.php?id=".$rows["uid"]."&nid=".$rows["nid"]."&s=all");
 		}
 		elseif($act == "edit")
 		{
@@ -59,20 +59,20 @@
 				html_error_quit("所选择的评论不存在!");
 				exit();
 			}
-			if(!pc_can_comment($link , $uid))
+			if(!pc_can_comment($link , $rows["uid"]))
 			{
 				html_error_quit("对不起，您尚无该BLOG的评论权限！");
 				exit();
 			}	
 		
 			//判定评论文章是否用了编辑器，根据情况调入 windinsn feb 22 , 2004
-			if($rows[htmltag])
+			if($rows["htmltag"])
 				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",1);		
 			else
 				pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>
 <br><center>
-<form name="postform" action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>&id=<?php echo $rows[uid]; ?>&nid=<?php echo $rows[nid]; ?>" method="post" onsubmit="return submitwithcopy();">
+<form name="postform" action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>&id=<?php echo $rows["uid"]; ?>&nid=<?php echo $rows["nid"]; ?>" method="post" onsubmit="return submitwithcopy();">
 <table cellspacing="0" cellpadding="5" width="90%" border="0" class="t1">
 <tr>
 	<td class="t2">修改评论</td>
@@ -80,7 +80,7 @@
 <tr>
 	<td class="t8">
 	主题
-	<input class="f1" maxlength="200" type="text" name="subject" size="100" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
+	<input class="f1" maxlength="200" type="text" name="subject" size="100" value="<?php echo htmlspecialchars(stripslashes($rows["subject"])); ?>">
 	</td>
 </tr>
 <tr>
@@ -91,14 +91,14 @@
 </tr>
 <tr>
 	<td class="t11">
-	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] ) echo "checked"; ?> >使用HTML标记
+	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows["body"],$pcconfig["NOWRAPSTR"]) || $rows["htmltag"] ) echo "checked"; ?> >使用HTML标记
 	</td>
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" style="width:100%" rows="20" id="blogbody" wrap="physical"><?php
-		if($rows[htmltag])
+		if($rows["htmltag"])
 			echo $pcconfig["EDITORALERT"];
-		echo htmlspecialchars(stripslashes($rows[body]." ")); 
+		echo htmlspecialchars(stripslashes($rows["body"]." ")); 
 	?></textarea></td>
 </tr>
 <tr>

@@ -18,7 +18,7 @@
 		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",1);		
 		$nid = (int)($_GET["nid"]);
 		$act = $_GET["act"];
-		$cid = (int)($_GET["cid"]);
+		@$cid = (int)($_GET["cid"]);
 		
 		$link =	pc_db_connect();
 		$query = "SELECT `access`,`uid` FROM nodes WHERE `nid` = '".$nid."' AND `type` != '1' AND `comment` != '0';";
@@ -32,7 +32,7 @@
 			exit();
 		}
 		
-		$uid = $rows[uid];
+		$uid = $rows["uid"];
 		
 		if(!pc_can_comment($link , $uid))
 		{
@@ -40,18 +40,18 @@
 			exit();
 		}	
 		
-		$pc = pc_load_infor($link,"",$rows[uid]);
-		if(!$pc)   
-	        {   
-	               	html_error_quit("对不起，您要查看的Blog不存在");   
-	               	exit();   
+		$pc = pc_load_infor($link,"",$rows["uid"]);
+		if(!$pc)
+	        {
+	               	html_error_quit("对不起，您要查看的Blog不存在");
+	               	exit();
 	        }
 	               
 	        $userPermission = pc_get_user_permission($currentuser,$pc);
 		$sec = $userPermission["sec"];
 		$pur = $userPermission["pur"];
 		$tags = $userPermission["tags"];
-		if(!$tags[$rows[access]])
+		if(!$tags[$rows["access"]])
 		{
 			html_error_quit("对不起，您不能查看本条记录!");
 			exit();
@@ -86,7 +86,7 @@
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" style="width:100%" rows="20" id="blogbody" wrap="physical">
-	<?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?>
+	<?php echo $pcconfig["EDITORALERT"].@$_POST["blogbody"]; ?>
 	</textarea></td>
 </tr>
 <tr>

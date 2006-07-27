@@ -109,15 +109,15 @@
 		echo "]\n</p>";
 	}
 	
-	$listorder = $_GET["order"];
-	$listorder1 = $_GET["order1"];
+	@$listorder = $_GET["order"];
+	@$listorder1 = $_GET["order1"];
 	@$pageno = (int)($_GET["pno"]);
 	if(isset($_GET["char"]))
 		$char = addslashes($_GET["char"]);
 	else
 		$char = FALSE;
 		
-	switch($_GET["order"])
+	switch(@$_GET["order"])
 	{
 		case "createtime":
 			$listorder = "createtime";

@@ -60,7 +60,7 @@
 		
 		if($act == "post" && !$subject && $pc["EDITOR"] != 0)
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
-		elseif($act == "edit" && !$_POST["subject"] && $pc["EDITOR"] != 0)
+		elseif($act == "edit" && !$subject && $pc["EDITOR"] != 0)
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
 		elseif($act != "favcut" && $act != "favcopy" && $act != "favpaste")
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
@@ -147,7 +147,7 @@
 						/*	目前复制文章的时候评论不同步复制	*/
 						$rows = mysql_fetch_array($result);
 						$query = "INSERT INTO `nodes` ( `pid` , `tid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ,`htmltag`)  ".
-							" VALUES ('0','".$target."' , '0', '".addslashes($rows[source])."', '".addslashes($rows[hostname])."','NOW( )' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$access."', '0','".$rows[htmltag]."');";
+							" VALUES ('0','".$target."' , '0', '".addslashes($rows["source"])."', '".addslashes($rows["hostname"])."','NOW( )' , '".$rows["created"]."', '".$pc["UID"]."', '".$rows["comment"]."', '0', '".addslashes($rows["subject"])."', '".addslashes($rows["body"])."', '".$access."', '0','".$rows["htmltag"]."');";
 						mysql_query($query,$link);
 					}
 					if($access == 0)
@@ -184,7 +184,7 @@
 						/*	目前复制文章的时候评论不同步复制	*/
 						$rows = mysql_fetch_array($result);
 						$query = "INSERT INTO `nodes` ( `pid` , `tid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ,`htmltag`)  ".
-							" VALUES ('".$rootpid."','0' , '0', '".addslashes($rows[source])."', '".addslashes($rows[hostname])."',NOW( ) , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$target."', '0','".$rows[htmltag]."');";
+							" VALUES ('".$rootpid."','0' , '0', '".addslashes($rows["source"])."', '".addslashes($rows["hostname"])."',NOW( ) , '".$rows["created"]."', '".$pc["UID"]."', '".$rows["comment"]."', '0', '".addslashes($rows["subject"])."', '".addslashes($rows["body"])."', '".$target."', '0','".$rows["htmltag"]."');";
 						mysql_query($query,$link);
 					}
 				}	
@@ -206,11 +206,11 @@
 					$blogbody = $_POST["blogbody"];
 				
 				if ($pcconfig["ENCODINGTBP"]) 
-				    $convert_encoding = $_POST['tbpencoding'];
+				    $convert_encoding = @$_POST['tbpencoding'];
 				else
 				    $convert_encoding = '';
 				    
-				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["theme"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"],$convert_encoding,0,0,$currentuser["userid"]);
+				$ret = @pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["theme"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"],$convert_encoding,0,0,$currentuser["userid"]);
 				$error_alert = "";
 				switch($ret)
 				{
@@ -260,8 +260,8 @@
 			}
 			else
 			{
-				$tid = intval($_GET["tid"]);
-				$pid = intval($_GET["pid"]);
+				@$tid = intval($_GET["tid"]);
+				@$pid = intval($_GET["pid"]);
 				$tag = intval($_GET["tag"]);
 				if($tag < 0 || $tag > 4)
 					$tag =2 ;
@@ -429,7 +429,7 @@
 				exit();
 			}
 			*/
-			if($_POST["subject"])
+			if($subject)
 			{
 				if($_POST["comment"]==1)
 					$c = 0;
@@ -441,15 +441,15 @@
 				$query = "UPDATE nodes SET `theme` = '".addslashes($_POST["theme"])."'  , `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' AND nodetype = 0;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
-				if($rows[subject]==$_POST["subject"])
+				if($rows["subject"]==$_POST["subject"])
 					$log_action = "EDIT NODE: ".$rows[subject];
 				else
 				{
 					$log_action = "EDIT NODE: ".$_POST["subject"];
-					$log_content = "OLD SUBJECT: ".$rows[subject]."\nNEW SUBJECT: ".$_POST["subject"];
+					$log_content = "OLD SUBJECT: ".$rows["subject"]."\nNEW SUBJECT: ".$_POST["subject"];
 				}
-				if($rows[type]==1)
-					pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".$rows[pid]);
+				if($rows["type"]==1)
+					pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".$rows["pid"]);
 				else
 					pc_return("pccon.php?id=".$pc["UID"]."&nid=".$nid);
 			}
@@ -460,7 +460,7 @@
 <form name="postform" id="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="return submitwithcopy();">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <?php
-		if($rows[type]==1)
+		if($rows["type"]==1)
 		{
 ?>
 <tr>
@@ -469,7 +469,7 @@
 <tr>
 	<td class="t8">
 	主题
-	<input type="text" size="100" class="f1" maxlength="200" name="subject" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
+	<input type="text" size="100" class="f1" maxlength="200" name="subject" value="<?php echo htmlspecialchars(stripslashes($rows["subject"])); ?>">
 	</td>
 </tr>
 <tr>
@@ -488,14 +488,14 @@
 </tr>
 <tr>
 	<td class="t8">主题
-	<input type="text" size="100" class="f1" name="subject" value="<?php echo htmlspecialchars($rows[subject]); ?>">
+	<input type="text" size="100" class="f1" name="subject" value="<?php echo htmlspecialchars($rows["subject"]); ?>">
 	</td>
 </tr>
 <tr>
 	<td class="t5">
 	评论
-	<input type="radio" name="comment" class="f1" value="0" <?php if($rows[comment]!=0) echo "checked"; ?>>允许
-	<input type="radio" name="comment" class="f1" value="1" <?php if($rows[comment]==0) echo "checked"; ?>>不允许
+	<input type="radio" name="comment" class="f1" value="0" <?php if($rows["comment"]!=0) echo "checked"; ?>>允许
+	<input type="radio" name="comment" class="f1" value="1" <?php if($rows["comment"]==0) echo "checked"; ?>>不允许
 	</td>
 </tr>
 <tr>
@@ -503,10 +503,10 @@
 	Blog
 	<select name="tid" class="f1">
 <?php
-		$blogs = pc_blog_menu($link,$pc,$rows[access]);
+		$blogs = pc_blog_menu($link,$pc,$rows["access"]);
 		for($i = 0 ; $i < count($blogs) ; $i ++)
 		{
-			if($blogs[$i]["TID"] == $rows[tid])
+			if($blogs[$i]["TID"] == $rows["tid"])
 				echo "<option value=\"".$blogs[$i]["TID"]."\" selected>".html_format($blogs[$i]["NAME"])."</option>";
 			else
 				echo "<option value=\"".$blogs[$i]["TID"]."\" >".html_format($blogs[$i]["NAME"])."</option>";
@@ -517,7 +517,7 @@
 	<select name="theme" class="f1">
 <?php
     while (list ($key,$val) = each ($pcconfig["SECTION"])) {
-        if ($key == $rows[theme])
+        if ($key == $rows["theme"])
             echo "<option value=\"".$key."\" selected>".html_format($val)."</option>";
         else
             echo "<option value=\"".$key."\">".html_format($val)."</option>";
@@ -533,18 +533,18 @@
 </tr>
 <tr>
 	<td class="t11">内容
-	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) echo "checked"; ?> >使用HTML标记
+	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows["body"],$pcconfig["NOWRAPSTR"]) || $rows["htmltag"] == 1) echo "checked"; ?> >使用HTML标记
 	</td>
 </tr>
 <tr>
 	<td class="t8">
-	<textarea name="blogbody" class="f1" style="width:100%" rows="30" id="blogbody" wrap="physical"><?php echo $pcconfig["EDITORALERT"]; ?><?php echo htmlspecialchars($rows[body]); ?></textarea>
+	<textarea name="blogbody" class="f1" style="width:100%" rows="30" id="blogbody" wrap="physical"><?php echo $pcconfig["EDITORALERT"]; ?><?php echo htmlspecialchars($rows["body"]); ?></textarea>
 	</td>
 </tr>
 <tr>
 	<td class="t5">
 	允许引用
-	<input type="checkbox" name="trackback" value="1" <?php if($rows[trackback]==1) echo "checked"; ?>>
+	<input type="checkbox" name="trackback" value="1" <?php if($rows["trackback"]==1) echo "checked"; ?>>
 	</td>
 </tr>
 <tr>
@@ -582,7 +582,7 @@
 				exit();
 			}
 			*/
-			if($rows[access] == 4)
+			if($rows["access"] == 4)
 			{
 				//彻底删除	
 				$query = "DELETE FROM nodes WHERE `nid` = '".$nid."' ";
@@ -591,11 +591,11 @@
 				mysql_query($query,$link);
 				$query = "DELETE FROM trackback WHERE `nid` = '".$nid."' ";
 				mysql_query($query,$link);
-				$log_action = "DEL NODE: ".$rows[subject];
+				$log_action = "DEL NODE: ".$rows["subject"];
 			}
 			else
 			{
-				if($rows[type] == 1)
+				if($rows["type"] == 1)
 				{
 					$query = "SELECT `nid` FROM nodes WHERE `pid` = '".$nid."' LIMIT 0, 1 ;";
 					$result = mysql_query($query);
@@ -608,19 +608,19 @@
 					mysql_free_result($result);
 					$query = "DELETE FROM nodes WHERE `nid` = '".$nid."' ;";
 					mysql_query($query,$link);
-					$log_action = "DEL DIR: ".$rows[subject];
+					$log_action = "DEL DIR: ".$rows["subject"];
 				}
 				else
 				{
 					$query = "UPDATE nodes SET `access` = '4' , `changed` = '".date("YmdHis")."' , `tid` = '0' WHERE `nid` = '".$nid."' ;";
 					mysql_query($query,$link);
-					$log_action = "DEL TO JUNK: ".$rows[subject];
-					if($rows[access] == 0)
+					$log_action = "DEL TO JUNK: ".$rows["subject"];
+					if($rows["access"] == 0)
 						pc_update_record($link,$pc["UID"]," - 1");
 				}
 			}
 			pc_update_record($link,$pc["UID"]);
-			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&tid=".$rows[tid]."&pid=".$rows[pid]);	
+			pc_return("pcdoc.php?userid=".$pc["USER"]."&tag=".$rows["access"]."&tid=".$rows["tid"]."&pid=".$rows["pid"]);	
 		}
 		elseif($act == "clear")
 		{
@@ -630,8 +630,8 @@
 			$query_tb = "DELETE FROM trackback WHERE `nid` = '0' ";
 			while($rows = mysql_fetch_array($result))
 			{
-				$query.= "  OR `nid` = '".$rows[nid]."' ";	
-				$query_tb.= "  OR `nid` = '".$rows[nid]."' ";	
+				$query.= "  OR `nid` = '".$rows["nid"]."' ";	
+				$query_tb.= "  OR `nid` = '".$rows["nid"]."' ";	
 			}
 			mysql_query($query,$link);
 			mysql_query($query_tb,$link);
@@ -649,7 +649,7 @@
 				html_error_quit("Blog不存在!");
 				exit();
 			}
-			if($_POST["topicname"])
+			if(@$_POST["topicname"])
 			{
 				pc_edit_topics($link,$tid,$_POST["topicname"]);
 				$log_action = "UPDATE TOPIC: ".$_POST["topicname"];
@@ -770,7 +770,7 @@
 			}
 			mysql_free_result($result);
 			setcookie("BLOGFAVACTION",$act);
-			setcookie("BLOGFAVNID",$rows[nid]);
+			setcookie("BLOGFAVNID",$rows["nid"]);
 			
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 ?>
@@ -816,7 +816,7 @@ alert("已将 <?php echo htmlspecialchars($rows[subject]); ?> 放入剪切板!");
 					$rows = mysql_fetch_array($result);
 					mysql_free_result($result);
 					$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ,`htmltag`) ".
-						"VALUES ('', '".$pid."', '0', '".addslashes($rows[source])."', '".addslashes($rows[hostname])."', NOW( ) , '".addslashes($rows[created])."', '".$pc["UID"]."', '".intval($rows[comment])."', '".intval($rows[commentcount])."', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '3', '".intval($rows[visitcount])."', '".intval($rows[tid])."', '".intval($rows[emote])."','".intval($rows[htmltag])."');";
+						"VALUES ('', '".$pid."', '0', '".addslashes($rows["source"])."', '".addslashes($rows["hostname"])."', NOW( ) , '".addslashes($rows["created"])."', '".$pc["UID"]."', '".intval($rows["comment"])."', '".intval($rows["commentcount"])."', '".addslashes($rows["subject"])."', '".addslashes($rows["body"])."', '3', '".intval($rows["visitcount"])."', '".intval($rows["tid"])."', '".intval($rows["emote"])."','".intval($rows["htmltag"])."');";
 				}
 				mysql_query($query,$link);
 			}

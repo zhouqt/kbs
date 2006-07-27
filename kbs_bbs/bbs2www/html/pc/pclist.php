@@ -10,23 +10,23 @@ function pcmain_hot_users($link,$period,$color)
 {
 	$users = getHotUsersByPeriod($link,$period,50);
 	for($i = 0;$i < count($users) ; $i ++)
-		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/index.php?id=".$users[$i][username]."\" title=\"".htmlspecialchars($users[$i][corpusname])."\">".html_format(html_format_fix_length($users[$i][corpusname],20))."</a>".
-		     "\n<a href=\"/bbsqry.php?userid=".$users[$i][username]."\"><font class=low2>".$users[$i][username]."</font></a><br />";
+		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/index.php?id=".$users[$i]["username"]."\" title=\"".htmlspecialchars($users[$i]["corpusname"])."\">".html_format(html_format_fix_length($users[$i]["corpusname"],20))."</a>".
+		     "\n<a href=\"/bbsqry.php?userid=".$users[$i]["username"]."\"><font class=low2>".$users[$i]["username"]."</font></a><br />";
 }
 
 function pcmain_hot_nodes($link,$period,$color)
 {
 	$nodes = getHotNodesByPeriod($link,$period,50);
 	for($i = 0;$i < count($nodes) ; $i ++)
-		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/pccon.php?id=".$nodes[$i][uid]."&nid=".$nodes[$i][nid]."&s=all\" title=\"".htmlspecialchars($nodes[$i][subject])."\">".html_format(html_format_fix_length($nodes[$i][subject],32))."</a><br />";
+		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/pccon.php?id=".$nodes[$i]["uid"]."&nid=".$nodes[$i]["nid"]."&s=all\" title=\"".htmlspecialchars($nodes[$i]["subject"])."\">".html_format(html_format_fix_length($nodes[$i]["subject"],32))."</a><br />";
 }
 
 function pcmain_hot_topics($link,$period,$color)
 {
 	$topics = getHotTopicsByPeriod($link,$period,50);
 	for($i = 0;$i < count($topics) ; $i ++)
-		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/pcdoc.php?userid=".$topics[$i][username]."&tid=".$topics[$i][1]."&tag=0\" title=\"".htmlspecialchars($topics[$i][topicname])."\">".html_format(html_format_fix_length($topics[$i][topicname],32))."</a>".
-		     "\n<a href=\"/pc/index.php?id=".$topics[$i][username]."\"><font class=low2>".$topics[$i][username]."</font></a><br />";
+		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/pcdoc.php?userid=".$topics[$i]["username"]."&tid=".$topics[$i][1]."&tag=0\" title=\"".htmlspecialchars($topics[$i]["topicname"])."\">".html_format(html_format_fix_length($topics[$i]["topicname"],32))."</a>".
+		     "\n<a href=\"/pc/index.php?id=".$topics[$i]["username"]."\"><font class=low2>".$topics[$i]["username"]."</font></a><br />";
 }
 
 $link = pc_db_connect();

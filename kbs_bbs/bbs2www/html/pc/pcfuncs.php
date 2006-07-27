@@ -989,7 +989,7 @@ function pc_load_topic($link,$uid,$tid,&$topicname,$access=9)
 		return FALSE;
 	
 	mysql_free_result($result);
-	$topicname = $rows[topicname];
+	$topicname = $rows["topicname"];
 	return $tid;
 }
 
@@ -1094,7 +1094,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	else
 	{
 		$pid = 0;
-		if(pc_used_space($link,$pc["UID"],$tag) >= $pc["NLIM"]) //目标文件夹使用空间
+		if(pc_used_space($link,$pc["UID"],$access) >= $pc["NLIM"]) //目标文件夹使用空间
 			return -3;
 		if($tid != 0) //如果是发布在一个分类下面，需要检查分类
 		{
@@ -1109,6 +1109,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 		$autodetecttbp = FALSE;
 	}
 	
+	$into_filter = false;
 	if (!$filtered) //未经过过滤检查的要先检查一次
 	    if (bbs_checkbadword($subject) || bbs_checkbadword($body))
 	        $into_filter = true;
@@ -1648,6 +1649,7 @@ function pc_add_comment($link,$pc,$nid,$emote,$userid,$subject,$body,$htmltag,$f
     $htmltag = ($htmltag==1)?1:0;
     if (!$subject) return -1;
     
+    $into_filter = false;
     if (!$filtered) //未经过过滤检查的要先检查一次
 	    if (bbs_checkbadword($subject) || bbs_checkbadword($body))
 	        $into_filter = true;

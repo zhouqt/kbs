@@ -39,12 +39,12 @@
 	
 	@$pno = (int)($_GET["pno"]);
 	$pno = ($pno < 1)?1:$pno;
-	$type = ($_GET["t"]=="c")?"c":"n";
+	$type = (@$_GET["t"]=="c")?"c":"n";
 	$link = pc_db_connect();
 	if($type=="n")
 	{
 		$newBlogs = getNewBlogs($link,$pno);
-		$newNum = count($newBlogs[useretems]);
+		$newNum = count($newBlogs["useretems"]);
 	}
 	else
 	{
@@ -84,14 +84,14 @@
 <?php
 		for($i=0;$i < $newNum;$i++)
 		{
-			echo "<tbody><tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][creator]."'>".$newBlogs[useretems][$i][creator]."</a></td>\n".
-				"<td class=t3><span title=\"".html_format($newBlogs[useretems][$i][description])."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][creator]."\">".html_format($newBlogs[useretems][$i][pcname])."</a>&nbsp;</span></td>\n".
-				"<td class=t4><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($newBlogs[useretems][$i][theme][0])."\">".
-				$pcconfig["SECTION"][$newBlogs[useretems][$i][theme][0]]."</a></span></td>\n".
-				"<td class=t3>".$newBlogs[useretems][$i][pcvisit]."</td>\n".
-				"<td class=t4>".$newBlogs[useretems][$i][pcnodes]."</td>\n".
-				"<td class=t8><a href='pccon.php?id=".$newBlogs[useretems][$i][pc]."&nid=".$newBlogs[useretems][$i][nid]."&s=all&tid=".$newBlogs[useretems][$i][tid]."'>".$newBlogs[useretems][$i][subject]."</a>&nbsp;</td>\n".
-				"<td class=t4>".$newBlogs[useretems][$i][created]."</td>\n</tr></tbody>\n";
+			echo "<tbody><tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newBlogs["useretems"][$i]["creator"]."'>".$newBlogs["useretems"][$i]["creator"]."</a></td>\n".
+				"<td class=t3><span title=\"".html_format($newBlogs["useretems"][$i]["pcdesc"])."\"><a href=\"index.php?id=".$newBlogs["useretems"][$i]["creator"]."\">".html_format($newBlogs["useretems"][$i]["pcname"])."</a>&nbsp;</span></td>\n".
+				"<td class=t4><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($newBlogs["useretems"][$i]["theme"][0])."\">".
+				$pcconfig["SECTION"][$newBlogs["useretems"][$i]["theme"][0]]."</a></span></td>\n".
+				"<td class=t3>".$newBlogs["useretems"][$i]["pcvisit"]."</td>\n".
+				"<td class=t4>".$newBlogs["useretems"][$i]["pcnodes"]."</td>\n".
+				"<td class=t8><a href='pccon.php?id=".$newBlogs["useretems"][$i]["pc"]."&nid=".$newBlogs["useretems"][$i]["nid"]."&s=all&tid=".$newBlogs["useretems"][$i]["tid"]."'>".$newBlogs["useretems"][$i]["subject"]."</a>&nbsp;</td>\n".
+				"<td class=t4>".$newBlogs["useretems"][$i]["created"]."</td>\n</tr></tbody>\n";
 		}
 	}
 	else

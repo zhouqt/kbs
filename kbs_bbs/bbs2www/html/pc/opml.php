@@ -34,7 +34,8 @@ function pc_opml_outline($title,$htmlUrl,$xmlUrl,$description,$text="")
 if(pc_update_cache_header())
 	return;
 
-$type = intval( $_GET["t"]);
+$type = 0;
+@$type = intval( $_GET["t"]);
 $link = pc_db_connect();
 if($type == 2) //ÐÂÓÃ»§
 {

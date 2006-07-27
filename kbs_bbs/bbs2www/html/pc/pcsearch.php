@@ -65,7 +65,7 @@
 	elseif($num_rows==1)
 	{
 		$rows = mysql_fetch_array($result);
-		header("Location: index.php?id=".$rows[username]);
+		header("Location: index.php?id=".$rows["username"]);
 	}
 	else
 	{

@@ -158,7 +158,7 @@
 		if($spr)
 			$query = "SELECT * FROM comments WHERE `nid` = '".$nid."' AND `uid` = '".$uid."' ORDER BY `cid` ASC ;";
 		else
-			$query = "SELECT `username` , `emote` , `subject` , `created`,`cid` FROM comments WHERE `nid` = '".$nid."' AND `uid` = '".$uid."' ORDER BY `cid` ASC ;";
+			$query = "SELECT `username` , `emote` , `subject` , `created`,`cid`,`htmltag` FROM comments WHERE `nid` = '".$nid."' AND `uid` = '".$uid."' ORDER BY `cid` ASC ;";
 		
 		$result = mysql_query($query,$link);
 		$re_num = mysql_num_rows($result);
@@ -170,12 +170,12 @@
 <?php
 		for($i = 0;$i < $re_num ;$i++)
 		{
+			$rows = mysql_fetch_array($result);
 			$contentcss = ($rows["htmltag"])?"contentwithhtml":"content";
 			if($i%2==0)
 				$tdclass= array("t8","t10","t11");
 			else
 				$tdclass= array("t5","t12","t13");
-			$rows = mysql_fetch_array($result);
 			echo "<tr>\n<td class=\"".$tdclass[1]."\">&nbsp;".
 				"<img src=\"icon/".$rows["emote"].".gif\" border=\"0\" align=\"absmiddle\">\n".
 				"<a href=\"pcshowcom.php?cid=".$rows["cid"]."\">".
@@ -183,7 +183,7 @@
 				"</a>".
 				"[<a href=\"/bbsqry.php?userid=".$rows["username"]."\">".$rows["username"]."</a> 于 ".time_format($rows["created"])." 提到]\n";
 			if($perm || strtolower($rows["username"]) == strtolower($currentuser["userid"]) || pc_is_manager($currentuser) )
-				echo "[<a href=\"#\" onclick=\"bbsconfirm('pceditcom.php?act=del&cid=".$rows[cid]."','确认删除?')\">删</a>]\n";
+				echo "[<a href=\"#\" onclick=\"bbsconfirm('pceditcom.php?act=del&cid=".$rows["cid"]."','确认删除?')\">删</a>]\n";
 			if(strtolower($rows["username"]) == strtolower($currentuser["userid"]))
 				echo "[<a href=\"pceditcom.php?act=edit&cid=".$rows["cid"]."\">改</a>]\n";
 			echo "</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\"><font class=\"f4\">".($i+1)."</font>&nbsp;&nbsp;</td>\n</tr>\n";
@@ -208,7 +208,7 @@
 	@$tag = (int)($_GET["tag"]);
 	@$tid = (int)($_GET["tid"]);
 	
-	if($_GET["s"]=="all")
+	if(@$_GET["s"]=="all")
 		$spr = TRUE;
 	else
 		$spr = FALSE;
@@ -241,10 +241,6 @@
 		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
-	
-	
-	if( @$err_alert )
-		echo "<script language=\"javascript\">alert(\"".$err_alert."\");</script>";
 	
 	$userPermission = pc_get_user_permission($currentuser,$pc);
 	$pur = $userPermission["pur"];
@@ -298,6 +294,9 @@
 	}
 	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
+	
+	if( @$err_alert )
+		echo "<script language=\"javascript\">alert(\"".$err_alert."\");</script>";
 ?>
 <a name="top"></a>
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -337,28 +336,28 @@
 	<table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 	<tr>
 		<td colspan="2" class="t9">
-		<img src="icon/<?php echo $rows[emote]; ?>.gif" border="0" align="absmiddle">
-		<?php echo html_format($rows[subject]); ?></td>
+		<img src="icon/<?php echo $rows["emote"]; ?>.gif" border="0" align="absmiddle">
+		<?php echo html_format($rows["subject"]); ?></td>
 	</tr>
 	<tr>
 		<td width="20%" align="left" valign="top" class="t8">
 		作者：<?php echo "<a href=\"/bbsqry.php?userid=".$author."\">".$author."</a>"; ?><br/>
 		发表时间：<br/>
-		<?php echo time_format($rows[created]); ?><br/>
+		<?php echo time_format($rows["created"]); ?><br/>
 		更新时间：<br/>
-		<?php echo time_format($rows[changed]); ?><br/>
-		浏览：<?php echo $rows[visitcount]; ?>次<br>
-		主题：<a href="pcsec.php?sec=<?php echo $rows[theme]; ?>"><?php echo html_format($pcconfig["SECTION"][$rows[theme]]); ?></a><br/>
+		<?php echo time_format($rows["changed"]); ?><br/>
+		浏览：<?php echo $rows["visitcount"]; ?>次<br>
+		主题：<a href="pcsec.php?sec=<?php echo $rows["theme"]; ?>"><?php echo html_format($pcconfig["SECTION"][$rows["theme"]]); ?></a><br/>
 		<?php
-			if($rows[comment]==0)
+			if($rows["comment"]==0)
 				echo "锁定主题<br>";
 			else
-				echo "评论：".$rows[commentcount]."篇<br>";
+				echo "评论：".$rows["commentcount"]."篇<br>";
 			
-			if($rows[trackback])
-				echo "引用：".$rows[trackbackcount]."次<br/>";
+			if($rows["trackback"])
+				echo "引用：".$rows["trackbackcount"]."次<br/>";
 		?>
-		地址：<?php echo pc_hide_ip($rows[hostname]); ?>
+		地址：<?php echo pc_hide_ip($rows["hostname"]); ?>
 <?php
     if ($pc['USER'] != '_filter') {
 ?>
@@ -370,13 +369,13 @@
 			<tr><td class=t5 style="line-height:20px">
 			<ul>
 <?php
-	$blogtopics = pc_blog_menu($link,$pc,$rows[access]);
+	$blogtopics = pc_blog_menu($link,$pc,$rows["access"]);
 	foreach( $blogtopics as $blogtopic )
 	{
 		if( $blogtopic["TID"] != $tid )
-			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&tid=".$blogtopic["TID"]."\">".html_format($blogtopic["NAME"])."</a></li>";
+			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows["access"]."&tid=".$blogtopic["TID"]."\">".html_format($blogtopic["NAME"])."</a></li>";
 		else
-			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&tid=".$blogtopic["TID"]."\"><strong><font color=red>".html_format($blogtopic["NAME"])."</font></strong></a></li>";
+			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows["access"]."&tid=".$blogtopic["TID"]."\"><strong><font color=red>".html_format($blogtopic["NAME"])."</font></strong></a></li>";
 	}
 ?>
 			</ul>
@@ -387,33 +386,33 @@
 ?>
 		</td>
 		<td width="80%" height="300" align="left" valign="top" class="t5">
-		<font class="<?php echo ($rows[htmltag])?"contentwithhtml":"content"; ?>">
-		<?php echo html_format($rows[body],TRUE,$rows[htmltag]); ?>&nbsp;
+		<font class="<?php echo ($rows["htmltag"])?"contentwithhtml":"content"; ?>">
+		<?php echo html_format($rows["body"],TRUE,$rows["htmltag"]); ?>&nbsp;
 		</font>
 		</td>
 	</tr>
 	<tr>
 		<td colspan="2" align="right" class="t8">
-		<?php display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype] , $rows[username] , $rows[state]); ?>
+		<?php display_navigation_bar($link,$pc,$nid,$rows["pid"],$rows["access"],$spr,addslashes(@$_GET["order"]),$rows["comment"],$tid,$pur,$rows["trackback"],$rows["subject"] , $rows["recommend"] , $rows["nodetype"] , 0, 0);// $rows["username"] , $rows["state"]); ?>
 		</td>
 	</tr>
 	</table>
 	</td>
 </tr>
 <?php
-		if($rows[comment] && $rows[commentcount])
+		if($rows["comment"] && $rows["commentcount"])
 		{
 ?>
 <tr>
-	<td align="center"><br/><?php $re_num = display_pc_comments($link,$rows[uid],$rows[nid],$spr); ?></td>
+	<td align="center"><br/><?php $re_num = display_pc_comments($link,$rows["uid"],$rows["nid"],$spr); ?></td>
 </tr>
 <?php
 	}
-		if($rows[trackback] && $rows[trackbackcount] && $rows[access] == 0)
+		if($rows["trackback"] && $rows["trackbackcount"] && $rows["access"] == 0)
 		{
 ?>
 <tr>
-	<td align="center"><br/><?php $tb_num = display_pc_trackbacks($link,$rows[nid]); ?></td>
+	<td align="center"><br/><?php $tb_num = display_pc_trackbacks($link,$rows["nid"]); ?></td>
 </tr>
 <?php
 		}
@@ -421,8 +420,8 @@
 <tr>
 	<td align="center" class="f1" height="40" valign="middle">
 	<?php
-		if($re_num != 0 || $tb_num != 0)
-			display_navigation_bar($link,$pc,$nid,$rows[pid],$rows[access],$spr,addslashes($_GET["order"]),$rows[comment],$tid,$pur,$rows[trackback],$rows[subject] , $rows[recommend] , $rows[nodetype] , $rows[username] , $rows[state]); 
+		if(@$re_num != 0 || @$tb_num != 0)
+			display_navigation_bar($link,$pc,$nid,$rows["pid"],$rows["access"],$spr,addslashes(@$_GET["order"]),$rows["comment"],$tid,$pur,$rows["trackback"],$rows["subject"] , $rows["recommend"] , $rows["nodetype"] , 0, 0); //$rows["username"] , $rows["state"]); 
 	?>
 	&nbsp;</td>
 </tr>
@@ -430,7 +429,7 @@
 	<td>
 	<?php 
 		if ($pc['USER'] != '_filter')
-		if($rows[comment] && $rows[type] == 0)
+		if($rows["comment"] && $rows["type"] == 0)
 		{
 			$alert = ($loginok != 1 || !strcmp($currentuser["userid"],"guest"))?TRUE:FALSE;
 			pc_add_new_comment($pc,$nid,$alert); 

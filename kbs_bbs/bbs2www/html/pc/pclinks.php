@@ -48,8 +48,9 @@
 		}
 		
 		$favlinks = $pc["LINKS"];
+		$act = isset($_GET["act"])?$_GET["act"]:"";
 		
-		if($_GET["act"] == "edit")
+		if($act == "edit")
 		{
 			$favlinks = array();
 			$favlinksnum = count($pc["LINKS"]);
@@ -62,7 +63,7 @@
 				$favlinks[$favlinksnum] =array("LINK" => $_POST["link".$favlinksnum] , "URL" => $_POST["url".$favlinksnum] , "IMAGE" => (int)($_POST["image".$favlinksnum]));
 			pc_edit_link($link,$favlinks,$pc["UID"]);
 		}
-		if($_GET["act"] == "del" && $_GET["linkid"])
+		if($act == "del" && $_GET["linkid"])
 		{
 			$favlinks = array();
 			for($i = 0;$i < count($pc["LINKS"]);$i ++)
@@ -100,7 +101,7 @@
 			"<td class=t8><input size=30 name='link".$i."' value='".$favlinks[$i]["LINK"]."' class=f1></td>\n".
 			"<td class=t5>http://<input size=50 name='url".$i."' value='".$favlinks[$i]["URL"]."' class=f1></td>\n".
 			"<td class=t3><input type=checkbox name='image".$i."' value=1 ";
-		if($favlinks[$i]["IMAGE"]) echo " checked ";
+		if(@$favlinks[$i]["IMAGE"]) echo " checked ";
 		echo "></td>\n";
 		if( $i != $favlinksnum - 1 )
 			echo "<td class=t4><a href='pclinks.php?userid=".$pc["USER"]."&act=del&linkid=".($i+1)."'>É¾³ý</a>\n<a href='http://".$favlinks[$i]["URL"]."'>Á´½Ó</a></td>";
