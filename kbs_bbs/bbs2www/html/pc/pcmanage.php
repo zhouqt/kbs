@@ -56,8 +56,9 @@
 			$pcconfig["EDITORALERT"] = NULL;
 			
 		$act = $_GET["act"]?$_GET["act"]:$_POST["act"];
+		$subject = isset($_POST["subject"])?$_POST["subject"]:"";
 		
-		if($act == "post" && !$_POST["subject"] && $pc["EDITOR"] != 0)
+		if($act == "post" && !$subject && $pc["EDITOR"] != 0)
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
 		elseif($act == "edit" && !$_POST["subject"] && $pc["EDITOR"] != 0)
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
@@ -197,7 +198,7 @@
 		}
 		elseif($act == "post")
 		{
-			if($_POST["subject"])
+			if($subject)
 			{
 				if($pc["EDITOR"]==2)//use ubb
 					$blogbody = pc_ubb_parse($_POST["blogbody"]);
@@ -292,7 +293,7 @@
 </tr>
 <tr>
 	<td class="t8">主题
-	<input type="text" size="100" maxlength="200" name="subject" class="f1" value="<?php echo $_POST['subject']; ?>">
+	<input type="text" size="100" maxlength="200" name="subject" class="f1" value="<?php echo $subject; ?>">
 	</td>
 </tr>
 <tr>
@@ -347,8 +348,9 @@
 <?php
 	if($pc["EDITOR"]!=2)// not use ubb
 	{
+		$blogbody = isset($_POST["blogbody"])?$_POST["blogbody"]:"";
 ?>	
-	<textarea name="blogbody" class="f1" style="width:100%" rows="30" id="blogbody" wrap="physical"><?php echo $pcconfig["EDITORALERT"].$_POST["blogbody"]; ?></textarea>
+	<textarea name="blogbody" class="f1" style="width:100%" rows="30" id="blogbody" wrap="physical"><?php echo $pcconfig["EDITORALERT"].$blogbody; ?></textarea>
 <?php
 	}
 	else
@@ -382,8 +384,8 @@
 	<td class="t8">
 	<input type="checkbox" name="autodetecttbps" value="1">自动发掘引用通告
 	(什么是自动发掘引用通告?)<br />
-	文章链接: <input type="text" size="80" maxlength="255" name="trackbackname" class="f1" value="<?php echo htmlspecialchars($_GET[tbArtAddr]); ?>"><br />
-	Trackback Ping URL: <input type="text" size="80" maxlength="255" name="trackbackurl" value="<?php echo htmlspecialchars($_GET[tbTBP]); ?>" class="f1">
+	文章链接: <input type="text" size="80" maxlength="255" name="trackbackname" class="f1" value="<?php echo htmlspecialchars(@$_GET["tbArtAddr"]); ?>"><br />
+	Trackback Ping URL: <input type="text" size="80" maxlength="255" name="trackbackurl" value="<?php echo htmlspecialchars(@$_GET["tbTBP"]); ?>" class="f1">
 	(必须以"http://"开头)
 	</td>
 </tr>

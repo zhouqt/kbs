@@ -54,15 +54,15 @@
 		for($i=0;$i < $list_user_num;$i++)
 		{
 			$rows = mysql_fetch_array($result);
-			$pcThem = pc_get_theme($rows[theme]);
+			$pcThem = pc_get_theme($rows["theme"]);
 			echo "<tbody><tr>\n<td class=\"t3\">".($startno + $i + 1)."</td>\n".
-				"<td class=\"t4\"><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
-				"<td class=\"t3\"><span title=\"".html_format($rows[description])."\"><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;</span></td>\n".
+				"<td class=\"t4\"><a href=\"/bbsqry.php?userid=".html_format($rows["username"])."\">".html_format($rows["username"])."</a></td>\n".
+				"<td class=\"t3\"><span title=\"".html_format($rows["description"])."\"><a href=\"index.php?id=".$rows["username"]."\">".html_format($rows["corpusname"])."</a>&nbsp;</span></td>\n".
 				"<td class=\"t3\"><span title=\"点击查看该分类的其它Blog信息\"><a href=\"pcsec.php?sec=".html_format($pcThem[0])."\">".html_format($pcconfig["SECTION"][$pcThem[0]])."</a></span></td>\n".
-				"<td class=\"t4\">".$rows[nodescount]."</a>".
-				"<td class=\"t3\">".$rows[visitcount]."</a>".
-				"<td class=\"t4\">".time_format($rows[createtime])."</a>".
-				"<td class=\"t3\">".time_format($rows[modifytime])."</td>\n</tr></tbody>\n";
+				"<td class=\"t4\">".$rows["nodescount"]."</a>".
+				"<td class=\"t3\">".$rows["visitcount"]."</a>".
+				"<td class=\"t4\">".time_format($rows["createtime"])."</a>".
+				"<td class=\"t3\">".time_format($rows["modifytime"])."</td>\n</tr></tbody>\n";
 		}
 ?>
 </table>	
@@ -111,7 +111,7 @@
 	
 	$listorder = $_GET["order"];
 	$listorder1 = $_GET["order1"];
-	$pageno = (int)($_GET["pno"]);
+	@$pageno = (int)($_GET["pno"]);
 	if(isset($_GET["char"]))
 		$char = addslashes($_GET["char"]);
 	else

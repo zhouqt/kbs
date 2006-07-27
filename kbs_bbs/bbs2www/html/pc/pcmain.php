@@ -27,7 +27,7 @@ function pcmain_blog_new_user()
 <?php
 	foreach($newUsers as $newUser)
 	{
-		echo "<li><a href=\"index.php?id=".$newUser[username]."\"><span title=\"".html_format($newUser[description])."\">".html_format($newUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$newUser[username]."\"><font class=\"low\">".$newUser[username]."</font></a></li>";	
+		echo "<li><a href=\"index.php?id=".$newUser["username"]."\"><span title=\"".html_format($newUser["description"])."\">".html_format($newUser["corpusname"])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$newUser["username"]."\"><font class=\"low\">".$newUser["username"]."</font></a></li>";	
 	}
 ?>				
 </ul>
@@ -44,7 +44,7 @@ function pcmain_blog_top_ten()
 <?php
 	foreach($mostVstUsers as $mostVstUser)
 	{
-		echo "<li><a href=\"index.php?id=".$mostVstUser[username]."\"><span title=\"".html_format($mostVstUser[description])."\">".html_format($mostVstUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$mostVstUser[username]."\"><font class=\"low\">".$mostVstUser[username]."</font></a></li>";	
+		echo "<li><a href=\"index.php?id=".$mostVstUser["username"]."\"><span title=\"".html_format($mostVstUser["description"])."\">".html_format($mostVstUser["corpusname"])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$mostVstUser["username"]."\"><font class=\"low\">".$mostVstUser["username"]."</font></a></li>";	
 	}
 ?>				
 </ul>
@@ -60,7 +60,7 @@ function pcmain_blog_last_update()
 <?php
 	foreach($lastUpdates as $lastUpdate)
 	{
-		echo "<li><a href=\"index.php?id=".$lastUpdate[username]."\"><span title=\"".html_format($lastUpdate[description])."\">".html_format($lastUpdate[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$lastUpdate[username]."\"><font class=\"low\">".$lastUpdate[username]."</font></a></li>";	
+		echo "<li><a href=\"index.php?id=".$lastUpdate["username"]."\"><span title=\"".html_format($lastUpdate["description"])."\">".html_format($lastUpdate["corpusname"])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$lastUpdate["username"]."\"><font class=\"low\">".$lastUpdate["username"]."</font></a></li>";	
 	}
 ?>
 </ul>
@@ -77,7 +77,7 @@ function pcmain_annouce()
 	<tr><td align="left" valign="top" class="td"><ul>
 <?php
 	foreach($anns as $ann)
-		echo "<li><a href=\"/pc/pccon.php?id=".$ann[0]."&nid=".$ann[nid]."&s=all\">".html_format($ann[subject])."</a></li>";
+		echo "<li><a href=\"/pc/pccon.php?id=".$ann[0]."&nid=".$ann["nid"]."&s=all\">".html_format($ann["subject"])."</a></li>";
 ?>	
 	<li><a href="/pc/index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">&gt;&gt; 更多</a></li>
 	</ul></td></tr>
@@ -99,7 +99,7 @@ function pcmain_recommend_blogger()
 	mysql_free_result($result);
 	if (!$pc) return;
 	//提取该用户最热门的5篇文章
-	$query = "SELECT nid,subject FROM nodes WHERE access = 0 AND uid = '".$pc[uid]."' ORDER BY visitcount DESC LIMIT 0 , 5;";
+	$query = "SELECT nid,subject FROM nodes WHERE access = 0 AND uid = '".$pc["uid"]."' ORDER BY visitcount DESC LIMIT 0 , 5;";
 	$result = mysql_query($query,$link);
 	$nodes = array();
 	while($rows = mysql_fetch_array($result))
@@ -112,10 +112,10 @@ function pcmain_recommend_blogger()
 	<table width="100%" cellspacing="0" cellpadding="3" border="0">
 	<tr>
 	<td valign="top" align="left">
-	[<b><a href="index.php?id=<?php echo $pc[username]; ?>"><?php echo html_format($pc[corpusname]); ?></a></b>]
-	<a href="/bbsqry.php?userid=<?php echo $pc[username]; ?>"><font class="low2"><?php echo $pc[username]; ?></font></a></td></tr>
+	[<b><a href="index.php?id=<?php echo $pc["username"]; ?>"><?php echo html_format($pc["corpusname"]); ?></a></b>]
+	<a href="/bbsqry.php?userid=<?php echo $pc["username"]; ?>"><font class="low2"><?php echo $pc["username"]; ?></font></a></td></tr>
 	<tr><td>
-	<?php echo html_format($pc[description]); ?>
+	<?php echo html_format($pc["description"]); ?>
 	</td>
 	</tr>
 	</table>
@@ -124,7 +124,7 @@ function pcmain_recommend_blogger()
 	<td align="left" valign="top" class="td"><ul>
 <?php
 	foreach($nodes as $node)
-		echo "<li><a href=\"pccon.php?id=".$pc[uid]."&nid=".$node[nid]."&s=all\">".html_format($node[subject])."</a></li>";
+		echo "<li><a href=\"pccon.php?id=".$pc["uid"]."&nid=".$node["nid"]."&s=all\">".html_format($node["subject"])."</a></li>";
 ?>
 	</ul></td>
 	</tr>
@@ -156,13 +156,13 @@ function  pcmain_blog_most_hot()
 		}
 		
 		echo "<td class=\"".$tdclass."\" width=\"33%\">";
-		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "|&nbsp;<a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
-		if(strlen($rows[subject]) > 20 )
+		$pcinfor = pc_load_infor($link,"",$rows["uid"]);
+		echo "|&nbsp;<a href=\"pccon.php?id=".$rows["uid"]."&nid=".$rows["nid"]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows["subject"])."\">".html_format(substr($rows["subject"],0,20));
+		if(strlen($rows["subject"]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
-		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor["USER"]."\">";
 		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor["USER"]."\">";
 		echo "<font class=low2>".$pcinfor["USER"]."</font></a>\n";
 		echo "</td>\n";	
@@ -186,15 +186,15 @@ function  pcmain_blog_most_trackback()
 	{
 		if( $i == intval($num / 2) ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
 		$rows = $nodes[$i];
-		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
-		if(strlen($rows[subject]) > 20 )
+		$pcinfor = pc_load_infor($link,"",$rows["uid"]);
+		echo "<li><a href=\"pccon.php?id=".$rows["uid"]."&nid=".$rows["nid"]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows["subject"])."\">".html_format(substr($rows["subject"],0,20));
+		if(strlen($rows["subject"]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
-		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor["USER"]."\">";
 		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">";
-		echo "<font class=low2>".$pcinfor[USER]."</font></a>";
+		echo "<font class=low2>".$pcinfor["USER"]."</font></a>";
 		echo "</li>\n";	
 	}
 ?>				
@@ -217,15 +217,15 @@ function  pcmain_blog_most_view()
 	{
 		if( $i == intval( $num / 2 ) ) echo "</td><td style=\"line-height:16px \" align=left width=\"50%\">";
 		$rows = $nodes[$i];
-		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
-		if(strlen($rows[subject]) > 20 )
+		$pcinfor = pc_load_infor($link,"",$rows["uid"]);
+		echo "<li><a href=\"pccon.php?id=".$rows["uid"]."&nid=".$rows["nid"]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows["subject"])."\">".html_format(substr($rows["subject"],0,20));
+		if(strlen($rows["subject"]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
-		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor["USER"]."\">";
 		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">";
-		echo "<font class=low2>".$pcinfor[USER]."</font></a>\n";
+		echo "<font class=low2>".$pcinfor["USER"]."</font></a>\n";
 		echo "</li>\n";	
 	}
 ?>
@@ -238,7 +238,7 @@ function pcmain_blog_new_nodes()
 {
 	global $link;
 	$newBlogs = getNewBlogs($link,1, _PCMAIN_NEW_NODES_ );
-	$newNum = count($newBlogs[useretems]);
+	$newNum = count($newBlogs["useretems"]);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
 <?php
@@ -254,12 +254,12 @@ function pcmain_blog_new_nodes()
 			echo "<tr>";
 			$tdclass ="td1";
 		}
-		echo "<td class=".$tdclass." width=\"33%\">[<span title=\"".$newBlogs[useretems][$i][pcdesc]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][creator]."\"><font class=low2>".$newBlogs[useretems][$i][pcname]."</font></a></span>]".
-			"&nbsp;<a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][creator]."'><font class=low>".$newBlogs[useretems][$i][creator]."</font></a><br />".
-			"<a href='pccon.php?id=".$newBlogs[useretems][$i][pc]."&nid=".$newBlogs[useretems][$i][nid]."&s=all&tid=".$newBlogs[useretems][$i][tid]."'>".
-			"<span title=\"".$newBlogs[useretems][$i][subject]."\">";
-		echo substr($newBlogs[useretems][$i][subject],0,36);
-		if(strlen($newBlogs[useretems][$i][subject])>36) echo "...";
+		echo "<td class=".$tdclass." width=\"33%\">[<span title=\"".$newBlogs["useretems"][$i]["pcdesc"]."\"><a href=\"index.php?id=".$newBlogs["useretems"][$i]["creator"]."\"><font class=low2>".$newBlogs["useretems"][$i]["pcname"]."</font></a></span>]".
+			"&nbsp;<a href='/bbsqry.php?userid=".$newBlogs["useretems"][$i]["creator"]."'><font class=low>".$newBlogs["useretems"][$i]["creator"]."</font></a><br />".
+			"<a href='pccon.php?id=".$newBlogs["useretems"][$i]["pc"]."&nid=".$newBlogs["useretems"][$i]["nid"]."&s=all&tid=".$newBlogs["useretems"][$i]["tid"]."'>".
+			"<span title=\"".$newBlogs["useretems"][$i]["subject"]."\">";
+		echo substr($newBlogs["useretems"][$i]["subject"],0,36);
+		if(strlen($newBlogs["useretems"][$i]["subject"])>36) echo "...";
 		echo "</span></a></td>";
 		if($i % 2 == 1 ) echo "</tr>";
 	}
@@ -282,13 +282,13 @@ function  pcmain_blog_recommend_nodes()
 	{
 		if( $i == intval( $num / 2) ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
 		$rows = $nodes[$i];
-		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
-		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
-		if(strlen($rows[subject]) > 20 )
+		$pcinfor = pc_load_infor($link,"",$rows["uid"]);
+		echo "<li><a href=\"pccon.php?id=".$rows["uid"]."&nid=".$rows["nid"]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows["subject"])."\">".html_format(substr($rows["subject"],0,20));
+		if(strlen($rows["subject"]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
-		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor["USER"]."\">";
 		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor["USER"]."\">";
 		echo "<font class=low2>".$pcinfor["USER"]."</font></a>";
 		echo "</li>\n";	
@@ -341,9 +341,9 @@ function pcmain_section_top_view()
 <?php
 			for( $i = 0 ; $i < $nodesNum ; $i ++ )
 			{
-				echo "<a href=\"/pc/pccon.php?id=".$nodes[$i][0]."&nid=".$nodes[$i][nid]."&s=all\">".
-				     "<span title=\"".html_format($nodes[$i][subject])."(".$nodes[$i][username]."'s BLOG:".html_format($nodes[$i][corpusname]).")\">";
-				echo html_format($nodes[$i][subject])."</span></a>";
+				echo "<a href=\"/pc/pccon.php?id=".$nodes[$i][0]."&nid=".$nodes[$i]["nid"]."&s=all\">".
+				     "<span title=\"".html_format($nodes[$i]["subject"])."(".$nodes[$i]["username"]."'s BLOG:".html_format($nodes[$i]["corpusname"]).")\">";
+				echo html_format($nodes[$i]["subject"])."</span></a>";
 				if( $i < $nodesNum - 1 ) echo " | ";
 			}
 ?>

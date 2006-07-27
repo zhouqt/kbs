@@ -57,10 +57,10 @@ header("Content-Disposition: inline;filename=opml.xml");
 pc_opml_init($opmlTitle);
 foreach($blogs as $blog)
 {
-	$title = stripslashes($blog[corpusname]);
-	$htmlUrl = pc_personal_domainname($blog[username]);
-	$xmlUrl = "http://".$pcconfig["SITE"] . "/pc/rss.php?userid=" . $blog[username];
-	$description = stripslashes($blog[description]);
+	$title = stripslashes($blog["corpusname"]);
+	$htmlUrl = pc_personal_domainname($blog["username"]);
+	$xmlUrl = "http://".$pcconfig["SITE"] . "/pc/rss.php?userid=" . $blog["username"];
+	$description = stripslashes($blog["description"]);
 	pc_opml_outline($title,$htmlUrl,$xmlUrl,$description);
 }
 pc_opml_quit();

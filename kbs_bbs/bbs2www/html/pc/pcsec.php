@@ -17,7 +17,7 @@
 		}
 		echo "下面是<font class=f4>".html_format($pcconfig["SECTION"][$sec])."</font>分类的Blog：<br /><hr size=1>";
 		
-		$pno = (int)($_GET["pno"]);
+		@$pno = (int)($_GET["pno"]);
 		if($pno < 1 ) $pno = 1;
 		
 		$link = pc_db_connect();
@@ -31,7 +31,7 @@
 		for($i = 0 ; $i < $numRows ; $i ++)
 		{
 			$rows = mysql_fetch_array($result);
-			echo "<li><strong><a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a></strong>[".time_format_date1($rows[createtime])."]：".html_format($rows[description],TRUE)."</li>";
+			echo "<li><strong><a href=\"index.php?id=".$rows["username"]."\">".html_format($rows["corpusname"])."</a></strong>[".time_format_date1($rows["createtime"])."]：".html_format($rows["description"],TRUE)."</li>";
 		}
 ?></ul>
 <p align=center class=f1>
@@ -77,8 +77,8 @@
 ?>
 <font class=content>
 <?php
-	if($_GET["sec"]) display_section_blogs($_GET["sec"]);
-	if($_GET["act"]=="list") display_section_list();
+	if(@$_GET["sec"]) display_section_blogs(@$_GET["sec"]);
+	if(@$_GET["act"]=="list") display_section_list();
 ?>
 </font>
 <hr size=1>

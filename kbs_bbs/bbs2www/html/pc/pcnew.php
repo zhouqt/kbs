@@ -37,7 +37,7 @@
 	if(pc_update_cache_header())
 		return;
 	
-	$pno = (int)($_GET["pno"]);
+	@$pno = (int)($_GET["pno"]);
 	$pno = ($pno < 1)?1:$pno;
 	$type = ($_GET["t"]=="c")?"c":"n";
 	$link = pc_db_connect();
@@ -108,14 +108,14 @@
 <?php
 		for($i=0;$i < $newNum;$i++)
 		{
-			echo "<tbody><tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newComments[$i][POSTER]."'>".$newComments[$i][POSTER]."</a></td>\n".
-				"<td class=t8><a href=\"pcshowcom.php?cid=".$newComments[$i][CID]."\">".$newComments[$i][CSUBJECT]."</a>&nbsp;</td>\n".
-				"<td class=t4>".$newComments[$i][CCREATED]."&nbsp;</td>\n".
-				"<td class=t8><span title=\"".$newComments[$i][NSUBJECT]."\"><a href=\"pccon.php?id=".$newComments[$i][UID]."&nid=".$newComments[$i][NID]."&s=all\">".substr($newComments[$i][NSUBJECT],0,30)." \n ";
-			if(strlen($newComments[$i][NSUBJECT]) > 30) echo " ...";
+			echo "<tbody><tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newComments[$i]["POSTER"]."'>".$newComments[$i]["POSTER"]."</a></td>\n".
+				"<td class=t8><a href=\"pcshowcom.php?cid=".$newComments[$i]["CID"]."\">".$newComments[$i]["CSUBJECT"]."</a>&nbsp;</td>\n".
+				"<td class=t4>".$newComments[$i]["CCREATED"]."&nbsp;</td>\n".
+				"<td class=t8><span title=\"".$newComments[$i]["NSUBJECT"]."\"><a href=\"pccon.php?id=".$newComments[$i]["UID"]."&nid=".$newComments[$i]["NID"]."&s=all\">".substr($newComments[$i]["NSUBJECT"],0,30)." \n ";
+			if(strlen($newComments[$i]["NSUBJECT"]) > 30) echo " ...";
 				echo "</a>&nbsp;</span></td>\n".
-				"<td class=t3>".$newComments[$i][VISITCOUNT]."</td>\n".
-				"<td class=t4>".$newComments[$i][COMMENTCOUNT]."</td>\n</tr></tbody>\n";
+				"<td class=t3>".$newComments[$i]["VISITCOUNT"]."</td>\n".
+				"<td class=t4>".$newComments[$i]["COMMENTCOUNT"]."</td>\n</tr></tbody>\n";
 		}
 	}	
 ?>

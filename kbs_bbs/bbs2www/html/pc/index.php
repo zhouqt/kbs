@@ -68,7 +68,7 @@ blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows[nid]); ?>;
 	
 	function pc_user_infor($pc)
 	{
-		if($pc[INFOR]) echo $pc[INFOR];	
+		if($pc["INFOR"]) echo $pc["INFOR"];	
 	}
 	
 	function pc_load_nodes($link,$pc,$pur=0,$pno)
@@ -99,7 +99,7 @@ blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows[nid]); ?>;
 		global $pcconfig;
 		for($i=0;$i<min($pc["INDEX"]["nodeNum"],count($nodes));$i++)
 		{
-			$contentcss = ($nodes[$i][htmltag])?"indexcontentwithhtml":"indexcontent";
+			$contentcss = ($nodes[$i]["htmltag"])?"indexcontentwithhtml":"indexcontent";
 			if($tablestyle==1)
 			{
 				$tableclass = "f1";
@@ -117,43 +117,43 @@ blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows[nid]); ?>;
 					$cellclass=array("t16","t13","t5");
 			}
 			echo "<center><table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
-			"<tr><td class=\"".$cellclass[0]."\">".time_format_date($nodes[$i][created])."</td>".
-			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n".
+			"<tr><td class=\"".$cellclass[0]."\">".time_format_date($nodes[$i]["created"])."</td>".
+			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i]["nid"]."\">评论</a>]\n".
 			"[<a href=\"";
 			if($pc["EMAIL"])
 				echo "mailto:".$pc["EMAIL"];
 			else
 				echo "/bbspstmail.php?userid=".$pc["USER"]."&title=问候";
 			echo "\">写信问候</a>]</td></tr>\n".
-			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
-			"<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
+			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i]["emote"].".gif\" border=0 align=absmiddle>\n".
+			"<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i]["nid"]."&s=all\" class=f2>".html_format($nodes[$i]["subject"])."</a></td>".
 			"<td align=right class=\"".$cellclass[1]."\">&nbsp;</td>".
 			"</tr>";
 			if($pc["INDEX"]["nodeChars"]==0)
 				echo "<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>".
-				     html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]).
+				     html_format($nodes[$i]["body"],TRUE,$nodes[$i]["htmltag"]).
 				     "</font></td></tr>\n";
 			else
 			{
 				echo "<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>".
-				     html_format(substr($nodes[$i][body],0,$pc["INDEX"]["nodeChars"])." ",TRUE,$nodes[$i][htmltag]); 
-                        	if (strlen($nodes[$i][body])>$pc["INDEX"]["nodeChars"]) 
+				     html_format(substr($nodes[$i]["body"],0,$pc["INDEX"]["nodeChars"])." ",TRUE,$nodes[$i]["htmltag"]); 
+                        	if (strlen($nodes[$i]["body"])>$pc["INDEX"]["nodeChars"]) 
                         		echo " <br class=\"\" /> ......<br class=\"\" /><br class=\"\" />".
-                        		     "<strong><A href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\">>> 阅读全文</A></strong>".
+                        		     "<strong><A href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i]["nid"]."&s=all\">>> 阅读全文</A></strong>".
                         		     "</font></td></tr>\n";; 
                         }
             
-            if (pc_is_groupwork($pc) && $nodes[$i][publisher])
-                $publisher = $nodes[$i][publisher];
+            if (pc_is_groupwork($pc) && $nodes[$i]["publisher"])
+                $publisher = $nodes[$i]["publisher"];
             else
                 $publisher = $pc["USER"];
                 
-                        echo "<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$publisher."\">".$publisher."</a> 发布于 ".time_format($nodes[$i][created]).
-			"\n|\n浏览[".$nodes[$i][visitcount]."]".
-			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\">评论[".$nodes[$i][commentcount]."]</a>";
-			if($nodes[$i][trackback]) {
-				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i][subject])."' , 460, 480)\">引用[".$nodes[$i][trackbackcount]."]</a>";
-			    echo "&nbsp;<a href=\"#\" onClick=\"javascript: holdtext.innerText = 'http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nodes[$i][nid]."'; Copied = holdtext.createTextRange(); Copied.execCommand('Copy'); alert('该引用地址已经复制到剪贴板'); return false; \">Trackback Ping URL</a>";
+                        echo "<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$publisher."\">".$publisher."</a> 发布于 ".time_format($nodes[$i]["created"]).
+			"\n|\n浏览[".$nodes[$i]["visitcount"]."]".
+			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i]["nid"]."&s=all\">评论[".$nodes[$i]["commentcount"]."]</a>";
+			if($nodes[$i]["trackback"]) {
+				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i]["nid"]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i]["subject"])."' , 460, 480)\">引用[".$nodes[$i]["trackbackcount"]."]</a>";
+			    echo "&nbsp;<a href=\"#\" onClick=\"javascript: holdtext.innerText = 'http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nodes[$i]["nid"]."'; Copied = holdtext.createTextRange(); Copied.execCommand('Copy'); alert('该引用地址已经复制到剪贴板'); return false; \">Trackback Ping URL</a>";
 			}
 			echo "</font></td></tr>\n</table></center>\n";
 		}
@@ -168,7 +168,7 @@ blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows[nid]); ?>;
 		echo "<ul>";
 		for($i=0;$i< count($nodes);$i++)
 		{
-			echo "<li><a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."\">".html_format($nodes[$i][subject])."</a>(".time_format($nodes[$i][created]).")</li>\n";
+			echo "<li><a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i]["nid"]."\">".html_format($nodes[$i]["subject"])."</a>(".time_format($nodes[$i]["created"]).")</li>\n";
 		}
 		echo "</ul>";
 		
@@ -393,7 +393,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 		for($i = 0;$i < mysql_num_rows($result) ; $i++)
 		{
 			$rows = mysql_fetch_array($result);
-			echo "<li>[<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>]<a href=\"pcshowcom.php?cid=".$rows[cid]."\">".html_format($rows[subject])."</a>(".time_format($rows[created]).")</li>";
+			echo "<li>[<a href=\"/bbsqry.php?userid=".$rows["username"]."\">".$rows["username"]."</a>]<a href=\"pcshowcom.php?cid=".$rows["cid"]."\">".html_format($rows["subject"])."</a>(".time_format($rows["created"]).")</li>";
 		}
 		echo "</ul>";
 		mysql_free_result($result);
@@ -910,7 +910,10 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 
 	$userid = addslashes($_GET["id"]);
 	$uid = intval($_GET["id"]);
-	$pno = intval($_GET["pno"]);
+	if(isset($_GET["pno"]))
+		$pno = intval($_GET["pno"]);
+	else
+		$pno = 0;
 	if($pno < 1) $pno = 1;
 	
 	$link = pc_db_connect();

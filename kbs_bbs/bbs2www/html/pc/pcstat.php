@@ -15,7 +15,7 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 		$etemnum = $pcconfig["NEWS"];
 	
 	$newBlogs = array();
-	$newBlogs[channel] = array(
+	$newBlogs["channel"] = array(
 			"siteaddr" => "http://".$pcconfig["SITE"],
 			"title" => $pcconfig["BBSNAME"]."即时Blog日志" ,
 			"pcaddr" => "http://".$pcconfig["SITE"],
@@ -44,32 +44,32 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 	while($rows=mysql_fetch_array($result))
 	{
 		$body = "<br>\n".
-			"来自: ".html_format($rows[corpusname])."<br>\n".
-			"作者: ".html_format($rows[username])."<br>\n".
+			"来自: ".html_format($rows["corpusname"])."<br>\n".
+			"作者: ".html_format($rows["username"])."<br>\n".
 			"发信站: ".$pcconfig["BBSNAME"]."<br>\n".
-			"时间: ".time_format($rows[created])."<br>\n".
+			"时间: ".time_format($rows["created"])."<br>\n".
 			"<hr size=1>\n".
-			html_format($rows[body],TRUE,$rows[htmltag]).
+			html_format($rows["body"],TRUE,$rows["htmltag"]).
 			"<hr size=1>\n".
-			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&tid=".$rows[tid]."&s=all\">浏览全文</a>\n".
-			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=".$rows[nid]."\">发表评论</a>)<br>\n".
-			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".html_format($rows[username])."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".html_format($rows[username])."</a>";
-		$newBlogs[useretems][$j] = array(
-					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
-					"subject" => htmlspecialchars($rows[subject]),
+			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows["uid"]."&nid=".$rows["nid"]."&tid=".$rows["tid"]."&s=all\">浏览全文</a>\n".
+			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=".$rows["nid"]."\">发表评论</a>)<br>\n".
+			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".html_format($rows["username"])."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".html_format($rows["username"])."</a>";
+		$newBlogs["useretems"][$j] = array(
+					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows["uid"]."&amp;nid=".$rows["nid"]."&amp;tid=".$rows["tid"],
+					"subject" => htmlspecialchars($rows["subject"]),
 					"desc" => $body,
-					"tid" => $rows[tid],
-					"nid" => $rows[nid],
+					"tid" => $rows["tid"],
+					"nid" => $rows["nid"],
 					"publisher" => $pcconfig["BBSNAME"],
-					"creator" => html_format($rows[username]),
-					"pc" => $rows[uid],
-					"created" => time_format($rows[created]),
-					"rights" => html_format($rows[username]).".bbs@".$pcconfig["SITE"],
-					"theme" => pc_get_theme($rows[theme]),
-					"pcdesc" => $rows[description],
-					"pcname" => $rows[corpusname],
+					"creator" => html_format($rows["username"]),
+					"pc" => $rows["uid"],
+					"created" => time_format($rows["created"]),
+					"rights" => html_format($rows["username"]).".bbs@".$pcconfig["SITE"],
+					"theme" => pc_get_theme($rows["theme"]),
+					"pcdesc" => $rows["description"],
+					"pcname" => $rows["corpusname"],
 					"pcvisit" => $rows[0],
-					"pcnodes" => $rows[nodescount]
+					"pcnodes" => $rows["nodescount"]
 					);
 		$j ++;
 	}
@@ -102,16 +102,16 @@ function getNewComments($link,$pno=1,$etemnum=0)
 	{
 		$rows = mysql_fetch_array($result);
 		$newComments[$i] = array(
-					"CID" => $rows[cid],
-					"UID" => $rows[uid],
+					"CID" => $rows["cid"],
+					"UID" => $rows["uid"],
 					"CCREATED" => time_format($rows[3]),
-					"NCREATED" => time_format($rows[created]),
-					"VISITCOUNT" => $rows[visitcount],
-					"COMMENTCOUNT" => $rows[commentcount],
+					"NCREATED" => time_format($rows["created"]),
+					"VISITCOUNT" => $rows["visitcount"],
+					"COMMENTCOUNT" => $rows["commentcount"],
 					"CSUBJECT" => html_format($rows[2]),
-					"NSUBJECT" => html_format($rows[subject]),
-					"POSTER" => $rows[username],
-					"NID" => $rows[nid]
+					"NSUBJECT" => html_format($rows["subject"]),
+					"POSTER" => $rows["username"],
+					"NID" => $rows["nid"]
 					);	
 	}
 	mysql_free_result($result);
@@ -154,7 +154,7 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 	$num_rows = mysql_num_rows($result);
 	
 	$recommendBlogs = array();
-	$recommendBlogs[channel] = array(
+	$recommendBlogs["channel"] = array(
 			"siteaddr" => "http://".$pcconfig["SITE"],
 			"title" => $pcconfig["BBSNAME"]."推荐Blog日志" ,
 			"pcaddr" => "http://".$pcconfig["SITE"],
@@ -172,27 +172,27 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 	{
 		$rows = mysql_fetch_array($result);
 		$body = "<br>\n".
-			"来自: ".$rows[corpusname]."<br>\n".
-			"作者: ".$rows[username]."<br>\n".
+			"来自: ".$rows["corpusname"]."<br>\n".
+			"作者: ".$rows["username"]."<br>\n".
 			"发信站: ".$pcconfig["BBSNAME"]."<br>\n".
-			"时间: ".time_format($rows[created])."<br>\n".
+			"时间: ".time_format($rows["created"])."<br>\n".
 			"<hr size=1>\n".
-			html_format($rows[body],TRUE,$rows[htmltag]).
+			html_format($rows["body"],TRUE,$rows["htmltag"]).
 			"<hr size=1>\n".
-			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[0]."&nid=".$rows[nid]."&s=all\">浏览全文</a>\n".
-			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=".$rows[nid]."\">发表评论</a>)<br>\n".
-			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows[username]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows[user]."</a>";
-		$recommendBlogs[useretems][$i] = array(
+			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[0]."&nid=".$rows["nid"]."&s=all\">浏览全文</a>\n".
+			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=".$rows["nid"]."\">发表评论</a>)<br>\n".
+			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows["username"]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows["user"]."</a>";
+		$recommendBlogs["useretems"][$i] = array(
 					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[0]."&amp;nid=".$rows[nid],
-					"subject" => htmlspecialchars($rows[subject]),
+					"subject" => htmlspecialchars($rows["subject"]),
 					"desc" => $body,
 					"tid" => 0,
-					"nid" => $rows[nid],
+					"nid" => $rows["nid"],
 					"publisher" => $pcconfig["BBSNAME"],
-					"creator" => $rows[username],
+					"creator" => $rows["username"],
 					"pc" => $rows[0],
-					"created" => time_format($rows[created]),
-					"rights" => $rows[username].".bbs@".$pcconfig["SITE"]
+					"created" => time_format($rows["created"]),
+					"rights" => $rows["username"].".bbs@".$pcconfig["SITE"]
 					);
 	}
 	mysql_free_result($result);

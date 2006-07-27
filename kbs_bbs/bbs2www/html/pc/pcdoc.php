@@ -212,7 +212,7 @@
 		while($rows = mysql_fetch_array($result))
 		{
 			$i ++;
-			if($rows[comment] == 0)
+			if($rows["comment"] == 0)
 				$c = "<img src='images/lock.gif' alt='被锁定的主题' border='0'>";
 			else
 				$c = "<img src='images/open.gif' alt='开放的主题' border='0'>";
@@ -221,62 +221,62 @@
 		    {
 		        echo "<tr>\n<td class='t3'>".($start + $i)."</td>\n".
 		            "<td class='t4'>".(($rows[nid]&&$tag<3)?'评论':'文章')."</td>".
-					"<td align=\"center\" class='t4'><a href=\"/bbsqry.php?userid=".$rows[username]."\">".html_format($rows[username])."</a></td>\n".
+					"<td align=\"center\" class='t4'><a href=\"/bbsqry.php?userid=".$rows["username"]."\">".html_format($rows["username"])."</a></td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>";
-				echo ($rows[htmltag]==1)?"&nbsp;":"#";
-				echo "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[fid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t3'>\n".time_format($rows[created])."</td>\n".
-					"<td class='t4'>".$rows[visitcount]."</td>\n".
-					"<td class='t3'>".$rows[commentcount]."</td>\n";
+				echo ($rows["htmltag"]==1)?"&nbsp;":"#";
+				echo "<img src=\"icon/".$rows["emote"].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows["fid"]."&order=".$order."&tid=".$tid."\">".html_format($rows["subject"])."</a></td>\n".
+					"<td class='t3'>\n".time_format($rows["created"])."</td>\n".
+					"<td class='t4'>".$rows["visitcount"]."</td>\n".
+					"<td class='t3'>".$rows["commentcount"]."</td>\n";
 				if ($tag < 3) {
-					echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=n\">过</a></td>\n".
-					"<td class='t4'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=y\">滤</a></td>\n";
+					echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows["fid"]."&filter=n\">过</a></td>\n".
+					"<td class='t4'><a href=\"pcadmin_flt.php?fid=".$rows["fid"]."&filter=y\">滤</a></td>\n";
 				} else {
-					echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=r\">恢复</a></td>\n".
-					"<td class='t4'>".$rows[recuser]."</td>\n";
+					echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows["fid"]."&filter=r\">恢复</a></td>\n".
+					"<td class='t4'>".$rows["recuser"]."</td>\n";
 				}
 				echo "</tr>\n";
 			}
 			elseif($pur > 2)
 			{
 				echo "<tr>\n<td class='t3'>".($start + $i)."</td>\n".
-					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\"></td>\n".
+					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows["nid"]."\" class=\"b2\"></td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>";
-				echo ($rows[htmltag]==1)?"&nbsp;":"#";
-				echo "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t3'>\n".time_format($rows[created])."<br/>".time_format($rows[changed])."\n</td>\n".
-					"<td class='t4'>".$rows[visitcount]."</td>\n".
-					"<td class='t3'>".$rows[commentcount]."</td>\n";
+				echo ($rows["htmltag"]==1)?"&nbsp;":"#";
+				echo "<img src=\"icon/".$rows["emote"].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows["nid"]."&order=".$order."&tid=".$tid."\">".html_format($rows["subject"])."</a></td>\n".
+					"<td class='t3'>\n".time_format($rows["created"])."<br/>".time_format($rows["changed"])."\n</td>\n".
+					"<td class='t4'>".$rows["visitcount"]."</td>\n".
+					"<td class='t3'>".$rows["commentcount"]."</td>\n";
 				if($tag == 0)
 				{
 					
 					echo "<td class='t4'>";
-					echo $rows[trackback]?$rows[trackbackcount]:"-";
+					echo $rows["trackback"]?$rows["trackbackcount"]:"-";
 					echo "</td>\n";
 				}
-				echo	"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$rows[nid]."\">改</a></td>\n".
-					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?userid=".$pc["USER"]."&act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n".
+				echo	"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$rows["nid"]."\">改</a></td>\n".
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?userid=".$pc["USER"]."&act=del&nid=".$rows["nid"]."','确认删除?')\">删</a></td>\n".
 					"</tr>\n";
 			}
 			else
 			{
 				echo "<tr>\n<td class='t3'>".($start + $i)."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
-					"<td class='t8'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\ align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t4'>\n".time_format($rows[created])."<br/>".time_format($rows[changed])."\n</td>\n".
-					"<td class='t3'>".$rows[visitcount]."</td>\n".
-					"<td class='t4'>".$rows[commentcount]."</td>\n";
+					"<td class='t8'>&nbsp;<img src=\"icon/".$rows["emote"].".gif\" border=\"0\ align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows["nid"]."&order=".$order."&tid=".$tid."\">".html_format($rows["subject"])."</a></td>\n".
+					"<td class='t4'>\n".time_format($rows["created"])."<br/>".time_format($rows["changed"])."\n</td>\n".
+					"<td class='t3'>".$rows["visitcount"]."</td>\n".
+					"<td class='t4'>".$rows["commentcount"]."</td>\n";
 				if($tag == 0)
 				{
 					
 					echo "<td class='t3'>";
-					echo $rows[trackback]?$rows[trackbackcount]:"-";
+					echo $rows["trackback"]?$rows["trackbackcount"]:"-";
 					echo "</td>\n";
 				}
 				if ($is_admin) {
-					echo "<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcadmin_del.php?userid=".$pc["USER"]."&nid=".$rows[nid]."','确认删除?')\">滤</a></td>\n";
+					echo "<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcadmin_del.php?userid=".$pc["USER"]."&nid=".$rows["nid"]."','确认删除?')\">滤</a></td>\n";
 				}
 				echo	"</tr>\n";
 			}
@@ -403,46 +403,46 @@
 		while($rows = mysql_fetch_array($result))
 		{
 			$i ++;
-			if($rows[comment] == 1 && $rows[type] == 0)
+			if($rows["comment"] == 1 && $rows["type"] == 0)
 				$c = "<img src='images/open.gif' alt='开放的主题' border='0'>";
 			else
 				$c = "<img src='images/lock.gif' alt='被锁定的主题' border='0'>";
-			if($rows[type]==1)
+			if($rows["type"]==1)
 			{
 				$type = "<img src='images/dir.gif' alt='目录' border='0'>";
-				$url = "pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".$rows[nid];
+				$url = "pcdoc.php?userid=".$pc["USER"]."&tag=3&pid=".$rows["nid"];
 			}
 			else
 			{
 				$type = "<img src='images/art.gif' alt='文章' border='0'>";
-				$url = "pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order;
+				$url = "pccon.php?id=".$pc["UID"]."&nid=".$rows["nid"]."&order=".$order;
 			}
 			if( $pur > 2)
 			{
 				echo "<tr>\n<td class='t3'>".$i."</td>\n<td align=\"center\" class='t4'>";
-				if($rows[type]==0)
-					echo "<input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\">";
+				if($rows["type"]==0)
+					echo "<input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows["nid"]."\" class=\"b2\">";
 				else
 					echo "&nbsp;";
 				echo	"</td>\n<td class='t3'>".$type."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
 					"<td class='t8'>";
-				echo   ($rows[htmltag]==1)?"&nbsp;":"#";	
-				echo    "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t4'>".time_format($rows[created])."<br/>".time_format($rows[changed])."</td>\n".
-					"<td class='t3'>".$rows[visitcount]."</td>\n".
-					"<td class='t4'>".$rows[commentcount]."</td>\n".
-					"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$rows[nid]."\">改</a></td>\n".
-					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?userid=".$pc["USER"]."&act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n";
-				if($rows[type]==0)
-					echo "<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favcut&nid=".$rows[nid]."\">剪</a></td>".
-					      "<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favcopy&nid=".$rows[nid]."\">复</a></td>";
+				echo   ($rows["htmltag"]==1)?"&nbsp;":"#";	
+				echo    "<img src=\"icon/".$rows["emote"].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows["subject"])."</a></td>\n".
+					"<td class='t4'>".time_format($rows["created"])."<br/>".time_format($rows["changed"])."</td>\n".
+					"<td class='t3'>".$rows["visitcount"]."</td>\n".
+					"<td class='t4'>".$rows["commentcount"]."</td>\n".
+					"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$rows["nid"]."\">改</a></td>\n".
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?userid=".$pc["USER"]."&act=del&nid=".$rows["nid"]."','确认删除?')\">删</a></td>\n";
+				if($rows["type"]==0)
+					echo "<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favcut&nid=".$rows["nid"]."\">剪</a></td>".
+					      "<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favcopy&nid=".$rows["nid"]."\">复</a></td>";
 				else
 					echo "<td class='t3' width=20>-</td>\n<td class='t3'>-</td>\n";
-				if($_COOKIE["BLOGFAVACTION"])
+				if(isset($_COOKIE["BLOGFAVACTION"]) && $_COOKIE["BLOGFAVACTION"])
 				{
-					if($rows[type]==1)
-						echo 	"<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favpaste&pid=".$rows[nid]."\">贴</a></td>";
+					if($rows["type"]==1)
+						echo 	"<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favpaste&pid=".$rows["nid"]."\">贴</a></td>";
 					else
 						echo "<td class='t3' width=20>-</td>";
 				}
@@ -452,10 +452,10 @@
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
 					"<td class='t4'>".$type."</td>\n".
 					"<td class='t3'>".$c."</td>\n".
-					"<td class='t5'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t3'>".time_format($rows[created])."<br/>".time_format($rows[changed])."</td>\n".
-					"<td class='t4'>".$rows[visitcount]."</td>\n".
-					"<td class='t3'>".$rows[commentcount]."</td>\n".
+					"<td class='t5'>&nbsp;<img src=\"icon/".$rows["emote"].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows["subject"])."</a></td>\n".
+					"<td class='t3'>".time_format($rows["created"])."<br/>".time_format($rows["changed"])."</td>\n".
+					"<td class='t4'>".$rows["visitcount"]."</td>\n".
+					"<td class='t3'>".$rows["commentcount"]."</td>\n".
 					"</tr>\n";
 		}
 		mysql_free_result($result);
@@ -468,10 +468,10 @@
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
-			$prepid = ($rows[pid]>$rootpid)?$rows[pid]:$rootpid;
+			$prepid = ($rows["pid"]>$rootpid)?$rows["pid"]:$rootpid;
 ?>
 <p align="center"  class="b2">
-[<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$rows[pid]; ?>">返回上层目录</a>]
+[<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$rows["pid"]; ?>">返回上层目录</a>]
 [<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3"; ?>">返回根目录</a>]
 </p>
 <?php		
@@ -482,7 +482,7 @@
 ?>
 </form>
 <?php
-		if($_COOKIE["BLOGFAVACTION"])
+		if(isset($_COOKIE["BLOGFAVACTION"]) && $_COOKIE["BLOGFAVACTION"])
 			echo "<p align='center' class='b2'>[<a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favpaste&pid=".$rootpid."\">粘贴到根目录</a>]</p>\n";
 ?>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=adddir" method="post" onsubmit="if(this.dir.value==''){alert('请输入目录名!');return false;}">
@@ -754,7 +754,7 @@ Blog名
 <tr>
 	<td class="t3">首页其他信息(支持HTML语法和JavaScript)</td>
 	<td class="t5">
-	<textarea name="userinfor" id="userinfor" class="f1" rows=10 cols=50><?php echo htmlspecialchars($pc[INFOR]); ?></textarea>
+	<textarea name="userinfor" id="userinfor" class="f1" rows=10 cols=50><?php echo htmlspecialchars($pc["INFOR"]); ?></textarea>
 	</td>
 </tr>
 <tr>
@@ -771,9 +771,18 @@ Blog名
 	}
 	
 	$userid = addslashes($_GET["userid"]);
-	$pid = (int)($_GET["pid"]);
-	$tag = (int)($_GET["tag"]);
-	$tid = (int)($_GET["tid"]);
+	if(isset($_GET["pid"]))
+		$pid = intval($_GET["pid"]);
+	else
+		$pid = 0;
+	if(isset($_GET["tag"]))
+		$tag = intval($_GET["tag"]);
+	else
+		$tag = 0;
+	if(isset($_GET["tid"]))
+		$tid = intval($_GET["tid"]);
+	else
+		$tid = 0;
 		
 	$link = pc_db_connect();
 	$pc = pc_load_infor($link,$userid);
@@ -784,12 +793,15 @@ Blog名
 		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
+	$f_err = "";
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
-		if($_GET["act"] == "addfriend")
-			$f_err = add_friend($pc);
-		if($_GET["act"] == "delfriend")
-			del_friend($pc);
+		if(isset($_GET["act"])) {
+			if($_GET["act"] == "addfriend")
+				$f_err = add_friend($pc);
+			if($_GET["act"] == "delfriend")
+				del_friend($pc);
+		}
 	}	
 	
 	$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
@@ -814,7 +826,11 @@ Blog名
 		$blogMenus = pc_blog_menu($link,$pc,$tag);
 		if(!$pc["DEFAULTTOPIC"] && $tag == 0 && !$tid)
 			$tid = $blogMenus[0]["TID"];
-	}	
+	}
+	else
+	{
+		$blogMenus = NULL;
+	}
 	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 ?>
@@ -898,10 +914,18 @@ Blog名
 <tr>
 	<td align="left" valign="top">
 <?php
+	if(isset($_GET["order"]))
+		$order = $_GET["order"];
+	else
+		$order = "";
+	if(isset($_GET["pno"]))
+		$pno = $_GET["pno"];
+	else
+		$pno = 0;
 	if($tag == 3)
-		display_fav_folder($link,$pc,$pid,$pur,addslashes($_GET["order"]));
+		display_fav_folder($link,$pc,$pid,$pur,addslashes($order));
 	elseif($tag < 5 )
-		display_art_list($link,$pc,$tag,$pur,$tid,addslashes($_GET["order"]),$_GET["pno"]);
+		display_art_list($link,$pc,$tag,$pur,$tid,addslashes($order),$pno);
 	elseif($tag == 5)
 		display_friend_manage($pc,$f_err);
 	elseif($tag == 6)

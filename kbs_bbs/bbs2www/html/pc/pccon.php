@@ -170,28 +170,28 @@
 <?php
 		for($i = 0;$i < $re_num ;$i++)
 		{
-			$contentcss = ($rows[htmltag])?"contentwithhtml":"content";
+			$contentcss = ($rows["htmltag"])?"contentwithhtml":"content";
 			if($i%2==0)
 				$tdclass= array("t8","t10","t11");
 			else
 				$tdclass= array("t5","t12","t13");
 			$rows = mysql_fetch_array($result);
 			echo "<tr>\n<td class=\"".$tdclass[1]."\">&nbsp;".
-				"<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n".
-				"<a href=\"pcshowcom.php?cid=".$rows[cid]."\">".
-				html_format($rows[subject]).
+				"<img src=\"icon/".$rows["emote"].".gif\" border=\"0\" align=\"absmiddle\">\n".
+				"<a href=\"pcshowcom.php?cid=".$rows["cid"]."\">".
+				html_format($rows["subject"]).
 				"</a>".
-				"[<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a> 于 ".time_format($rows[created])." 提到]\n";
-			if($perm || strtolower($rows[username]) == strtolower($currentuser["userid"]) || pc_is_manager($currentuser) )
+				"[<a href=\"/bbsqry.php?userid=".$rows["username"]."\">".$rows["username"]."</a> 于 ".time_format($rows["created"])." 提到]\n";
+			if($perm || strtolower($rows["username"]) == strtolower($currentuser["userid"]) || pc_is_manager($currentuser) )
 				echo "[<a href=\"#\" onclick=\"bbsconfirm('pceditcom.php?act=del&cid=".$rows[cid]."','确认删除?')\">删</a>]\n";
-			if(strtolower($rows[username]) == strtolower($currentuser["userid"]))
-				echo "[<a href=\"pceditcom.php?act=edit&cid=".$rows[cid]."\">改</a>]\n";
+			if(strtolower($rows["username"]) == strtolower($currentuser["userid"]))
+				echo "[<a href=\"pceditcom.php?act=edit&cid=".$rows["cid"]."\">改</a>]\n";
 			echo "</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\"><font class=\"f4\">".($i+1)."</font>&nbsp;&nbsp;</td>\n</tr>\n";
 			if($spr)
 			{
 				echo "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\"><font class='".$contentcss."'>".
-					html_format($rows[body],TRUE,$rows[htmltag])."</font></td>\n</tr>\n".
-					"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: ".pc_hide_ip($rows[hostname])."]".
+					html_format($rows["body"],TRUE,$rows["htmltag"])."</font></td>\n</tr>\n".
+					"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: ".pc_hide_ip($rows["hostname"])."]".
 					"</td>\n</tr>\n";
 			}	
 		}
@@ -204,9 +204,9 @@
 	
 	$id = (int)($_GET["id"]);
 	$nid = (int)($_GET["nid"]);
-	$pid = (int)($_GET["pid"]);
-	$tag = (int)($_GET["tag"]);
-	$tid = (int)($_GET["tid"]);
+	@$pid = (int)($_GET["pid"]);
+	@$tag = (int)($_GET["tag"]);
+	@$tid = (int)($_GET["tid"]);
 	
 	if($_GET["s"]=="all")
 		$spr = TRUE;
@@ -214,7 +214,7 @@
 		$spr = FALSE;
 	
 	$link = pc_db_connect();
-	if( $_GET["p"] == "p" || $_GET["p"] == "n" )
+	if( @$_GET["p"] == "p" || @$_GET["p"] == "n" )
 	{
 		if( $_GET["p"] == "p" )
 		{
@@ -243,7 +243,7 @@
 	}
 	
 	
-	if( $err_alert )
+	if( @$err_alert )
 		echo "<script language=\"javascript\">alert(\"".$err_alert."\");</script>";
 	
 	$userPermission = pc_get_user_permission($currentuser,$pc);
@@ -267,31 +267,31 @@
 	}
 	
 	if ($pc['USER'] != '_filter') {
-    	if(!$tags[$rows[access]])
+    	if(!$tags[$rows["access"]])
     	{
     		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
     		html_error_quit("对不起，您无权查看该文章!");
     		exit();
     	}
-    	$nid = $rows[nid];
-	    $tid = $rows[tid];
-	    $author = $pc['USER'];
+    	$nid = $rows["nid"];
+	    $tid = $rows["tid"];
+	    $author = $pc["USER"];
 
-        if (pc_is_groupwork($pc) && $rows[publisher])
-            $author = $rows[publisher];
+        if (pc_is_groupwork($pc) && $rows["publisher"])
+            $author = $rows["publisher"];
         else
             $author = $pc["USER"];
 	}
 	else {
 	    $nid = $rows[fid];
 	    $tid = 0;
-	    if (pc_is_groupwork($pc) && $rows[publisher])
-            $author = $rows[publisher];
+	    if (pc_is_groupwork($pc) && $rows["publisher"])
+            $author = $rows["publisher"];
         else
-            $author = $rows[username];
+            $author = $rows["username"];
 	}
 	
-	if(!($pur == 3 && !pc_is_groupwork($pc)) && $rows[nodetype] == 0)
+	if(!($pur == 3 && !pc_is_groupwork($pc)) && $rows["nodetype"] == 0)
 	{
 		pc_counter($link);
 		pc_ncounter($link,$nid);

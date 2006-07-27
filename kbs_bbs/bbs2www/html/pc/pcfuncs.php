@@ -27,7 +27,6 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 	global $_COOKIE;
 	global $cachemode;
 	global $currentuser;
-	global $cssFile;
 	bbs_session_modify_user_mode(BBS_MODE_BLOG);
 	if ($cachemode=="") 
 	{
@@ -458,14 +457,13 @@ function pc_db_close($link)
 
 function pc_load_infor($link,$userid=FALSE,$uid=0)
 {
-	global $cssFile;
 	global $currentuser;
 	if (!$userid && !$uid)
 		return FALSE;
 	if($userid)
 		$query = "SELECT *,UNIX_TIMESTAMP(`createtime`) 'ts_createtime' FROM users WHERE `username`= '".addslashes($userid)."'  LIMIT 0,1;";
 	else
-		$query = "SELECT * FROM users WHERE `uid` = '".intval($uid)."' LIMIT 0,1;";
+		$query = "SELECT *,UNIX_TIMESTAMP(`createtime`) 'ts_createtime' FROM users WHERE `uid` = '".intval($uid)."' LIMIT 0,1;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
@@ -473,42 +471,36 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 		return FALSE;
 	else
 	{
-		$pcThem = pc_get_theme($rows[theme]);
+		$pcThem = pc_get_theme($rows["theme"]);
 		$pc = array(
-			"NAME" => html_format($rows[corpusname]),
-			"USER" => $rows[username],
-			"UID" => $rows[uid],
-			"DESC" => html_format($rows[description]),
+			"NAME" => html_format($rows["corpusname"]),
+			"USER" => $rows["username"],
+			"UID" => $rows["uid"],
+			"DESC" => html_format($rows["description"]),
 			"THEM" => $pcThem,
-			"TIME" => $rows[createtime],
-			"TS_TIME" => $rows[ts_createtime],
-			"VISIT" => $rows[visitcount],
-			"CREATED" => $rows[createtime],
-			"MODIFY" => $rows[modifytime],
-			"NODES" => $rows[nodescount],
-			"NLIM" => $rows[nodelimit],
-			"DLIM" => $rows[dirlimit],
-			"STYLE" => pc_style_array($rows[style]),
-			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
-			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage])),
-			"LINKS" => pc_get_links(stripslashes($rows[links])),
-			"EDITOR" => $rows[htmleditor],
-			"INDEX" => array("nodeNum"=> $rows[indexnodes],"nodeChars" => $rows[indexnodechars]),
-			"CSSFILE" => htmlspecialchars(stripslashes($rows[cssfile])),
-			"EMAIL" => htmlspecialchars(stripslashes($rows[useremail])),
-			"FAVMODE" => (int)($rows[favmode]),
-			"UPDATE" => (int)($rows[updatetime]),
-			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor])),
-			"TYPE" => $rows[pctype],
-			"DEFAULTTOPIC" => $rows[defaulttopic],
-			"TMPSAVE" => $rows[tempsave],
-			"FILELIMIT" => intval($rows[userfile]),
-			"FILENUMLIMIT" => intval($rows[filelimit])
+			"TIME" => $rows["createtime"],
+			"TS_TIME" => $rows["ts_createtime"],
+			"VISIT" => $rows["visitcount"],
+			"CREATED" => $rows["createtime"],
+			"MODIFY" => $rows["modifytime"],
+			"NODES" => $rows["nodescount"],
+			"NLIM" => $rows["nodelimit"],
+			"DLIM" => $rows["dirlimit"],
+			"STYLE" => pc_style_array($rows["style"]),
+			"LOGO" => str_replace("<","&lt;",stripslashes($rows["logoimage"])),
+			"BKIMG" => str_replace("<","&lt;",stripslashes($rows["backimage"])),
+			"LINKS" => pc_get_links(stripslashes($rows["links"])),
+			"EDITOR" => $rows["htmleditor"],
+			"INDEX" => array("nodeNum"=> $rows["indexnodes"],"nodeChars" => $rows["indexnodechars"]),
+			"EMAIL" => htmlspecialchars(stripslashes($rows["useremail"])),
+			"FAVMODE" => (int)($rows["favmode"]),
+			"UPDATE" => (int)($rows["updatetime"]),
+			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows["userinfor"])),
+			"TYPE" => $rows["pctype"],
+			"DEFAULTTOPIC" => $rows["defaulttopic"],
+			"FILELIMIT" => intval($rows["userfile"]),
+			"FILENUMLIMIT" => intval($rows["filelimit"])
 			);
-	if($pc["CSSFILE"])
-		$cssFile = $pc["CSSFILE"];
-	else
-		$cssFile = "";
 	
 	if($pc["TYPE"] == 9) 
 	    if (!pc_is_manager($currentuser))
@@ -591,10 +583,10 @@ function pc_blog_menu($link,$pc,$tag=9)
 	while($rows = mysql_fetch_array($result))
 	{
 		$blog[] = array(
-				"TID" => $rows[tid],
-				"NAME" => $rows[topicname],
-				"SEQ" => $rows[sequen],
-				"TAG" => $rows[access]
+				"TID" => $rows["tid"],
+				"NAME" => $rows["topicname"],
+				"SEQ" => $rows["sequen"],
+				"TAG" => $rows["access"]
 				);
 	}
 	mysql_free_result($result);
@@ -1251,7 +1243,7 @@ function pc_fav_rootpid($link,$uid)
 	if(!$rows)
 		return FALSE;
 	mysql_free_result($result);	
-	return $rows[nid];
+	return $rows["nid"];
 }
 
 //一个Blog是否为群体BLOG
