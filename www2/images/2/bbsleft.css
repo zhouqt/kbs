@@ -3,6 +3,7 @@ body {
 	background-image: url('menuback.gif');
 	background-repeat: no-repeat;
 	background-position: bottom;
+	background-attachment: fixed;
 	FONT-SIZE: 12px; 
 	COLOR: #000000;
 	scrollbar-3dlight-color:#170708;
