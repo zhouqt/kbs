@@ -5221,7 +5221,7 @@ static char* read_top_ent(char *buf,int num,struct fileheader *fh,struct filehea
     time_t ftime;
     type=get_article_flag(fh,getCurrentUser(),currboard->filename,0,NULL,getSession());
     if((ftime=get_posttime(fh))>740000000)
-        snprintf(date,7,"%s",ctime(&ftime+4));
+        snprintf(date,7,"%s",ctime(&ftime)+4);
     else
         date[0]=0;
     attachch=((fh->attachment)?'@':' ');
