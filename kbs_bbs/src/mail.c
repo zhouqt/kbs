@@ -1350,7 +1350,7 @@ int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extr
             sprintf(genbuf, "tmp/bm.%s", getCurrentUser()->userid);
             f_cp(fname, genbuf, 0);
         }
-        sprintf(genbuf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
+        sprintf(genbuf, " 已将该文章存入暂存档, 请按 ENTER 键以继续 << ");
         a_prompt(-1, genbuf, ans);
     }
     clear();
