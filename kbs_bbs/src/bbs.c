@@ -762,7 +762,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     time_t filetime;
     char date[20];
     char TITLE[ARTICLE_TITLE_LEN+30];
-//	char TITLE[256];
+    int titlelen;
     int type;
     int manager;
     char typeprefix[20];
@@ -839,9 +839,13 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         attachch[0]=' ';
 	attachch[1]='\0';
 #endif
+    titlelen = scr_cols > 80 ? scr_cols - 80 + 45 : 45;
+    if (titlelen > ARTICLE_TITLE_LEN) {
+        titlelen = ARTICLE_TITLE_LEN - 1;
+    }
     if (! DEFINE(getCurrentUser(), DEF_SHOWSIZE) && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK){
 		char sizebuf[30];
-		strnzhcpy(TITLE, ent->title, 38);
+		strnzhcpy(TITLE, ent->title, titlelen - 7);
 		if(ent->eff_size < 1000)
 			sprintf(sizebuf,"(%d)", ent->eff_size);
 		else if(ent->eff_size < 1000000){
@@ -851,7 +855,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 		}
 		strcat(TITLE, sizebuf);
 	}else {
-		strnzhcpy(TITLE, ent->title, 45);
+		strnzhcpy(TITLE, ent->title, titlelen);
 	}
 //    TITLE = ent->title;         /*ÎÄÕÂ±êÌâTITLE */
 //	sprintf(TITLE,"%s(%d)",ent->title,ent->eff_size);
