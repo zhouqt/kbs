@@ -1175,7 +1175,7 @@ int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     if ((fileinfo->owner[0] == '-') 
         && (arg->readmode != DIR_MODE_DELETED) 
         && (arg->readmode != DIR_MODE_JUNK) )
-	    return DONOTHING;
+	    return ret;
 
     clear();
     strcpy(buf, read_getcurrdirect(conf));
