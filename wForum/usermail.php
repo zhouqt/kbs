@@ -90,11 +90,9 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
                 </tr>
                 <tr>
                     <td  class=TableBody1 valign=top align=left>
-					<b>
 <?php
 					echo dvbcode(bbs_printansifile($filename,1,"bbsmailcon.php?" . $_SERVER['QUERY_STRING']),0,'TableBody2');
 ?>
-	</b>
 	&nbsp;
                     </td>
                 </tr>
