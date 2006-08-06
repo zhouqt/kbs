@@ -876,7 +876,7 @@ function pc_counter($link)
 	global $pc,$currentuser;
 	if(!$pc || !is_array($pc))
 		return FALSE;
-	$visitcount = $_COOKIE["BLOGVISITCOUNT"];
+	@$visitcount = $_COOKIE["BLOGVISITCOUNT"];
 	$action = $currentuser["userid"]." visit ".$pc["USER"]."'s Blog(www)";
 	if(!$visitcount)
 	{
