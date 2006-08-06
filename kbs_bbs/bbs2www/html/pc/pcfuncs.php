@@ -928,7 +928,7 @@ function pc_node_counter($link,$nid)
 
 function pc_ncounter($link,$nid)
 {
-	if(!$_COOKIE["BLOGREADNODES"])
+	if(!@$_COOKIE["BLOGREADNODES"])
 	{
 		$readnodes = ",".$nid.",";
 		setcookie("BLOGREADNODES",$readnodes);
