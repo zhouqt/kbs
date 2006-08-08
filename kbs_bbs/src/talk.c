@@ -1682,18 +1682,34 @@ char *uident;
     uid = searchuser(uident);
     if (uid == 0)
         return -1;
-    if (myfriend(uid, NULL,getSession()))
-        return -1;
-    if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND) {
-        strcpy(tmp.id, uident);
+
+    strcpy(tmp.id, uident);
+
+    if (myfriend(uid, NULL,getSession())){
         move(2, 0);
         clrtoeol();
-        sprintf(genbuf, "请输入给好友【%s】的说明: ", tmp.id);
-        getdata(2, 0, genbuf, tmp.exp, 15, DOECHO, NULL, true);
+
+				prints("用户【%s】已经在您的好友名单中!\n", tmp.id);
+				pressanykey();
+        return -1;
+      }
+    if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND) {
+        move(2, 0);
+        clrtoeol();
+
+        char ans[3];
+        sprintf(buf, "确实要增加用户【%s】为好友吗?(Y/N) [N]: ", tmp.id);
+        getdata(0, 0, buf, ans, sizeof(ans), DOECHO, NULL, true);
+				if (ans[0] == 'Y' || ans[0] == 'y'){
+	        sprintf(genbuf, "请输入给好友【%s】的说明: ", tmp.id);
+	        getdata(2, 0, genbuf, tmp.exp, 15, DOECHO, NULL, true);
+				}
+				else{
+				  return -1;
+				}
     } else {
         move(t_lines - 2, 0);
         clrtoeol();
-        strcpy(tmp.id, uident);
         sprintf(genbuf, "请输入给好友【%s】的说明: ", tmp.id);
         getdata(t_lines - 2, 0, genbuf, tmp.exp, 15, DOECHO, NULL, true);
     }
