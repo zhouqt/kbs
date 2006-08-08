@@ -108,7 +108,8 @@ const char * const user_definestr[] = {
     "显示真实用户数据(wForum)", /*DEF_SHOWREALUSERDATA 2003.7.31 */
 	"",
     "隐藏ip",                 /* DEF_HIDEIP */
-    "不显示文章字节数"        /* DEF_SHOWSIZE */
+    "不显示文章字节数",       /* DEF_SHOWSIZE */
+    "BLOG不允许匿名评论"      /* DEF_BLOGANONYCOMMENT */
 };
 #endif
 
