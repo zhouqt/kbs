@@ -48,13 +48,13 @@ var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
 		$bc = array();
 		while($rows = mysql_fetch_array($result))
 		{
-			$dvlt = substr(time_mysql($rows[created]),0,8);
-			if(!$bc[$dvlt])
+			$dvlt = substr(time_mysql($rows["created"]),0,8);
+			if(!@$bc[$dvlt])
 			{
-				$bc[$dvlt] = $rows[nid] ;
+				$bc[$dvlt] = $rows["nid"] ;
 				
 ?>
-blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows[nid]); ?>;
+blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows["nid"]); ?>;
 <?php			
 			}
 			else
