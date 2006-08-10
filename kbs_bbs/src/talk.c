@@ -529,15 +529,8 @@ int t_query(char* q_id)
             case 'O':
                 if (!strcmp("guest", getCurrentUser()->userid))
                     break;
-                if (addtooverride(uident) == -1)
-                    sprintf(buf, "%s 已在朋友名单", uident);
-                else
-                    sprintf(buf, "%s 列入朋友名单", uident);
-                move(BBS_PAGESIZE + 3, 0);
-                clrtoeol();
-                prints("%s", buf);
-                refresh();
-                sleep(1);
+                clear();
+                addtooverride(uident);
                 break;
             case 'D':
                 if (!strcmp("guest", getCurrentUser()->userid))
