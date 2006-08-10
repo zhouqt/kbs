@@ -4,52 +4,7 @@
 	** @id:windinsn nov 27,2003
 	*/
 	require("pcfuncs.php");
-	function pc_add_new_comment($nid,$alert)
-	{
-?>
-<center>
-<table cellspacing="0" cellpadding="5" width="500" border="0" class="t1">
-<tr>
-	<td class="t5"><strong>发表评论 </strong>
-	<?php if($alert){ ?>
-	<font class=f4>
-	注意：仅有本站登录用户才能发表评论。<br />
-	<?php bbs_login_form(); ?>
-	</font>
-	<?php } ?>
-	</td>
-</tr>
-<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
-<tr>
-	<td class="t8">
-	主题
-	<input type="text" name="subject" maxlength="200" size="60" class="f1">
-	</td>
-</tr>
-<tr>
-	<td class="t13">心情符号</td>
-</tr>
-<tr>
-	<td class="t5"><?php @require("emote.html"); ?></td>
-</tr>
-<tr>
-	<td class="t11">内容
-	<input type="hidden" name="htmltag" value=0>
-	</td>
-</tr>
-<tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="60" rows="10" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
-</tr>
-<tr>
-	<td class="t5">
-	<input type="submit" value="发表评论" class="f1">
-	<input type="button" value="返回上页" class="f1" onclick="history.go(-1)">
-	<input type="button" value="使用HTML编辑器" class="f1" onclick="window.location.href='pccom.php?act=pst&nid=<?php echo $nid; ?>';">
-</tr>
-</table>
-</form></center>
-<?php		
-	}
+	
 	$cid = (int)($_GET["cid"]);
 	
 	$link = pc_db_connect();
@@ -81,6 +36,64 @@
 		html_error_quit("对不起，您要查看的Blog不存在");   
                	exit();   
         }
+	
+	function pc_add_new_comment($nid,$alert)
+	{
+		global $pc, $currentuser;
+?>
+<center>
+<table cellspacing="0" cellpadding="5" width="500" border="0" class="t1">
+<tr>
+	<td class="t5"><strong>发表评论 </strong>
+	<?php if($alert && !$pc["ANONYCOMMENT"]){ ?>
+	<font class=f4>
+	注意：仅有本站登录用户才能发表评论。<br />
+	<?php bbs_login_form(); ?>
+	</font>
+	<?php } ?>
+	</td>
+</tr>
+<?php
+		if($alert && !$pc["ANONYCOMMENT"]) {
+			echo '</table><br/><br/>';
+			return;
+		}
+?>
+<form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
+<tr>
+	<td class="t8">
+	主题
+	<input type="text" name="subject" maxlength="200" size="60" class="f1">
+	</td>
+</tr>
+<tr>
+	<td class="t13">心情符号</td>
+</tr>
+<tr>
+	<td class="t5"><?php @require("emote.html"); ?></td>
+</tr>
+<tr>
+	<td class="t11">内容
+<?php
+		if(strtolower($currentuser["userid"]) == "guest")
+			print("<br><span style=\"color:#FF0000\">您没有登录，现在是匿名评论，一旦发表将无法修改。</span>");
+?>
+	<input type="hidden" name="htmltag" value=0>
+	</td>
+</tr>
+<tr>
+	<td class="t8"><textarea name="blogbody" class="f1" cols="60" rows="10" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"></textarea></td>
+</tr>
+<tr>
+	<td class="t5">
+	<input type="submit" value="发表评论" class="f1">
+	<input type="button" value="返回上页" class="f1" onclick="history.go(-1)">
+	<input type="button" value="使用HTML编辑器" class="f1" onclick="window.location.href='pccom.php?act=pst&nid=<?php echo $nid; ?>';">
+</tr>
+</table>
+</form></center>
+<?php		
+	}
                
         $userPermission = pc_get_user_permission($currentuser,$pc);
 	$sec = $userPermission["sec"];

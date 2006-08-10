@@ -14,6 +14,14 @@ function pcmain_hot_users($link,$period,$color)
 		     "\n<a href=\"/bbsqry.php?userid=".$users[$i]["username"]."\"><font class=low2>".$users[$i]["username"]."</font></a><br />";
 }
 
+function pcmain_score_top_users($link, $color)
+{
+	$users = getScoreTopUsers($link, 50);
+	for($i = 0;$i < count($users) ; $i ++)
+		echo "<font color=\"".$color."\">".($i+1)."</font>&nbsp;<a href=\"/pc/index.php?id=".$users[$i]["username"]."\" title=\"".htmlspecialchars($users[$i]["corpusname"])."\">".html_format(html_format_fix_length($users[$i]["corpusname"],20))."</a>".
+		     "\n<a href=\"/bbsqry.php?userid=".$users[$i]["username"]."\"><font class=low2>".$users[$i]["username"]."</font></a><br />";
+}
+
 function pcmain_hot_nodes($link,$period,$color)
 {
 	$nodes = getHotNodesByPeriod($link,$period,50);
@@ -177,7 +185,12 @@ pcmain_html_init();
 				</tr>
 				<tr>
 					<td align="left" class="td3">
-					<?php pcmain_hot_users($link,"all","#4cb81c"); ?>
+<?php 
+	if(defined("_BLOG_SCORE_STAT_"))
+		pcmain_score_top_users($link, "#4cb81c");
+	else
+		pcmain_hot_users($link,"all","#4cb81c");
+?>
 					</td>			
 				</tr>
 			</table>

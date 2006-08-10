@@ -499,7 +499,8 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"TYPE" => $rows["pctype"],
 			"DEFAULTTOPIC" => $rows["defaulttopic"],
 			"FILELIMIT" => intval($rows["userfile"]),
-			"FILENUMLIMIT" => intval($rows["filelimit"])
+			"FILENUMLIMIT" => intval($rows["filelimit"]),
+			"ANONYCOMMENT" => defined("_BLOG_ANONY_COMMENT_")
 			);
 	
 	if($pc["TYPE"] == 9) 

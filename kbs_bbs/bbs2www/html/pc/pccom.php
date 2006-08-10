@@ -5,26 +5,38 @@
 	*/
 	require("pcfuncs.php");
 	
-	if ($loginok != 1)
-		html_nologin();
-	elseif(!strcmp($currentuser["userid"],"guest"))
-	{
-		html_init("gb2312");
-		html_error_quit("guest 不能发表评论!\n<br>\n<a href=\"/\" target=\"_top\">现在登录</a>");
-		exit();
+	$nid = (int)($_GET["nid"]);
+	$act = $_GET["act"];
+	@$cid = (int)($_GET["cid"]);
+		
+	$link =	pc_db_connect();
+	$query = "SELECT `access`,`uid` FROM nodes WHERE `nid` = '".$nid."' AND `type` != '1' AND `comment` != '0';";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
+		
+	$pc = pc_load_infor($link,"",$rows["uid"]);
+	if(!$pc)
+        {
+               	html_error_quit("对不起，您要查看的Blog不存在");
+               	exit();
+        }
+
+	if(!$pc["ANONYCOMMENT"]) {
+		if ($loginok != 1) {
+			html_nologin();
+			exit;
+		}
+		elseif(!strcmp($currentuser["userid"],"guest"))
+		{
+			html_init("gb2312");
+			html_error_quit("guest 不能发表评论!\n<br>\n<a href=\"/\" target=\"_top\">现在登录</a>");
+			exit();
+		}
 	}
 	else
 	{
 		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",1);		
-		$nid = (int)($_GET["nid"]);
-		$act = $_GET["act"];
-		@$cid = (int)($_GET["cid"]);
-		
-		$link =	pc_db_connect();
-		$query = "SELECT `access`,`uid` FROM nodes WHERE `nid` = '".$nid."' AND `type` != '1' AND `comment` != '0';";
-		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
-		mysql_free_result($result);
 		
 		if(!$rows)
 		{
@@ -34,18 +46,13 @@
 		
 		$uid = $rows["uid"];
 		
-		if(!pc_can_comment($link , $uid))
-		{
-			html_error_quit("对不起，您尚无该BLOG的评论权限！");
-			exit();
-		}	
+		if(!$pc["ANONYCOMMENT"])
+			if(!pc_can_comment($link , $uid))
+			{
+				html_error_quit("对不起，您尚无该BLOG的评论权限！");
+				exit();
+			}	
 		
-		$pc = pc_load_infor($link,"",$rows["uid"]);
-		if(!$pc)
-	        {
-	               	html_error_quit("对不起，您要查看的Blog不存在");
-	               	exit();
-	        }
 	               
 	        $userPermission = pc_get_user_permission($currentuser,$pc);
 		$sec = $userPermission["sec"];

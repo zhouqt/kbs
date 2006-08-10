@@ -38,7 +38,10 @@ function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
 	//$mostVstUsers = getHotUsersByPeriod($link,'day',_PCMAIN_USERS_NUM_); //每日热门
-	$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
+	if(defined("_BLOG_SCORE_STAT_"))
+		$mostVstUsers = getScoreTopUsers($link, _PCMAIN_USERS_NUM_);
+	else
+		$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
 ?>
 <ul>
 <?php
@@ -410,7 +413,7 @@ if (top.location != self.location && !top.location.href.match(reg)) {
               <td class="channelback"><table width="100%"  border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="channel">热门BLOG</td>
-                  <td align="right" class="more"><a href="pc.php?order=visitcount&order1=DESC"><font class="more">更多</font></a></td>
+                  <td align="right" class="more"><a href="pc.php?order=<?php echo defined("_BLOG_SCORE_STAT_")?"score":"visitcount"; ?>&order1=DESC"><font class="more">更多</font></a></td>
               </tr>
               </table></td>
             </tr>
@@ -418,8 +421,8 @@ if (top.location != self.location && !top.location.href.match(reg)) {
               <td align="left" valign="top" bgcolor="#F6F6F6" class="td">
 		<?php pcmain_blog_top_ten(); ?>
 	      <center>
-	      [<a href="pc.php?order=visitcount&order1=DESC" class="low2">更多</a>]
-	      [<a href="opml.php?t=1" class="low2">OPML</a>]
+	      [<a href="pc.php?order=<?php echo defined("_BLOG_SCORE_STAT_")?"score":"visitcount"; ?>&order1=DESC" class="low2">更多</a>]
+	      [<a href="opml.php?t=<?php echo defined("_BLOG_SCORE_STAT_")?"3":"1"; ?>" class="low2">OPML</a>]
 	      </center>
 	      </td>
           </tr>

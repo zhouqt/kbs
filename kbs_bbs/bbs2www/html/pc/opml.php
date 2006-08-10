@@ -37,7 +37,12 @@ if(pc_update_cache_header())
 $type = 0;
 @$type = intval( $_GET["t"]);
 $link = pc_db_connect();
-if($type == 2) //新用户
+if($type == 3) //积分最高
+{
+	$blogs = getScoreTopUsers($link, 100);
+	$opmlTitle = $pcconfig["BBSNAME"] . "BLOG热门用户组";
+}
+elseif($type == 2) //新用户
 {
 	$blogs = getNewUsers($link,100);
 	$opmlTitle = $pcconfig["BBSNAME"] . "BLOG新用户组";

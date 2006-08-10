@@ -7,12 +7,15 @@
 	
 	function pc_add_new_comment($pc,$nid,$alert)
 	{
+		global $currentuser;
 ?>
 <center>
 <table cellspacing="0" cellpadding="5" width="500" border="0" class="t1">
 <tr>
 	<td class="t5"><strong>发表评论 </strong>
-	<?php if($alert){ ?>
+<?php
+	if($alert && !$pc["ANONYCOMMENT"]) {
+?>
 	<font class=f4>
 	注意：仅有本站登录用户才能发表评论<br />
 	<?php bbs_login_form(); ?>
@@ -21,7 +24,7 @@
 	</td>
 </tr>
 <?php
-		if($alert){
+		if($alert && !$pc["ANONYCOMMENT"]) {
 			echo '</table><br/><br/>';
 			return;
 		}
@@ -41,6 +44,10 @@
 </tr>
 <tr>
 	<td class="t11">内容
+<?php
+		if(strtolower($currentuser["userid"]) == "guest")
+			print("<br><span style=\"color:#FF0000\">您没有登录，现在是匿名评论，一旦发表将无法修改。</span>");
+?>
 	<input type="hidden" name="htmltag" value=0>
 	</td>
 </tr>
@@ -182,9 +189,9 @@
 				html_format($rows["subject"]).
 				"</a>".
 				"[<a href=\"/bbsqry.php?userid=".$rows["username"]."\">".$rows["username"]."</a> 于 ".time_format($rows["created"])." 提到]\n";
-			if($perm || strtolower($rows["username"]) == strtolower($currentuser["userid"]) || pc_is_manager($currentuser) )
+			if($perm || ((strtolower($rows["username"]) == strtolower($currentuser["userid"])) && (strtolower($rows["username"]) != "guest")) || pc_is_manager($currentuser) )
 				echo "[<a href=\"#\" onclick=\"bbsconfirm('pceditcom.php?act=del&cid=".$rows["cid"]."','确认删除?')\">删</a>]\n";
-			if(strtolower($rows["username"]) == strtolower($currentuser["userid"]))
+			if((strtolower($rows["username"]) == strtolower($currentuser["userid"])) && (strtolower($rows["username"]) != "guest"))
 				echo "[<a href=\"pceditcom.php?act=edit&cid=".$rows["cid"]."\">改</a>]\n";
 			echo "</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\"><font class=\"f4\">".($i+1)."</font>&nbsp;&nbsp;</td>\n</tr>\n";
 			if($spr)
