@@ -6,7 +6,8 @@ bin_PROGRAMS = poststat static usage Xhtml Bhtml listonline \
 	scanIP scanMODE listMODE ulevel \
 	mails genhot bonlinelog uonlinelog dayuserlog alluserlog \
 	gennewboard outdaybm process_invalid_mail bmerge rebuild_digest \
-	post_brdlog post_buse newpoststat genbplot sync_mailsize
+	post_brdlog post_buse newpoststat genbplot sync_mailsize \
+	blogstat
 
 EXTRA_DIST = urlencode.c
 EXTRA_PROGRAMS = 
