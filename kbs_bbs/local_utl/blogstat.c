@@ -58,15 +58,15 @@ void make_stat_data(char *statstr, long lastnum, int *statnums) {
     strcat(statstr, tmp);
 }
 
-int compare_visitcount(void *v1, void *v2) {
+int compare_visitcount(const void *v1, const void *v2) {
     return ((struct blogstat *)v2)->visitcount - ((struct blogstat *)v1)->visitcount;
 }
 
-int compare_visit30(void *v1, void *v2) {
+int compare_visit30(const void *v1, const void *v2) {
     return ((struct blogstat *)v2)->visit30 - ((struct blogstat *)v1)->visit30;
 }
 
-int compare_post30(void *v1, void *v2) {
+int compare_post30(const void *v1, const void *v2) {
     return ((struct blogstat *)v2)->post30 - ((struct blogstat *)v1)->post30;
 }
 
