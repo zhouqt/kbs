@@ -228,5 +228,11 @@ finish:
     return 0;
 }
 
+#else /* PERSONAL_CORP */
+
+int main() {
+    return 0;
+}
+
 #endif /* PERSONAL_CORP */
 
