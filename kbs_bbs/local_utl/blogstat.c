@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include "bbs.h"
 
+#ifdef PERSONAL_CORP
+
 struct blogstat {
     long uid; // 用户编号
     long visitcount; // 总访问量
@@ -225,3 +227,6 @@ finish:
         free(statdata);
     return 0;
 }
+
+#endif /* PERSONAL_CORP */
+
