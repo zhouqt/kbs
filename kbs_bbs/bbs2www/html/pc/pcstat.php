@@ -298,7 +298,7 @@ function getHotUsersByPeriod($link,$period,$num=10)
 
 function getScoreTopUsers($link, $num=10)
 {
-	$query = "SELECT `corpusname`,`uid`,`username`,`description` FROM `users` ORDER BY `score` DESC LIMIT 0,{$num}";
+	$query = "SELECT `corpusname`,`uid`,`username`,`description` FROM `users` WHERE `pctype`<2 ORDER BY `score` DESC LIMIT 0,{$num}";
 	$result = mysql_query($query, $link);
 	$users = array();
 	while($rows = mysql_fetch_array($result))
