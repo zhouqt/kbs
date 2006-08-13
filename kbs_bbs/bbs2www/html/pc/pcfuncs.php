@@ -500,7 +500,7 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"DEFAULTTOPIC" => $rows["defaulttopic"],
 			"FILELIMIT" => intval($rows["userfile"]),
 			"FILENUMLIMIT" => intval($rows["filelimit"]),
-			"ANONYCOMMENT" => defined("_BLOG_ANONY_COMMENT_")
+			"ANONYCOMMENT" => defined("_BLOG_ANONY_COMMENT_")?$rows["anonycomment"]:false
 			);
 	
 	if($pc["TYPE"] == 9) 

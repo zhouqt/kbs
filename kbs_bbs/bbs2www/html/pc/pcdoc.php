@@ -745,6 +745,18 @@ Blog名
 	<input type="input" name="indexnodechars" class=f1 size=5 maxlength=5 value="<?php echo $pc["INDEX"]["nodeChars"]; ?>">字节(设定0表示显示整篇文章)
 	</td>
 </tr>
+<?php
+		if(defined("_BLOG_ANONY_COMMENT_")) {
+?>
+<tr>
+	<td class="t3">是否允许匿名用户评论</td>
+	<td class="t5">
+		<input type="checkbox" name="anonycomment" value="yes" class=f1<?php echo $pc["ANONYCOMMENT"]?" checked":""; ?>>勾选表示允许匿名评论
+	</td>
+</tr>
+<?php
+		}
+?>
 <tr>
 	<td class="t3">设定黑名单</td>
 	<td class="t5">

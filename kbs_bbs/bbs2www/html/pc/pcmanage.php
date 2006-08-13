@@ -723,7 +723,10 @@
 			if($favmode != 1 && $favmode != 2)
 				$favmode = 0;
 			$tmpsave = ($_POST["pctmpsave"]==0)?0:1;
-			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes(trim($_POST["pcuseremail"]))."' , `userinfor` = '".addslashes(trim($_POST["userinfor"]))."' , `defaulttopic` = '".addslashes(trim($_POST["pcdefaulttopic"]))."'  WHERE `uid` = '".$pc["UID"]."';";	
+			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes(trim($_POST["pcuseremail"]))."' , `userinfor` = '".addslashes(trim($_POST["userinfor"]))."' , `defaulttopic` = '".addslashes(trim($_POST["pcdefaulttopic"]))."'";
+			if(defined("_BLOG_ANONY_COMMENT_"))
+				$query .= " , `anonycomment` = " . (($_POST["anonycomment"]=="yes")?"true":"false");
+			$query .= " WHERE `uid` = '".$pc["UID"]."';";	
 			mysql_query($query,$link);
 			
 			$log_action = "UPDATE SETTINGS";
