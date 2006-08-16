@@ -75,6 +75,8 @@ $pcconfig["SECTION"] = array(
 			"others" => "其他类别"
 			);
 
+//define("_BLOG_ANONY_COMMENT_", 1);  // 是否允许匿名评论
+
 //首页显示的一些参数
 define("_PCMAIN_TIME_LONG_" , 259200 ); //日志统计时长
 define("_PCMAIN_NODES_NUM_" , 20 );     //显示的日志数目
