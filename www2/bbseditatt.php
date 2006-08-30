@@ -15,7 +15,6 @@
 	}
 	$board = $brdarr["NAME"];
 
-	bbs_set_onboard($brdnum,1);
 	$usernum = $currentuser["index"];
 
 	$brd_encode = urlencode($board);
