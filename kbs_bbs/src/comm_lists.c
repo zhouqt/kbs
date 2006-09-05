@@ -136,6 +136,10 @@ int pc_add_user();
 int pc_choose_user();
 #endif
 
+int t_utmp();
+int t_wwwguest();
+int display_publicshm();
+
 /* etnlegend, 2005.11.27, 设定特定用户具有访问特定版面回收站权限接口 */
 int edit_board_delete_read_perm(void);
 
@@ -286,6 +290,11 @@ static const struct scommandlist sysconf_cmdlist[] = {
 	{"Personal", Personal},
 #endif
     {"DelView",edit_board_delete_read_perm},
+
+    {"ViewUTMP", t_utmp}, 
+    {"ViewWWWguest", t_wwwguest},
+    {"DisplayPublic", display_publicshm},
+     
     {NULL, NULL},
 };
 
