@@ -519,12 +519,13 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
                 return FULLUPDATE;
         }
         if ((fileinfo->attachment!=0)&&!(bh->flag&BOARD_ATTACH)) {
+            char ans[4];
             move(3, 0);
             clrtobot();
-            prints("\n\n                很抱歉，该版面不能发表带附件的文章...\n");
-            pressreturn();
-            clear();
-            return FULLUPDATE;
+            prints("\n\n  您要转贴的文章带有附件，而%s版不能粘贴附件。", bh->filename);
+            getdata(8, 2, "是否丢弃附件继续转贴 [y/N]: ", ans, 2, DOECHO, NULL, true);
+            if(!(ans[0]=='y'||ans[0]=='Y'))
+                return FULLUPDATE;
         }
         if (deny_me(getCurrentUser()->userid, bname) ) {    /* 版主禁止POST 检查 */
 			if( HAS_PERM(getCurrentUser(), PERM_SYSOP) ){

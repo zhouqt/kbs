@@ -860,16 +860,23 @@ static int getcross(const char *filepath, const char *quote_file, struct userec 
     } else if (mode == 2) {
         write_header(of, user, in_mail, toboard->filename, title, Anony, 0 /*写入 .posts */ ,session);
     }
-    while ((asize = -attach_fgets(buf, 256, inf)) != 0) {
-        if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
-            continue;           /* 避免引用重复 */
-        if(asize<0)
-            fprintf(of, "%s", buf);
-        else {
-            if (!attachok) {
-                return -1;
+    if(attachok) {
+        while ((asize = -attach_fgets(buf, 256, inf)) != 0) {
+            if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
+                continue;           /* 避免引用重复 */
+            if(asize<0)
+                fprintf(of, "%s", buf);
+            else {
+                put_attach(inf, of, asize);
             }
-            put_attach(inf, of, asize);
+        }
+    }
+    else {
+        while ((asize = skip_attach_fgets(buf, 256, inf)) != 0) {
+            if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
+                continue;           /* 避免引用重复 */
+            if(asize>0)
+                fprintf(of, "%s", buf);
         }
     }
     fclose(inf);
