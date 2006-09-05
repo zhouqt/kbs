@@ -1061,7 +1061,14 @@ int t_wwwguest()
 
    publicshm = get_publicshm();
    range = publicshm->www_guest_count;
-   choose(true, 0, wwwguest_title, wwwguest_key, show_wwwguestlist, wwwguest_query);
+   if(range == 0) {
+       clear();
+       move(5, 6);
+       prints("目前没有www guest在线。");
+       pressanykey();
+   }
+   else
+       choose(true, 0, wwwguest_title, wwwguest_key, show_wwwguestlist, wwwguest_query);
    return 0;
 }
 
