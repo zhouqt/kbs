@@ -12,6 +12,7 @@ int usercounter, real_user_names = 0;
 int range, page, readplan, num;
 struct user_info *user_record[USHM_SIZE];
 struct userec *user_data;
+struct WWW_GUEST_S *wg_record[MAX_WWW_GUEST];
 int t_users();
 int Show_Users();
 int print_title()
@@ -21,6 +22,20 @@ int print_title()
                    " 聊天[\x1b[1;32mt\x1b[m] 寄信[\x1b[1;32mm\x1b[m] 送讯息[\x1b[1;32ms\x1b[m] 加,减朋友[\x1b[1;32mo\x1b[m,\x1b[1;32md\x1b[m] 看说明档[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 切换模式 [\x1b[1;32mf\x1b[m] 求救[\x1b[1;32mh\x1b[m]");
     else
         docmdtitle((friendmode) ? "[好朋友列表]" : "[使用者列表]", " 聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 看说明档[→,r] 切换模式 [f] 求救[h]");
+    update_endline();
+    return 0;
+}
+
+int utmp_title()
+{
+    docmdtitle("[活动进程列表]", "  该功能在测试中，有任何问题请与\033[1;32mpig2532\033[m联系，谢谢。");
+    update_endline();
+    return 0;
+}
+
+int wwwguest_title()
+{
+    docmdtitle("[www guest 列表]", "  该功能在测试中，有任何问题请与\033[1;32mpig2532\033[m联系，谢谢。");
     update_endline();
     return 0;
 }
@@ -185,6 +200,24 @@ int fill_userlist()
    } range = i2;
     return i2 == 0 ? -1 : 1;
 }
+
+// load www guest list, pig2532 2006-9
+int fill_wglist()
+{
+    int count, i;
+
+    resolve_guest_table();
+    count = 0;
+    for(i=0; i<MAX_WWW_GUEST; i++)
+    {
+        if(wwwguest_shm->guest_entry[i].key > 0) {
+            wg_record[count] = &(wwwguest_shm->guest_entry[i]);
+            count++;
+        }
+    }
+    return 0;
+}
+
 char pagerchar(int usernum, struct user_info *user, int pager, int *isfriend)
 {
     if (pager & ALL_PAGER)
@@ -351,6 +384,64 @@ int do_userlist()
     }
 #undef FROMSTR    
 #undef FRIENDSIG    
+    return 0;
+}
+
+// show all utmp information, pig2532 2006-9
+int show_utmplist()
+{
+    int i, rn;
+    struct user_info uent;
+	struct boardheader *bp = NULL;
+    char stbuf[STRLEN];
+    
+    if (update_time + refreshtime < time(0)) {
+        fill_userlist();
+        update_time = time(0);
+    }
+    move(2, 0);
+	prints("\033[1;37;44m  序号 用户名        进程号 IP地址          当前状态");
+	clrtoeol();
+	prints("\033[m");
+    rn = 3;
+    for(i=0; i<BBS_PAGESIZE && i+page<range; i++) {
+        uent = *(user_record[i+page]);
+        move(rn, 0);
+        rn++;
+        bp = (struct boardheader *)getboard(uent.currentboard);
+        prints("  %4d %s%-12s\033[m %7d %-15s", i+page, uent.invisible?"\033[1;34m":"", uent.userid, uent.pid, uent.from);
+        if(bp)
+            prints(" %s", bp->filename);
+        prints(" %s", modestring(stbuf, uent.mode, uent.destuid, 0, ""));
+    }
+    return 0;
+}
+
+// show all www guest, pig2532 2006-9
+int show_wwwguestlist()
+{
+    int i, rn;
+    struct WWW_GUEST_S *wgentp;
+    unsigned char ip[4];
+    char ips[16];
+    struct boardheader *bp = NULL;
+
+    fill_wglist();
+    move(2, 0);
+    prints("\033[1;37;44m    序号 IP地址          登录时间                 所在版面");
+    clrtoeol();
+    prints("\033[m");
+    rn = 3;
+    for(i=0; i<BBS_PAGE_SIZE && i+page<range; i++) {
+        move(rn, 0);
+        rn++;
+        wgentp = wg_record[i+page];
+        memcpy(ip, &(wgentp->fromip), 4);
+        sprintf(ips, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+        bp = (struct boardheader *)getboard(wgentp->currentboard);
+        prints("   %5d %-15s %-24s %s", i+page, ips, ctime(&(wgentp->logintime)), bp?bp->filename:"");
+        clrtoeol();
+    }
     return 0;
 }
 
@@ -617,6 +708,20 @@ int allnum, pagenum;
     return 1;
 }
 
+int utmp_key(ch, allnum, pagenum)
+char ch;
+int allnum, pagenum;
+{
+    return 0;
+}
+
+int wwwguest_key(ch, allnum, pagenum)
+char ch;
+int allnum, pagenum;
+{
+    return 0;
+}
+
 int deal_key2(ch, allnum, pagenum)
 char ch;
 int allnum, pagenum;
@@ -796,6 +901,40 @@ int do_query(int star, int curr)
     }
     return 0;
 }
+
+int utmp_query(int star, int curr)
+{
+    struct user_info *uentp;
+    struct boardheader *bp = NULL;
+    
+    uentp = user_record[curr];
+    clear();
+    move(1, 0);
+    bp = (struct boardheader *)getboard(uentp->currentboard);
+    prints("%15s = %d\n", "用户号", uentp->uid);
+    prints("%15s = %s\n", "用户名", uentp->userid);
+    prints("%15s = %s\n", "真实姓名", uentp->realname);
+    prints("%15s = %d %s\n", "进程号", uentp->pid, (uentp->pid==1)?"(歪脖)":"");
+    prints("%15s = %s\n", "隐身状态", uentp->invisible?"ON":"OFF");
+    prints("%15s = %s\n", "呼叫器状态", uentp->pager?"ON":"OFF");
+    prints("%15s = %s\n", "聊天状态", uentp->in_chat?"正在聊天":"没有");
+    prints("%15s = %s\n", "当前状态", ModeType(uentp->mode));
+    prints("%15s = %s\n", "客户端IP地址", uentp->from);
+    prints("%15s = %s", "登录时间", ctime(&(uentp->logintime)));
+    prints("%15s = %s", "刷新时间", ctime(&(uentp->freshtime)));
+    prints("%15s = %s\n\n\n", "所在版面", bp?bp->filename:"没有");
+    clrtoeol();
+    return 0;
+}
+
+int wwwguest_query(int star, int curr)
+{
+    clear();
+    move(10, 10);
+    prints("没有什么可供查询的信息。");
+    return 0;
+}
+
 int do_query2(int star, int curr)
 {
     t_query(user_data[curr - star].userid);
@@ -904,6 +1043,28 @@ int t_users()
     clear();
     return 0;
 }
+
+int t_utmp()
+{
+    if(!HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) {
+        prints("您不具有查看该项目的权限（可见隐身）。");
+        pressanykey();
+    }
+    range = num_visible_users();
+    choose(true, 0, utmp_title, utmp_key, show_utmplist, utmp_query);
+    return 0;
+}
+
+int t_wwwguest()
+{
+   struct public_data *publicshm;
+
+   publicshm = get_publicshm();
+   range = publicshm->www_guest_count;
+   choose(true, 0, wwwguest_title, wwwguest_key, show_wwwguestlist, wwwguest_query);
+   return 0;
+}
+
 int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), int (*list_show) (), int (*read) ())
 {
     int ch, number, deal;
@@ -1053,4 +1214,27 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
     }
     set_alarm(0, 0, NULL, NULL);
     return -1;
+}
+
+int display_publicshm()
+{
+    struct public_data *publicshm;
+
+    publicshm = get_publicshm();
+    clear();
+    move(1, 0);
+    prints("  \033[1;33m当前系统状态\033[m\n\n");
+    prints("    系统时间 : \033[1;32m%s\033[m", ctime(&(publicshm->nowtime)));
+    prints("    系统缓存版本 : \033[1;32m%d\033[m\n", publicshm->sysconfimg_version);
+    prints("    www guest数量 : \033[1;32m%d\033[m\n", publicshm->www_guest_count);
+    prints("    最高用户数 : \033[1;32m%d\033[m\n", publicshm->max_user);
+    prints("    最高www guest数 : \033[1;32m%d\033[m\n", publicshm->max_wwwguest);
+    prints("    上站计数 : \033[1;32m%d\033[m\n", publicshm->logincount);
+    prints("    离站计数 : \033[1;32m%d\033[m\n", publicshm->logoutcount);
+    prints("    www上站计数 : \033[1;32m%d\033[m\n", publicshm->wwwlogincount);
+    prints("    www离站计数 : \033[1;32m%d\033[m\n", publicshm->wwwlogoutcount);
+    prints("    www guest上站计数 : \033[1;32m%d\033[m\n", publicshm->wwwguestlogincount);
+    prints("    www guest离站计数 : \033[1;32m%d\033[m\n", publicshm->wwwguestlogoutcount);
+    pressanykey();
+    return 0;
 }
