@@ -1795,6 +1795,19 @@ MENU *father;
              * }
              * break;
              */
+        case Ctrl('Q'):
+            clear();
+            move(3,0);
+            char slink[256];
+
+            if (ann_attach_link_num) {
+               (*ann_attach_link_num)(slink,255,NULL,-1,-1,&me);
+               prints("È«ÎÄÁ´½Ó£º\033[4m%s\033[m\n",slink);
+            }
+
+            pressanykey();
+            me.page = 9999;
+            break;		
         case Ctrl('Y'):
             if (me.now < me.num) {
                 if (me.item[me.now]->host != NULL) {
