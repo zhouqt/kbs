@@ -433,6 +433,8 @@ void unlock_sem_check(int lockid);
  *          0 No record matched or execution failed
  * @author flyriver
  */
+    int ann_article_import(const char *bname, const char *title, const char *fname, const char *userid);
+    
     int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index);
     int get_ent_from_id(int mode, int id, const char *bname);
     int get_ent_from_id_ext(int mode, int id, const char *bname, fileheader_t *fh);
