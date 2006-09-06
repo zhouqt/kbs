@@ -79,7 +79,7 @@ int ann_load_directory(MENU * pm, session_t* session)
             litem.fname[sizeof(litem.fname) - 1] = '\0';
             /*if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(session->getCurrentUser(),PERM_BOARDS))&&
                (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(session->getCurrentUser(),PERM_SYSOP))) */
-            if (ann_can_access(litem.title, board, session->currentuser)) {
+            //if (ann_can_access(litem.title, board, session->currentuser)) {
                 if (strstr(litem.fname, "!@#$%")) {     /*取 host & port */
                     char *ptr1, *ptr2, gtmp[STRLEN];
 
@@ -93,7 +93,7 @@ int ann_load_directory(MENU * pm, session_t* session)
                     litem.port = atoi(strtok(NULL, "@"));
                 }
                 ann_add_item(pm, &litem);
-            }
+            //}
             hostname[0] = '\0';
         } else if (strncmp(buf, "# Title=", 8) == 0) {
             if (pm->mtitle[0] == '\0') {
@@ -210,19 +210,61 @@ int ann_get_path(char *board, char *path, size_t len)
     return -1;
 }
 
+#ifdef ANN_CTRLK
+static int canread(int level, char *path, char * fname, char *title)
+{
+	char buf[PATHLEN+20];
+
+	if(strlen(path)+strlen(fname) > PATHLEN)
+		return 0;
+
+	sprintf(buf,"%s/%s",path,fname);
+
+#ifdef FB2KPC
+	if(!strncmp(path,FB2KPC,strlen(FB2KPC))){
+		if(fb2kpc_is_owner(buf))
+			return 1;
+		if(strstr(title,"<secret>"))
+			return 0;
+	}else{
+#endif
+	if(level & PERM_BOARDS) return 1;
+#ifdef FB2KPC
+	}
+#endif
+
+	if(dashd(buf)){
+		strcat(buf,"/.allow");
+		if(!dashf(buf)) return 1;
+		if(!seek_in_file(buf,getCurrentUser()->userid)) return 0;
+		return 1;
+	}
+	return 1;
+}
+#endif
+
+/* modified by pig2532 */
+/* 返回值意义：
+       -1  没有权限
+        0  有看的权限
+        1  有管理的权限
+*/
 int ann_traverse_check(char *path, struct userec *user)
 {
     char *ptr;
     char *ptr2;
     size_t i = 0;
     char filename[256];
-    char buf[256];
+    char buf[256], *fnameptr;
     char pathbuf[256];
-    char title[STRLEN];
     char currpath[256];
+    char title[STRLEN];
     FILE *fp;
     char board[STRLEN];
-    int ret = 0;
+
+    bool has_perm_boards = false, sysop_only = false;
+    char *bmstr;
+    int bms_level = 0;
 
     /* path parameter can not have leading '/' character */
     if (path[0] == '/')
@@ -234,15 +276,28 @@ int ann_traverse_check(char *path, struct userec *user)
     if (board[0] == '\0') {
         ptr = path;
     } else {
-        if (check_read_perm(user, getbcache(board)) == 0) return -1;
+        struct boardheader *bh;
+        bh = getbcache(board);
+        if (check_read_perm(user, bh) == 0) return -1;
         ann_get_path(board, filename, sizeof(filename));
         snprintf(pathbuf, sizeof(pathbuf), "0Announce%s", filename);
         ptr = path + strlen(pathbuf);
         i = strlen(pathbuf);
+        /* 如果是本版版主 则获得版主权限 TODO */
+        if (chk_currBM(bh->BM, user))
+            has_perm_boards = true;
     }
+
+    /* 如果是站务 则获得版主权限 */
+    if (HAS_PERM(user, PERM_OBOARDS) || HAS_PERM(user, PERM_ANNOUNCE) || HAS_PERM(user, PERM_SYSOP))
+        has_perm_boards = true;
+
+    /* 开始逐级判断权限 */
     while (*ptr != '\0') {
         if (*ptr == '/')
+        {
             snprintf(filename, sizeof(filename), "%s/.Names", pathbuf);
+        }
         else {
             if (i < sizeof(pathbuf))
                 pathbuf[i] = *ptr;
@@ -253,7 +308,6 @@ int ann_traverse_check(char *path, struct userec *user)
         if ((fp = fopen(filename, "r")) == NULL)
             return -1;
         while (fgets(buf, sizeof(buf), fp) != NULL) {
-            int t;
 
             if ((ptr2 = strrchr(buf, '\n')) != NULL)
                 *ptr2 = '\0';
@@ -263,27 +317,53 @@ int ann_traverse_check(char *path, struct userec *user)
                 continue;
             }
             if (strncmp(buf, "Path=~/", 7) == 0)
-                snprintf(currpath, sizeof(currpath), "%s/%s", pathbuf, buf + 7);
+                fnameptr = buf + 7;
             else if (strncmp(buf, "Path=", 5) == 0)
-                snprintf(currpath, sizeof(currpath), "%s/%s", pathbuf, buf + 5);
+                fnameptr = buf + 5;
             else
                 continue;
+            snprintf(currpath, sizeof(currpath), "%s/%s", pathbuf, fnameptr);
             if (strncmp(currpath, path, strlen(currpath)) != 0)
                 continue;
-			if (path[strlen(currpath)] != '/' && path[strlen(currpath)]!='\0' ) continue;
-            /*if ((!strstr(title,"(BM: BMS)")||HAS_PERM(session->getCurrentUser(),PERM_BOARDS))&&
-               (!strstr(title,"(BM: SYSOPS)")||HAS_PERM(session->getCurrentUser(),PERM_SYSOP))&&
-               (!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(session->getCurrentUser(),PERM_SECANC))) */
-            if ((t = ann_can_access(title, board, user)) != 0) {
-                if (ret < t)
-                    ret = t;    /* directory can be accessed but it should be access with some
-                                   permission */
-                break;
-            } else {
-                /* diretory cannot be accessed */
+            if (path[strlen(currpath)] != '/' && path[strlen(currpath)]!='\0' ) continue;
+            
+            /* 如果有指定BM 则按BM名单获得版主权限 */
+            bmstr = strstr(title, "(BM:");
+            if (bmstr != NULL)
+                if (chk_currBM(bmstr + 4, user))
+                    has_perm_boards = true;
+            /* 如果指定BMS 则目录的版主权限级别升高 */
+            if (strstr(title, "(BM: BMS)"))
+                bms_level++;
+            /* 如果指定SYSOPS 则目录为仅站务可见 */
+            if (strstr(title, "(BM: SYSOPS)"))
+                sysop_only = true;
+
+#ifdef ANN_CTRLK    /* 如果Ctrl+K权限验证不通过 则禁止 */
+            if(!canread(has_perm_boards ? PERM_BOARDS : 0, pathbuf, fnameptr, title))
+            {
                 fclose(fp);
                 return -1;
             }
+#endif
+
+            /* 如果在一级BMS目录下且用户不具备版主权限 则禁止 */
+            if ((bms_level >=1) && !HAS_PERM(user, PERM_BOARDS)) {
+                fclose(fp);
+                return -1;
+            }
+            /* 如果在二级BMS目录下且用户不具备本版版主权限 则禁止 */
+            if ((bms_level >=2) && !has_perm_boards) {
+                fclose(fp);
+                return -1;
+            }
+            /* 如果在SYSOPS目录下且用户不是站务 则禁止 */
+            if (sysop_only && !HAS_PERM(user, PERM_SYSOP)) {
+                fclose(fp);
+                return -1;
+            }
+            break;
+
         }
         if (feof(fp)) {
             fclose(fp);
@@ -295,7 +375,8 @@ int ann_traverse_check(char *path, struct userec *user)
         ptr++;
         i++;
     }
-    return ret;
+
+    return has_perm_boards ? 1 : 0;
 }
 
 char * ann_numtopath(char *path, char *numpath, struct userec *user)
@@ -320,8 +401,8 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
 
 		if(path[0]=='\0'){
 			c=strchr(numpath, '-');
-			if(c==NULL) return NULL;
-			*c='\0';
+			if(c!=NULL)
+				*c='\0';
 			bid = atoi(numpath);
 
 			if((bh=getboard(bid))==NULL) return NULL;
@@ -330,6 +411,9 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
 		        return NULL;
 
 		    snprintf(path,255,"0Announce/groups/%s",bh->ann_path);
+			
+			if(c==NULL)
+				break;
 
 			ptr = c + 1;
 
@@ -433,39 +517,6 @@ int fb2kpc_is_owner(char *path)
 	if((c=strchr(owner,'/'))!=NULL) *c='\0';
 	if(strcasecmp(owner,getCurrentUser()->userid))
 		return 0;
-	return 1;
-}
-#endif
-
-#ifdef ANN_CTRLK
-static int canread(int level, char *path, char * fname, char *title)
-{
-	char buf[PATHLEN+20];
-
-	if(strlen(path)+strlen(fname) > PATHLEN)
-		return 0;
-
-	sprintf(buf,"%s/%s",path,fname);
-
-#ifdef FB2KPC
-	if(!strncmp(path,FB2KPC,strlen(FB2KPC))){
-		if(fb2kpc_is_owner(buf))
-			return 1;
-		if(strstr(title,"<secret>"))
-			return 0;
-	}else{
-#endif
-	if(level & PERM_BOARDS) return 1;
-#ifdef FB2KPC
-	}
-#endif
-
-	if(dashd(buf)){
-		strcat(buf,"/.allow");
-		if(!dashf(buf)) return 1;
-		if(!seek_in_file(buf,getCurrentUser()->userid)) return 0;
-		return 1;
-	}
 	return 1;
 }
 #endif
