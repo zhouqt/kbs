@@ -709,17 +709,20 @@ static int choose_tmpl_post(char * title, char *fname){
 	FILE *fp;
 	FILE *fpsrc;
 	char filepath[STRLEN];
-	int i;
+	int i, ret=1;
 	int write_ok = 0;
 	char * tmp[ MAX_CONTENT ];
 	char newtitle[STRLEN];
 	int oldmode = uinfo.mode;
+    bool modifying=false, loop=true;
 
 	if(t_now <= 0 || t_now > MAX_TEMPLATE )
 		return -1;
 
 	if( ptemplate[t_now-1].tmpl->content_num <= 0 )
 		return -1;
+
+    while(loop) {
 
 	if((fp = fopen(fname, "w"))==NULL){
 		return -1;
@@ -729,7 +732,13 @@ static int choose_tmpl_post(char * title, char *fname){
 	for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++){
 		char *ans;
 
-		ans = (char *)malloc(ptemplate[t_now-1].cont[i].length + 2);
+        if(modifying)
+            ans = tmp[i];
+        else
+        {
+            ans = (char *)malloc(ptemplate[t_now-1].cont[i].length + 2);
+            ans[0] = '\0';
+        }
 		if( ans == NULL ){
     		modify_user_mode(oldmode);
 			fclose(fp);
@@ -742,7 +751,7 @@ static int choose_tmpl_post(char * title, char *fname){
 		prints("模板问题:%s",ptemplate[t_now-1].cont[i].text);
 		move(4,0);
 		prints("模板回答(最长%d字符):",ptemplate[t_now-1].cont[i].length);
-        multi_getdata(6, 0, 79, NULL, ans, ptemplate[t_now-1].cont[i].length+1, 11, true, 0);
+        multi_getdata(6, 0, 79, NULL, ans, ptemplate[t_now-1].cont[i].length+1, 11, false, 0);
 		tmp[i] = ans;
 	}
     modify_user_mode(oldmode);
@@ -849,8 +858,6 @@ static int choose_tmpl_post(char * title, char *fname){
 	}
 
 
-	for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++)
-		free( tmp[i] );
 
 	{
 		char ans[3];
@@ -858,13 +865,30 @@ static int choose_tmpl_post(char * title, char *fname){
         ansimore2(fname, false, 0, 19 /*19 */ );
 		move(21,0);
 		prints("标题:%s",title);
-        getdata(t_lines - 1, 0, "确实要发表吗(Y/N)? [Y]: ", ans, sizeof(ans), DOECHO, NULL, true);
-        if (ans[0] == 'N' || ans[0] == 'n') {
-			return -1;
-		}
+        while(1) {
+            getdata(t_lines - 1, 0, "确实要发表吗?  (Y)发表  (N)不发表  (E)再编辑 : ", ans, sizeof(ans), DOECHO, NULL, true);
+            if (ans[0] == 'Y' || ans[0] == 'y') {
+                loop = false;
+                ret = 1;
+		        break;
+		    }
+            else if (ans[0] == 'N' || ans[0] == 'n') {
+                loop = false;
+                ret = -1;
+                break;
+            }
+            else if (ans[0] == 'E' || ans[0] == 'e') {
+                modifying = true;
+                break;
+            }
+        }
 	}
+    }
 
-	return 1;
+	for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++)
+		free( tmp[i] );
+
+	return ret;
 }
 
 static int choose_tmpl_key(struct _select_def *conf, int key)
