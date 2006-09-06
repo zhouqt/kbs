@@ -600,22 +600,41 @@ int check_result(int num)
 int get_vitems(bal)
 struct votebal *bal;
 {
-    int num;
+    int num, oldnum=-1;
     char buf[STRLEN];
 
+    for (num = 0; num < 32; num++)
+        bal->items[num][0] = '\0';
     move(3, 0);
     prints("请依序输入可选择项, 按 ENTER 完成设定.\n");
-    num = 0;
+
+    while(1) {
     for (num = 0; num < 32; num++) {
         sprintf(buf, "%c) ", num + 'A');
         getdata((num % 16) + 4, (num / 16) * 40, buf, bal->items[num], 36,
-                DOECHO, NULL, true);
+                DOECHO, NULL, false);
         if (strlen(bal->items[num]) == 0) {
             if (num != 0)
                 break;
             num = -1;
         }
     }
+    if(oldnum != -1)
+    {
+        int i;
+        for(i=num+1; i<oldnum; i++)
+        {
+            move((i % 16) + 4, (i / 16) * 40);
+            prints("                                        ");
+        }
+    }
+    oldnum = num;
+    move(20, 0);
+    getdata(21, 0, "需要再编辑选项内容吗(Y/N)? [N]: ", buf, 2, DOECHO, NULL, true);
+    if(buf[0] != 'Y' && buf[0] != 'y')
+        break;
+    }
+
     bal->totalitems = num;
     return num;
 }
