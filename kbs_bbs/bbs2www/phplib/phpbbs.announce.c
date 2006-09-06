@@ -527,7 +527,7 @@ PHP_FUNCTION(bbs_x_search)
 }
 
 /**
- * int bbs_read_ann_dir(string path,string board,string path2,array articles)
+ * int bbs_read_ann_dir(string path,string board,string path2,array articles[,long seespecial])
  * $articles is the articles/sub-directories in this directory except BMS/SYSOPS.
  * $articles = array(
  *               int 'FLAG',  // 0: error;1: dir;2: file;3: file with attach
@@ -559,12 +559,14 @@ PHP_FUNCTION(bbs_read_ann_dir)
     char r_title[STRLEN],r_path[256],r_bm[256];
     int  r_flag,r_time;
     struct stat st;
+    bool cansee;
+    long seespecial=0;
     
-    int ac = ZEND_NUM_ARGS();
-    if(ac != 4 || zend_parse_parameters(4 TSRMLS_CC,"szza",&path,&path_len,&board,&path2,&articles) ==FAILURE) {
+
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,"szza|l",&path,&path_len,&board,&path2,&articles,&seespecial) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    
+
     if (!PZVAL_IS_REF(board) || !PZVAL_IS_REF(path2)) {
        	zend_error(E_WARNING, "Parameter wasn't passed by reference");
        	RETURN_FALSE;
@@ -643,7 +645,18 @@ PHP_FUNCTION(bbs_read_ann_dir)
             strncpy(r_bm,id[0]?id:"",sizeof(r_bm)-1);
             r_bm[sizeof(r_bm)-1] = '\0';
             
-            if (strcmp(r_bm,"BMS") && strcmp(r_bm,"SYSOPS")) { // only display common articles
+            cansee = false;
+            if (strcmp(r_bm, "BMS")==0) {
+                if (HAS_PERM(getCurrentUser(), PERM_BOARDS) && (seespecial!=0))
+                    cansee = true;
+            }
+            else if (strcmp(r_bm, "SYSOPS")==0) {
+                if (HAS_PERM(getCurrentUser(), PERM_SYSOP) && (seespecial!=0))
+                    cansee = true;
+            }
+            else
+                cansee = true;
+            if (cansee) {
                 MAKE_STD_ZVAL(element);
                 array_init(element);
                 add_assoc_string(element,"TITLE",r_title,1);
@@ -651,6 +664,7 @@ PHP_FUNCTION(bbs_read_ann_dir)
                 add_assoc_string(element,"BM",r_bm,1);
                 add_assoc_long(element,"FLAG",r_flag);
                 add_assoc_long(element,"TIME",r_time);
+                add_assoc_string(element,"FNAME",me.item[i]->fname,1);
                 zend_hash_index_update(Z_ARRVAL_P(articles),j,(void*) &element, sizeof(zval*), NULL);
                 j ++;
             }
