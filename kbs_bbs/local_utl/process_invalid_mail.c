@@ -175,6 +175,9 @@ static int process_user(const char *userid){
 }
 
 static int pim_callback_func(struct userec *user,void *arg){
+    if(!(user->userid[0])){
+        return 0;
+    }
     return process_user(user->userid);
 }
 
