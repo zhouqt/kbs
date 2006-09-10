@@ -408,11 +408,15 @@ int show_utmplist()
         uent = *(user_record[i+page]);
         move(rn, 0);
         rn++;
-        bp = (struct boardheader *)getboard(uent.currentboard);
-        prints("  %4d %s%-12s\033[m %7d %-15s", i+page, uent.invisible?"\033[1;34m":"", uent.userid, uent.pid, uent.from);
-        if(bp)
-            prints(" %s", bp->filename);
-        prints(" %s", modestring(stbuf, uent.mode, uent.destuid, 0, ""));
+        if(!uent.active || !uent.pid || uent.logintime > update_time)
+            prints("    -- null --\n");
+        else {
+            bp = (struct boardheader *)getboard(uent.currentboard);
+            prints("  %4d %s%-12s\033[m %7d %-15s", i+page, uent.invisible?"\033[1;34m":"", uent.userid?uent.userid:"", uent.pid, uent.from);
+            if(bp)
+                prints(" %s", bp->filename);
+            prints(" %s", modestring(stbuf, uent.mode, uent.destuid, 0, ""));
+        }
     }
     return 0;
 }
