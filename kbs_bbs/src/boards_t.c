@@ -986,50 +986,44 @@ static int fav_key(struct _select_def *conf, int command)
     case Ctrl('Z'):
         r_lastmsg();            /* Leeward 98.07.30 support msgX */
         break;
-    case 'X':                  /* Leeward 98.03.28 Set a board READONLY */
-        {
-            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !HAS_PERM(getCurrentUser(), PERM_OBOARDS))
+    case ';':        /* ai 2006.9.11:只读版面，由X只读Y取消只读改为;开关键只读/取消只读，并增加确认 */
+        do{
+            char buf[STRLEN]; /* etnlegend: 这个要放在前面... */
+            if(!HAS_PERM(getCurrentUser(),PERM_SYSOP|PERM_OBOARDS)||ptr->dir)
                 break;
-            if (!strcmp(ptr->name, "syssecurity")
-                || !strcmp(ptr->name, "Filter"))
+            if(!strcmp(ptr->name,"syssecurity")||!strcmp(ptr->name,"Filter"))
                 break;          /* Leeward 98.04.01 */
-            if (ptr->dir)
-                break;
-
-            if (strlen(ptr->name)) {
-                board_setreadonly(ptr->name, 1);
-
-                /*
-                 * Bigman 2000.12.11:系统记录 
-                 */
-                sprintf(genbuf, "只读讨论区 %s ", ptr->name);
-                securityreport(genbuf, NULL, NULL);
-                sprintf(genbuf, " readonly board %s", ptr->name);
-                newbbslog(BBSLOG_USER, "%s", genbuf);
-
+            move(t_lines-1,0);clrtoeol();
+            if(checkreadonly(ptr->name)){   /* 判断版面如果是只读就取消, 否则就只读 */
+              	sprintf(buf, "取消只读版面 %s, 是否确认",ptr->name);
+                if(!askyn(buf,false))
+                    return FULLUPDATE;
+                board_setreadonly(ptr->name,0);
+                /* Bigman 2000.12.11:系统记录 */
+                sprintf(genbuf,"解开只读讨论区 %s ",ptr->name);
+                securityreport(genbuf,NULL,NULL);
+                sprintf(genbuf, " readable board %s",ptr->name);
+                newbbslog(BBSLOG_USER,"%s",genbuf);
+                clrtobot();
                 return SHOW_REFRESHSELECT;
             }
-            break;
+            else{
+              	sprintf(buf,"只读版面 %s, 是否确认",ptr->name);
+                if(!askyn(buf,false))
+                    return FULLUPDATE;
+                if(ptr->name[0]){
+                    board_setreadonly(ptr->name,1);
+                    /* Bigman 2000.12.11:系统记录 */
+                    sprintf(genbuf,"只读讨论区 %s ",ptr->name);
+                    securityreport(genbuf,NULL,NULL);
+                    sprintf(genbuf," readonly board %s",ptr->name);
+                    newbbslog(BBSLOG_USER,"%s",genbuf);
+                    clrtobot();
+                    return SHOW_REFRESHSELECT;
+                }
+            }
         }
-    case 'Y':                  /* Leeward 98.03.28 Set a board READABLE */
-        {
-            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !HAS_PERM(getCurrentUser(), PERM_OBOARDS))
-                break;
-            if (ptr->dir)
-                break;
-
-            board_setreadonly(ptr->name, 0);
-
-            /*
-             * Bigman 2000.12.11:系统记录 
-             */
-            sprintf(genbuf, "解开只读讨论区 %s ", ptr->name);
-            securityreport(genbuf, NULL, NULL);
-            sprintf(genbuf, " readable board %s", ptr->name);
-            newbbslog(BBSLOG_USER, "%s", genbuf);
-
-            return SHOW_REFRESHSELECT;
-        }
+        while(0);
         break;
     case 'L':
     case 'l':                  /* Luzi 1997.10.31 */
