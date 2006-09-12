@@ -79,7 +79,7 @@
 	}
 
 	$channel["lastBuildDate"] = gmt_date_format($modifytime);
-	if(cache_header("public", $modifytime, 1800))
+	if(cache_header("public", $modifytime, 3600))
 		return;
 
 	output_rss($channel, $items);
