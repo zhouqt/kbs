@@ -150,6 +150,8 @@ int append_board(fin, sender1, sender, bname, title, received, encoding, boundar
 	if ((brd = getbcache(bname)) == NULL)
 		return -1;
 	strcpy(bname, brd->filename);
+	if(!is_emailpost_board(bname))
+	    return 0;
 
 	/* check for the dir for the board */
 	setbpath(boardpath, bname);
