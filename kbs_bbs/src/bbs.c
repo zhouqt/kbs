@@ -1161,6 +1161,63 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     return DONOTHING;
 }
 
+/* etnlegend, 2006.09.14, 跳转到同主题中修改标题的第一篇文章 */
+static int jump_changed_title(struct _select_def *conf,struct fileheader *fh,void *varg){
+    int res,okay,last;
+    char *data;
+    off_t size;
+    struct fileheader *map;
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    if(arg->mode!=DIR_MODE_NORMAL)
+        return DONOTHING;
+    if((fh->id==fh->groupid)||strncmp(fh->title,"Re: ",4))  /* 初始判断 */
+        return DONOTHING;
+    BBS_TRY{
+        if(!safe_mmapfile_handle(arg->fd,PROT_READ,MAP_SHARED,&data,&size))
+            BBS_RETURN(0);
+        map=(struct fileheader*)data;
+        if((arg->filecount=size/sizeof(struct fileheader))<conf->pos)
+            res=-1;
+        else{
+            res=conf->pos-1;
+            if(map[res].id!=fh->id)
+                res=-1;
+            else{
+                do{         /* 处理主题链完整的情况 */
+                    for(last=res;!(res<0)&&(map[res].id>map[last].reid);res--)
+                        continue;
+                    if(!(okay=(!(res<0)&&(map[res].id==map[last].reid))))
+                        break;
+                    if((res==last)||
+                        !((!strncmp(map[res].title,"Re: ",4)
+                        &&!strncmp(&map[res].title[4],&fh->title[4],54))
+                        ||!strncmp(map[res].title,&fh->title[4],54)))
+                        break;
+                }
+                while(1);
+                if(!okay){  /* 处理主题链破损的情况 */
+                    for(res=last;!(res<0)&&!(map[res].id<fh->groupid);res--)
+                        if((map[res].groupid==fh->groupid)
+                            &&((!strncmp(map[res].title,"Re: ",4)
+                            &&!strncmp(&map[res].title[4],&fh->title[4],54))
+                            ||!strncmp(map[res].title,&fh->title[4],54)))
+                            last=res;
+                }
+                res=last;
+            }
+        }
+    }
+    BBS_CATCH{
+        res=-1;
+    }
+    BBS_END
+    end_mmapfile(data,size,-1);
+    if(res==-1)
+        return DONOTHING;
+    conf->new_pos=(res+1);
+    return SELCHANGE;
+}
+
 int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char *t;
@@ -5058,6 +5115,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'!', (READ_KEY_FUNC)read_callfunc0,(void *)Goodbye},
     {Ctrl('Q'), (READ_KEY_FUNC)showinfo,NULL},
     {'^', (READ_KEY_FUNC)jumpReID,NULL},
+    {'&',(READ_KEY_FUNC)jump_changed_title,NULL},
     {'\0', NULL},
 };
 
@@ -5414,6 +5472,7 @@ static struct key_command read_top_comms[]={
     {'v',(READ_KEY_FUNC)read_callfunc0,(void*)i_read_mail},
     {'=',(READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
     {'^',(READ_KEY_FUNC)jumpReID,NULL},
+    {'&',(READ_KEY_FUNC)jump_changed_title,NULL},
     {'z',(READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
     {'p',(READ_KEY_FUNC)thread_read,(void*)SR_READ},
 #ifdef INTERNET_EMAIL
