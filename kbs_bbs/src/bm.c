@@ -566,8 +566,10 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
         clrtoeol();
         prints("%s \033[1;36m<%s>\033[m",title,(!write_perm?"读取":"发表"));
     }
-    else
+    else {
         write_perm=(currboard->flag&BOARD_CLUB_WRITE);
+		prints(" \033[1;36m<%s>\033[m", write_perm?"发表":"读取");
+    }
     need_refresh=1;
     count=0;
     page=0;
