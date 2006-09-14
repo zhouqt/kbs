@@ -556,20 +556,18 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
     if(!(currboard->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(currboard->clubnum>0)||(currboard->clubnum>MAXCLUB))
         return DONOTHING;
     clear();
-    move(0,0);
-    prints("%s",title);
     if((currboard->flag&BOARD_CLUB_READ)&&(currboard->flag&BOARD_CLUB_WRITE)){
+        move(0,0);
+        prints("%s",title);
         getdata(1,0,(char*)choice,ans,2,DOECHO,NULL,true);
         ans[0]=toupper(ans[0]);
         write_perm=(ans[0]=='P');
-        move(0,0);
-        clrtoeol();
-        prints("%s \033[1;36m<%s>\033[m",title,(!write_perm?"读取":"发表"));
     }
-    else {
+    else
         write_perm=(currboard->flag&BOARD_CLUB_WRITE);
-		prints(" \033[1;36m<%s>\033[m", write_perm?"发表":"读取");
-    }
+    move(0,0);
+    clrtoeol();
+    prints("%s \033[1;36m<%s>\033[m",title,(!write_perm?"读取":"发表"));
     need_refresh=1;
     count=0;
     page=0;
