@@ -173,7 +173,7 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
     static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     static struct stat st;
     static struct tm *p;
-    static char name[BOUND],*s;
+    static char name[BOUND];
     static int fd,i,j,k,l;
     static time_t timestamp;
     static const char *S,*M,*N;
@@ -196,12 +196,12 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
             close(fd);
             break;
         }
-        vp=mmap(NULL,st.st_size,PROT_READ|PROT_WRITE,MAP_PRIVATE,fd,0);
+        vp=mmap(NULL,st.st_size,PROT_READ,MAP_PRIVATE,fd,0);
         fcntl(fd,F_SETLKW,&lck_clr);
         close(fd);
         if((S=(const char*)vp)==MAP_FAILED)
             break;
-        for(s=(char*)vp,s[st.st_size-1]=0,p=NULL,j=0,i=0;S[i];i++){
+        for(p=NULL,j=0,i=0;S[i]&&i<st.st_size;i++){
             while(j>0&&P[j]!=S[i])
                 j=L[j-1];
             if(P[j]==S[i])
