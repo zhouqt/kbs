@@ -4,11 +4,14 @@
     if(!($currentuser["userlevel"] & BBS_PERM_ACCOUNTS))
         admin_deny();
    
-    admin_header("批注册单", "设定使用者注册资料");
-
     $reglist = array();
     $count = bbs_admin_getnewreg($reglist);
 
+    if($count == -1)
+        html_error_quit("无法读取注册单文件。");
+
+    admin_header("批注册单", "设定使用者注册资料");
+    
     if($count == 0) {
         print("目前没有需要审批的注册单。");
     }
