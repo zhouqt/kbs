@@ -1,8 +1,8 @@
 EXTRA_DIST = php_kbs_bbs.h \
              phpbbs.errorno.h \
-             phpbbs.admin.h \
              phpbbs.announce.h \
              phpbbs.article.h \
+             phpbbs.admin.h \
              phpbbs.bm.h \
              phpbbs.board.h \
              phpbbs.file.h \
@@ -21,9 +21,9 @@ lib_LTLIBRARIES = libphpbbslib.la
 phpdir=@PHPBBSLIBPATH@
 #php_DATA=funcs.php
 libphpbbslib_la_SOURCES = phpbbslib.c \
-                          phpbbs.admin.c \
                           phpbbs.announce.c \
                           phpbbs.article.c \
+                          phpbbs.admin.c \
                           phpbbs.bm.c \
                           phpbbs.board.c \
                           phpbbs.file.c \
