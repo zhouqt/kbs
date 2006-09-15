@@ -133,7 +133,7 @@ static int fsp_show(struct _select_def *conf,int index){
 
 static int fsp_key(struct _select_def *conf,int key){
     int index;
-    if(key==KEY_ESC)
+    if(key==KEY_ESC||key==KEY_RIGHT)
         return SHOW_QUIT;
     for(index=0;index<FSP_LINES;index++){
         if(toupper(key)==toupper((((struct _select_item*)(conf->arg))[(conf->page_pos-1)+index]).hotkey)){
@@ -148,7 +148,7 @@ static int fsp_refresh(struct _select_def *conf){
     clear();
     move(FSP_TITLE_ROW,FSP_COL);
     prints("\033[1;32m%s \033[1;33m[%s]\033[m",
-        "请选择个人定制区目录","<Enter>键选择/<Esc>键取消");
+        "请选择个人定制区目录","<Enter>或<Right>键选择/<Esc>或<Left>键取消");
     return SHOW_CONTINUE;
 }
 
@@ -178,15 +178,8 @@ static int fav_select_path(void){
     struct _select_def conf;
     struct _select_item *sel;
     POINT *pts;
-    char ans[4];
     int index,ret;
     load_myboard(getSession(),0);
-    if(getSession()->mybrd_list_t<2){
-        move(FSP_TITLE_ROW,FSP_COL);
-        clrtoeol();
-        getdata(FSP_TITLE_ROW,FSP_COL,"加入个人定制区? [y/N]: ",ans,2,DOECHO,NULL,true);
-        return ((toupper(ans[0])=='Y')?0:-1);
-    }
     sel=NULL;
     pts=NULL;
     FSP_MALLOC(sel,((getSession()->mybrd_list_t+1)*sizeof(struct _select_item)));
@@ -210,7 +203,7 @@ static int fav_select_path(void){
     memset(&conf,0,sizeof(struct _select_def));
     conf.item_count=getSession()->mybrd_list_t;
     conf.item_per_page=FSP_LINES;
-    conf.flag=LF_LOOP|LF_MULTIPAGE;
+    conf.flag=LF_LOOP|LF_MULTIPAGE|LF_VSCROLL;
     conf.prompt="◆";
     conf.item_pos=pts;
     conf.arg=sel;
