@@ -88,6 +88,7 @@ static char                     post[OWNER_LEN];
 static int                      flag;
 static int                      current;
 static int                      count;
+static int                      number;
 static time_t                   from;
 static time_t                   to;
 static time_t                   mark;
@@ -200,7 +201,7 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
         close(fd);
         if((S=(const char*)vp)==MAP_FAILED)
             break;
-        for(s=(char*)vp,s[st.st_size-1]=0,j=0,i=0;S[i];i++){
+        for(s=(char*)vp,s[st.st_size-1]=0,p=NULL,j=0,i=0;S[i];i++){
             while(j>0&&P[j]!=S[i])
                 j=L[j-1];
             if(P[j]==S[i])
@@ -214,7 +215,7 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
                     if(!(k%2))
                         continue;
                 }
-                if(!(p=localtime(&timestamp)))
+                if(!p&&!(p=localtime(&timestamp)))
                     continue;
                 count++;
                 fprintf(out,"%6d %-20.20s %4d %4s %04d%02d%02d%02d%02d%02d %-17.17s %6d %-13.13s %s\n",
@@ -226,6 +227,7 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
             }
         }
         munmap(vp,st.st_size);
+        number++;
     }
     while(0);
     return 0;
@@ -274,7 +276,9 @@ int main(int argc,char **argv){
 #define EXIT(msg)  do{fprintf(stderr,"%s\n",(msg));if(out)fclose(out);exit(__LINE__);}while(0)
     const struct boardheader *board;
     char name[BOUND],path[BOUND];
+    const char *desc;
     int ret;
+    double cost;
     if(!getcwd(path,BOUND))
         EXIT("获取当前工作目录时发生错误");
     if(chdir(BBSHOME)==-1)
@@ -452,7 +456,23 @@ int main(int argc,char **argv){
     else
         APPLY_BIDS(process_board,NULL);
     fclose(out);
-    fprintf(stdout,"\n操作已完成, 共搜索到 %d 处匹配!\n",count);
+    cost=difftime(time(NULL),mark);
+    if(cost>86400){
+        cost/=86400;
+        desc="天";
+    }
+    else if(cost>3600){
+        cost/=3600;
+        desc="小时";
+    }
+    else if(cost>60){
+        cost/=60;
+        desc="分钟";
+    }
+    else
+        desc="秒";
+    fprintf(stdout,"\n操作已完成! 共处理 %d 篇文章, 获得 %d 处匹配, 耗时 %.2lf %s!\n",
+        number,count,cost,desc);
     return 0;
 #undef EXIT
 }
