@@ -49,3 +49,27 @@ PHP_FUNCTION(bbs_admin_getnewreg) {
 }
 
 
+/* bbs_admin_getuserinfo(string userid, array userinfo);
+ */
+PHP_FUNCTION(bbs_admin_getuserinfo) {
+    int ac, userid_len, uid;
+    char *userid;
+    zval *userinfo;
+    struct userec *user;
+
+    ac = ZEND_NUM_ARGS();
+    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &userid, &userid_len, &userinfo) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    uid = getuser(userid, &user);
+    if(!uid) {
+        RETURN_LONG(-1);
+    }
+    if(array_init(userinfo) != SUCCESS) {
+        RETURN_LONG(0);
+    }
+    assign_user(userinfo, user, uid);
+    RETURN_LONG((long)uid);
+}
+
