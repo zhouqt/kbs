@@ -28,8 +28,10 @@
  *
  *   {搜索参数}     搜索全部匹配位置                    默认
  *                  进行中文断字验证                    默认
+ *                  大小写敏感                          默认
  *     -s           仅搜索每篇文章的第一处匹配位置      无
  *     -n           不进行中文断字验证                  无
+ *     -i           大小写不敏感                        无
  *
  *   {输出选项}     输出到当前目录下 res_<mark>.us 文件 默认
  *                  进行详悉进度输出                    默认
@@ -57,8 +59,9 @@
 #define PARAM_E                 0x0200
 #define PARAM_S                 0x0400
 #define PARAM_N                 0x0800
-#define PARAM_O                 0x1000
-#define PARAM_Q                 0x2000
+#define PARAM_I                 0x1000
+#define PARAM_O                 0x2000
+#define PARAM_Q                 0x4000
 #define LENGTH                  1024
 #define BOUND                   _POSIX_PATH_MAX
 #define ISSET(param)            (flag&(param))
@@ -123,8 +126,10 @@ static inline int usage(void){
         "\n"
         "  {搜索参数}     搜索全部匹配位置                    默认\n"
         "                 进行中文断字验证                    默认\n"
+        "                 大小写敏感                          默认\n"
         "    -s           仅搜索每篇文章的第一处匹配位置      无\n"
         "    -n           不进行中文断字验证                  无\n"
+        "    -i           大小写不敏感                        无\n"
         "\n"
         "  {输出选项}     输出到当前目录下 res_<mark>.us 文件 默认\n"
         "                 进行详悉进度输出                    默认\n"
@@ -140,15 +145,28 @@ static inline int usage(void){
 }
 
 static inline int set_pattern(const char *s){
+#define ALPHA(c)    (!((c)<'A')&&!((c)>'Z'))
     static char pattern[LENGTH];
-    static int initialized;
+    static int initialized,i;
     if(!initialized){
-        snprintf(pattern,LENGTH,"%s",s);
+        if(!ISSET(PARAM_I)){
+            snprintf(pattern,LENGTH,"%s",s);
+            size=strlen(pattern);
+        }
+        else{
+            for(size=0;s[size];size++){
+                pattern[size]=toupper(s[size]);
+                if(ALPHA(pattern[size]))
+                    i++;
+            }
+            if(!i)
+                flag&=(~PARAM_I);
+        }
         P=pattern;
-        size=strlen(pattern);
         initialized=1;
     }
     return 0;
+#undef ALPHA
 }
 
 static inline int set_link(const char *s){
@@ -202,9 +220,10 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
         if((S=(const char*)vp)==MAP_FAILED)
             break;
         for(p=NULL,j=0,i=0;S[i]&&i<st.st_size;i++){
-            while(j>0&&P[j]!=S[i])
+#define EQUAL(cp,cs)    (((cp)==(cs))||(ISSET(PARAM_I)&&((cp)==toupper(cs))))
+            while(j>0&&!EQUAL(P[j],S[i]))
                 j=L[j-1];
-            if(P[j]==S[i])
+            if(EQUAL(P[j],S[i]))
                 j++;
             if(!P[j]){
                 M=&S[l=((i-j)+1)];
@@ -212,7 +231,7 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
                     for(k=0,N=M;!(N<S);N--)
                         if((*N)&0x80)
                             k++;
-                    if(!(k%2))
+                    if(!(k&0x01))
                         continue;
                 }
                 if(!p&&!(p=localtime(&timestamp)))
@@ -225,6 +244,7 @@ static inline int process_article(const struct fileheader *f,int n,const struct 
                     break;
                 j=L[j-1];
             }
+#undef EQUAL
         }
         munmap(vp,st.st_size);
         number++;
@@ -289,7 +309,7 @@ int main(int argc,char **argv){
     resolve_boards();
     to=mark;
     opterr=0;
-    while((ret=getopt(argc,argv,"r:f:t:ab:u:p:djesno:qh"))!=-1){
+    while((ret=getopt(argc,argv,"r:f:t:ab:u:p:djesnio:qh"))!=-1){
         switch(ret){
 #define CHECK_CONFLICT(param)   do{if(ISSET(param))EXIT("给定的选项间存在冲突...");}while(0)
 #define CHECK_DEPENDENCE(param) do{if(!ISSET(param))EXIT("给定的选项间缺少依赖...");}while(0)
@@ -405,6 +425,9 @@ int main(int argc,char **argv){
                 break;
             case 'n':
                 SET(PARAM_N);
+                break;
+            case 'i':
+                SET(PARAM_I);
                 break;
             case 'o':
                 SET(PARAM_O);
