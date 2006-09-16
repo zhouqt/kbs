@@ -4,11 +4,45 @@
     if(!($currentuser["userlevel"] & BBS_PERM_ACCOUNTS))
         admin_deny();
 
+    if(isset($_GET["userid"])) {
+        $userid = $_GET["userid"];
+        $username = $_POST["username"];
+        $realname = $_POST["realname"];
+        $address = $_POST["address"];
+        $email = $_POST["email"];
+        if($_POST["gender"] == "M")
+            $gender = 77;
+        else
+            $gender = 70;
+        $birthyear = $_POST["birthyear"];
+        $birthmonth = $_POST["birthmonth"];
+        $birthday = $_POST["birthday"];
+        $title = $_POST["title"];
+        $realemail = $_POST["realemail"];
+        $numlogins = $_POST["numlogins"];
+        $numposts = $_POST["numposts"];
+        if(@$_POST["firstlogin"] == "yes")
+            $firstlogin = 1;
+        else
+            $firstlogin = 0;
+        if(@$_POST["lastlogin"] == "yes")
+            $lastlogin = 1;
+        else
+            $lastlogin = 0;
+        $ret = bbs_admin_setuserinfo($userid, $username, $realname, $address, $email, $gender, $birthyear, $birthmonth, $birthday, $title, $realemail, $numlogins, $numposts, $firstlogin, $lastlogin);
+        $msg[0] = "资料修改成功。";
+        $msg[1] = $msg[2] = $msg[3] = "生日不正确。";
+        $msg[4] = "不存在的用户职务。";
+    }
+
     admin_header("改别人资料", "修改使用者资料");
-    if(isset($_POST["userid"]))
-        $userid = $_POST["userid"];
-    else
-        $userid = $currentuser["userid"];
+
+    if(!isset($userid)) {
+        if(isset($_POST["userid"]))
+            $userid = $_POST["userid"];
+        else
+            $userid = $currentuser["userid"];
+    }
     
 ?>
 <form method="post" action="adminfo.php" class="medium">
@@ -17,13 +51,14 @@
 <input type="submit" value="确定">
 </div></fieldset></form>
 <?php
+    print($msg[-$ret]);
     $userinfo = array();
     $uid = bbs_admin_getuserinfo($userid, $userinfo);
     if($uid == -1)
         html_error_quit("无法初始化数组。");
     if($uid > 0) {
 ?>
-<form method="post" action="adminfo.php" class="medium">
+<form method="post" action="adminfo.php?userid=<?php echo $userid; ?>" class="medium">
 <fieldset><legend>个人资料</legend><div class="inputs">
 <label>帐号:</label><?php echo $userinfo["userid"];?><br/>
 <label>昵称:</label><input type="text" name="username" value="<?php echo htmlspecialchars($userinfo["username"],ENT_QUOTES);?>" size="24" maxlength="39"><br/>
@@ -38,9 +73,6 @@
 <label>发表大作:</label><input type="text" name="numposts" value="<?php echo $userinfo["numposts"];?>" size="6" maxlength="7"><br/>
 <label>注册时间:</label><?php echo date("D M j H:i:s Y",$userinfo["firstlogin"]);?> <input type="checkbox" name="firstlogin" value="yes">提前1分钟<br/>
 <label>最近光临:</label><?php echo date("D M j H:i:s Y",$userinfo["lastlogin"]);?> <input type="checkbox" name="lastlogin" value="yes">设为今天<br/>
-<?php if (isset($userinfo["score_user"])) { ?>
-<label>用户积分:</label><?php echo $userinfo["score_user"];?><br/>
-<?php } ?>
 </div></fieldset>
 <div class="oper">
 <input type="submit" name="submit" value="确定" /> <input type="reset" value="复原" />
