@@ -4,8 +4,8 @@
     if(!($currentuser["userlevel"] & BBS_PERM_ACCOUNTS))
         admin_deny();
 
-    if(isset($_GET["userid"])) {
-        $userid = $_GET["userid"];
+    if(isset($_POST["modifyuserid"])) {
+        $userid = $_POST["modifyuserid"];
         $username = $_POST["username"];
         $realname = $_POST["realname"];
         $address = $_POST["address"];
@@ -58,9 +58,9 @@
         html_error_quit("无法初始化数组。");
     if($uid > 0) {
 ?>
-<form method="post" action="adminfo.php?userid=<?php echo $userid; ?>" class="medium">
+<form method="post" action="adminfo.php" class="medium">
 <fieldset><legend>个人资料</legend><div class="inputs">
-<label>帐号:</label><?php echo $userinfo["userid"];?><br/>
+<label>帐号:</label><input type="text" name="modifyuserid" value="<?php echo $userinfo["userid"];?>" size="12" readonly><br/>
 <label>昵称:</label><input type="text" name="username" value="<?php echo htmlspecialchars($userinfo["username"],ENT_QUOTES);?>" size="24" maxlength="39"><br/>
 <label>真实姓名:</label><input type="text" name="realname" value="<?php echo $userinfo["realname"];?>" size="16" maxlength="39"><br/>
 <label>居住地址:</label><input type="text" name="address" value="<?php echo $userinfo["address"];?>" size="40" maxlength="79"><br/>
