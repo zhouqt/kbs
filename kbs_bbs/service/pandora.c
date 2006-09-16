@@ -317,7 +317,7 @@ int bbsnet(int n)
 	now = time(NULL);
 	clear();
 	prints("\033[1;32m正在测试往 %s (%s) 的连接，请稍候... \033[m\n", 
-			host1[n], ip[n]);
+			host2[n], ip[n]);
 	prints("\033[1;32m如果在 %d 秒内无法连上，穿梭程序将放弃连接。\033[m\n",
 			TIME_OUT);
 	if (setjmp(jb) == 0)
@@ -379,7 +379,7 @@ int bbsnet(int n)
 	}
 	setsockopt(sockfd, IPPROTO_IP, IP_TOS, &tos, sizeof(int));	
 	prints("\033[1;31m连接成功！\033[m\n");
-	bbsnet_report(host1[n], ip[n], now, 0);
+	bbsnet_report(host2[n], ip[n], now, 0);
 	clear();
 	refresh();
 	for (;;)
@@ -441,7 +441,7 @@ int bbsnet(int n)
 			write(sockfd, buf, rc);
 		}
 	}
-	bbsnet_report(host1[n], ip[n], now, 1);
+	bbsnet_report(host2[n], ip[n], now, 1);
 	ret = 0;
 on_error:
 	close(sockfd);
