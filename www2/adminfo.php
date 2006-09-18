@@ -30,18 +30,27 @@
         else
             $lastlogin = 0;
         $ret = bbs_admin_setuserinfo($userid, $username, $realname, $address, $email, $gender, $birthyear, $birthmonth, $birthday, $title, $realemail, $numlogins, $numposts, $firstlogin, $lastlogin);
-        $msg[0] = "资料修改成功。";
-        $msg[1] = $msg[2] = $msg[3] = "生日不正确。";
-        $msg[4] = "不存在的用户职务。";
+        switch($ret) {
+        case 0:
+            html_success_quit("资料修改成功。");
+            break;
+        case 1:
+        case 2:
+        case 3:
+            html_error_quit("生日不正确。");
+            break;
+        case 4:
+            html_error_quit("不存在的用户职务。");
+            break;
+        default:
+        }
     }
 
 
-    if(!isset($userid)) {
-        if(isset($_POST["userid"]))
-            $userid = $_POST["userid"];
-        else
-            $userid = $currentuser["userid"];
-    }
+    if(isset($_POST["userid"]))
+        $userid = $_POST["userid"];
+    else
+        $userid = $currentuser["userid"];
     
     $userinfo = array();
     $uid = bbs_admin_getuserinfo($userid, $userinfo);
@@ -49,7 +58,6 @@
         html_error_quit("不存在的用户。");
     if($uid > 0) {
         admin_header("改别人资料", "修改使用者资料");
-        @print($msg[-$ret]);
 ?>
 <form method="post" action="adminfo.php" class="medium">
 <fieldset><legend>要修改的用户ID</legend><div class="inputs">

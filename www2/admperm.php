@@ -13,14 +13,13 @@
                 $perm |= (1 << $i);
         }
         $ret = bbs_admin_setuserperm($userid, $perm);
+        html_success_quit("修改用户权限成功。");
     }
 
-    if(!isset($userid)) {
-        if(isset($_POST["userid"]))
-            $userid = $_POST["userid"];
-        else
-            $userid = $currentuser["userid"];
-    }
+    if(isset($_POST["userid"]))
+        $userid = $_POST["userid"];
+    else
+        $userid = $currentuser["userid"];
 
     $perm = bbs_admin_getuserperm($userid);
     if(($perm == -1) || ($ret == -1))
@@ -34,10 +33,6 @@
 <label>ID:</label><input type="text" name="userid" value="<?php print($userid); ?>" size="12" maxlength="12">
 <input type="submit" value="确定"><br>注意：如果是封禁解封，请使用封禁选单！
 </div></fieldset></form>
-<?php
-    if($ret == 0)
-        print("权限修改成功。");
-?>
 <form method="post" action="admperm.php" class="large">
 <fieldset><legend>修改用户权限</legend><div class="inputs">
 <label>用户ID:</label><input type="text" name="modifyuserid" value="<?php print($userid); ?>" size="12" readonly>
