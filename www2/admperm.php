@@ -13,11 +13,13 @@
                 $perm |= (1 << $i);
         }
         $ret = bbs_admin_setuserperm($userid, $perm);
-        html_success_quit("修改用户权限成功。");
+        html_success_quit("修改用户权限成功。", array("<a href=\"admperm.php?userid={$userid}\">返回权限更改页面</a>"));
     }
 
     if(isset($_POST["userid"]))
         $userid = $_POST["userid"];
+    else if(isset($_GET["userid"]))
+        $userid = $_GET["userid"];
     else
         $userid = $currentuser["userid"];
 

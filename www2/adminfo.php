@@ -32,7 +32,7 @@
         $ret = bbs_admin_setuserinfo($userid, $username, $realname, $address, $email, $gender, $birthyear, $birthmonth, $birthday, $title, $realemail, $numlogins, $numposts, $firstlogin, $lastlogin);
         switch($ret) {
         case 0:
-            html_success_quit("资料修改成功。");
+            html_success_quit("资料修改成功。", array("<a href=\"adminfo.php?userid={$userid}\">返回资料修改页面</a>"));
             break;
         case 1:
         case 2:
@@ -49,6 +49,8 @@
 
     if(isset($_POST["userid"]))
         $userid = $_POST["userid"];
+    else if(isset($_GET["userid"]))
+        $userid = $_GET["userid"];
     else
         $userid = $currentuser["userid"];
     
