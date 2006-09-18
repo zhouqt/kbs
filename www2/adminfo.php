@@ -66,7 +66,7 @@
 <label>ID:</label><input type="text" name="userid" value="<?php print($userid); ?>" size="12" maxlength="12">
 <input type="submit" value="确定">
 </div></fieldset></form>
-<form method="post" action="adminfo.php" class="medium">
+<form method="post" action="adminfo.php" class="medium" onsubmit="return confirm('确实要修改用户资料吗？');">
 <fieldset><legend>个人资料</legend><div class="inputs">
 <label>帐号:</label><input type="text" name="modifyuserid" value="<?php echo $userinfo["userid"];?>" size="12" readonly><br/>
 <label>昵称:</label><input type="text" name="username" value="<?php echo htmlspecialchars($userinfo["username"],ENT_QUOTES);?>" size="24" maxlength="39"><br/>
@@ -83,7 +83,7 @@
 <label>最近光临:</label><?php echo date("D M j H:i:s Y",$userinfo["lastlogin"]);?> <input type="checkbox" name="lastlogin" value="yes">设为今天<br/>
 </div></fieldset>
 <div class="oper">
-<input type="submit" name="submit" value="确定" /> <input type="reset" value="复原" />
+<input type="submit" name="submit" value="确定" /> <input type="reset" value="重置" />
 </div>
 </form>
 <?php

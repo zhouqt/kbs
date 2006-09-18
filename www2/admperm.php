@@ -35,7 +35,7 @@
 <label>ID:</label><input type="text" name="userid" value="<?php print($userid); ?>" size="12" maxlength="12">
 <input type="submit" value="确定"><br>注意：如果是封禁解封，请使用封禁选单！
 </div></fieldset></form>
-<form method="post" action="admperm.php" class="large">
+<form method="post" action="admperm.php" class="large" onsubmit="return confirm('确实要修改用户权限吗？');">
 <fieldset><legend>修改用户权限</legend><div class="inputs">
 <label>用户ID:</label><input type="text" name="modifyuserid" value="<?php print($userid); ?>" size="12" readonly>
 <table align="center" border="0" cellpadding="1" cellspacing="0">
