@@ -35,7 +35,6 @@
         $msg[4] = "不存在的用户职务。";
     }
 
-    admin_header("改别人资料", "修改使用者资料");
 
     if(!isset($userid)) {
         if(isset($_POST["userid"]))
@@ -44,20 +43,19 @@
             $userid = $currentuser["userid"];
     }
     
+    $userinfo = array();
+    $uid = bbs_admin_getuserinfo($userid, $userinfo);
+    if($uid == -1)
+        html_error_quit("不存在的用户。");
+    if($uid > 0) {
+        admin_header("改别人资料", "修改使用者资料");
+        @print($msg[-$ret]);
 ?>
 <form method="post" action="adminfo.php" class="medium">
 <fieldset><legend>要修改的用户ID</legend><div class="inputs">
 <label>ID:</label><input type="text" name="userid" value="<?php print($userid); ?>" size="12" maxlength="12">
 <input type="submit" value="确定">
 </div></fieldset></form>
-<?php
-    print($msg[-$ret]);
-    $userinfo = array();
-    $uid = bbs_admin_getuserinfo($userid, $userinfo);
-    if($uid == -1)
-        html_error_quit("无法初始化数组。");
-    if($uid > 0) {
-?>
 <form method="post" action="adminfo.php" class="medium">
 <fieldset><legend>个人资料</legend><div class="inputs">
 <label>帐号:</label><input type="text" name="modifyuserid" value="<?php echo $userinfo["userid"];?>" size="12" readonly><br/>
