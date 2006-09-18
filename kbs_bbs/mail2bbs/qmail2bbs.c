@@ -244,7 +244,7 @@ append_board(fin, sender1, sender, bname, title, received, encoding, boundary)
 			*nameptrright = '\0';
 			strncpy(sender_tmp, nameptrleft, sizeof(sender_tmp));
 			*nameptrright = name_tmp;
-			str_decode(sender_conv, sender_tmp);
+			str_decode((unsigned char*)sender_conv, (unsigned char*)sender_tmp);
 			my_ansi_filter(sender_conv);
 		} else {
 			name_tmp = *nameptrright;
@@ -381,7 +381,7 @@ append_board(fin, sender1, sender, bname, title, received, encoding, boundary)
 			if (FileName[0] == '=' ) {
 				char FileName_tmp[256];
 				strncpy(FileName_tmp, FileName, sizeof(FileName_tmp));
-				str_decode(FileName, FileName_tmp);
+				str_decode((unsigned char*)FileName, (unsigned char*)FileName_tmp);
 			}
 			block = 0;
 			FileSize = 0;
@@ -573,7 +573,7 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 			*nameptrright = '\0';
 			strncpy(sender_tmp, nameptrleft, sizeof(sender_tmp));
 			*nameptrright = name_tmp;
-			str_decode(sender_conv, sender_tmp);
+			str_decode((unsigned char*)sender_conv, (unsigned char*)sender_tmp);
 			my_ansi_filter(sender_conv);
 		} else {
 			name_tmp = *nameptrright;
@@ -710,7 +710,7 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 			if (FileName[0] == '=' ) {
 				char FileName_tmp[256];
 				strncpy(FileName_tmp, FileName, sizeof(FileName_tmp));
-				str_decode(FileName, FileName_tmp);
+				str_decode((unsigned char*)FileName, (unsigned char*)FileName_tmp);
 			}
 			block = 0;
 			FileSize = 0;
