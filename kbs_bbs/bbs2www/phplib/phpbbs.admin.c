@@ -87,6 +87,7 @@ PHP_FUNCTION(bbs_admin_setuserinfo) {
     struct usermemo *um;
     time_t now;
     struct tm *tmnow;
+    char secustr[256];
 
     ac = ZEND_NUM_ARGS();
     if(ac != 15 || zend_parse_parameters(15 TSRMLS_CC, "ssssslllllsllll", &userid, &userid_len, &username, &username_len, &realname, &realname_len, &address, &address_len, &email, &email_len, &gender, &birthyear, &birthmonth, &birthday, &title, &realemail, &realemail_len, &numlogins, &numposts, &firstlogin, &lastlogin) == FAILURE) {
@@ -140,7 +141,87 @@ PHP_FUNCTION(bbs_admin_setuserinfo) {
     memcpy(&(um->ud), &ud, sizeof(struct userdata));
     write_userdata(newinfo.userid, &ud);
     end_mmapfile(um, sizeof(struct usermemo), -1);
+
+    sprintf(secustr, "修改 %s 的基本资料。", user->userid);
     
     RETURN_LONG(0);
+}
+
+/* bbs_admin_getuserperm(string userid);
+ */
+PHP_FUNCTION(bbs_admin_getuserperm) {
+    int ac;
+    char *userid;
+    int userid_len, uid;
+    struct userec *user;
+
+    ac = ZEND_NUM_ARGS();
+    if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    uid = getuser(userid, &user);
+    if(!uid) {
+        RETURN_LONG(-1);
+    }
+    else {
+        RETURN_LONG(user->userlevel);
+    }
+}
+
+/* bbs_admin_getgiveupperm(string userid);
+ */
+PHP_FUNCTION(bbs_admin_getgiveupperm) {
+    int ac;
+    char *userid;
+    int userid_len, uid, s[GIVEUPINFO_PERM_COUNT];
+    struct userec *user;
+    long giveupperm;
+    
+    ac = ZEND_NUM_ARGS();
+    if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    uid = getuser(userid, &user);
+    if(!uid) {
+        RETURN_LONG(-1);
+    }
+    giveupperm = get_giveupinfo(user, s);
+    RETURN_LONG(giveupperm);
+}
+
+/* bbs admin_setuserperm(string userid, long perm);
+ */
+PHP_FUNCTION(bbs_admin_setuserperm) {
+    int ac;
+    char *userid;
+    int userid_len, uid, s[GIVEUPINFO_PERM_COUNT];
+    struct userec *user;
+    long perm;
+    int giveupperm;
+    bool flag1, flag2;
+    
+    ac = ZEND_NUM_ARGS();
+    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &userid, &userid_len, &perm) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    uid = getuser(userid, &user);
+    if(!uid) {
+        RETURN_LONG(-1);
+    }
+    else {
+        giveupperm = get_giveupinfo(user, s);
+        flag1 = (user->userlevel & PERM_CLOAK) == 0;
+        flag2 = (user->userlevel & PERM_XEMPT) == 0;
+        user->userlevel = (unsigned int)perm;
+        if((user->userlevel & PERM_CLOAK) && flag1)
+            mail_file(getCurrentUser()->userid, "etc/forcloak", user->userid, NAME_SYSOP_GROUP "授予您隐身权限", BBSPOST_LINK, NULL);
+        if((user->userlevel & PERM_XEMPT) && flag2)
+            mail_file(getCurrentUser()->userid, "etc/forlongid", user->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", BBSPOST_LINK, NULL);
+        save_giveupinfo(user, s);
+        RETURN_LONG(0);
+    }
 }
 
