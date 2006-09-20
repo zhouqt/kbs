@@ -423,7 +423,7 @@ int select_user_title(const char *name){
     conf.title_pos.x=-1;
     conf.title_pos.y=-1;
     /*≥ı ºŒª÷√*/
-    conf.pos=(!prefix?1:2);
+    conf.pos=(!name?1:2);
     conf.on_select=editbrd_on_select;
     conf.show_data=editbrd_show;
     conf.key_command=editbrd_key;
