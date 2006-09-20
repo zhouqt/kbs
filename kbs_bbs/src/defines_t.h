@@ -175,6 +175,7 @@ int set_mailgroup_list();
 int check_systempasswd();
 void stand_title(char *title);
 char* gen_permstr(unsigned int,char*);
+int select_user_title(const char*);
 void deliverreport(char *title,char *str);
 
 /* talk.c */
