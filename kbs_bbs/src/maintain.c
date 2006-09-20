@@ -1557,14 +1557,14 @@ int modify_board(int bid){
             /*身份限制*/
             case 21:
 #ifdef HAVE_CUSTOM_USER_TITLE
-                move(17,0);clrtoeol();getdata(17,2,"设定身份限制{(序号)|(#职务)|(*)}: ",buf,USER_TITLE_LEN+2,DOECHO,NULL,true);
+                move(17,0);clrtoeol();getdata(17,2,"设定身份限制{(职务)|(#序号)|(@)}: ",buf,USER_TITLE_LEN,DOECHO,NULL,true);
                 /*取消修改*/
                 if(!*buf)
                     break;
-                if(buf[0]!='#'&&buf[0]!='*'){
-                    i=atoi(buf);
+                if(buf[0]=='#'){
+                    i=atoi(&buf[1]);
                     sprintf(&buf[128],"%d",i);
-                    if(i>255||strcmp(buf,&buf[128])){
+                    if(i>255||strcmp(&buf[1],&buf[128])){
                         move(17,0);clrtoeol();getdata(17,2,"\033[1;31m错误: 输入序号越界或非法!\033[m",buf,1,NOECHO,NULL,true);
                         break;
                     }
@@ -1576,7 +1576,7 @@ int modify_board(int bid){
                             break;
                     }
                 }
-                else if(buf[0]=='*'){
+                else if(buf[0]=='@'){
                     i=select_user_title(NULL);
                     if(i==-1)
                         break;
