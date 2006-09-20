@@ -1582,19 +1582,19 @@ int modify_board(int bid){
                         break;
                 }
                 else{
-                    if(!buf[1])
+                    if(buf[0]==' '&&!buf[1])
                         i=0;
                     else{
                         unsigned char count,first;
                         for(count=0,first=0,i=0;i<255;i++)
-                            if(!strcmp(get_user_title(i+1),&buf[1])&&!count++)
+                            if(!strcmp(get_user_title(i+1),buf)&&!count++)
                                 first=i+1;
                         if(!count){
                             move(17,0);clrtoeol();getdata(17,2,"\033[1;31m错误: 目前尚未定制此用户身份!\033[m",
                                 buf,1,NOECHO,NULL,true);
                             break;
                         }
-                        i=(count==1?first:select_user_title(&buf[1]));
+                        i=(count==1?first:select_user_title(buf));
                         if(i==-1)
                             break;
                     }
