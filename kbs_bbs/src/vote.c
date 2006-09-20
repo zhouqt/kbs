@@ -286,11 +286,11 @@ int b_jury_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extra
 
         if (aborted == 111) {
             sprintf(secu, "删除 %s 版的仲裁委员名单", currboard->filename);
-            securityreport(secu, NULL, NULL);
+            securityreport(secu, NULL, NULL, getSession());
             post_file(getCurrentUser(), "", buf, "JuryMail", secu, 0, 2, getSession());
         } else {
             sprintf(secu, "修改 %s 版的仲裁委员名单", currboard->filename);
-            securityreport(secu, NULL, NULL);
+            securityreport(secu, NULL, NULL, getSession());
             post_file(getCurrentUser(), "", buf, "syssecurity", secu, 0, 2, getSession());
             post_file(getCurrentUser(), "", buf, "JuryMail", secu, 0, 2, getSession());
         }
@@ -1268,7 +1268,7 @@ int allnum, pagenum;
         }
         mk_result(allnum + 1);
         sprintf(buf, "提早结束投票 %s", currvote.title);
-        /* securityreport(buf, NULL, NULL); */
+        /* securityreport(buf, NULL, NULL, getSession()); */
         bbslog("user","%s",buf);
         break;
     case '@':
@@ -1301,7 +1301,7 @@ int allnum, pagenum;
             break;
         }
         sprintf(buf, "强制关闭投票 %s", currvote.title);
-        /* securityreport(buf, NULL, NULL); */
+        /* securityreport(buf, NULL, NULL, getSession()); */
         bbslog("user","%s",buf);
         dele_vote(allnum + 1);
         break;

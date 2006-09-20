@@ -3332,7 +3332,7 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 					sprintf(title,"%s取消%s版匿名作者原id发文权限1天", getCurrentUser()->userid, currboard->filename);
 					mail_file("SYSOP", buff, tmpfh.owner, title, BBSPOST_COPY, NULL);
 					unlink(buff);
-					securityreport(title, NULL,NULL);
+					securityreport(title, NULL,NULL, getSession());
 				}
 			}
 		}
@@ -4991,7 +4991,7 @@ static int b_modify_title(struct _select_def* conf, struct fileheader* fh, void*
     if(!strcmp(ans,buf)) return FULLUPDATE;
     if (!(currboard->flag & BOARD_SUPER_CLUB) && !((currboard->title[0]=='P')&&(currboard->title[1]=='_'))) {
         sprintf(pmt, "修改 %s 版中文名", currboard->filename); 
-    	securityreport(pmt, NULL,NULL);
+    	securityreport(pmt, NULL,NULL, getSession());
     }
     ans[STRLEN-14]='\0';
     pos = getboardnum(currboard->filename,&newfh);

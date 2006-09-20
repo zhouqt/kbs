@@ -225,6 +225,7 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     char * filter_control_char(char *s);
     char *strnzhcpy(char *dest, const char *src, size_t n);
     void trimstr(char*);
+    void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN], session_t *session);
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)

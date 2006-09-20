@@ -98,7 +98,7 @@ int pc_add_user()
                 prints("删除成功");
                 pressanykey();
                 sprintf(buf1, "%s 取消 %s 的个人文集", getCurrentUser()->userid, lookupuser->userid);
-                securityreport(buf1, lookupuser, NULL);
+                securityreport(buf1, lookupuser, NULL, getSession());
                 return 1;
             } else {
                 move(10, 0);
@@ -200,7 +200,7 @@ int pc_add_user()
             prints("添加成功,用户%s已经拥有个人文集", lookupuser->userid);
         pressanykey();
         sprintf(buf1, "%s 增加 %s 的个人文集", getCurrentUser()->userid, lookupuser->userid);
-        securityreport(buf1, lookupuser, NULL);
+        securityreport(buf1, lookupuser, NULL, getSession());
         return 1;
     } else {
         move(18, 0);

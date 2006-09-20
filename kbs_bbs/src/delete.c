@@ -84,7 +84,7 @@ int d_board()
 
     /* this should be in delete_board function ? */
     sprintf(buf, "删除讨论区：%s", oldbh.filename);
-    securityreport(buf, NULL, NULL);
+    securityreport(buf, NULL, NULL, getSession());
 
     move(4, 0);
     prints("本讨论区已经删除...\n");
@@ -513,7 +513,7 @@ int d_user(cid)
         char secu[STRLEN];
 
         sprintf(secu, "删除使用者：%s", lookupuser->userid);
-        securityreport(secu, lookupuser, NULL);
+        securityreport(secu, lookupuser, NULL, getSession());
     }
     newbbslog(BBSLOG_USER,"%s deleted user %s", getCurrentUser()->userid, lookupuser->userid);
     /*Haohmaru.99.12.23.被删ID一个月内不得注册 */
@@ -571,7 +571,7 @@ int kick_user(int uid, char *userid, struct user_info *userinfo) {
     if (strcmp(getCurrentUser()->userid, userid)) {
         char buf[STRLEN];
         sprintf(buf, "%s 踢出使用者 %s", getCurrentUser()->userid, userid);
-        securityreport(buf, NULL, NULL);
+        securityreport(buf, NULL, NULL, getSession());
     }
     return kick_user_utmp(uid, userinfo, 0);
 }

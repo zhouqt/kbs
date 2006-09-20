@@ -64,7 +64,7 @@ int check_systempasswd()
         if (!passbuf[0]) {
             move(2, 0);
             prints("系统密码输入错误...");
-            securityreport("系统密码输入错误...", NULL, NULL);
+            securityreport("系统密码输入错误...", NULL, NULL, getSession());
             pressanykey();
             return false;
         }
@@ -121,136 +121,6 @@ char *str;
         fprintf(se, "%s\n", str);
         fclose(se);
         post_file(getCurrentUser(), "", fname, currboard->filename, title, 0, 2, getSession());
-        unlink(fname);
-        modify_user_mode(savemode);
-    }
-}
-
-
-void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
-{                               /* Leeward: 1997.12.02 */
-    FILE *se;
-    char fname[STRLEN];
-    int savemode;
-    char *ptr;
-
-    savemode = uinfo.mode;
-	gettmpfilename( fname, "security" );
-    //sprintf(fname, "tmp/security.%d", getpid());
-    if ((se = fopen(fname, "w")) != NULL) {
-        if (lookupuser) {
-            if (strstr(str, "身份确认")) {
-                struct userdata ud;
-
-                read_userdata(lookupuser->userid, &ud);
-                fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
-                fprintf(se, "以下是通过者个人资料");
-                /*
-                 * getuinfo(se, lookupuser); 
-                 */
-                /*
-                 * Haohmaru.99.4.15.把被注册的资料列得更详细,同时去掉注册者的资料 
-                 */
-                fprintf(se, "\n\n您的代号     : %s\n", fdata[1]);
-                fprintf(se, "您的昵称     : %s\n", lookupuser->username);
-                fprintf(se, "真实姓名     : %s\n", fdata[2]);
-                fprintf(se, "电子邮件信箱 : %s\n", ud.email);
-                if (strstr(str, "自动处理程序"))
-                	fprintf(se, "真实 E-mail  : %s$%s@SYSOP\n", fdata[3], fdata[5]);
-		else	
-                	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], getCurrentUser()->userid);
-                fprintf(se, "服务单位     : %s\n", fdata[3]);
-                fprintf(se, "目前住址     : %s\n", fdata[4]);
-                fprintf(se, "连络电话     : %s\n", fdata[5]);
-                fprintf(se, "注册日期     : %s", ctime(&lookupuser->firstlogin));
-                fprintf(se, "最近光临日期 : %s", ctime(&lookupuser->lastlogin));
-                fprintf(se, "最近光临机器 : %s\n", lookupuser->lasthost);
-                fprintf(se, "上站次数     : %d 次\n", lookupuser->numlogins);
-                fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);
-                fprintf(se, "生    日     : %s\n", fdata[6]);
-                if (strstr(str,"拒绝"))
-                	fprintf(se, "\033[1;32m自动拒绝理由 : %s\033[m\n", fdata[7]);
-                /*
-                 * fprintf(se, "\n\033[33m以下是认证者个人资料\033[35m");
-                 * getuinfo(se, getCurrentUser());rem by Haohmaru.99.4.16 
-                 */
-                fclose(se);
-                if (strstr(str,"拒绝"))
-                	post_file(getCurrentUser(), "", fname, "reject_registry", str, 0, 1, getSession());     
-                else
-                {
-	                if (strstr(str, "自动处理程序"))
-	                	post_file(getCurrentUser(), "", fname, "Registry", str, 0, 1, getSession());       
-	                else
-		                post_file(getCurrentUser(), "", fname, "Registry", str, 0, 2, getSession());
-                }
-            } else if (strstr(str, "删除使用者：")) {
-                fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
-                fprintf(se, "以下是被删者个人资料");
-                getuinfo(se, lookupuser);
-                fprintf(se, "\n以下是删除者个人资料");
-                getuinfo(se, getCurrentUser());
-                fclose(se);
-                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
-            } else if ((ptr = strstr(str, "的权限XPERM")) != NULL) {
-                int oldXPERM, newXPERM;
-                int num;
-                char XPERM[48];
-
-                sscanf(ptr + strlen("的权限XPERM"), "%d %d", &oldXPERM, &newXPERM);
-                *(ptr + strlen("的权限")) = 0;
-
-                fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
-
-                strcpy(XPERM, XPERMSTR);
-                for (num = 0; num < (int) strlen(XPERM); num++)
-                    if (!(oldXPERM & (1 << num)))
-                        XPERM[num] = ' ';
-                XPERM[num] = '\0';
-                fprintf(se, "以下是被改者原来的权限\n\033[1m\033[33m%s", XPERM);
-
-                strcpy(XPERM, XPERMSTR);
-                for (num = 0; num < (int) strlen(XPERM); num++)
-                    if (!(newXPERM & (1 << num)))
-                        XPERM[num] = ' ';
-                XPERM[num] = '\0';
-                fprintf(se, "\n%s\033[m\n以上是被改者现在的权限\n", XPERM);
-
-                fprintf(se, "\n"
-                        "\033[1m\033[33mb\033[m基本权力 \033[1m\033[33mT\033[m进聊天室 \033[1m\033[33mC\033[m呼叫聊天 \033[1m\033[33mP\033[m发文章 \033[1m\033[33mR\033[m资料正确 \033[1m\033[33mp\033[m实习站务 \033[1m\033[33m#\033[m可隐身 \033[1m\033[33m@\033[m可见隐身\n"
-                        "\033[1m\033[33mX\033[m长期帐号 \033[1m\033[33mW\033[m编辑系统档案 \033[1m\033[33mB\033[m版主 \033[1m\033[33mA\033[m帐号管理 \033[1m\033[33m$\033[m智囊团 \033[1m\033[33mV\033[m封禁娱乐 \033[1m\033[33mS\033[m系统维护\n"
-                        "\033[1m\033[33m!\033[mRead/Post限制 \033[1m\033[33mD\033[m精华区总管 \033[1m\033[33mE\033[m讨论区总管 \033[1m\033[33mM\033[m活动看版总管 \033[1m\033[33m1\033[m不能ZAP \033[1m\033[33m2\033[m聊天室OP\n"
-                        "\033[1m\033[33m3\033[m系统总管理员 \033[1m\033[33m4\033[m荣誉帐号 \033[1m\033[33m5 7\033[m 特殊权限 \033[1m\033[33m6\033[m仲裁 \033[1m\033[33m8\033[m自杀 \033[1m\033[33m9\033[m集体帐号 \033[1m\033[33m0\033[m看系统讨论版\n"
-			"\033[1m\033[33m%%\033[m封禁Mail"
-                        "\n");
-
-                fprintf(se, "\n以下是被改者个人资料");
-                getuinfo(se, lookupuser);
-                fprintf(se, "\n以下是修改者个人资料");
-                getuinfo(se, getCurrentUser());
-                fclose(se);
-                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
-            } else {            /* Modified for change id by Bigman 2001.5.25 */
-
-                fprintf(se, "系统安全记录系统\n\x1b[32m原因：%s\x1b[m\n", str);
-                fprintf(se, "以下是个人资料");
-                getuinfo(se, lookupuser);
-                fclose(se);
-                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
-            }
-        } else {
-            fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
-            fprintf(se, "以下是个人资料");
-            getuinfo(se, getCurrentUser());
-            fclose(se);
-            if (strstr(str, "设定使用者注册资料"))      /* Leeward 98.03.29 */
-                post_file(getCurrentUser(), "", fname, "Registry", str, 0, 2, getSession());
-            else {
-                if((ptr = strchr(str, '\n')) != NULL)
-                    sprintf(ptr, "...");
-                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
-            }
-        }
         unlink(fname);
         modify_user_mode(savemode);
     }
@@ -376,7 +246,7 @@ int m_newbrd()
         char secu[STRLEN];
 
         sprintf(secu, "成立新版：%s", newboard.filename);
-        securityreport(secu, NULL, NULL);
+        securityreport(secu, NULL, NULL, getSession());
     }
     pressreturn();
     clear();
@@ -1845,7 +1715,7 @@ int modify_board(int bid){
     sprintf(src,"tmp/edit_board_log_%ld_%d",time(NULL),(int)getpid());
     if(!(fp=fopen(src,"w"))){
         sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,(change&(1<<0))?32:0,newbh.filename);
-        securityreport(buf,NULL,NULL);
+        securityreport(buf,NULL,NULL, getSession());
     }
     else{
         sprintf(buf,"修改讨论区属性: %s%c-> %s",bh.filename,(change&(1<<0))?32:0,newbh.filename);
@@ -1953,7 +1823,7 @@ int searchtrace(void){
         return -1;
     }
     mail_file(getCurrentUser()->userid,fn_buf,getCurrentUser()->userid,&buf[4],BBSPOST_MOVE,NULL);
-    securityreport(buf,user,NULL);
+    securityreport(buf,user,NULL, getSession());
     newbbslog(BBSLOG_USER,"query_user_log: <%c> %s",(toupper(ans[0])=='M'?'M':'P'),user->userid);
     move(3,0);prints("\033[1;36m%s 已回寄, 请检查信件...\033[m",&buf[4]);
     WAIT_RETURN;clear();
@@ -2549,7 +2419,7 @@ if (ret==-2) {
 	 }
 #endif
          	mail_file(sender, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0, NULL);
-                securityreport(genbuf, lookupuser, fdata);
+                securityreport(genbuf, lookupuser, fdata, getSession());
                 if ((fout = fopen(logfile, "a")) != NULL) {
                     time_t now;
 
@@ -2624,7 +2494,7 @@ if (ret==-2) {
                 buf[0]='!';
                 strncpy(fdata[7],errorstr,STRLEN - 1);
                 sprintf(genbuf, "自动处理程序拒绝 %s 的身份确认.", uinfo.userid);
-                securityreport(genbuf, lookupuser, fdata);
+                securityreport(genbuf, lookupuser, fdata, getSession());
               }
 #endif
 
@@ -2773,7 +2643,7 @@ int m_register()
                 char secu[STRLEN];
 
                 sprintf(secu, "设定使用者注册资料");
-                securityreport(secu, NULL, NULL);
+                securityreport(secu, NULL, NULL, getSession());
             }
             scan_register_form("register.list", fname);
         }
@@ -2933,7 +2803,7 @@ int x_deny()
                 if (askyn(buf, 0) != 0) {
                     sprintf(reportbuf, "封禁%s的%s ", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
                     lookupuser->userlevel ^= level[sel - 1];
-                    securityreport(reportbuf, lookupuser, NULL);
+                    securityreport(reportbuf, lookupuser, NULL, getSession());
                     break;
                 }
             } else {
@@ -2946,7 +2816,7 @@ int x_deny()
                 }
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel - 1];
-                    securityreport(reportbuf, lookupuser, NULL);
+                    securityreport(reportbuf, lookupuser, NULL, getSession());
                     save_giveupinfo(lookupuser,s);
                     break;
                 }
@@ -3045,7 +2915,7 @@ int set_BM(void){
                             set_board(pos,&bh,NULL);
                             newbbslog(BBSLOG_USER,"setBM: clear invalid BM %s on %s",genbuf,bh.filename);
                             snprintf(title,80,"清理 %s 版非法版主 %s",bh.filename,genbuf);
-                            securityreport(title,NULL,NULL);
+                            securityreport(title,NULL,NULL, getSession());
                         }
                         else{
                             clrtoeol();pressreturn();clear();
@@ -3111,7 +2981,7 @@ int set_BM(void){
                         del_bm(user,&bh,pos,brd_num);
                         sprintf(genbuf,"免去 %s 的版主 %s ",bh.filename,user->userid);
                     }
-                    securityreport(genbuf,user,NULL);
+                    securityreport(genbuf,user,NULL, getSession());
                     newbbslog(BBSLOG_USER,"setBM: %s <%c> %s",bh.filename,(flag==1?'+':'-'),user->userid);
                     memcpy(bh.BM,cache_ptr->BM,BM_LEN);
 #ifdef SMTH

@@ -311,7 +311,7 @@ int x_level()
         char secu[STRLEN];
 
         sprintf(secu, "修改 %s 的权限XPERM%d %d", lookupuser->userid, lookupuser->userlevel, newlevel);
-        securityreport(secu, lookupuser, NULL);
+        securityreport(secu, lookupuser, NULL, getSession());
         lookupuser->userlevel = newlevel;
         /*
          * Leeward: 1997.12.02 : Modification stops 
@@ -409,7 +409,7 @@ int XCheckLevel(void){
     move(2,0);clrtoeol();
     prints("\033[1;36m查阅具有特定权限的用户·查询结果 已回寄, 请检查信件...\033[m");
     mail_file(getCurrentUser()->userid,buf,getCurrentUser()->userid,"查阅具有特定权限的用户·查询结果",BBSPOST_MOVE,NULL);
-    securityreport("查阅具有特定权限的用户",NULL,NULL);
+    securityreport("查阅具有特定权限的用户",NULL,NULL, getSession());
     bbslog("user","%s","查阅具有特定权限的用户");
     pressreturn();clear();
     return 0;
@@ -478,7 +478,7 @@ int Xdeljunk()
     sprintf(buf, "boards/%s/.JUNK", board);
     unlink(buf);
     sprintf(buf, "%s 清空 %s 版面垃圾箱", getCurrentUser()->userid, board);
-    securityreport(buf, NULL, NULL);
+    securityreport(buf, NULL, NULL, getSession());
     clear();
     return 0;
 }
@@ -931,7 +931,7 @@ int a_edits()
             char secu[STRLEN];
 
             sprintf(secu, "删除系统档案：%s", explain_file[ch]);
-            securityreport(secu, NULL, NULL);
+            securityreport(secu, NULL, NULL, getSession());
         }
         my_unlink(genbuf);
         move(5, 0);
@@ -953,7 +953,7 @@ int a_edits()
             char secu[STRLEN];
 
             sprintf(secu, "修改系统档案：%s", explain_file[ch]);
-            securityreport(secu, NULL, NULL);
+            securityreport(secu, NULL, NULL, getSession());
         }
 
         if (!strcmp(e_file[ch], "../Welcome")) {

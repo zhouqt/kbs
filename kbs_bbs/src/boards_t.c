@@ -994,7 +994,7 @@ static int fav_key(struct _select_def *conf, int command)
                 board_setreadonly(ptr->name,0);
                 /* Bigman 2000.12.11:系统记录 */
                 sprintf(genbuf,"解开只读讨论区 %s ",ptr->name);
-                securityreport(genbuf,NULL,NULL);
+                securityreport(genbuf,NULL,NULL, getSession());
                 sprintf(genbuf, " readable board %s",ptr->name);
                 newbbslog(BBSLOG_USER,"%s",genbuf);
                 clrtobot();
@@ -1008,7 +1008,7 @@ static int fav_key(struct _select_def *conf, int command)
                     board_setreadonly(ptr->name,1);
                     /* Bigman 2000.12.11:系统记录 */
                     sprintf(genbuf,"只读讨论区 %s ",ptr->name);
-                    securityreport(genbuf,NULL,NULL);
+                    securityreport(genbuf,NULL,NULL, getSession());
                     sprintf(genbuf," readonly board %s",ptr->name);
                     newbbslog(BBSLOG_USER,"%s",genbuf);
                     clrtobot();

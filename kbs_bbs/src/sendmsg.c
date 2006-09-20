@@ -441,7 +441,7 @@ int wall()
         pressanykey();
     }
     sprintf(genbuf, "%s 广播:%s", getCurrentUser()->userid, buf2);
-    securityreport(genbuf, NULL, NULL);
+    securityreport(genbuf, NULL, NULL, getSession());
     prints("\n已经广播完毕....\n");
     pressanykey();
     return 0;

@@ -2466,3 +2466,129 @@ void trimstr(char *s){
     memmove(s,p,((strlen(p)+1)*sizeof(char)));
     return;
 }
+
+void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN], session_t *session)
+{                               /* Leeward: 1997.12.02 */
+    FILE *se;
+    char fname[STRLEN];
+    char *ptr;
+
+	gettmpfilename( fname, "security" );
+    //sprintf(fname, "tmp/security.%d", getpid());
+    if ((se = fopen(fname, "w")) != NULL) {
+        if (lookupuser) {
+            if (strstr(str, "身份确认")) {
+                struct userdata ud;
+
+                read_userdata(lookupuser->userid, &ud);
+                fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
+                fprintf(se, "以下是通过者个人资料");
+                /*
+                 * getuinfo(se, lookupuser); 
+                 */
+                /*
+                 * Haohmaru.99.4.15.把被注册的资料列得更详细,同时去掉注册者的资料 
+                 */
+                fprintf(se, "\n\n您的代号     : %s\n", fdata[1]);
+                fprintf(se, "您的昵称     : %s\n", lookupuser->username);
+                fprintf(se, "真实姓名     : %s\n", fdata[2]);
+                fprintf(se, "电子邮件信箱 : %s\n", ud.email);
+                if (strstr(str, "自动处理程序"))
+                	fprintf(se, "真实 E-mail  : %s$%s@SYSOP\n", fdata[3], fdata[5]);
+		else	
+                	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], session->currentuser->userid);
+                fprintf(se, "服务单位     : %s\n", fdata[3]);
+                fprintf(se, "目前住址     : %s\n", fdata[4]);
+                fprintf(se, "连络电话     : %s\n", fdata[5]);
+                fprintf(se, "注册日期     : %s", ctime(&lookupuser->firstlogin));
+                fprintf(se, "最近光临日期 : %s", ctime(&lookupuser->lastlogin));
+                fprintf(se, "最近光临机器 : %s\n", lookupuser->lasthost);
+                fprintf(se, "上站次数     : %d 次\n", lookupuser->numlogins);
+                fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);
+                fprintf(se, "生    日     : %s\n", fdata[6]);
+                if (strstr(str,"拒绝"))
+                	fprintf(se, "\033[1;32m自动拒绝理由 : %s\033[m\n", fdata[7]);
+                /*
+                 * fprintf(se, "\n\033[33m以下是认证者个人资料\033[35m");
+                 * getuinfo(se, session->currentuser);rem by Haohmaru.99.4.16 
+                 */
+                fclose(se);
+                if (strstr(str,"拒绝"))
+                	post_file(session->currentuser, "", fname, "reject_registry", str, 0, 1, session);     
+                else
+                {
+	                if (strstr(str, "自动处理程序"))
+	                	post_file(session->currentuser, "", fname, "Registry", str, 0, 1, session);       
+	                else
+		                post_file(session->currentuser, "", fname, "Registry", str, 0, 2, session);
+                }
+            } else if (strstr(str, "删除使用者：")) {
+                fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
+                fprintf(se, "以下是被删者个人资料");
+                getuinfo(se, lookupuser);
+                fprintf(se, "\n以下是删除者个人资料");
+                getuinfo(se, session->currentuser);
+                fclose(se);
+                post_file(session->currentuser, "", fname, "syssecurity", str, 0, 2, session);
+            } else if ((ptr = strstr(str, "的权限XPERM")) != NULL) {
+                int oldXPERM, newXPERM;
+                int num;
+                char XPERM[48];
+
+                sscanf(ptr + strlen("的权限XPERM"), "%d %d", &oldXPERM, &newXPERM);
+                *(ptr + strlen("的权限")) = 0;
+
+                fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
+
+                strcpy(XPERM, XPERMSTR);
+                for (num = 0; num < (int) strlen(XPERM); num++)
+                    if (!(oldXPERM & (1 << num)))
+                        XPERM[num] = ' ';
+                XPERM[num] = '\0';
+                fprintf(se, "以下是被改者原来的权限\n\033[1m\033[33m%s", XPERM);
+
+                strcpy(XPERM, XPERMSTR);
+                for (num = 0; num < (int) strlen(XPERM); num++)
+                    if (!(newXPERM & (1 << num)))
+                        XPERM[num] = ' ';
+                XPERM[num] = '\0';
+                fprintf(se, "\n%s\033[m\n以上是被改者现在的权限\n", XPERM);
+
+                fprintf(se, "\n"
+                        "\033[1m\033[33mb\033[m基本权力 \033[1m\033[33mT\033[m进聊天室 \033[1m\033[33mC\033[m呼叫聊天 \033[1m\033[33mP\033[m发文章 \033[1m\033[33mR\033[m资料正确 \033[1m\033[33mp\033[m实习站务 \033[1m\033[33m#\033[m可隐身 \033[1m\033[33m@\033[m可见隐身\n"
+                        "\033[1m\033[33mX\033[m长期帐号 \033[1m\033[33mW\033[m编辑系统档案 \033[1m\033[33mB\033[m版主 \033[1m\033[33mA\033[m帐号管理 \033[1m\033[33m$\033[m智囊团 \033[1m\033[33mV\033[m封禁娱乐 \033[1m\033[33mS\033[m系统维护\n"
+                        "\033[1m\033[33m!\033[mRead/Post限制 \033[1m\033[33mD\033[m精华区总管 \033[1m\033[33mE\033[m讨论区总管 \033[1m\033[33mM\033[m活动看版总管 \033[1m\033[33m1\033[m不能ZAP \033[1m\033[33m2\033[m聊天室OP\n"
+                        "\033[1m\033[33m3\033[m系统总管理员 \033[1m\033[33m4\033[m荣誉帐号 \033[1m\033[33m5 7\033[m 特殊权限 \033[1m\033[33m6\033[m仲裁 \033[1m\033[33m8\033[m自杀 \033[1m\033[33m9\033[m集体帐号 \033[1m\033[33m0\033[m看系统讨论版\n"
+			"\033[1m\033[33m%%\033[m封禁Mail"
+                        "\n");
+
+                fprintf(se, "\n以下是被改者个人资料");
+                getuinfo(se, lookupuser);
+                fprintf(se, "\n以下是修改者个人资料");
+                getuinfo(se, session->currentuser);
+                fclose(se);
+                post_file(session->currentuser, "", fname, "syssecurity", str, 0, 2, session);
+            } else {            /* Modified for change id by Bigman 2001.5.25 */
+
+                fprintf(se, "系统安全记录系统\n\x1b[32m原因：%s\x1b[m\n", str);
+                fprintf(se, "以下是个人资料");
+                getuinfo(se, lookupuser);
+                fclose(se);
+                post_file(session->currentuser, "", fname, "syssecurity", str, 0, 2, session);
+            }
+        } else {
+            fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
+            fprintf(se, "以下是个人资料");
+            getuinfo(se, session->currentuser);
+            fclose(se);
+            if (strstr(str, "设定使用者注册资料"))      /* Leeward 98.03.29 */
+                post_file(session->currentuser, "", fname, "Registry", str, 0, 2, session);
+            else {
+                if((ptr = strchr(str, '\n')) != NULL)
+                    sprintf(ptr, "...");
+                post_file(session->currentuser, "", fname, "syssecurity", str, 0, 2, session);
+            }
+        }
+        unlink(fname);
+    }
+}

@@ -463,7 +463,7 @@ int uinfo_query(struct userec *u, int real, int unum)
                 
                 else
                     sprintf(secu, "修改 %s 的基本资料或密码。", u->userid);
-                securityreport(secu, &newinfo, NULL);
+                securityreport(secu, &newinfo, NULL, getSession());
             }
             break;             /*Haohmaru.98.01.10.faint...Luzi加个for循环也不break! */
         }
