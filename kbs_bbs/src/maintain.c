@@ -379,7 +379,7 @@ int select_group(int pos,int force){
     while(force&&i!=SHOW_SELECT);
     return i==SHOW_SELECT?conf.pos-1:-1;
 }
-int select_user_title(char *prefix){
+int select_user_title(const char *name){
     struct _select_item sel[257];
     struct _select_def conf;
     struct _simple_select_arg arg;
@@ -396,7 +396,7 @@ int select_user_title(char *prefix){
         user_title=get_user_title(i+1);
         if(!*user_title)
             continue;
-        if(prefix&&strcmp(user_title,prefix))
+        if(name&&strcmp(user_title,name))
             continue;
         sel[pos].x=(pos%36<18?4:44);
         sel[pos].y=pos%18+4;
