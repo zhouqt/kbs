@@ -335,7 +335,7 @@ int main(int argc,char **argv){
                 }
                 while(0);
                 break;
-#define PARSE2(p)   (((p)[0]*10)+((p)[1]*1))
+#define PARSE2(p)   ((((p)[0]*10)+((p)[1]*1))-('0'*11))
 #define PARSE4(p)   ((PARSE2(p)*100)+(PARSE2(&(p)[2])*1))
             case 'f':
                 CHECK_CONFLICT(PARAM_R);
