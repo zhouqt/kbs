@@ -4,6 +4,7 @@
  * pig2532
  */
 
+#define WWW_SECURITY_REPORT_SUFFIX "(Web)"
 
 /* bbs_admin_getnewreg(array reglist);
  */
@@ -142,7 +143,8 @@ PHP_FUNCTION(bbs_admin_setuserinfo) {
     write_userdata(newinfo.userid, &ud);
     end_mmapfile(um, sizeof(struct usermemo), -1);
 
-    sprintf(secustr, "修改 %s 的基本资料。", user->userid);
+    sprintf(secustr, "修改 %s 的基本资料" WWW_SECURITY_REPORT_SUFFIX, user->userid);
+    securityreport(secustr, &newinfo, NULL, getSession());
     
     RETURN_LONG(0);
 }
@@ -201,6 +203,7 @@ PHP_FUNCTION(bbs_admin_setuserperm) {
     long perm;
     int giveupperm;
     bool flag1, flag2;
+    char secustr[256];
     
     ac = ZEND_NUM_ARGS();
     if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &userid, &userid_len, &perm) == FAILURE) {
@@ -221,6 +224,12 @@ PHP_FUNCTION(bbs_admin_setuserperm) {
         if((user->userlevel & PERM_XEMPT) && flag2)
             mail_file(getCurrentUser()->userid, "etc/forlongid", user->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", BBSPOST_LINK, NULL);
         save_giveupinfo(user, s);
+
+        sprintf(secustr, "修改 %s 的权限" WWW_SECURITY_REPORT_SUFFIX, user->userid);
+        securityreport(secustr, user, NULL, getSession());
+        sprintf(secustr, "changed permissions for %s", user->userid);
+        bbslog("user", "%s", secustr);
+        
         RETURN_LONG(0);
     }
 }
