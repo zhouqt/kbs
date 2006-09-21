@@ -1599,6 +1599,7 @@ struct key_command mail_comms[] = {
 #ifdef INTERNET_EMAIL
     {'F', (READ_KEY_FUNC)mail_forward,NULL},
 #endif
+    {Ctrl('P'), (READ_KEY_FUNC)m_sendnull,NULL},
     /*
      * Added by ming, 96.10.9
      */
@@ -2352,8 +2353,10 @@ static int m_clean()
 
 int m_sendnull()
 {
-    m_send(NULL);
-    return 0;
+    if (HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
+       m_send(NULL);
+    }
+    return FULLUPDATE;
 }
 
 const static struct command_def mail_cmds[] = {
