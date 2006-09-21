@@ -1798,13 +1798,13 @@ MENU *father;
         case Ctrl('Q'):
             clear();
             move(3,0);
-            char slink[256];
-
-            if (ann_attach_link_num) {
-               (*ann_attach_link_num)(slink,255,NULL,-1,-1,&me);
-               prints("全文链接：\033[4m%s\033[m\n",slink);
+            /* etnlegend, 2006.09.21, 打倒 ai! */
+            do{
+                char slink[256];
+                ann_attach_link_num(slink,255,NULL,-1,-1,&me);
+                prints("全文链接：\033[4m%s\033[m\n",slink);
             }
-
+            while(0);
             pressanykey();
             me.page = 9999;
             break;		
