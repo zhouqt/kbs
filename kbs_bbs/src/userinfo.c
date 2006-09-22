@@ -1137,7 +1137,7 @@ int modify_userinfo(int uid,int mode){
 #ifdef HAVE_CUSTOM_USER_TITLE
     unsigned char uc,uf;
 #endif /* HAVE_CUSTOM_USER_TITLE */
-    int i,j,k,loop,pos;
+    int i,j,k,loop,pos,mail;
     unsigned int access,change,verify,level;
     time_t current;
     switch(mode){
@@ -1259,6 +1259,7 @@ int modify_userinfo(int uid,int mode){
     conf.on_selchange=mu_menu_on_change;
     loop=1;
     pos=MU_ITEM;
+    mail=0;
     change=0;
     do{
         move(1,0);
@@ -1338,9 +1339,10 @@ int modify_userinfo(int uid,int mode){
                     if(!i){
                         snprintf(nuser.userid,(IDLEN+2),"%s",buf);
                         snprintf(ndata.userid,(IDLEN+2),"%s",buf);
-                        MU_SET(0,user,userid,str,"%s",0);
+                        snprintf(buf,80,"%s \033[0;33m[将会踢出该用户全部登录]\033[m",nuser.userid);
+                        MU_SET(0,user,userid,str,"%s",buf);
                     }
-                    setpasswd(&buf[40],&nuser);
+                    setpasswd(&buf[80],&nuser);
                     snprintf(buf,MU_LENGTH,"%s",md5_mask);
                     MU_SET(1,user,md5passwd,str,"%s",buf);
                     break;
@@ -1615,9 +1617,15 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     if(mu_generate_level(MU_CURR_ROW,15,&level,nuser.userlevel)==-1)
                         break;
+                    if(level!=ouser.userlevel&&level!=nuser.userlevel){
+                        MU_GET(MU_CURR_ROW,MU_MSG(Y,"是否向该用户发送权限修改通知? [Y]: "),buf,1);
+                        mail=(toupper(buf[0])!='N');
+                    }
                     nuser.userlevel=level;
-                    gen_permstr(nuser.userlevel,buf);
-                    MU_SET(i,user,userlevel,val,"<%s>",buf);
+                    buf[0]='<';
+                    gen_permstr(nuser.userlevel,&buf[1]);
+                    snprintf(&buf[NUMPERMS+1],(MU_LENGTH-(NUMPERMS+1)),"> \033[0;33m[%s通知]\033[m",(mail?"启用":"禁用"));
+                    MU_SET(i,user,userlevel,val,"%s",buf);
                     break;
 #undef MU_CURR_ROW
                 case (MU_ITEM-1):
@@ -1827,6 +1835,24 @@ int modify_userinfo(int uid,int mode){
     else{
         sethomefile(buf,urec->userid,"usermemo");
         unlink(buf);
+    }
+    if(mail&&(change&(1<<18))){
+        snprintf(name,MU_LENGTH,"tmp/modify_userinfo_%lu_%d.mail",time(NULL),(int)getpid());
+        if((fp=fopen(name,"w"))){
+            write_header(fp,getCurrentUser(),1,NULL,"[系统] 用户权限修改通知",0,0,getSession());
+            fprintf(fp,"\033[1;37m[%s]\033[m\n\n","用户权限修改明细");
+            fprintf(fp,"  \033[1;33m原用户权限状态: \033[0;33m<%s>\033[m\n",gen_permstr(ouser.userlevel,buf));
+            fprintf(fp,"  \033[1;33m现用户权限状态: \033[1;32m<%s>\033[m\n\n",gen_permstr(vuser.userlevel,buf));
+            fprintf(fp,"\033[1;37m[%s]\033[m\n\n","涉及修改的权限位说明");
+            for(level=(ouser.userlevel^vuser.userlevel),j=0;j<NUMPERMS;j++)
+                if(level&(1<<j))
+                    fprintf(fp,"  %s<%c> \033[1;33m%s\033[m\n",((vuser.userlevel&(1<<j))?"\033[1;32m+":"\033[1;31m-"),
+                        XPERMSTR[j],permstrings[j]);
+            fprintf(fp,"\n\033[1;37m[%s]\033[m\n","如有异常情况请及时回复本信联系站务人员设法解决!");
+            fclose(fp);
+            mail_file(getCurrentUser()->userid,name,urec->userid,"[系统] 用户权限修改通知",BBSPOST_MOVE,NULL);
+            unlink(name);
+        }
     }
     if(mode){
         snprintf(name,MU_LENGTH,"tmp/modify_userinfo_%lu_%d.log",time(NULL),(int)getpid());
