@@ -473,7 +473,7 @@ int t_query(char* q_id)
         {
             t3 = "       ";
         }
-        prints("\x1b[m\x1b[44m%s 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] %s 加,减朋友[\x1b[1;32mo,d\x1b[m\x1b[0;44m] %s 其它键继续", t1, t2, t3);
+        prints("\x1b[m\x1b[44m%s 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] %s 加,减朋友[\x1b[1;32mo,d\x1b[m\x1b[0;44m] 查看说明档[\x1b[1;32ml\x1b[m\x1b[0;44m] %s 其它键继续", t1, t2, t3);
 
         clrtoeol();
         resetcolor();
@@ -496,29 +496,14 @@ int t_query(char* q_id)
                 ttt_talk(uin);
                 break;
             case 'S':
-#ifdef SMS_SUPPORT
-				/*
-		if(ch=='S')
-		    do_send_sms_func(uident, NULL);
-		else
-		*/
-#endif
-		{
-		    if (!((genbuf[0]) && seecount)) break;
-		    if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
+                if (!((genbuf[0]) && seecount)) break;
+                if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
 	                break;
-		    uin = t_search(uident, false);
-            if (uin == NULL) {
-                sprintf(buf, "%s 已经下线", uident);
-                break;
-            }
-		    if (!canmsg(getCurrentUser(), uin)) {
-			sprintf(buf, "%s 已经关闭讯息呼叫器", uident);
-			break;
-		    }
-		    strcpy(getSession()->MsgDesUid, uident);
-                    do_sendmsg(uin, NULL, 0);
-		}
+                uin = t_search(uident, false);
+                if (!uin || !canmsg(getCurrentUser(), uin))
+                    break;
+                strcpy(getSession()->MsgDesUid, uident);
+                do_sendmsg(uin, NULL, 0);
                 break;
             case 'M':
                 if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
@@ -531,6 +516,17 @@ int t_query(char* q_id)
                     break;
                 clear();
                 addtooverride(uident);
+                break;
+            case 'L':
+                do{
+                    struct stat st;
+                    sethomefile(buf,planid,"plans");
+                    if(!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size){
+                        ansimore(buf,true);
+                        move(0,0);
+                    }
+                }
+                while(0);
                 break;
             case 'D':
                 if (!strcmp("guest", getCurrentUser()->userid))
