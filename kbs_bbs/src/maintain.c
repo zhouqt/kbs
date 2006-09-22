@@ -267,7 +267,7 @@ char* gen_permstr(unsigned int level,char* buf){
     int i;
     /*参数buf应该具有足够的大小*/
     sprintf(buf,"%s",XPERMSTR);
-    for(i=0;i<30;i++)
+    for(i=0;i<NUMPERMS;i++)
         if(!(level&(1<<i)))
             buf[i]='-';
     return buf;
