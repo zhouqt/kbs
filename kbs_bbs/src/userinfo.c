@@ -1303,7 +1303,7 @@ int modify_userinfo(int uid,int mode){
                     }
                 case 1:
                     if(!mode){
-                        MU_GETPWD(MU_CURR_ROW,MU_MSG(Y,"«Î ‰»Î√‹¬Î: "),&buf[40],38);
+                        MU_GETPWD(MU_CURR_ROW,MU_MSG(Y,"«Î ‰»Î‘≠√‹¬Î: "),&buf[40],38);
                         if(!buf[40])
                             break;
                         if(!checkpasswd2(&buf[40],&ouser)){
