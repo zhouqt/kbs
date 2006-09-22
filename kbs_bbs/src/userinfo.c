@@ -1273,11 +1273,12 @@ int modify_userinfo(int uid,int mode){
         list_select_loop(&conf);
         pos=conf.pos;
         if(arg.type==MU_MENU_QUIT){
-            if(!change)
-                return -1;
-            MU_GET((MU_ITEM+2),MU_MSG(Y,"放弃修改并退出? [N]: "),buf,1);
-            loop=(!(toupper(buf[0])=='Y'));
-            continue;
+            if(change){
+                MU_GET((MU_ITEM+2),MU_MSG(Y,"放弃修改并退出? [N]: "),buf,1);
+                if(toupper(buf[0])!='Y')
+                    continue;
+            }
+            return -1;
         }
         else if(arg.type==MU_MENU_SELECT){
             switch((i=(pos-1))){
