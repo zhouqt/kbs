@@ -1314,33 +1314,18 @@ int read_showauthor(struct _select_def* conf, struct fileheader* fh, void* extra
     return FULLUPDATE;
 }
 
-/*直接查作者资料*/
-int read_showauthorinfo(struct _select_def* conf, struct fileheader* fh, void* extraarg)
-{
-    struct userec uinfo;
-    struct userec *lookupuser;
-    int id;
-
-    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
-        clear();
-        move(2,0);
-        prints("全文链接快捷键改拉 ! 现在用 Ctrl+Q ，谢谢适应 !");
-        pressanykey();
-        return FULLUPDATE;
-    } else {
-        if (0 == (id = getuser(fh->owner, &lookupuser))) {
-            move(2, 0);
-            prints("不正确的使用者代号");
-            clrtoeol();
-            return PARTUPDATE;
-        }
-        uinfo = *lookupuser;
-        move(1, 0);
-        clrtobot();
-        disply_userinfo(&uinfo, 1);
-        uinfo_query(&uinfo, 1, id);
-    }
+/* etnlegend, 2006.09.21, 阅读状态查阅或修改用户资料... */
+int read_authorinfo(struct _select_def *conf,struct fileheader *fh,void *arg){
+#ifdef HAVE_STRICT_USERINFO
+#define RAI_PERM    (PERM_ADMIN)
+#else /* HAVE_STRICT_USERINFO */
+#define RAI_PERM    (PERM_SYSOP|PERM_ADMIN)
+#endif /* HAVE_STRICT_USERINFO */
+    if(!HAS_PERM(getCurrentUser(),RAI_PERM))
+        return DONOTHING;
+    modify_userinfo(searchuser(fh->owner),(HAS_PERM(getCurrentUser(),PERM_ADMIN)?1:2));
     return FULLUPDATE;
+#undef RAI_PERM
 }
 
 /* etnlegend, 2005.10.16, 查询版主更新 */

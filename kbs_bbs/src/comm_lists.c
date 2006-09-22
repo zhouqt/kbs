@@ -40,8 +40,13 @@ int New();
 int Post();
 int ReadBoard();
 
-/* etnlegend, 2004.04.07, 新选择阅读讨论区... */
+/* etnlegend, 2006.04.07, 新选择阅读讨论区... */
 int Select(void);
+
+/* etnlegend, 2006.09.21, 新修改用户资料... */
+int modify_userinfo_current(void);
+int modify_userinfo_admin(void);
+
 
 int Users();
 int Welcome();
@@ -294,7 +299,10 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ViewUTMP", t_utmp}, 
     {"ViewWWWguest", t_wwwguest},
     {"DisplayPublic", display_publicshm},
-     
+
+    {"ModifyUserCurrent",modify_userinfo_current},
+    {"ModifyUserAdmin",modify_userinfo_admin},
+
     {NULL, NULL},
 };
 

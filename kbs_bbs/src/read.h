@@ -148,7 +148,7 @@ int author_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 
 int read_sendmsgtoauthor(struct _select_def* conf, struct fileheader* fh, void* extraarg);
 int read_showauthor(struct _select_def* conf, struct fileheader* fh, void* extraarg);
-int read_showauthorinfo(struct _select_def* conf, struct fileheader* fh, void* extraarg);
+int read_authorinfo(struct _select_def *conf,struct fileheader *fh,void *arg);
 int read_cross(struct _select_def* conf, struct fileheader* fh, void* extraarg);
 int read_zsend(struct _select_def* conf, struct fileheader* fh, void* extraarg);
 

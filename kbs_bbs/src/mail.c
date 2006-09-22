@@ -1617,7 +1617,7 @@ struct key_command mail_comms[] = {
     {'z', (READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
     
     {Ctrl('A'), (READ_KEY_FUNC)read_showauthor,NULL},
-    {'~', (READ_KEY_FUNC)read_showauthorinfo,NULL},     
+    {'~',(READ_KEY_FUNC)read_authorinfo,NULL},
     {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
     {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
 

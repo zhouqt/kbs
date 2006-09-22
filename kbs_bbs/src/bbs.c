@@ -1407,7 +1407,7 @@ reget:
     case '~':            /*Haohmaru.98.12.05,系统管理员直接查作者资料 */
         if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) break;
         clear();
-        read_showauthorinfo(conf, fileinfo, NULL);
+        read_authorinfo(conf,fileinfo,NULL);
         return READ_NEXT;
         break;
     case Ctrl('W'):            /*cityhunter 00.10.18察看版主信息 */
@@ -5065,7 +5065,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'[', (READ_KEY_FUNC)thread_read,(void*)SR_PREV},
 
     {Ctrl('A'), (READ_KEY_FUNC)read_showauthor,NULL},
-    {'~', (READ_KEY_FUNC)read_showauthorinfo,NULL},     
+    {'~',(READ_KEY_FUNC)read_authorinfo,NULL},
     {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
     {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
 #ifdef DENYANONY
@@ -5430,7 +5430,7 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
                 case '~':
                     if(HAS_PERM(getCurrentUser(),PERM_ADMIN)){
                         clear();
-                        read_showauthorinfo(conf,fh,NULL);
+                        read_authorinfo(conf,fh,NULL);
                         return READ_NEXT;
                     }
                     break;
@@ -5496,7 +5496,7 @@ static struct key_command read_top_comms[]={
     {Ctrl('H'),(READ_KEY_FUNC)author_read,(void*)SR_READX}, 
     {',',(READ_KEY_FUNC)read_splitscreen,NULL},
     {Ctrl('Q'),(READ_KEY_FUNC)showinfo,NULL},
-    {'~',(READ_KEY_FUNC)read_showauthorinfo,NULL},
+    {'~',(READ_KEY_FUNC)read_authorinfo,NULL},
     {Ctrl('W'),(READ_KEY_FUNC)read_showauthorBM,NULL},
     {Ctrl('O'),(READ_KEY_FUNC)read_addauthorfriend,NULL},
     {'!',(READ_KEY_FUNC)read_callfunc0,(void*)Goodbye},

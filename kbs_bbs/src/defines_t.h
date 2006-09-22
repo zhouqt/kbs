@@ -251,6 +251,7 @@ int countlogouts(char filename[STRLEN]);
 /* userinfo.c */
 void disply_userinfo(struct userec *u, int real);
 int uinfo_query(struct userec *u, int real, int unum);
+int modify_userinfo(int uid,int mode);  /* etnlegend, 2006.09.21, 修改用户资料接口... */
 
 
 /* commlist.c */
