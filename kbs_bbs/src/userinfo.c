@@ -880,6 +880,9 @@ static inline int mu_generate_level(int row,int col,unsigned int *level,unsigned
             prints(((perm&mask)?MU_GL_C(A):MU_GL_C(D)),XPERMSTR[i]);
         else
             prints(((perm&mask)?MU_GL_C(N):MU_GL_C(U)),XPERMSTR[i]);
+        move(row,(col+(NUMPERMS+2)));
+        clrtoeol();
+        prints(" \033[1;36m%s\033[m",permstrings[i]);
         move(row,2);
         do{
             switch((key=igetkey())){
