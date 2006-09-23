@@ -1364,9 +1364,9 @@ void a_manager(MENU *pm,int ch)
         }
 }
 
-void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos,void* arg)
+void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
 {
-	char board[STRLEN];
+	char board[STRLEN], path[MAXPATH], phpname[20];
     MENU *m=(MENU *)arg;
 	MENU *tmp;
 	int bid;
@@ -1374,12 +1374,28 @@ void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos
 	const struct boardheader *fh;
 	int sz;
 
+ 	/* "bbs0an.php" or "bbsanc.php", by pig2532 */
+ 	snprintf(path, MAXPATH, "%s/%s", m->path, m->item[m->now]->fname);
+ 	if(dashd(path))
+ 	{
+ 	    strcpy(phpname, "bbs0an.php");
+ 
+ 	    /* 如果bbs0an.php支持数字串方式的精华区路径，则下面一段可删除 */
+ 	    snprintf(buf, buf_len, "http://%s/bbs0an.php?path=%s",
+ 	        get_my_webdomain(0), path+10);
+ 	    return;
+ 	    /* 以上 */
+ 	    
+ 	}
+ 	else
+ 	    strcpy(phpname, "bbsanc.php");
+ 
 	board[0]='\0';
 
     ann_get_board(m->path, board, sizeof(board));
 	if(board[0] =='\0' || (bid=getbnum_safe(board,getSession()))==0){
-      snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s/%s&ap=%ld",
-        get_my_webdomain(0),m->path+10, m->item[m->now]->fname,attachpos);
+        snprintf(buf,buf_len-9,"http://%s/%s?path=%s/%s",
+          get_my_webdomain(0), phpname, m->path+10, m->item[m->now]->fname);
 	  return;
 	}
 
@@ -1398,8 +1414,8 @@ void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos
 
 	if(tmp==NULL) return;
 
-    snprintf(buf,buf_len-9,"http://%s/bbsanc.php?p=%d",
-        get_my_webdomain(0),bid);
+    snprintf(buf,buf_len-9,"http://%s/%s?p=%d",
+        get_my_webdomain(0), phpname, bid);
 
 	for(; tmp; tmp=(MENU *)(tmp->nowmenu)){
 		if(strlen(buf) < buf_len-9){
@@ -1408,15 +1424,35 @@ void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos
 		}
 	}
 
-	if(attachpos!=-1){
-		if(strlen(buf) < buf_len-9){
-			sprintf(bap, "&ap=%ld", attachpos);
-			strcat(buf, bap);
-		}
-	}
-
 	return;
 
+}
+
+/* Show file info in announce, pig2532 */
+void ann_showinfo(MENU *m)
+{
+    char url[STRLEN];
+    
+    ann_get_current_url(url, STRLEN, NULL, 0, m);
+    
+    clear();
+    move(3, 0);
+    prints("精华区文件链接地址：");
+    move(4, 1);
+    prints("%s", url);
+    pressanykey();
+}
+
+void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos,void* arg)
+{
+    char bap[PATHLEN];
+    
+    ann_get_current_url(buf, buf_len, ext, len, arg);
+    if(attachpos != -1)
+    {
+        sprintf(bap, "&ap=%ld", attachpos);
+        strcat(buf, bap);
+    }
 }
 
 void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
@@ -1622,6 +1658,10 @@ MENU *father;
 		case KEY_END:
 			me.now = me.num - 1;
 			break;
+	case Ctrl('Q'):    /* pig2532: show file info */
+	    ann_showinfo(&me);
+	    me.page = 9999;
+	    break;
         case Ctrl('C'):
         case Ctrl('P'):
             if (!HAS_PERM(getCurrentUser(), PERM_POST))
@@ -1795,19 +1835,6 @@ MENU *father;
              * }
              * break;
              */
-        case Ctrl('Q'):
-            clear();
-            move(3,0);
-            /* etnlegend, 2006.09.21, 打倒 ai! */
-            do{
-                char slink[256];
-                ann_attach_link_num(slink,255,NULL,-1,-1,&me);
-                prints("全文链接：\033[4m%s\033[m\n",slink);
-            }
-            while(0);
-            pressanykey();
-            me.page = 9999;
-            break;		
         case Ctrl('Y'):
             if (me.now < me.num) {
                 if (me.item[me.now]->host != NULL) {
