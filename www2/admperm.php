@@ -1,6 +1,8 @@
 <?php
     require("www2-admin.php");
 
+    admin_check("perm");
+
     if(!($currentuser["userlevel"] & BBS_PERM_ADMIN))
         admin_deny();
 

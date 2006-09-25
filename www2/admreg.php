@@ -1,9 +1,8 @@
 <?php
     require("www2-admin.php");
    
-    if(!($currentuser["userlevel"] & BBS_PERM_ACCOUNTS))
-        admin_deny();
-   
+    admin_check("reg");
+  
     $reglist = array();
     $count = bbs_admin_getnewreg($reglist);
 

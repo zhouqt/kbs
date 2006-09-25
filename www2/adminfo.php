@@ -1,8 +1,7 @@
 <?php
 	require("www2-admin.php");
 
-    if(!($currentuser["userlevel"] & BBS_PERM_ACCOUNTS))
-        admin_deny();
+    admin_check("info");
 
     if(isset($_POST["modifyuserid"])) {
         $userid = $_POST["modifyuserid"];

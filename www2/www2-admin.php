@@ -1,8 +1,22 @@
 <?php
 
-    function admin_deny()
+    $adminperm = array(
+        "reg" => BBS_PERM_ACCOUNTS,
+        "info" => BBS_PERM_ACCOUNTS,
+        "perm" => BBS_PERM_ADMIN,
+    );
+    
+    function admin_check($adminitem)
     {
-        html_error_quit("您没有进入此管理页面的权限。");
+        global $adminperm, $currentuser;
+        if(!isset($adminperm[$adminitem])) {
+            html_error_quit("没有这样的管理功能。");
+            exit;
+        }
+        if(!($currentuser["userlevel"] & $adminperm[$adminitem])) {
+            html_error_quit("您没有进入此管理页面的权限。");
+            exit;
+        }
     }
 
     function admin_header($title_simple, $title_full)
