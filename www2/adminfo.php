@@ -58,12 +58,13 @@
     if($uid == -1)
         html_error_quit("不存在的用户。");
     if($uid > 0) {
-        admin_header("改别人资料", "修改使用者资料");
+        admin_header("改别人资料", "修改用户数据");
 ?>
 <form method="post" action="adminfo.php" class="medium">
 <fieldset><legend>要修改的用户ID</legend><div class="inputs">
 <label>ID:</label><input type="text" name="userid" value="<?php print($userid); ?>" size="12" maxlength="12">
-<input type="submit" value="确定">
+<input type="submit" value="确定"><br>
+为了壁面重复提交网页表单导致重要数据破坏，用户ID和密码请用telnet方式登录修改。
 </div></fieldset></form>
 <form method="post" action="adminfo.php" class="medium" onsubmit="return confirm('确实要修改用户资料吗？');">
 <fieldset><legend>个人资料</legend><div class="inputs">
