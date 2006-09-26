@@ -276,7 +276,7 @@ int ann_traverse_check(char *path, struct userec *user)
     if (board[0] == '\0') {
         ptr = path;
     } else {
-        struct boardheader *bh;
+        const struct boardheader *bh;
         bh = getbcache(board);
         if (check_read_perm(user, bh) == 0) return -1;
         ann_get_path(board, filename, sizeof(filename));
