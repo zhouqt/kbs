@@ -895,8 +895,8 @@ main(argc, argv)
 	
 #ifdef MAIL2BOARD
 	/* _[boardid] = [boardid].board   edwwq */
-	int i;
 	if (receiver[0] == '_') {
+		int i;
 		mail2board = 1;
 		for (i = 0;i < STRLEN;i++) {
 			receiver[i] = receiver[i + 1];
