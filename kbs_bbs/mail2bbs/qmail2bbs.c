@@ -903,7 +903,7 @@ main(argc, argv)
 		}
 	}
 	else {
-		ptr = strchr(receiver, '.');
+		ptr = strrchr(receiver, '.');
 		/* [userid]@mydomain.com */
 		if (ptr == NULL) {
 			mail2board = 0;
