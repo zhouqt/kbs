@@ -921,15 +921,9 @@ main(argc, argv)
 			return 1;
 		}
 	}
-#endif
-
-#ifdef MAIL2BOARD
-	if (mail2board == 1) {
+	if (mail2board == 1)
 		return append_board(stdin, nettyp, sender, receiver, getenv("TITLE"), getenv("MSGID"), argv[3], argv[4]);
-	} else {
 #endif //MAIL2BOARD
-		return append_mail(stdin, nettyp, sender, receiver, getenv("TITLE"), getenv("MSGID"), argv[3], argv[4]);
-#ifdef MAIL2BOARD
-	}
-#endif //MAIL2BOARD
+	return append_mail(stdin, nettyp, sender, receiver, getenv("TITLE"), getenv("MSGID"), argv[3], argv[4]);
 }
+
