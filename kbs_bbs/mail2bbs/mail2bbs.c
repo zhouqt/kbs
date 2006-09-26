@@ -80,7 +80,6 @@ int my_after_post(struct fileheader *fh, char *boardname)
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
-    char *p;
 
     if (!strncmp(fh->title, "Re:", 3)) {
         strncpy(fh->title, fh->title + 4, ARTICLE_TITLE_LEN);
@@ -126,7 +125,7 @@ char *bname, *sender1, *sender, *title, *received;
     FILE *fout;
     struct fileheader newmessage;
     char fname[512], buf[256], boardpath[256], conv_buf[256];
-    struct boardheader *brd;
+    const struct boardheader *brd;
     char *user, *userptr;
     char *lesssym, *nameptrleft, *nameptrright;
     char author[STRLEN];
@@ -142,7 +141,7 @@ char *bname, *sender1, *sender, *title, *received;
     setbpath(boardpath, bname);
     printf("OK, board dir is %s\n", boardpath);
 
-    str_decode(conv_buf, title);
+    str_decode((void*)conv_buf,(void*)title);
 /* copy from flyriver qmailpost.c */
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
