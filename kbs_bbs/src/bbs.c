@@ -5469,6 +5469,69 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
     return ret;
 }
 
+static int read_top_edit_title(struct _select_def *conf,struct fileheader *fh,void *varg){
+    struct read_arg *arg=(struct read_arg*)(conf->arg);
+    char buf[STRLEN],path[PATHLEN];
+    int change,index;
+    switch(deny_modify_article(currboard,fh,arg->mode,getSession())){
+        case 0:
+            break;
+        case -2:
+            move(3,0);
+            clrtobot();
+            move(5,0);
+            prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","您已被管理人员取消在当前版面的发文权限...");
+            WAIT_RETURN;
+            return FULLUPDATE;
+        case -5:
+            check_readonly(currboard->filename);
+            return FULLUPDATE;
+        default:
+            return DONOTHING;
+    }
+    snprintf(buf,STRLEN,"%s",fh->title);
+    getdata(t_lines-1,0,"新文章标题: ",buf,78,DOECHO,NULL,false);
+    if(!(change=(buf[0]&&strcmp(buf,fh->title))))
+        return PARTUPDATE;
+#ifdef FILTER
+    if(check_badword_str(buf,strlen(buf),getSession())){
+        move(3,0);
+        clrtobot();
+        prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","该标题中可能含有不当内容, 请检查更换...");
+        WAIT_RETURN;
+        return PARTUPDATE;
+    }
+#endif /* FILTER */
+    filter_control_char(buf);
+    setbfile(path,currboard->filename,fh->filename);
+    add_edit_mark(path,2,buf,getSession());
+    newbbslog(BBSLOG_USER,"read_top_edit_title %s %s %s",currboard->filename,fh->title,buf);
+    strnzhcpy(fh->title,buf,ARTICLE_TITLE_LEN);
+    setbdir(DIR_MODE_NORMAL,path,currboard->filename);
+    if((index=get_ent_from_id(DIR_MODE_NORMAL,fh->id,currboard->filename))!=0)
+        substitute_record(path,fh,sizeof(struct fileheader),index);
+    if(fh->id==fh->groupid){
+        if(setboardorigin(currboard->filename,-1))
+            board_regenspecial(currboard->filename,DIR_MODE_ORIGIN,NULL);
+        else{
+            setbdir(DIR_MODE_ORIGIN,path,currboard->filename);
+            if((index=get_ent_from_id(DIR_MODE_ORIGIN,fh->id,currboard->filename))!=0)
+                substitute_record(path,fh,sizeof(struct fileheader),index);
+        }
+    }
+    if(fh->accessed[0]&FILE_MARKED){
+        if(setboardmark(currboard->filename,-1))
+            board_regenspecial(currboard->filename,DIR_MODE_MARK,NULL);
+        else{
+            setbdir(DIR_MODE_MARK,path,currboard->filename);
+            if((index=get_ent_from_id(DIR_MODE_MARK,fh->id,currboard->filename))!=0)
+                substitute_record(path,fh,sizeof(struct fileheader),index);
+        }
+    }
+    setboardtitle(currboard->filename,1);
+    return PARTUPDATE;
+}
+
 static struct key_command read_top_comms[]={
     {'r',(READ_KEY_FUNC)read_top_post,NULL},
     {Ctrl('A'),(READ_KEY_FUNC)read_showauthor,NULL},
@@ -5485,6 +5548,8 @@ static struct key_command read_top_comms[]={
 #endif
     {'f',(READ_KEY_FUNC)clear_all_new_flag,NULL},
     {'c',(READ_KEY_FUNC)clear_new_flag,NULL},
+    {'E',(READ_KEY_FUNC)edit_post,NULL},
+    {'T',(READ_KEY_FUNC)read_top_edit_title,NULL},
     {Ctrl('R'),(READ_KEY_FUNC)post_reply,NULL},
     {']',(READ_KEY_FUNC)thread_read,(void*)SR_NEXT},
     {'[',(READ_KEY_FUNC)thread_read,(void*)SR_PREV},
@@ -5515,7 +5580,7 @@ static struct key_command read_top_comms[]={
 
 static int read_top(int index,int force){
 #define RT_INTERVAL 60
-#define RT_INTERVAL_FORCE 180
+#define RT_INTERVAL_FORCE 120
     static const struct flock lck_set={.l_type=F_WRLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     struct stat st_dir,st_top;
