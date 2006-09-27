@@ -1405,15 +1405,10 @@ reget:
             goto reget;
         } else return READ_NEXT;
     case '~':            /*Haohmaru.98.12.05,系统管理员直接查作者资料 */
-        if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) break;
-        clear();
-        read_authorinfo(conf,fileinfo,NULL);
-        return READ_NEXT;
+        ret=read_authorinfo(conf,fileinfo,NULL);
         break;
     case Ctrl('W'):            /*cityhunter 00.10.18察看版主信息 */
-        clear();
-        read_showauthorBM(conf, fileinfo, NULL);
-        return READ_NEXT;
+        ret=read_showauthorBM(conf, fileinfo, NULL);
         break;
     case Ctrl('O'):
         clear();
@@ -1425,18 +1420,16 @@ reget:
             break;
         read_sendmsgtoauthor(conf, fileinfo, NULL);
         return READ_NEXT;
-        break;
     case Ctrl('A'):            /*Add by SmallPig */
         clear();
         read_showauthor(conf, fileinfo, NULL);
         return READ_NEXT;
-        break;
     case 'L':
         if (uinfo.mode != LOOKMSGS) {
             show_allmsgs();
             break;
-        } else
-            return DONOTHING;
+        }
+        return DONOTHING;
     case '!':                  /*Haohmaru 98.09.24 */
         Goodbye();
         break;
@@ -2600,7 +2593,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #endif
     modify_user_mode(POSTING);
     setbdir(DIR_MODE_NORMAL, direct, currboard->filename);
-    if (!((cmdmode == DIR_MODE_MARK)||( cmdmode == DIR_MODE_THREAD)||( cmdmode == DIR_MODE_NORMAL)))
+    if(!((cmdmode==DIR_MODE_MARK)||(cmdmode==DIR_MODE_THREAD)||(cmdmode==DIR_MODE_NORMAL)||(cmdmode==DIR_MODE_TOP10)))
     {
         move(3, 0);
         clrtobot();
@@ -5310,7 +5303,7 @@ static char* read_top_ent(char *buf,int num,struct fileheader *fh,struct filehea
 static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *varg){
     struct read_arg *arg;
     char buf[PATHLEN],*p;
-    int key,repeat;
+    int key,repeat,ret;
     if(!fh||(fh->owner[0]=='-'))
         return DONOTHING;
     snprintf(buf,PATHLEN,"%s",read_getcurrdirect(conf));
@@ -5348,6 +5341,7 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
     prints(DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?"\033[1m%s\033[m":"%s\033[m",genbuf);
     resetcolor();
     setreadpost(conf,fh);
+    ret=FULLUPDATE;
     if(!(key==KEY_RIGHT||key==KEY_PGUP||key==KEY_UP||key==KEY_DOWN)&&(!(key>0)||!strchr("RrEexp",key))){
         do{
             repeat=0;
@@ -5390,6 +5384,25 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
                     arg->oldpos=((key==KEY_RIGHT||key==Ctrl('X')||key==Ctrl('H'))?conf->pos:0);
                     repeat=1;
                     break;
+                case 'R':
+                case 'r':
+                case 'Y':
+                case 'y':
+                    clear();
+                    move(5,0);
+                    if(currboard->flag&BOARD_NOREPLY)
+                        prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","该版面已设置为不可回复文章...");
+                    else if(fh->accessed[1]&FILE_READ)
+                        prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","本文已设置为不可回复, 请勿试图讨论...");
+                    else{
+                        do_reply(conf,fh);
+                        return DIRCHANGED;
+                    }
+                    WAIT_RETURN;
+                    break;
+                case Ctrl('R'):
+                    post_reply(conf,fh,NULL);
+                    break;
                 case Ctrl('A'):
                     clear();
                     read_showauthor(conf,fh,NULL);
@@ -5428,16 +5441,11 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
                     read_addauthorfriend(conf,fh,NULL);
                     return READ_NEXT;
                 case '~':
-                    if(HAS_PERM(getCurrentUser(),PERM_ADMIN)){
-                        clear();
-                        read_authorinfo(conf,fh,NULL);
-                        return READ_NEXT;
-                    }
+                    ret=read_authorinfo(conf,fh,NULL);
                     break;
                 case Ctrl('W'):
-                    clear();
-                    read_showauthorBM(conf,fh,NULL);
-                    return READ_NEXT;
+                    ret=read_showauthorBM(conf,fh,NULL);
+                    break;
                 case Ctrl('D'):
                     zsend_attach(conf->pos,fh,read_getcurrdirect(conf));
                     break;
@@ -5447,21 +5455,18 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
                 case '!':
                     Goodbye();
                     break;
-                case Ctrl('N'):
-                    list_select_add_key(conf,Ctrl('N'));
-                    break;
             }
         }
         while(repeat);
     }
-    if(arg->oldpos!=0){
+    if(ret==FULLUPDATE&&arg->oldpos!=0){
         conf->new_pos=arg->oldpos;
 	    arg->oldpos=0;
 	    list_select_add_key(conf,KEY_REFRESH);
         arg->readmode=READ_NORMAL;
         return SELCHANGE;
     }
-    return FULLUPDATE;
+    return ret;
 }
 
 static struct key_command read_top_comms[]={
@@ -5478,10 +5483,11 @@ static struct key_command read_top_comms[]={
 #ifdef INTERNET_EMAIL
     {'F',(READ_KEY_FUNC)mail_forward,NULL},
 #endif
+    {'f',(READ_KEY_FUNC)clear_all_new_flag,NULL},
+    {'c',(READ_KEY_FUNC)clear_new_flag,NULL},
+    {Ctrl('R'),(READ_KEY_FUNC)post_reply,NULL},
     {']',(READ_KEY_FUNC)thread_read,(void*)SR_NEXT},
     {'[',(READ_KEY_FUNC)thread_read,(void*)SR_PREV},
-    {'c',(READ_KEY_FUNC)clear_new_flag,NULL},
-    {'f',(READ_KEY_FUNC)clear_all_new_flag,NULL},
     {'n',(READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
     {'\\',(READ_KEY_FUNC)thread_read,(void*)SR_LAST},
     {'a',(READ_KEY_FUNC)auth_search,(void*)false},
@@ -5493,16 +5499,17 @@ static struct key_command read_top_comms[]={
     {'h',(READ_KEY_FUNC)mainreadhelp,NULL},
     {Ctrl('X'),(READ_KEY_FUNC)thread_read,(void*)SR_READX},
     {Ctrl('U'),(READ_KEY_FUNC)author_read,(void*)SR_READ},
-    {Ctrl('H'),(READ_KEY_FUNC)author_read,(void*)SR_READX}, 
+    {Ctrl('H'),(READ_KEY_FUNC)author_read,(void*)SR_READX},
     {',',(READ_KEY_FUNC)read_splitscreen,NULL},
     {Ctrl('Q'),(READ_KEY_FUNC)showinfo,NULL},
-    {'~',(READ_KEY_FUNC)read_authorinfo,NULL},
-    {Ctrl('W'),(READ_KEY_FUNC)read_showauthorBM,NULL},
     {Ctrl('O'),(READ_KEY_FUNC)read_addauthorfriend,NULL},
-    {'!',(READ_KEY_FUNC)read_callfunc0,(void*)Goodbye},
 #ifdef PERSONAL_CORP
     {'y',(READ_KEY_FUNC)read_importpc,NULL},
 #endif
+    {'~',(READ_KEY_FUNC)read_authorinfo,NULL},
+    {Ctrl('W'),(READ_KEY_FUNC)read_showauthorBM,NULL},
+    {Ctrl('Y'),(READ_KEY_FUNC)read_zsend,NULL},
+    {'!',(READ_KEY_FUNC)read_callfunc0,(void*)Goodbye},
     {0,NULL}
 };
 
@@ -5656,7 +5663,7 @@ static int select_top(void){
         if(!total||(stat("etc/posts/day",&st)==-1||!S_ISREG(st.st_mode))){              \
             move(t_lines-1,0);                                                          \
             clrtoeol();                                                                 \
-            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","目前十大热门话题不存在!");    \
+            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","目前尚无十大热门话题!");      \
             WAIT_RETURN;                                                                \
             return -1;                                                                  \
         }                                                                               \
@@ -5677,7 +5684,9 @@ static int select_top(void){
                 "\033[1;32mRIGHT\033[1;37m,\033[1;32mSPACE\033[1;37m]\033[m");
             update=0;
         }
-        move((3+2*index),1);
+        move((2+2*index),3);
+        prints("\033[1;31m%2d\033[m",(index+1));
+        move((3+2*index),2);
         prints("\033[1;33m%s\033[m","◆");
         do{
             valid_key=1;
@@ -5725,7 +5734,7 @@ static int select_top(void){
                         if(read_top(index,0)<0){
                             move(t_lines-1,4);
                             clrtoeol();
-                            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","获取十大信息时发生错误!");
+                            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","检索十大信息时发生错误!");
                             WAIT_RETURN;
                         }
                         update=1;
@@ -5738,7 +5747,9 @@ static int select_top(void){
         }
         while(!valid_key);
         if(old_index!=-1){
-            move((3+2*old_index),1);
+            move((2+2*old_index),3);
+            prints("\033[31m%2d\033[m",(old_index+1));
+            move((3+2*old_index),2);
             prints("%s","  ");
         }
     }
