@@ -5742,8 +5742,8 @@ static int select_top(void){
     do{
         if(update){
             ansimore("etc/posts/day",0);
-            move(t_lines-2,8);
-            prints("%s","\033[1;33m定位\033[1;37m[\033[1;32mUP\033[1;37m,\033[1;32mDOWN\033[1;37m,"
+            move(t_lines-2,6);
+            prints("%s","\033[1;33m定位\033[1;37m[\033[1;32mUP\033[1;37m,\033[1;32mDOWN\033[1;37m,\033[1;32mNUM\033[1;37m,"
                 "\033[1;32mHOME\033[1;37m,\033[1;32mEND\033[1;37m]/\033[1;33m退出\033[1;37m[\033[1;32mESC\033[1;37m,"
                 "\033[1;32mLEFT\033[1;37m,\033[1;32mQ\033[1;37m]/\033[1;33m选择\033[1;37m[\033[1;32mENTER\033[1;37m,"
                 "\033[1;32mRIGHT\033[1;37m,\033[1;32mSPACE\033[1;37m]\033[m");
@@ -5792,12 +5792,37 @@ static int select_top(void){
                         else
                             valid_key=0;
                         break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        key-='1';
+                        if(index!=key&&total>key){
+                            old_index=index;
+                            index=key;
+                        }
+                        else
+                            valid_key=0;
+                        break;
+                    case '0':
+                        if(index!=9&&total==10){
+                            old_index=index;
+                            index=9;
+                        }
+                        else
+                            valid_key=0;
+                        break;
                     case KEY_RIGHT:
                     case '\r':
                     case '\n':
                     case ' ':
                         if(read_top(index,0)<0){
-                            move(t_lines-1,4);
+                            move(t_lines-1,6);
                             clrtoeol();
                             prints("\033[1;31m%s\033[0;33m<Enter>\033[m","检索十大信息时发生错误!");
                             WAIT_RETURN;
