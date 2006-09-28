@@ -253,3 +253,61 @@ PHP_FUNCTION(bbs_admin_setuserperm) {
     }
 }
 
+/* bbs_admin_newboard(string boardname);
+ */
+PHP_FUNCTION(bbs_admin_newboard) {
+    int ac, bid;
+    char *boardname, vpath[PATHLEN], bpath[PATHLEN], secustr[STRLEN];
+    int boardname_len;
+    struct boardheader newbh;
+
+    ac = ZEND_NUM_ARGS();
+    if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &boardname_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    memset(&newbh, 0, sizeof(struct boardheader));
+    if(!boardname) {
+        RETURN_LONG(-1);
+    }
+    if(boardname[0] == '\0') {
+        RETURN_LONG(-1);
+    }
+    if(!valid_brdname(boardname)) {
+        RETURN_LONG(-2);
+    }
+    strncpy(newbh.filename, boardname, BOARDNAMELEN);
+    strcpy(newbh.title, "0[待定]      版面中文名称待定");
+    sprintf(vpath, "vote/%s", boardname);
+    setbpath(bpath, boardname);
+    if(getbid(boardname, NULL) > 0) {
+        RETURN_LONG(-3);
+    }
+    if((mkdir(bpath, 0755) == -1) || (mkdir(vpath, 0755) == -1)) {
+        RETURN_LONG(-4);
+    }
+#ifndef PERM_NEWBOARD
+    newbh.level = PERM_SYSOP;
+#else
+    newbh.level = PERM_NEWBOARD;
+#endif
+    if(!HAS_PERM(getCurrentUser(), newbh.level))
+        newbh.level = 0;
+    build_board_structure(boardname);
+    snprintf(newbh.ann_path, 127, "%s/%s", groups[0], boardname);
+    newbh.ann_path[127]=0;
+    if(add_board(&newbh) == -1) {
+        RETURN_LONG(-5);
+    }
+    bid = getbid(boardname, NULL);
+    if(bid == 0) {
+        RETURN_LONG(-6);
+    }
+    edit_group(NULL, &newbh);
+    sprintf(secustr, "add brd %s", boardname);
+    bbslog("user", "%s", secustr);
+    sprintf(secustr, "成立新版：%s" WWW_SECURITY_REPORT_SUFFIX, boardname);
+    securityreport(secustr, NULL, NULL, getSession());
+    RETURN_LONG(0);
+}
+
