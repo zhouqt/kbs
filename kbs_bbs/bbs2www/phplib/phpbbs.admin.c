@@ -149,6 +149,25 @@ PHP_FUNCTION(bbs_admin_setuserinfo) {
     RETURN_LONG(0);
 }
 
+/* bbs_admin_getusertitle(long num);
+ */
+PHP_FUNCTION(bbs_admin_getusertitle) {
+    int ac;
+    long num;
+    char *user_title;
+
+    ac = ZEND_NUM_ARGS();
+    if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &num) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    if((num < 1) || (num > 255)) {
+        RETURN_STRING("error", 1);
+    }
+    user_title = get_user_title((unsigned char)num);
+    RETURN_STRING(user_title, 1);
+}
+
 /* bbs_admin_getuserperm(string userid);
  */
 PHP_FUNCTION(bbs_admin_getuserperm) {
