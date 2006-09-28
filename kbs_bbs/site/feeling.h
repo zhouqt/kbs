@@ -76,10 +76,10 @@
 #ifdef SMTH
 #define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
 #endif
-#define MAIL_BBSDOMAIN      "feeling.smth.org"
+#define MAIL_BBSDOMAIN      "feeling.cn-bbs.org"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
-#define NAME_BBS_ENGLISH	"bbs.feeling.smth.org"
+#define NAME_BBS_ENGLISH	"feeling.cn-bbs.org"
 #define	NAME_BBS_CHINESE	"ÎÂÜ°Ð¡ÎÝ"
 #define NAME_BBS_NICK		"BBS Õ¾"
 
@@ -236,6 +236,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWDETAILUSERDATA	04000000000
 #define DEF_SHOWREALUSERDATA	010000000000
 #define DEF_HIDEIP			040000000001
+#define DEF_SHOWSIZE		040000000002
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//*
@@ -332,4 +333,5 @@ attach define
 
 #define NEWPOSTSTAT
 
+#define	SAVELIVE
 #endif

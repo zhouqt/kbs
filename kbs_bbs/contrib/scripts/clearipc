@@ -1,2 +1,3 @@
 #!/bin/sh
-ipcs |awk '$0~/bbs/ {system(sprintf("ipcrm shm %s",$2));}'
+ipcs -m|awk '$0~/bbs/ {system(sprintf("ipcrm shm %s",$2));}'
+ipcs -q|awk '$0~/bbs/ {system(sprintf("ipcrm msg %s",$2));}'
