@@ -4,6 +4,7 @@
         "reg" => BBS_PERM_ACCOUNTS,
         "info" => BBS_PERM_ACCOUNTS,
         "perm" => BBS_PERM_ADMIN,
+        "newbrd" => BBS_PERM_SYSOP
     );
     
     function admin_check($adminitem)

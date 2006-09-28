@@ -3,9 +3,6 @@
 
     admin_check("perm");
 
-    if(!($currentuser["userlevel"] & BBS_PERM_ADMIN))
-        admin_deny();
-
     $ret = 1;
     if(isset($_POST["modifyuserid"])) {
         $userid = $_POST["modifyuserid"];
