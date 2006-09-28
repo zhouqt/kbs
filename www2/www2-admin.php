@@ -21,7 +21,7 @@
 
     function admin_header($title_simple, $title_full)
     {
-        page_header($title_simple, "系统管理");
+        page_header($title_simple, "<a href=\"admindex.php\">系统管理</a>");
         print("<br><div align=\"center\"><strong>{$title_full}</strong></div><hr><br>");
     }
 

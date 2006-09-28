@@ -59,6 +59,11 @@
         html_error_quit("不存在的用户。");
     if($uid > 0) {
         admin_header("改别人资料", "修改用户数据");
+        
+        for($i=1; $i<256; $i++) {
+            $usertitles[$i-1] = bbs_admin_getusertitle($i);
+        }
+        
 ?>
 <form method="post" action="adminfo.php" class="medium">
 <fieldset><legend>要修改的用户ID</legend><div class="inputs">
@@ -75,7 +80,17 @@
 <label>电子信箱:</label><input type="text" name="email" value="<?php echo $userinfo["email"];?>" size="40" maxlength="79"><br/>
 <label>性别:</label><input type="radio" name="gender" value='M'<?php echo ($userinfo["gender"]==77)?" checked":""; ?>>男 <input type="radio" name="gender" value="F"<?php echo ($userinfo["gender"]==77)?"":" checked"; ?>>女<br />
 <label>生日:</label><input type="text" name="birthyear" value="<?php echo $userinfo["birthyear"]+1900; ?>" size="4" maxlength="4"> 年 <input type="text" name="birthmonth" value="<?php echo $userinfo["birthmonth"]; ?>" size="2" maxlength="2"> 月 <input type="text" name="birthday" value="<?php echo $userinfo["birthday"]; ?>" size="2" maxlength="2"> 日<br/>
-<label>当前职务:</label><input type="text" name="title" value="<?php echo $userinfo["title"];?>" size="15" maxlength="254"><br/>
+<label>当前职务:</label>
+<select name="title">
+<option value="0">[没有职务]</option>
+<?php
+        for($i=1; $i<256; $i++) {
+            if($usertitles[$i-1] != "")
+                print("<option value=\"{$i}\"" . (($userinfo["title"]==$i)?" selected":"") . ">{$usertitles[$i-1]}</option>");
+        }
+?>
+</select>
+<br/>
 <label>真实Email:</label><input type="text" name="realemail" value="<?php echo $userinfo["realemail"];?>" size="40" maxlength="79"><br/>
 <label>上站次数:</label><input type="text" name="numlogins" value="<?php echo $userinfo["numlogins"];?>" size="6" maxlength="7"><br/>
 <label>发表大作:</label><input type="text" name="numposts" value="<?php echo $userinfo["numposts"];?>" size="6" maxlength="7"><br/>
