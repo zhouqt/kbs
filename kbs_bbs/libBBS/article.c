@@ -3168,21 +3168,22 @@ int delete_range_base(
             }
             DRBP_RDST;
             /* 处理源 DIR 文件写入 */
-            /* 优化移动次数和移动数据量的内容移动 */
-            for(n_src=0,i=count-1,j=0;!(i<0);i--){
-                if(DRBP_TGET(i)){
+            for(n_src=0,i=0,j=0;i<count;i++){
+                if(!DRBP_TGET(i)){
                     j++;
+                    src[i].accessed[1]&=~FILE_DEL;
                     continue;
                 }
                 if(j){
-                    memmove(&src[i+1],&src[(i+1)+j],n_src*sizeof(struct fileheader));
+                    memmove(&src[n_src],&src[i-j],j*sizeof(struct fileheader));
+                    n_src+=j;
                     j=0;
                 }
-                n_src++;
-                src[i].accessed[1]&=~FILE_DEL;
             }
-            if(j)                                           /* 最后一块需要移动的数据 */
-                memmove(src,&src[j],n_src*sizeof(struct fileheader));
+            if(j){
+                memmove(&src[n_src],&src[count-j],j*sizeof(struct fileheader));
+                n_src+=j;
+            }
             memmove(&src[n_src],&src[count],reserved*sizeof(struct fileheader));
             /* 确定文件长度并同步映像数据 */
             if(ftruncate(fd_src,(st_src.st_size-(count-n_src)*sizeof(struct fileheader)))==-1){
