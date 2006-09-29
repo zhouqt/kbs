@@ -78,7 +78,7 @@ void new_register()
         if (flag) {
             if (strlen(newuser.userid) < 2) {
                 prints("代号至少需有两个英文字母!\n");
-            } else if ((*newuser.userid == '\0') || bad_user_id(newuser.userid)) {
+            } else if ((*newuser.userid == '\0') || bad_user_id(newuser.userid) || (strcasecmp(newuser.userid, "SYSOPS") == 0) || (strcasecmp(newuser.userid, "BMS") == 0)) {
                 prints("抱歉，本站暂不提供此帐号注册。\n");
             } else if ((usernum = searchuser(newuser.userid)) != 0) {   /*( dosearchuser( newuser.userid ) ) midified by dong , 1998.12.2, change getuser -> searchuser , 1999.10.26 */
                 prints("此帐号已经有人使用\n");
