@@ -1240,9 +1240,12 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
         default:
             DELETE_RANGE_QUIT(++line,"操作取消...");
     }
+    move(++line,4);
+    prints("\033[1;33m%s\033[m","区段操作可能需要较长时间, 请耐心等候...");
     ret=delete_range_base(ident,src,dst,arg.id_from,arg.id_to,mode,NULL,&st_src);
     if(ret==0x21){
-        line++;move(line++,4);
+        move(line++,4);
+        clrtoeol();
         prints("%s","\033[1;37m系统检测到在您操作期间版面文章列表已经发生变化, \033[m");
         move(line++,4);
         sprintf(buf,"%s","\033[1;33m强制操作\033[1;37m[\033[1;31m严重不建议\033[1;37m]? [y/N] \033[m");
@@ -1267,7 +1270,8 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
         newbbslog(BBSLOG_USER,"delete_range %s %d - %d <%d,%#04x>",ident,arg.id_from,arg.id_to,mode,ret);
         bmlog(getCurrentUser()->userid,ident,5,1);
     }
-    move(++line,4);
+    move(line++,4);
+    clrtoeol();
     if(!ret){
         if(!mail){
             if((mode&DELETE_RANGE_BASE_MODE_FORCE)
