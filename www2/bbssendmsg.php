@@ -37,10 +37,13 @@
 <?php
 		page_footer();
 	} else {
-		bbs_sendwebmsg($destid, $msg, $destutmp, $errmsg);
+		$ret = bbs_sendwebmsg($destid, $msg, $destutmp, $errmsg);
 ?>
 <script>top.fmsg.location="bbsgetmsg.php?refresh";</script>
 <?php
-		html_success_quit($errmsg);
+		if($ret)
+            html_success_quit($errmsg);
+        else
+            html_error_quit($errmsg);
 	}
 ?>
