@@ -11,6 +11,8 @@ PHP_FUNCTION(bbs_admin_getuserperm);
 PHP_FUNCTION(bbs_admin_getgiveupperm);
 PHP_FUNCTION(bbs_admin_setuserperm);
 PHP_FUNCTION(bbs_admin_newboard);
+PHP_FUNCTION(bbs_admin_getboardparam);
+
 
 #define PHP_BBS_ADMIN_EXPORT_FUNCTIONS \
     PHP_FE(bbs_admin_getnewreg, NULL) \
@@ -20,7 +22,8 @@ PHP_FUNCTION(bbs_admin_newboard);
     PHP_FE(bbs_admin_getuserperm, NULL) \
     PHP_FE(bbs_admin_getgiveupperm, NULL) \
     PHP_FE(bbs_admin_setuserperm, NULL) \
-    PHP_FE(bbs_admin_newboard, NULL)
+    PHP_FE(bbs_admin_newboard, NULL) \
+    PHP_FE(bbs_admin_getboardparam, NULL)
 
 
 #endif /* PHP_BBS_ADMIN_H */

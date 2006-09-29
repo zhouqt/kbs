@@ -6,7 +6,7 @@
 
 #define WWW_SECURITY_REPORT_SUFFIX "(Web)"
 
-/* bbs_admin_getnewreg(array reglist);
+/* long bbs_admin_getnewreg(array reglist);
  */
 PHP_FUNCTION(bbs_admin_getnewreg) {
 
@@ -50,7 +50,7 @@ PHP_FUNCTION(bbs_admin_getnewreg) {
 }
 
 
-/* bbs_admin_getuserinfo(string userid, array userinfo);
+/* long bbs_admin_getuserinfo(string userid, array userinfo);
  */
 PHP_FUNCTION(bbs_admin_getuserinfo) {
     int ac, userid_len, uid;
@@ -75,7 +75,7 @@ PHP_FUNCTION(bbs_admin_getuserinfo) {
 }
 
 
-/* bbs_admin_setuserinfo(string userid, string username, string realname, string address, string email, long gender, long birthyear, long birthmonth, long birthday, long title, string realemail, long numlogins, long numposts, long firstlogin, long lastlogin);
+/* long bbs_admin_setuserinfo(string userid, string username, string realname, string address, string email, long gender, long birthyear, long birthmonth, long birthday, long title, string realemail, long numlogins, long numposts, long firstlogin, long lastlogin);
  */
 PHP_FUNCTION(bbs_admin_setuserinfo) {
     int ac;
@@ -149,7 +149,7 @@ PHP_FUNCTION(bbs_admin_setuserinfo) {
     RETURN_LONG(0);
 }
 
-/* bbs_admin_getusertitle(long num);
+/* string bbs_admin_getusertitle(long num);
  */
 PHP_FUNCTION(bbs_admin_getusertitle) {
     int ac;
@@ -168,7 +168,7 @@ PHP_FUNCTION(bbs_admin_getusertitle) {
     RETURN_STRING(user_title, 1);
 }
 
-/* bbs_admin_getuserperm(string userid);
+/* long bbs_admin_getuserperm(string userid);
  */
 PHP_FUNCTION(bbs_admin_getuserperm) {
     int ac;
@@ -190,7 +190,7 @@ PHP_FUNCTION(bbs_admin_getuserperm) {
     }
 }
 
-/* bbs_admin_getgiveupperm(string userid);
+/* long bbs_admin_getgiveupperm(string userid);
  */
 PHP_FUNCTION(bbs_admin_getgiveupperm) {
     int ac;
@@ -212,7 +212,7 @@ PHP_FUNCTION(bbs_admin_getgiveupperm) {
     RETURN_LONG(giveupperm);
 }
 
-/* bbs admin_setuserperm(string userid, long perm);
+/* long bbs admin_setuserperm(string userid, long perm);
  */
 PHP_FUNCTION(bbs_admin_setuserperm) {
     int ac;
@@ -253,7 +253,7 @@ PHP_FUNCTION(bbs_admin_setuserperm) {
     }
 }
 
-/* bbs_admin_newboard(string boardname);
+/* long bbs_admin_newboard(string boardname);
  */
 PHP_FUNCTION(bbs_admin_newboard) {
     int ac, bid;
@@ -309,5 +309,10 @@ PHP_FUNCTION(bbs_admin_newboard) {
     sprintf(secustr, "³ÉÁ¢ÐÂ°æ£º%s" WWW_SECURITY_REPORT_SUFFIX, boardname);
     securityreport(secustr, NULL, NULL, getSession());
     RETURN_LONG(0);
+}
+
+/* long bbs_admin_getboardparam(string boardname, array boardparams);
+ */
+PHP_FUNCTION(bbs_admin_getboardparam) {
 }
 

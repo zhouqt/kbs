@@ -145,10 +145,11 @@ PHP_FUNCTION(bbs_sendwebmsg)
         ZVAL_STRING(z_errmsg, "无法发送讯息", 1);
         RETURN_FALSE;
     }
-    if (!strcasecmp(destid, getCurrentUser()->userid)) {
+    // 可以给自己发讯息 - pig2532
+    /* if (!strcasecmp(destid, getCurrentUser()->userid)) {
         ZVAL_STRING(z_errmsg, "你不能给自己发讯息", 1);
         RETURN_FALSE;
-    }
+    } */
     if ((result = send_msg(getCurrentUser()->userid, getSession()->utmpent, destid, destutmp, msg)) == 1) {
         ZVAL_STRING(z_errmsg, "已经帮你送出讯息", 1);
         RETURN_TRUE;
