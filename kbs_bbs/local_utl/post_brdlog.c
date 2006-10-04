@@ -12,7 +12,7 @@ crontab:  10 0 * * * /home/bbs/bin/post_brdlog
 #include "bbs.h"
 #include "urlencode.c"
 
-#ifdef HAVE_MYSQL_SMTH
+#ifdef NEWSMTH
 struct _brdlog
 {
 	char filename[STRLEN];
