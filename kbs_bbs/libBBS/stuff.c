@@ -2429,6 +2429,34 @@ char * filter_control_char(char *s) {
     return s;
 }
 
+/* new filter, pig2532, 2006-10-4 */
+char * filter_control_char_all(char *s) {
+    char *rstr, *ptr, *rptr;
+    int l;
+    bool inesc = false;
+    l = strlen(s);
+    rstr = (char *)malloc(l + 1);
+    if(rstr == NULL)
+        return s;
+    ptr = s;
+    rptr = rstr;
+    while(*ptr != '\0') {
+        if(*ptr == '\033')
+            inesc = true;
+        if(!inesc) {
+            *rptr = *ptr;
+            rptr++;
+        }
+        if(isalpha(*ptr))
+            inesc = false;
+        ptr++;
+    }
+    *rptr = '\0';
+    strcpy(s, rstr);
+    free(rstr);
+    return s;
+}
+
 
 /*
  * 将 src 中不超过 (n-1) 个字符复制到 dest 中

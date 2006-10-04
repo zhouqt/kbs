@@ -223,6 +223,7 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     int check_ip_acl(char * id, char * sip);
     char * filter_upload_filename(char *s);
     char * filter_control_char(char *s);
+    char * filter_control_char_all(char *s);
     char *strnzhcpy(char *dest, const char *src, size_t n);
     void trimstr(char*);
     void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN], session_t *session);
