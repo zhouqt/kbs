@@ -12,7 +12,7 @@ crontab:  10 0 * * * /home/bbs/bin/post_brdlog
 #include "bbs.h"
 #include "urlencode.c"
 
-#ifdef NEWSMTH
+#ifdef HAVE_MYSQL_SMTH
 struct _brdlog
 {
 	char filename[STRLEN];
@@ -213,7 +213,7 @@ int main(int argc,char **argv)
 }
 #else
 int main(void){
-	fprintf(stderr, "MySQL support had been disabled.\n");
+	fprintf(stderr, "This program is designed for NEWSMTH only. Enable at your own risk.\n");
 	return -1;
 }
 #endif
