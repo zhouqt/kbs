@@ -1055,7 +1055,6 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
-    char *p;
 
 #ifdef FILTER
     char oldpath[50], newpath[50];
@@ -1109,13 +1108,7 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
         err = 1;
     }
-    /*
-     * 过滤彩色标题
-     */
-    for (p = fh->title; *p; p++)
-        if (*p == '\x1b')
-            *p = ' ';
-
+    process_control_chars(fh->title);
     if (!err) {
         flock(fd, LOCK_EX);
         nowid = get_nextid(boardname);
