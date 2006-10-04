@@ -3,6 +3,7 @@
 void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
 {
     const struct boardheader *bh;
+    char title[ARTICLE_TITLE_LEN];
     add_assoc_string(array, "FILENAME", fh->filename, 1);
 	if (fh->o_bid > 0 && ((bh = getboard(fh->o_bid)) != NULL))
     	add_assoc_string(array, "O_BOARD", (char*)(bh->filename), 1); /* for compitible */
@@ -16,7 +17,9 @@ void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, si
     add_assoc_long(array, "POSTTIME", get_posttime(fh));
     add_assoc_stringl(array, "INNFLAG", fh->innflag, sizeof(fh->innflag), 1);
     add_assoc_string(array, "OWNER", fh->owner, 1);
-    add_assoc_string(array, "TITLE", fh->title, 1);
+    strcpy(title, fh->title);
+    //filter_control_char_all(title);
+    add_assoc_string(array, "TITLE", title, 1);
 /*    add_assoc_long(array, "LEVEL", fh->level);*/
     add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
     add_assoc_long(array, "ATTACHPOS", fh->attachment);
