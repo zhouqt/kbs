@@ -234,20 +234,34 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     sigjmp_buf* push_sigbus(ARG_VOID);
     void popup_sigbus(ARG_VOID);
 
-#define BBS_TRY \
-    if (!sigsetjmp(*push_sigbus(), 1)) { \
-        signal(SIGBUS, sigbus);
+#define BBS_TRY                             \
+    if(!sigsetjmp(*push_sigbus(),1)){       \
+        signal(SIGBUS,sigbus);
 
-#define BBS_CATCH \
-    } \
-    else { \
+#define BBS_CATCH                           \
+    }                                       \
+    else{
 
-#define BBS_END } \
-    popup_sigbus();
+#define BBS_END                             \
+    }                                       \
+    do{                                     \
+        popup_sigbus();                     \
+    }                                       \
+    while(0)
 
-#define BBS_RETURN(x) {popup_sigbus();return (x);}
-#define BBS_RETURN_VOID {popup_sigbus();return;}
+#define BBS_RETURN(x)                       \
+    do{                                     \
+        popup_sigbus();                     \
+        return (x);                         \
+    }                                       \
+    while(0)
 
+#define BBS_RETURN_VOID                     \
+    do{                                     \
+        popup_sigbus();                     \
+        return;                             \
+    }                                       \
+    while(0)
 
     int safe_mmapfile(char *filename, int openflag, int prot, int flag, char **ret_ptr, off_t * size, int *ret_fd);
     int safe_mmapfile_handle(int fd, int prot, int flag, char **ret_ptr, off_t * size);

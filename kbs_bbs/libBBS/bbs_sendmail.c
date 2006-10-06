@@ -488,7 +488,8 @@ static int write_imail_file(FILE* fp2, char *oldfile, char *boundary, int isbig5
 	}
 	BBS_CATCH{
 	}
-	BBS_END end_mmapfile((void*)ptr, size, -1);
+	BBS_END;
+    end_mmapfile((void*)ptr, size, -1);
 
 	close(fd);
 endencode:

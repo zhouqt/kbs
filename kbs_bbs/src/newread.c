@@ -770,7 +770,8 @@ static int searchpattern(char *filename, char *query, int qlen)
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
 
     return ret;
 }
@@ -894,7 +895,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     BBS_CATCH {
         match = 0;
     }
-    BBS_END
+    BBS_END;
     end_mmapfile(data, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
@@ -1057,7 +1058,7 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
     BBS_CATCH {
         now = -1;
     }
-    BBS_END
+    BBS_END;
     end_mmapfile(data, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();

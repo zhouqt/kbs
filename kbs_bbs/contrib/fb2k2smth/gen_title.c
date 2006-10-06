@@ -96,7 +96,8 @@ int generate_board_title(struct boardheader *bh, void *arg)
     }
     BBS_CATCH {
     }
-    BBS_END free(index);
+    BBS_END;
+    free(index);
 
     end_mmapfile((void *) ptr, buf.st_size, -1);
     fclose(fp);

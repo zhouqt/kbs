@@ -682,7 +682,8 @@ long insert_from_fp(FILE *fp, long * attach_length)
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
 
     if(ret <= 0) return 0;
     return ret;

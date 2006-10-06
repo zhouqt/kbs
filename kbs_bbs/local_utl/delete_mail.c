@@ -48,7 +48,8 @@ int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC
 	}
 	BBS_CATCH {
 	}
-	BBS_END end_mmapfile((void *) buf, filesize, -1);
+	BBS_END;
+    end_mmapfile((void *) buf, filesize, -1);
 
 	return 0;
 }

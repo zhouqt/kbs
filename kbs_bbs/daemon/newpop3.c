@@ -335,7 +335,8 @@ void outfile(filename, linenum)
         }
         BBS_CATCH {
         }
-        BBS_END end_mmapfile((void *) ptr, size, -1);
+        BBS_END;
+        end_mmapfile((void *) ptr, size, -1);
     }
     outs("");
     outs(".");

@@ -714,7 +714,8 @@ int mmap_show(char *fn, int row, int numlines)
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
 
     return retv;
 }
@@ -732,7 +733,8 @@ int mmap_more(char *fn, int quit, char *keystr, char *title)
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
 
     return retv;
 }
@@ -1209,7 +1211,8 @@ int draw_content(char *fn, struct fileheader *fh)
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
 
     return retv;
 }

@@ -453,12 +453,14 @@ enum BBS_DIR_MODE {
     DIR_MODE_ORIGIN     = 6,        /* .ORIGIN */
     DIR_MODE_AUTHOR     = 7,        /* .AUTHOR.userid */
     DIR_MODE_TITLE      = 8,        /* .TITLE.userid */
-    DIR_MODE_SUPERFITER = 9,        /* .FILTER */
+    DIR_MODE_SUPERFITER = 9,        /* .Search.userid */
     DIR_MODE_WEB_THREAD = 10,       /* .WEBTHREAD */
     DIR_MODE_ZHIDING    = 11,       /* .DINGDIR */
-    DIR_MODE_MAIL ,                 /* mail mode */
+    DIR_MODE_MAIL ,                 /* 邮件模式 */
     DIR_MODE_FRIEND,                /* 好友名单 */
-    DIR_MODE_TOP10                  /* 十大模式 */
+    DIR_MODE_TOP10,                 /* 十大模式 */
+    DIR_MODE_SELF,                  /* 自删模式, .SELF.userid */
+    DIR_MODE_UNKNOWN                /* 未知模式 */
 };
 
 enum BBSLOG_TYPE {

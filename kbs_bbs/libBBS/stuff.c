@@ -350,53 +350,75 @@ int countperf(struct userec *udata)
 /*
  * 根据阅读模式 取某版 目录路径 
  */
-char *setbdir(enum BBS_DIR_MODE digestmode, char *buf,const  char *boardname)
-{
-    char dir[STRLEN];
-
-    switch (digestmode) {
-	case DIR_MODE_WEB_THREAD:
-		strcpy(dir, ".WEBTHREAD");
-		break;
-    case DIR_MODE_DIGEST:
-        strcpy(dir, DIGEST_DIR);
-        break;
-    case DIR_MODE_THREAD:
-        strcpy(dir, THREAD_DIR);
-        break;
-    case DIR_MODE_MARK:
-        strcpy(dir, ".MARK");
-        break;
-    case DIR_MODE_DELETED:
-        strcpy(dir, ".DELETED");
-        break;
-    case DIR_MODE_JUNK:
-        strcpy(dir, ".JUNK");
-        break;
-    case DIR_MODE_ORIGIN:
-        strcpy(dir, ".ORIGIN");
-        break;
-    case DIR_MODE_AUTHOR:
-        sprintf(dir, ".AUTHOR.%s", getCurrentUser()->userid);
-        break;
-    case DIR_MODE_TITLE:
-        sprintf(dir, ".TITLE.%s", getCurrentUser()->userid);
-        break;
-    case DIR_MODE_ZHIDING:
-	strcpy(dir, DING_DIR);
-	break;
-    case DIR_MODE_NORMAL:
-        strcpy(dir, DOT_DIR);
-        break;
-    case DIR_MODE_SUPERFITER:
-        sprintf(dir, ".Search.%s", getCurrentUser()->userid);
-        break;
-    default:
-        sprintf(dir, ".Search.%s", getCurrentUser()->userid);
-	newbbslog(BBSLOG_DEBUG,"uknown dir mode %d",digestmode); 
-        break;
+char* setbdir(enum BBS_DIR_MODE mode,char *buf,const char *boardname){
+    const char *prefix;
+    int type;
+    switch(mode){
+        case DIR_MODE_NORMAL:
+            type=0;
+            prefix=DOT_DIR;
+            break;
+        case DIR_MODE_DIGEST:
+            type=0;
+            prefix=DIGEST_DIR;
+            break;
+        case DIR_MODE_THREAD:
+            type=0;
+            prefix=THREAD_DIR;
+            break;
+        case DIR_MODE_MARK:
+            type=0;
+            prefix=".MARK";
+            break;
+        case DIR_MODE_DELETED:
+            type=0;
+            prefix=".DELETED";
+            break;
+        case DIR_MODE_JUNK:
+            type=0;
+            prefix=".JUNK";
+            break;
+        case DIR_MODE_ORIGIN:
+            type=0;
+            prefix=".ORIGIN";
+            break;
+        case DIR_MODE_AUTHOR:
+            type=1;
+            prefix=".AUTHOR";
+            break;
+        case DIR_MODE_TITLE:
+            type=1;
+            prefix=".TITLE";
+            break;
+        case DIR_MODE_SUPERFITER:
+            type=1;
+            prefix=".Search";
+            break;
+        case DIR_MODE_WEB_THREAD:
+            type=0;
+            prefix=".WEBTHREAD";
+            break;
+        case DIR_MODE_ZHIDING:
+            type=0;
+            prefix=DING_DIR;
+            break;
+        case DIR_MODE_SELF:
+            type=1;
+            prefix=".SELF";
+            break;
+        case DIR_MODE_MAIL:
+        case DIR_MODE_FRIEND:
+        case DIR_MODE_TOP10:
+        default:
+            type=0;
+            prefix=".DIR";
+            newbbslog(BBSLOG_DEBUG,"Unexpected DIR_MODE <%d> in setbdir()",mode);
+            break;
     }
-    sprintf(buf, "boards/%s/%s", boardname, dir);
+    if(!type)
+        sprintf(buf,"boards/%s/%s",boardname,prefix);
+    else
+        sprintf(buf,"boards/%s/%s.%s",boardname,prefix,getCurrentUser()->userid);
     return buf;
 }
 
@@ -1883,7 +1905,8 @@ int gen_title(const char *boardname )
             free(hashtable);
         BBS_RETURN(-1);
     }
-    BBS_END ldata2.l_type = F_UNLCK;
+    BBS_END;
+    ldata2.l_type = F_UNLCK;
 
     fcntl(fd2, F_SETLKW, &ldata2);
     close(fd2);

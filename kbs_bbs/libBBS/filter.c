@@ -120,7 +120,8 @@ retry:
             goto retry;
         retv=-2;
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
     return retv;
 }
 
@@ -147,7 +148,7 @@ retry:
 	  goto retry;
     	retv=-2;
     }
-    BBS_END
+    BBS_END;
     return retv;
 }
 int check_filter(char *patternfile, char *checkfile,int defaultval, session_t* session)
@@ -173,7 +174,8 @@ int check_filter(char *patternfile, char *checkfile,int defaultval, session_t* s
     BBS_CATCH {
     	retv=defaultval;
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
     close(fp);
     releasepf(pattern_buf);
     return retv;

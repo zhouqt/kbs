@@ -118,7 +118,8 @@ int pc_conv_file_to_body( char **body, char *fname)
 	}
 	BBS_CATCH{
 	}
-	BBS_END end_mmapfile((void *)ptr, size, -1);
+	BBS_END;
+    end_mmapfile((void *)ptr, size, -1);
 
 	close(fd);
 

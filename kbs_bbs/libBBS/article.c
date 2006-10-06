@@ -1271,7 +1271,8 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) datac, filesize, -1);
+    BBS_END;
+    end_mmapfile((void *) datac, filesize, -1);
 
     flock(fd, LOCK_UN);
     return ret;
@@ -1315,7 +1316,8 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) datac, filesize, -1);
+    BBS_END;
+    end_mmapfile((void *) datac, filesize, -1);
 
     flock(fd, LOCK_UN);
 
@@ -2718,7 +2720,8 @@ int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *sessio
                 ftruncate(fileno(fp), begin + size);
                 fseek(fp, begin + size, SEEK_SET);
             }
-            BBS_END end_mmapfile((void *) ptr, size, -1);
+            BBS_END;
+            end_mmapfile((void *) ptr, size, -1);
 
             close(fd);
         }

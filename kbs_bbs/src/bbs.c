@@ -93,39 +93,35 @@ int check_readonly(char *checked)
 }
 
 /* Undel an article   pig2532 2005.12.18 */
-int UndeleteArticle(struct _select_def* conf, struct fileheader *fileinfo, void *extraarg)
-{
-	int ret;
-	struct read_arg* arg=(struct read_arg*)conf->arg;
-	char title[STRLEN];
 
-	if (fileinfo==NULL)
-		return DONOTHING;
-	if ((arg->mode!= DIR_MODE_JUNK)&& (arg->mode != DIR_MODE_DELETED))
-		return DONOTHING;
-	if (!chk_currBM(currBM, getCurrentUser()))
-		return DONOTHING;
-
-	ret = do_undel_post(currboard->filename, arg->direct, conf->pos, fileinfo, title, getSession());
-	switch(ret)
-	{
-	case -1:
-		clear();
-		move(2, 0);
-		prints("该文章不存在，已被恢复, 删除或列表出错");
-		pressreturn();
-		return FULLUPDATE;
-	case 0:
-		return DONOTHING;
-	case 1:
-		clear();
-		move(2, 0);
-		prints("'%s' 已恢复到版面 \n", title);
-		pressreturn();
-		return FULLUPDATE;
-	default:
-		return DONOTHING;
-	}
+/* etnlegend, 2006.10.06, 增加用户处理自删文章功能... */
+int UndeleteArticle(struct _select_def *conf,struct fileheader *fh, void *varg){
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    /* 不再在此处检测版主权限, 处理 DIR_MODE 的地方来做这件事情... */
+    if(!fh||!(arg->mode==DIR_MODE_DELETED||arg->mode==DIR_MODE_JUNK
+#ifndef DENY_SELF_UNDELETE
+        /* 是否允许用户恢复自删文章由 DENY_SELF_UNDELETE 宏控制... */
+        ||arg->mode==DIR_MODE_SELF
+#endif /* DENY_SELF_UNDELETE */
+        ))
+        return DONOTHING;
+    switch(do_undel_post(currboard->filename,arg->direct,conf->pos,fh,NULL,getSession())){
+        case -1:
+            move(t_lines-1,0);
+            clrtoeol();
+            prints("\033[1;31;47m\t%s\033[K\033[m","此文章已被恢复或列表错误, 按 <Enter> 键继续...");
+            WAIT_RETURN;
+            break;
+        case 1:
+            move(t_lines-1,0);
+            clrtoeol();
+            prints("\033[1;34;47m\t%s\033[K\033[m","恢复成功, 按 <Enter> 键继续!");
+            WAIT_RETURN;
+            break;
+        default:
+            return DONOTHING;
+    }
+    return FULLUPDATE;
 }
 
 int check_stuffmode()
@@ -617,7 +613,7 @@ void readtitle(struct _select_def* conf)
     const struct boardheader *bp;
     struct BoardStatus * bs;
     char header[STRLEN*2], title[STRLEN];
-    char readmode[10];
+    const char *readmode;
     int chkmailflag = 0;
     int bnum;
     struct read_arg* arg=(struct read_arg*)conf->arg;
@@ -692,28 +688,45 @@ void readtitle(struct _select_def* conf)
             ("离开[\x1b[1;32m←\x1b[m,\x1b[1;32me\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 发表文章[\x1b[1;32mCtrl-P\x1b[m] 砍信[\x1b[1;32md\x1b[m] 备忘录[\x1b[1;32mTAB\x1b[m] 求助[\x1b[1;32mh\x1b[m]\033[m");
     else
         prints("离开[←,e] 选择[↑,↓] 阅读[→,r] 发表文章[Ctrl-P] 砍信[d] 备忘录[TAB] 求助[h]\x1b[m");
-    if (arg->mode== DIR_MODE_NORMAL)        /* 阅读模式 */
-        strcpy(readmode, "一般");
-    else if (arg->mode== DIR_MODE_DIGEST)
-        strcpy(readmode, "文摘");
-    else if (arg->mode== DIR_MODE_THREAD)
-        strcpy(readmode, "主题");
-    else if (arg->mode== DIR_MODE_MARK)
-        strcpy(readmode, "精华");
-    else if (arg->mode== DIR_MODE_DELETED)
-        strcpy(readmode, "回收");
-    else if (arg->mode== DIR_MODE_JUNK)
-        strcpy(readmode, "纸娄");
-    else if (arg->mode== DIR_MODE_ORIGIN)
-        strcpy(readmode, "原作");
-    else if (arg->mode== DIR_MODE_AUTHOR)
-        strcpy(readmode, "作者");
-    else if (arg->mode== DIR_MODE_TITLE)
-        strcpy(readmode, "标题");
-    else if (arg->mode== DIR_MODE_SUPERFITER)
-        strcpy(readmode, "搜索");
-    else
-        strcpy(readmode, "未知");
+
+    switch(arg->mode){
+        case DIR_MODE_NORMAL:
+            readmode="一般";
+            break;
+        case DIR_MODE_DIGEST:
+            readmode="文摘";
+            break;
+        case DIR_MODE_THREAD:
+            readmode="主题";
+            break;
+        case DIR_MODE_MARK:
+            readmode="精华";
+            break;
+        case DIR_MODE_DELETED:
+            readmode="回收";
+            break;
+        case DIR_MODE_JUNK:
+            readmode="纸娄";
+            break;
+        case DIR_MODE_ORIGIN:
+            readmode="原作";
+            break;
+        case DIR_MODE_AUTHOR:
+            readmode="作者";
+            break;
+        case DIR_MODE_TITLE:
+            readmode="标题";
+            break;
+        case DIR_MODE_SUPERFITER:
+            readmode="搜索";
+            break;
+        case DIR_MODE_SELF:
+            readmode="自删";
+            break;
+        default:
+            readmode="未知";
+            break;
+    }
 
     move(2, 0);
     setfcolor(WHITE, DEFINE(getCurrentUser(), DEF_HIGHCOLOR));
@@ -1078,7 +1091,8 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
+    BBS_END;
+    end_mmapfile((void *) ptr, size, -1);
     return 0;
 }
 
@@ -1152,7 +1166,7 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     BBS_CATCH {
         now = -1;
     }
-    BBS_END
+    BBS_END;
     end_mmapfile(data, size, -1);
     if(now > 0) {
         conf->new_pos = now;
@@ -1210,7 +1224,7 @@ static int jump_changed_title(struct _select_def *conf,struct fileheader *fh,voi
     BBS_CATCH{
         res=-1;
     }
-    BBS_END
+    BBS_END;
     end_mmapfile(data,size,-1);
     if(res==-1)
         return DONOTHING;
@@ -1781,7 +1795,6 @@ int digest_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extra
     return NEWDIRECT;
 }
 
-
 int deleted_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
@@ -1861,22 +1874,90 @@ int title_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     return NEWDIRECT;
 }
 
-int junk_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
-{
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
-        return DONOTHING;
+int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
+#define SM_QUIT(msg)                                            \
+    do{                                                         \
+        if(cptr!=MAP_FAILED){                                   \
+            if(filedes!=-1){                                    \
+                flock(filedes,LOCK_UN);                         \
+                close(filedes);                                 \
+            }                                                   \
+            end_mmapfile(cptr,size,-1);                         \
+        }                                                       \
+        if(msg){                                                \
+            move(t_lines-2,0);                                  \
+            clrtoeol();                                         \
+            move(t_lines-1,0);                                  \
+            clrtoeol();                                         \
+            prints("\033[1;34;47m\t%s\033[K\033[m",(msg));      \
+            WAIT_RETURN;                                        \
+            BBS_RETURN(FULLUPDATE);                             \
+        }                                                       \
+    }                                                           \
+    while(0)
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    struct fileheader info;
+    const struct fileheader *ptr;
+    char dir[STRLEN],*cptr;
+    int filedes,count,selected,i;
+    const void *data;
+    ssize_t length,writen;
+    off_t size;
+    if(arg->mode==DIR_MODE_SELF){
+        arg->newmode=DIR_MODE_NORMAL;
+        setbdir(DIR_MODE_NORMAL,arg->direct,currboard->filename);
+        return NEWDIRECT;
     }
+    BBS_TRY{
+        filedes=-1;
+        setbdir(DIR_MODE_JUNK,dir,currboard->filename);
+        if(!safe_mmapfile(dir,O_RDONLY,PROT_READ,MAP_SHARED,&cptr,&size,NULL)){
+            SM_QUIT("目前没有自删文章, 按 <Enter> 键继续...");
+            BBS_RETURN(FULLUPDATE);
+        }
+        setbdir(DIR_MODE_SELF,dir,currboard->filename);
+        if((filedes=open(dir,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1||flock(filedes,LOCK_EX)==-1){
+            SM_QUIT("打开文件时发生错误, 按 <Enter> 键继续...");
+            BBS_RETURN(FULLUPDATE);
+        }
+        ptr=(const struct fileheader*)cptr;
+        count=size/sizeof(struct fileheader);
+        for(selected=0,i=0;i<count;i++){
+            if(!strcmp(ptr[i].owner,getCurrentUser()->userid)){
+                info=ptr[i];
+                strnzhcpy(info.title,ptr[i].title,34);
+                for(data=&info,length=sizeof(struct fileheader),writen=0;
+                    writen!=-1&&length>0;vpm(data,writen),length-=writen){
+                    writen=write(filedes,data,length);
+                }
+                selected++;
+            }
+        }
+        SM_QUIT((!selected?"目前没有自删文章, 按 <Enter> 键继续...":NULL));
+    }
+    BBS_CATCH{
+    }
+    BBS_END;
+    arg->newmode=DIR_MODE_SELF;
+    strcpy(arg->direct,dir);
+    return NEWDIRECT;
+#undef SM_QUIT
+}
 
-    if (arg->mode == DIR_MODE_JUNK) {
-        arg->newmode = DIR_MODE_NORMAL;
-        setbdir(arg->newmode, arg->direct, currboard->filename);
-    } else {
-        arg->newmode = DIR_MODE_JUNK;
-        setbdir(DIR_MODE_JUNK, arg->direct, currboard->filename);
-        if (!dashf(arg->direct)) {
-            arg->newmode = DIR_MODE_NORMAL;
-            setbdir(arg->mode, arg->direct, currboard->filename);
+int junk_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+        return self_mode(conf,fh,varg);
+    if(arg->mode==DIR_MODE_JUNK){
+        arg->newmode=DIR_MODE_NORMAL;
+        setbdir(arg->newmode,arg->direct,currboard->filename);
+    }
+    else{
+        arg->newmode=DIR_MODE_JUNK;
+        setbdir(DIR_MODE_JUNK,arg->direct,currboard->filename);
+        if(!dashf(arg->direct)){
+            arg->newmode=DIR_MODE_NORMAL;
+            setbdir(arg->mode,arg->direct,currboard->filename);
             return DONOTHING;
         }
     }
@@ -1942,118 +2023,116 @@ int search_x(char * b, char * s)
     return 0;
 }
 
-int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode)
-{
-    char ans[4];
-    char buf[STRLEN], buf2[STRLEN];
-    static char title[31] = "";
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-
-    if (newmode==0) {
-        move(t_lines - 2, 0);
+/* etnlegend, 2006.10.06, 增加用户处理自删文章功能... */
+int change_mode(struct _select_def *conf,struct fileheader *fh,int mode){
+    static char title[32];
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    char buf[STRLEN],echo[STRLEN],ans[4];
+    if(!mode){
+        move(t_lines-2,0);
         clrtoeol();
-        prints("切换模式到: 0)取消 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
-        move(t_lines - 1, 0);
+        prints("%s","切换模式到: 0)取消 1)文摘区 2)同主题 3)保留区 4)原作 5)同作者 6)标题关键字");
+        move(t_lines-1,0);
         clrtoeol();
-        getdata(t_lines - 1, 12, "7)超级文章选择"
+        getdata(t_lines-1,12,"7)超级文章选择"
 #ifdef NEWSMTH
             " 8)本版精华区搜索"
-#endif
-            " [1]: ", ans, 3, DOECHO, NULL, true);
-        if (ans[0] == ' ') {
-            ans[0] = ans[1];
-            ans[1] = 0;
-        }
-        switch (ans[0]) {
-        case '0':
-            return FULLUPDATE;
-            break;
-        case '1':
-            newmode=DIR_MODE_DIGEST;
-            break;
-        case '2':
-            newmode=DIR_MODE_THREAD;
-            break;
-        case '3':
-            newmode=DIR_MODE_MARK;
-            break;
-        case '4':
-            newmode=DIR_MODE_ORIGIN;
-            break;
-        case '5':
-            newmode=DIR_MODE_AUTHOR;
-            move(t_lines - 1, 0);
-            clrtoeol();
-            move(t_lines - 2, 0);
-            clrtoeol();
-            sprintf(buf, "您想查找哪位网友的文章[%s]: ", fileinfo->owner);
-            getdata(t_lines - 1, 0, buf, buf2, 13, DOECHO, NULL, true);
-            if (buf2[0])
-                strcpy(buf, buf2);
-            else
-                strcpy(buf, fileinfo->owner);
-            if (buf[0] == 0)
+#endif /* NEWSMTH */
+            " 9)自删文章 [1]: ",ans,2,DOECHO,NULL,true);
+        switch(ans[0]){
+            case '0':
                 return FULLUPDATE;
-            break;
-        case '6':
-            newmode=DIR_MODE_TITLE;
-            move(t_lines - 1, 0);
-            clrtoeol();
-            move(t_lines - 2, 0);
-            clrtoeol();
-            sprintf(buf, "您想查找的文章标题关键字[%s]: ", title);
-            getdata(t_lines - 1, 0, buf, buf2, 30, DOECHO, NULL, true);
-            if (buf2[0])
-                strcpy(title, buf2);
-            strcpy(buf, title);
-            if (buf[0] == 0)
-                return FULLUPDATE;
-            break;
-        case '7':
-            newmode=DIR_MODE_SUPERFITER;
-            break;
+            case '1':
+                mode=DIR_MODE_DIGEST;
+                break;
+            case '2':
+                mode=DIR_MODE_THREAD;
+                break;
+            case '3':
+                mode=DIR_MODE_MARK;
+                break;
+            case '4':
+                mode=DIR_MODE_ORIGIN;
+                buf[0]=0;
+                break;
+            case '5':
+                mode=DIR_MODE_AUTHOR;
+                move(t_lines-2,0);
+                clrtoeol();
+                move(t_lines-1,0);
+                clrtoeol();
+                sprintf(echo,"您希望查找哪位用户的文章[%s]: ",fh->owner);
+                getdata(t_lines-1,0,echo,buf,IDLEN+2,DOECHO,NULL,true);
+                if(!buf[0])
+                    strcpy(buf,fh->owner);
+                if(!buf[0])
+                    return FULLUPDATE;
+                break;
+            case '6':
+                mode=DIR_MODE_TITLE;
+                move(t_lines-2,0);
+                clrtoeol();
+                move(t_lines-1,0);
+                clrtoeol();
+                snprintf(echo,STRLEN,"您希望查找的标题关键字[%s]: ",title);
+                getdata(t_lines-1,0,echo,buf,32,DOECHO,NULL,true);
+                if(buf[0])
+                    strcpy(title,buf);
+                if(!title[0])
+                    return FULLUPDATE;
+                strcpy(buf,title);
+                break;
+            case '7':
+                mode=DIR_MODE_SUPERFITER;
+                break;
 #ifdef NEWSMTH
-        case '8':
-            move(t_lines - 1, 0);
-            clrtoeol();
-            move(t_lines - 2, 0);
-            clrtoeol();
-            sprintf(buf, "您想查找的文章内容关键字[%s]: ", title);
-            getdata(t_lines - 1, 0, buf, buf2, 70, DOECHO, NULL, true);
-            if (buf2[0])
-                strcpy(title, buf2);
-            strcpy(buf, title);
-            if(buf[0]) search_x(currboard->filename, buf);
-            return FULLUPDATE;
-#endif
-        default:
-            newmode=0;
+            case '8':
+                move(t_lines-2,0);
+                clrtoeol();
+                move(t_lines-1,0);
+                clrtoeol();
+                snprintf(echo,STRLEN,"您希望查找的全文关键字[%s]: ",title);
+                getdata(t_lines-1,0,echo,buf,64,DOECHO,NULL,true);
+                if(buf[0])
+                    strcpy(title,buf);
+                if(title[0]){
+                    strcpy(buf,title);
+                    search_x(currboard->filename,buf);
+                }
+                return FULLUPDATE;
+#endif /* NEWSMTH */
+            case '9':
+                mode=DIR_MODE_SELF;
+                break;
+            default:
+                mode=DIR_MODE_NORMAL;
+                break;
         }
-        if (arg->mode > DIR_MODE_NORMAL&&ans[0]!='7') {
-            if (arg->mode==DIR_MODE_AUTHOR|| arg->mode==DIR_MODE_TITLE)
-                unlink(arg->direct);
-        }
+        if(mode!=DIR_MODE_SUPERFITER&&(arg->mode==DIR_MODE_AUTHOR||arg->mode==DIR_MODE_TITLE||arg->mode==DIR_MODE_SELF))
+            unlink(arg->direct);
     }
-    switch (newmode) {
-    case DIR_MODE_NORMAL:
-    case DIR_MODE_DIGEST:
-        return digest_mode(conf,fileinfo,0);
-    case DIR_MODE_THREAD:
-        return title_mode(conf,fileinfo,0);
-    case DIR_MODE_MARK:
-        return marked_mode(conf,fileinfo,0);
-    case DIR_MODE_ORIGIN:
-        return search_mode(conf,fileinfo, DIR_MODE_ORIGIN, buf);
-    case DIR_MODE_AUTHOR:
-        return search_mode(conf,fileinfo, DIR_MODE_AUTHOR, buf);
-    case DIR_MODE_TITLE:
-        return search_mode(conf,fileinfo, DIR_MODE_TITLE, buf);
-    case DIR_MODE_SUPERFITER:
-        return super_filter(conf,fileinfo,0);
-    case DIR_MODE_DELETED:
-        return deleted_mode(conf, fileinfo, 0);
-    case DIR_MODE_JUNK:
-        return junk_mode(conf, fileinfo, 0);
+    switch(mode){
+        case DIR_MODE_NORMAL:
+        case DIR_MODE_DIGEST:
+            return digest_mode(conf,fh,NULL);
+        case DIR_MODE_THREAD:
+            return title_mode(conf,fh,NULL);
+        case DIR_MODE_MARK:
+            return marked_mode(conf,fh,NULL);
+        case DIR_MODE_ORIGIN:
+        case DIR_MODE_AUTHOR:
+        case DIR_MODE_TITLE:
+            return search_mode(conf,fh,mode,buf);
+        case DIR_MODE_SUPERFITER:
+            return super_filter(conf,fh,NULL);
+        case DIR_MODE_SELF:
+            return self_mode(conf,fh,NULL);
+        case DIR_MODE_DELETED:
+            return deleted_mode(conf,fh,NULL);
+        case DIR_MODE_JUNK:
+            return junk_mode(conf,fh,NULL);
+        default:
+            break;
     }
     return DIRCHANGED;
 }

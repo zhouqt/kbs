@@ -285,7 +285,8 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) buf, file_size, -1);
+    BBS_END;
+    end_mmapfile((void *) buf, file_size, -1);
 
     if (applycopy)
         free(buf2);
@@ -337,7 +338,8 @@ int search_record_back(int fd,  /* file handle */
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) buf, filesize, -1);
+    BBS_END;
+    end_mmapfile((void *) buf, filesize, -1);
 
     return 0;
 }
@@ -365,7 +367,8 @@ int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_AR
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) buf, filesize, -1);
+    BBS_END;
+    end_mmapfile((void *) buf, filesize, -1);
 
     return 0;
 }
@@ -393,7 +396,8 @@ int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, vo
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) buf, filesize, -1);
+    BBS_END;
+    end_mmapfile((void *) buf, filesize, -1);
 
     return 0;
 }
@@ -595,7 +599,8 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
     BBS_CATCH {
         ret = -3;
     }
-    BBS_END end_mmapfile(ptr, filesize, -1);
+    BBS_END;
+    end_mmapfile(ptr, filesize, -1);
 	if (ret == 0)
 		ftruncate(fdr, filesize - size);
 	close(fdr);
@@ -646,7 +651,8 @@ int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG file
 	BBS_CATCH {
 		ret = -3;
 	}
-	BBS_END end_mmapfile(ptr, filesize, -1);
+	BBS_END;
+    end_mmapfile(ptr, filesize, -1);
 	close(fdr);
 	
 	return ret;
