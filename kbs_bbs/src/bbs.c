@@ -1881,8 +1881,6 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
             if(filedes!=-1){                                    \
                 flock(filedes,LOCK_UN);                         \
                 close(filedes);                                 \
-                if(msg)                                         \
-                    unlink(dir);                                \
             }                                                   \
             end_mmapfile(cptr,size,-1);                         \
         }                                                       \
