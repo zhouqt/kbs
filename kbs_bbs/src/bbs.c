@@ -1911,14 +1911,12 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
     BBS_TRY{
         filedes=-1;
         setbdir(DIR_MODE_JUNK,dir,currboard->filename);
-        if(!safe_mmapfile(dir,O_RDONLY,PROT_READ,MAP_SHARED,&cptr,&size,NULL)){
+        if(!safe_mmapfile(dir,O_RDONLY,PROT_READ,MAP_SHARED,&cptr,&size,NULL))
             SM_QUIT("目前没有自删文章, 按 <Enter> 键继续...");
-            BBS_RETURN(FULLUPDATE);
-        }
         setbdir(DIR_MODE_SELF,dir,currboard->filename);
         if((filedes=open(dir,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1||flock(filedes,LOCK_EX)==-1){
+            unlink(dir);
             SM_QUIT("打开文件时发生错误, 按 <Enter> 键继续...");
-            BBS_RETURN(FULLUPDATE);
         }
         ptr=(const struct fileheader*)cptr;
         count=size/sizeof(struct fileheader);
@@ -1933,7 +1931,11 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
                 selected++;
             }
         }
-        SM_QUIT((!selected?"目前没有自删文章, 按 <Enter> 键继续...":NULL));
+        if(!selected){
+            unlink(dir);
+            SM_QUIT("目前没有自删文章, 按 <Enter> 键继续...");
+        }
+        SM_QUIT(NULL);
     }
     BBS_CATCH{
     }
