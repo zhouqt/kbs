@@ -1881,6 +1881,8 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
             if(filedes!=-1){                                    \
                 flock(filedes,LOCK_UN);                         \
                 close(filedes);                                 \
+                if(msg)                                         \
+                    unlink(dir);                                \
             }                                                   \
             end_mmapfile(cptr,size,-1);                         \
         }                                                       \
@@ -1914,10 +1916,8 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
         if(!safe_mmapfile(dir,O_RDONLY,PROT_READ,MAP_SHARED,&cptr,&size,NULL))
             SM_QUIT("目前没有自删文章, 按 <Enter> 键继续...");
         setbdir(DIR_MODE_SELF,dir,currboard->filename);
-        if((filedes=open(dir,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1||flock(filedes,LOCK_EX)==-1){
-            unlink(dir);
+        if((filedes=open(dir,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1||flock(filedes,LOCK_EX)==-1)
             SM_QUIT("打开文件时发生错误, 按 <Enter> 键继续...");
-        }
         ptr=(const struct fileheader*)cptr;
         count=size/sizeof(struct fileheader);
         for(selected=0,i=0;i<count;i++){
@@ -1931,11 +1931,7 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
                 selected++;
             }
         }
-        if(!selected){
-            unlink(dir);
-            SM_QUIT("目前没有自删文章, 按 <Enter> 键继续...");
-        }
-        SM_QUIT(NULL);
+        SM_QUIT((!selected?"目前没有自删文章, 按 <Enter> 键继续...":NULL));
     }
     BBS_CATCH{
     }
