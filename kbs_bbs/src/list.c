@@ -552,6 +552,7 @@ int allnum, pagenum;
         clrtoeol();
         getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (genbuf[0] != 'Y' && genbuf[0] != 'y') {
+            update_endline();
             return 1;
         }
         if (user_record[allnum]->logintime > update_time || strcmp(user_record[allnum]->userid, tmpid) || !user_record[allnum]->active) {
