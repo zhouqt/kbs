@@ -2163,9 +2163,9 @@ int set_board_rule(struct boardheader *bh, int flag)
 }
 #endif
 
-#ifdef NEWSMTH
+#ifndef USE_PRIMORDIAL_TOP10
 static int select_top(void);
-#endif /* NEWSMTH */
+#endif /* USE_PRIMORDIAL_TOP10 */
 
 int read_hot_info()
 {
@@ -2254,11 +2254,11 @@ int read_hot_info()
 
 /* etnlegend, 2006.05.30, 阅读十大 ... */
 
-#ifdef NEWSMTH
+#ifndef USE_PRIMORDIAL_TOP10
         select_top();
-#else /* NEWSMTH */
+#else /* USE_PRIMORDIAL_TOP10 */
         show_help("etc/posts/day");
-#endif /* NEWSMTH */
+#endif /* USE_PRIMORDIAL_TOP10 */
 
     }
     return FULLUPDATE;
@@ -5270,7 +5270,7 @@ int Read()
 
 /* etnlegend, 2006.05.28, 阅读十大 ... */
 
-#ifdef NEWSMTH
+#ifndef USE_PRIMORDIAL_TOP10
 
 static void read_top_title(struct _select_def *conf){
     struct BoardStatus *bs;
@@ -5654,8 +5654,22 @@ static struct key_command read_top_comms[]={
 };
 
 static int read_top(int index,int force){
-#define RT_INTERVAL 60
-#define RT_INTERVAL_FORCE 120
+/*
+ *  关于 RT_INTERVAL 和 RT_INTERVAL_FORCE 宏的作用 ----
+ *
+ *  这两个宏定义的时间间隔(单位为秒)控制更新十大主题所用的索引(.TOP.<gid>)的松弛策略, 若版面
+ *  文章索引(.DIR)的修改时间比十大索引(.TOP.<gid>)的修改时间新 RT_INTERVAL 秒以上, 或者 .DIR
+ *  比 .TOP.<gid> 新并且后者已经超过 RT_INTERVAL_FORCE 秒未更新, 则从 .DIR 重新生成 .TOP.<gid>,
+ *  否则直接使用原有的 .TOP.<gid>, 当然, 如果 .TOP.<gid> 不存在或者参数 `force` 设置为真也会
+ *  导致重新生成 .TOP.<gid>, 经过初步估算, 阅读十大的系统消耗并不比同作者搜索/标题关键字搜索
+ *  更大, 因此在规模不是很大的站点上这两个宏可以放心的定义为 0, 但目前此部分代码尚未在水木社
+ *  区上完成全面的压力测试, 因此 cvs 上仍然保留 RT_INTERVAL/RT_INTERVAL_FORCE 为 15/30 秒...
+ *
+ *  注释于 2006 年 10 月 7 日, etnlegend ...
+ *
+*/
+#define RT_INTERVAL         15
+#define RT_INTERVAL_FORCE   30
     static const struct flock lck_set={.l_type=F_WRLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
     struct stat st_dir,st_top;
@@ -5921,7 +5935,7 @@ static int select_top(void){
     while(1);
 }
 
-#endif /* NEWSMTH */
+#endif /* USE_PRIMORDIAL_TOP10 */
 
 /* END -- etnlegend, 2006.05.30, 阅读十大 ... */
 
