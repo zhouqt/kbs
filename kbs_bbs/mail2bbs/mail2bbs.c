@@ -349,6 +349,8 @@ char *userid, *sender1, *sender, *title, *received;
         if (append_record(buf, &newmessage, sizeof(newmessage)) == 0) {
             update_user_usedspace(fs.st_size, user);
 			setmailcheck(user->userid);
+			if(strcmp(userid, "SYSOP") == 0)
+				updatelastpost(SYSMAIL_BOARD);
             return 0;
         }
     }

@@ -797,6 +797,8 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 		{
 			update_user_usedspace(fs.st_size, user);
 			setmailcheck(user->userid);
+			if(strcmp(userid, "SYSOP") == 0)
+				updatelastpost(SYSMAIL_BOARD);
 			return 0;
 		}
 	}
