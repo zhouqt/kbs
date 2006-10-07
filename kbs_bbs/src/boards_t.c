@@ -10,6 +10,7 @@ static int yank_flag=0;
 
 #define favbrd_list_t (*(getSession()->favbrd_list_count))
 extern int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
+extern int modify_board(int bid);
 static int check_newpost(struct newpostdata *ptr);
 
 void EGroup(cmd)
@@ -1018,6 +1019,22 @@ static int fav_key(struct _select_def *conf, int command)
         }
         while(0);
         break;
+    case 'E':
+        if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||ptr->dir)
+            break;
+        do{
+            int bid;
+            if(!(bid=getbnum_safe(ptr->name,getSession()))){
+                move(t_lines-1,0);
+                clrtoeol();
+                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","您不具有修改该版面的权限!");
+                WAIT_RETURN;
+                return FULLUPDATE;
+            }
+            modify_board(bid);
+        }
+        while(0);
+        return FULLUPDATE;
     case 'L':
     case 'l':                  /* Luzi 1997.10.31 */
         if (uinfo.mode != LOOKMSGS) {
