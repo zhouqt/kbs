@@ -1,9 +1,16 @@
 #include "bbs.h"
-#define BLOCKFILE   "/bbs/.blockmail"
+#define MAILDIR     BBSHOME"/mail"
+#define BLOCKFILE ".blockmail"
+#define BUFLEN 256
 
-extern void str_decode(unsigned char *dst, unsigned char *src);
+#define UBMAPNUM 0
+/*
+static char ubmap[UBMAPNUM][2][20] = {
+	{"ArmMailing", "MailingTest"},
+};
+*/
+int str_decode(register unsigned char *dst, register unsigned char *src);
 
-/* copy from flyriver qmail2bbs.c */
 void my_ansi_filter(char *source)
 {
     char result[500];
@@ -29,7 +36,103 @@ void my_ansi_filter(char *source)
     strncpy(source, result, loc + 1);
 }
 
-#ifdef MAIL2BOARD
+int strsncpy(char *c,char *d,int l)
+{
+	strncpy(c,d,l);
+	c[l-1]=0;
+}
+
+void
+mailog(char *msg)
+{
+	FILE   *fp;
+	char    xx[256];
+	sprintf(xx, "%s/mail.logg", BBSHOME);
+	fp = fopen(xx, "a+");
+	if (fp == NULL)
+		return;
+	fprintf(fp, "%d: %s\n", time(0), msg);
+	fclose(fp);
+}
+
+void
+chop(char *s)
+{
+	int i;
+	i = strlen(s);
+	if (s[i - 1] == '\n')
+		s[i - 1] = 0;
+	return;
+}
+
+void
+decode_mail(FILE * fin, FILE * fout)
+{
+	char filename[BUFLEN];
+	char encoding[BUFLEN];
+	char buf[BUFLEN];
+	char sbuf[BUFLEN + 20];
+	char dbuf[BUFLEN + 20];
+	char ch;
+	int wc;
+	long sizep;
+	uint32_t sz;
+	while (fgets(filename, sizeof (filename), fin)) {
+		if (!fgets(encoding, sizeof (encoding), fin))
+			return;
+		chop(filename);
+		chop(encoding);
+		ch = 0;
+		sizep = 0;
+		sz=0;
+		if (filename[0]) {
+			str_decode(buf, filename);
+			strsncpy(filename, buf, sizeof (filename));
+			printf("f:%s\n", filename);
+			fprintf(fout, "\n信件有附件: %s\n", filename);
+			fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fout);
+			fwrite(filename, strlen(filename) + 1, 1, fout);
+			fwrite(&sz, sizeof (sz), 1, fout);
+			//fwrite(&ch, 1, 1, fout);
+			sizep = ftell(fout);
+		}
+		if (!strcmp(encoding, "quoted-printable")
+		    || !strcmp(encoding, "base64")) {
+			ch = encoding[0];
+			while (fgets(buf, sizeof (buf), fin)) {
+				if (!buf[0] && buf[1] == '\n')
+					break;
+
+				buf[sizeof(buf)-1]='\0';
+				chop(buf);
+				//wc = str_decode(dbuf, sbuf);
+				wc = from64tobits(dbuf, buf);
+				if (wc >= 0) {
+					fwrite(dbuf, wc, 1, fout);
+				} else{
+					fputs(buf, fout);
+				}
+			}
+		} else {
+			while (fgets(buf, sizeof (buf), fin)) {
+				if (!buf[0] && buf[1] == '\n')
+					break;
+				fputs(buf, fout);
+			}
+		}
+		if (sizep) {
+			uint32_t asize;
+			sizep = ftell(fout) - sizep ;
+			asize=htonl(sizep);
+			fseek(fout, -sizep -4, SEEK_CUR);
+			fwrite(&asize, 4, 1, fout);
+			fseek(fout, sizep, SEEK_CUR);
+		}
+	}
+	if (sizep)
+		fputs("\n\n--\n", fout);
+}
+
 void strmov(char *source, int offset)
 {
     int i;
@@ -80,10 +183,12 @@ int my_after_post(struct fileheader *fh, char *boardname)
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
-
+    char *p;
+/*
     if (!strncmp(fh->title, "Re:", 3)) {
         strncpy(fh->title, fh->title + 4, ARTICLE_TITLE_LEN);
     }
+	*/
     setbfile(buf, boardname, DOT_DIR);
 
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
@@ -132,16 +237,14 @@ char *bname, *sender1, *sender, *title, *received;
 
 /* check if the board is in our bbs now */
     if ((brd = getbcache(bname)) == NULL)
-        return -1;
+        return -21;
     strcpy(bname, brd->filename);
-    if(!is_emailpost_board(bname))
-        return 0;
 
 /* check for the dir for the board */
     setbpath(boardpath, bname);
     printf("OK, board dir is %s\n", boardpath);
 
-    str_decode((void*)conv_buf,(void*)title);
+    str_decode(conv_buf, title);
 /* copy from flyriver qmailpost.c */
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
@@ -155,7 +258,7 @@ char *bname, *sender1, *sender, *title, *received;
     setbfile(buf, bname, fname);
     strcpy(fname, buf);
     if (!dashd(boardpath))
-        return -1;
+        return -22;
     strncpy(newmessage.title, conv_buf, sizeof(newmessage.title) - 1);
     newmessage.title[sizeof(newmessage.title) - 1] = '\0';
 
@@ -191,7 +294,6 @@ char *bname, *sender1, *sender, *title, *received;
         strncpy(author, lesssym, sizeof(author));
     if (!isalnum(author[0]))
         strcpy(author, "Unknown");
-    strcat(author, ".");
 
     strncpy(newmessage.owner, author, sizeof(newmessage.owner) - 1);
     newmessage.owner[sizeof(newmessage.owner) - 1] = '\0';
@@ -202,7 +304,7 @@ char *bname, *sender1, *sender, *title, *received;
 /* copy the stdin to the specified file */
     if ((fout = fopen(fname, "w")) == NULL) {
         printf("Cannot open %s\n", fname);
-        return -1;
+        return -23;
     }
     now = time(NULL);
     fprintf(fout, "发信人: %s (%s), 信区: %s\n", newmessage.owner, sender, bname);
@@ -217,272 +319,174 @@ char *bname, *sender1, *sender, *title, *received;
 
     return my_after_post(&newmessage, bname);
 }
-#endif
 
-int append_mail(fin, sender1, sender, userid, title, received)
+int
+append_mail(fin, sender1, sender, userid, title, received)
 FILE *fin;
 char *userid, *sender1, *sender, *title, *received;
 {
-    struct fileheader newmessage;
-    char fname[512], buf[256], genbuf[256], fff[80], fff2[80];
-    char maildir[256];
-    struct stat st;
-    FILE *fout, *dp, *rmail;
-    int yyyy, zzzz, passcheck = 0;
-    char conv_buf[256];
-    char *ptr;
+	struct fileheader newmessage;
+	char fname[512],buf[BUFLEN], genbuf[BUFLEN];
+	char maildir[BUFLEN];
+	struct stat st;
+	int filetime;
+	int fp;
+	FILE  *fout, *dp, *rmail;
+	int passcheck = 0;
+	char conv_buf[BUFLEN], *p1, *p2, *ip, *c;
     struct userec *user;
 
 /* check if the userid is in our bbs now */
-    if (getuser(userid, &user) == 0)
+    if (getuser(userid, &user) == 0){
         return -1;
+	}
+
+	if (!strcasecmp(userid, "guest"))
+		return -11;
 
 /* check for the mail dir for the userid */
     setmailpath(maildir, user->userid);
-    if (stat(maildir, &st) == -1) {
-        if (mkdir(maildir, 0755) == -1)
-            return -1;
-    } else {
-        if (!(st.st_mode & S_IFDIR))
-            return -1;
-    }
-    printf("Ok, dir is %s\n", maildir);
 
-    str_decode((unsigned char*)conv_buf, (unsigned char*)title);
-/* copy from flyriver qmail2bbs.c */
+	if (stat(maildir, &st) == -1) {
+		if (mkdir(maildir, 0755) == -1)
+			return -2;
+	} else {
+		if (!(st.st_mode & S_IFDIR))
+			return -3;
+	}
+
+	printf("Ok, dir is %s\n", genbuf);
+
+	str_decode(conv_buf, sender);
+	strsncpy(sender, conv_buf, BUFLEN);
+	str_decode(conv_buf, title);
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
         strcpy(conv_buf, "没主题");
 
-/* check for mail register */
-    if (!strcmp(userid, "SYSOP") && strstr(conv_buf, " mail check.")) {
-        passcheck = 1;
-        if ((!strstr(sender, "bbs")) && (strchr(conv_buf, '@'))) {
-            yyyy = 0;
-            zzzz = 0;
-            while ((conv_buf[yyyy] != '@') && (yyyy < NAMELEN))
-                yyyy = yyyy + 1;
-            yyyy = yyyy + 1;
-            while ((conv_buf[yyyy] != '@') && (yyyy < NAMELEN)) {
-                sender1[zzzz] = conv_buf[yyyy];
-                yyyy = yyyy + 1;
-                zzzz = zzzz + 1;
-            }
-            sender1[zzzz] = '\0';
-            strcpy(userid, sender1);
-            sprintf(fff, "%s/home/%c/%s/mailcheck", BBSHOME, toupper(sender1[0]), sender1);
-            if ((dp = fopen(fff, "r")) != NULL) {
-                printf("open mailcheck\n");
-                fgets(fff2, sizeof(fff2), dp);
-                fclose(dp);
-                sprintf(fff2, "%9.9s", fff2);
-                if (getuser(sender1, NULL) && strstr(conv_buf, fff2)) {
-                    printf("pass1\n");
-                    unlink(fff);
-                    passcheck = 5;
-                    sprintf(genbuf, "%s", sender);
-                    sprintf(buf, "%s/home/%c/%s/register", BBSHOME, toupper(sender1[0]), sender1);
-                    if (dashf(buf)) {
-                        sprintf(buf, "%s/home/%c/%s/register.old", BBSHOME, toupper(sender1[0]), sender1);
-                        rename(buf, conv_buf);
-                    }
-                    if ((fout = fopen(buf, "w")) != NULL) {
-                        fprintf(fout, "%s\n", genbuf);
-                        fclose(fout);
-                    }
-                }
-            }
-        }
-    }
-
 /* allocate a record for the new mail */
-    bzero(&newmessage, sizeof(newmessage));
+	bzero(&newmessage, sizeof (newmessage));
     GET_MAILFILENAME(fname, maildir);
     strcpy(newmessage.filename, fname);
-    setmailfile(buf, user->userid, fname);
-    strcpy(fname, buf);
-    strncpy(newmessage.title, conv_buf, sizeof(newmessage.title) - 1);
-    newmessage.title[sizeof(newmessage.title) - 1] = '\0';
-    ptr = strchr(sender, '@');
-    if (ptr == NULL || ptr == sender)
-        return -1;
-    strncpy(newmessage.owner, sender, sizeof(newmessage.owner) - 1);
-    newmessage.owner[sizeof(newmessage.owner) - 1] = '\0';
-    printf("Ok, the file is %s\n", fname);
+
+	strsncpy(newmessage.title, conv_buf, sizeof (newmessage.title));
+    strsncpy(newmessage.owner, sender, sizeof(newmessage.owner) );
 
 /* copy the stdin to the specified file */
-    if ((fout = fopen(fname, "w")) == NULL) {
-        printf("Cannot open %s \n", fname);
-        return -1;
-    } else {
-        time_t tmp_time;
+    setmailfile(genbuf, user->userid, fname);
+	strcpy(fname,genbuf);
 
-        time(&tmp_time);
-        fprintf(fout, "寄信人: %-.70s \n", sender);
-        fprintf(fout, "标  题: %-.70s\n", conv_buf);
-        fprintf(fout, "发信站: %s 信差\n", BBS_FULL_NAME);
-        if (received != NULL && received[0] != '\0')
-            fprintf(fout, "来  源: %-.70s\n", received);
-        fprintf(fout, "日  期: %s\n", ctime(&tmp_time));
-        if (passcheck >= 1) {
-            fprintf(fout, "亲爱的 %s:\n", sender1);
-            sprintf(maildir, "%s/etc/%s", BBSHOME, (passcheck == 5) ? "smail" : "fmail");
-            if ((rmail = fopen(maildir, "r")) != NULL) {
-                while (fgets(genbuf, 255, rmail) != NULL)
-                    fputs(genbuf, fout);
-                fclose(rmail);
-            }
-        } else {
-            while (fgets(genbuf, 255, fin) != NULL)
-                fputs(genbuf, fout);
-        }
-        fclose(fout);
-    }
+	printf("Ok, the file is %s\n", maildir);
 
-/* append the record to the MAIL control file */
+	if ((fout = fopen(fname, "w")) == NULL) {
+		printf("Cannot open %s \n", maildir);
+		return -4;
+	} else {
+		time_t tmp_time;
+		struct stat st;
+
+		time(&tmp_time);
+		fprintf(fout, "寄信人: %-.70s \n", sender);
+		fprintf(fout, "标  题: %-.70s\n", conv_buf);
+		fprintf(fout, "发信站: %s BBS\n", BBS_FULL_NAME);
+		if (received[0] != '\0')
+			fprintf(fout, "来  源: %-.70s\n", received);
+		fprintf(fout, "日  期: %s\n", ctime(&tmp_time));
+		if (passcheck >= 1) {
+			fprintf(fout, "亲爱的 %s:\n", sender1);
+			sprintf(maildir, "etc/%s",
+				(passcheck == 5) ? "smail" : "fmail");
+			if ((rmail = fopen(maildir, "r")) != NULL) {
+				while (fgets(genbuf, sizeof (genbuf), rmail) !=
+				       NULL)
+					fputs(genbuf, fout);
+				fclose(rmail);
+			}
+		} else
+			decode_mail(fin, fout);
+		if (fstat(fileno(fout), &st) != -1)
+        	newmessage.eff_size = st.st_size;
+		fclose(fout);
+
+	}
+
     if (chkusermail(user) == 0) {
-        struct stat fs;
-
-        stat(fname, &fs);
         setmailfile(buf, user->userid, DOT_DIR);
-        newmessage.eff_size = fs.st_size;
         if (append_record(buf, &newmessage, sizeof(newmessage)) == 0) {
-            update_user_usedspace(fs.st_size, user);
+           	update_user_usedspace(newmessage.eff_size, user);
 			setmailcheck(user->userid);
-			if(strcmp(userid, "SYSOP") == 0)
-				updatelastpost(SYSMAIL_BOARD);
             return 0;
         }
     }
     unlink(fname);
-    return -1;
+    return -5;
+
 }
 
-int block_mail(addr)
+int
+block_mail(addr)
 char *addr;
 {
-    FILE *fp;
-    char temp[STRLEN];
+	FILE *fp;
+	char temp[STRLEN];
 
-    if ((fp = fopen(BLOCKFILE, "r")) != NULL) {
-        while (fgets(temp, STRLEN, fp) != NULL) {
-            strtok(temp, "\n");
-            if (strstr(addr, temp)) {
-                fclose(fp);
-                return 1;
-            }
-        }
-        fclose(fp);
-    }
-    return 0;
+	if ((fp = fopen(BLOCKFILE, "r")) != NULL) {
+		while (fgets(temp, STRLEN, fp) != NULL) {
+			strtok(temp, "\n");
+			if (strstr(addr, temp)) {
+				fclose(fp);
+				return 1;
+			}
+		}
+		fclose(fp);
+	}
+	return 0;
 }
 
-int main(argc, argv)
+int
+main(argc, argv)
 int argc;
 char *argv[];
 {
 
-    char sender[256];
-    char username[256];
-    char receiver[256];
-    char nettyp[256];
-    int xxxx;
+	char myarg[4][BUFLEN];
+	char nettyp[BUFLEN];
+	char *p;
+	int i;
+	char uboard[30];
 
-#ifdef MAIL2BOARD
-    char *ptr;
-    int mail2board = 0;
-#endif
+	for (i = 0; i < 4; i++)
+		if (!fgets(myarg[i], sizeof (myarg[i]), stdin))
+			return i + 1;
+	for (i = 0; i < 4; i++)
+		chop(myarg[i]);
 
-    strncpy(receiver, argv[2], 256);
-	receiver[255]='\0';
-
-#ifdef MAIL2BOARD
-    ptr = strchr(receiver, '.');
-    if (ptr == NULL) {
-        mail2board = 0;
-    } else if (!strncasecmp(ptr + 1, "board", 5)) {
-        *ptr = '\0';
-        mail2board = 1;
-    } else
-        return 1;
-#endif
-
-/* argv[ 1 ] is original sender */
-/* argv[ 2 ] is userid in bbs   */
-/* argv[ 3 ] is the mail title  */
-/* argv[ 4 ] is the message-id  */
-    if (argc != 5) {
-        char *p = (char *) rindex(argv[0], '/');
-
-        printf("Usage: %s sender receiver_in_bbs mail_title\n", p ? p + 1 : argv[0]);
-        return 1;
-    }
-    if (chroot(BBSHOME) == 0) {
-        chdir("/");
-#ifdef DEBUG
-        printf("Chroot ok!\n");
-#endif
-    } else {
-/* assume it is in chrooted in bbs */
-/* if it is not the case, append_main() will handle it */
-        chdir(BBSHOME);
-#ifdef DEBUG
-        printf("Already chroot\n");
-#endif
-    }
-
-    setreuid(BBSUID, BBSUID);
-    setregid(BBSGID, BBSGID);
-#ifdef MAIL2BOARD
-    if (mail2board == 1)
-        resolve_boards();
-    else
-#endif
-        resolve_ucache();
+	chdir(BBSHOME);
+	setreuid(BBSUID, BBSUID);
+	setregid(BBSGID, BBSGID);
+    resolve_ucache();
+    resolve_boards();
     resolve_utmp();
 
-    if (argv[1] == NULL || strlen(argv[1]) == 0 || strlen(argv[1]) >= sizeof(sender) ) {
-        fprintf(stderr, "Error: Unknown sender\n");
-        return -2;
-    }
-    if (strchr(argv[1], '@')) {
-        strncpy(sender, argv[1], sizeof(sender) - 1);
-		sender[sizeof(sender)-1]='\0';
-/* added by netty */
-        xxxx = 0;
-        while (sender[xxxx] != '@' && sender[xxxx] ) {
-            nettyp[xxxx] = sender[xxxx];
-            xxxx = xxxx + 1;
-        }
-        nettyp[xxxx] = '\0';    /* added by netty */
-    } else {
-        char *p, *l, *r;
-        char buf[256];
+	strsncpy(nettyp, myarg[0], sizeof (nettyp));
+	p = strchr(nettyp, '@');
+	if (NULL != p)
+		*p = 0;
 
-        strcpy(buf, argv[1]);
-        p = strtok(buf, " \t\n\r");
-        l = strchr(argv[1], '(');
-        r = strchr(argv[1], ')');
-        if (l < r && l && r){
-            strncpy(username, l, r - l + 1);
-			username[r-l+1]='\0';
-		}else
-			username[0]='\0';
-        snprintf(sender, sizeof(sender), "%s@%s %s", p, MAIL_BBSDOMAIN, username);
-        strcpy(nettyp, p);
-    }
+	if (block_mail(myarg[0]) == true)
+		return -2;
 
-    if (block_mail(sender))
-        return -2;
-
-#ifdef MAIL2BOARD
-    if (mail2board == 1) {
-        return append_board(stdin, nettyp, sender, receiver, argv[3], argv[4]);
-    } else {
+#if UBMAPNUM > 0
+	for(i=0;i<UBMAPNUM;i++){
+		if(!strcasecmp(ubmap[i][0], myarg[1])){
+			strcpy(uboard, ubmap[i][1]);
+			append_board(stdin, nettyp, myarg[0], uboard, myarg[2], myarg[3]);
+			break;
+		}
+	}
 #endif
-        return append_mail(stdin, nettyp, sender, receiver, argv[3], argv[4]);
-#ifdef MAIL2BOARD
-    }
-#endif
-    return 0;
+
+	return append_mail(stdin, nettyp, myarg[0], myarg[1], myarg[2],
+			   myarg[3]);
 }
+
