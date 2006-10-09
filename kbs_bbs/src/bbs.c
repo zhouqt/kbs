@@ -5831,7 +5831,7 @@ static int select_top(void){
     do{
         if(update){
             ansimore("etc/posts/day",0);
-            move(t_lines-2,6);
+            move(t_lines-1,6);
             prints("%s","\033[1;33m定位\033[1;37m[\033[1;32mUP\033[1;37m,\033[1;32mDOWN\033[1;37m,\033[1;32mNUM\033[1;37m,"
                 "\033[1;32mHOME\033[1;37m,\033[1;32mEND\033[1;37m]/\033[1;33m退出\033[1;37m[\033[1;32mESC\033[1;37m,"
                 "\033[1;32mLEFT\033[1;37m,\033[1;32mQ\033[1;37m]/\033[1;33m选择\033[1;37m[\033[1;32mENTER\033[1;37m,"
