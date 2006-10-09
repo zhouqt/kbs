@@ -1,14 +1,19 @@
 #include "bbs.h"
+/*
 #define MAILDIR     BBSHOME"/mail"
+*/
 #define BLOCKFILE ".blockmail"
 #define BUFLEN 256
 
 #define UBMAPNUM 0
-/*
+
+#if UBMAPNUM > 0
 static char ubmap[UBMAPNUM][2][20] = {
 	{"ArmMailing", "MailingTest"},
+    {"",""}
 };
-*/
+#endif /* UBMAPNUM > 0 */
+
 int str_decode(register unsigned char *dst, register unsigned char *src);
 
 void my_ansi_filter(char *source)
@@ -36,10 +41,10 @@ void my_ansi_filter(char *source)
     strncpy(source, result, loc + 1);
 }
 
-int strsncpy(char *c,char *d,int l)
-{
+char* strsncpy(char *c,const char *d,size_t l){
 	strncpy(c,d,l);
 	c[l-1]=0;
+    return c;
 }
 
 void
@@ -51,7 +56,7 @@ mailog(char *msg)
 	fp = fopen(xx, "a+");
 	if (fp == NULL)
 		return;
-	fprintf(fp, "%d: %s\n", time(0), msg);
+	fprintf(fp, "%ld: %s\n", time(0), msg);
 	fclose(fp);
 }
 
@@ -71,11 +76,10 @@ decode_mail(FILE * fin, FILE * fout)
 	char filename[BUFLEN];
 	char encoding[BUFLEN];
 	char buf[BUFLEN];
-	char sbuf[BUFLEN + 20];
 	char dbuf[BUFLEN + 20];
 	char ch;
 	int wc;
-	long sizep;
+	long sizep=0;
 	uint32_t sz;
 	while (fgets(filename, sizeof (filename), fin)) {
 		if (!fgets(encoding, sizeof (encoding), fin))
@@ -86,7 +90,7 @@ decode_mail(FILE * fin, FILE * fout)
 		sizep = 0;
 		sz=0;
 		if (filename[0]) {
-			str_decode(buf, filename);
+			str_decode((unsigned char*)buf,(unsigned char*)filename);
 			strsncpy(filename, buf, sizeof (filename));
 			printf("f:%s\n", filename);
 			fprintf(fout, "\n信件有附件: %s\n", filename);
@@ -183,8 +187,7 @@ int my_after_post(struct fileheader *fh, char *boardname)
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
-    char *p;
-/*
+    /*
     if (!strncmp(fh->title, "Re:", 3)) {
         strncpy(fh->title, fh->title + 4, ARTICLE_TITLE_LEN);
     }
@@ -244,7 +247,7 @@ char *bname, *sender1, *sender, *title, *received;
     setbpath(boardpath, bname);
     printf("OK, board dir is %s\n", boardpath);
 
-    str_decode(conv_buf, title);
+    str_decode((unsigned char*)conv_buf,(unsigned char*)title);
 /* copy from flyriver qmailpost.c */
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
@@ -329,11 +332,9 @@ char *userid, *sender1, *sender, *title, *received;
 	char fname[512],buf[BUFLEN], genbuf[BUFLEN];
 	char maildir[BUFLEN];
 	struct stat st;
-	int filetime;
-	int fp;
-	FILE  *fout, *dp, *rmail;
+	FILE *fout,*rmail;
 	int passcheck = 0;
-	char conv_buf[BUFLEN], *p1, *p2, *ip, *c;
+	char conv_buf[BUFLEN];
     struct userec *user;
 
 /* check if the userid is in our bbs now */
@@ -357,9 +358,9 @@ char *userid, *sender1, *sender, *title, *received;
 
 	printf("Ok, dir is %s\n", genbuf);
 
-	str_decode(conv_buf, sender);
+	str_decode((unsigned char*)conv_buf,(unsigned char*)sender);
 	strsncpy(sender, conv_buf, BUFLEN);
-	str_decode(conv_buf, title);
+	str_decode((unsigned char*)conv_buf,(unsigned char*)title);
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
         strcpy(conv_buf, "没主题");
@@ -453,7 +454,6 @@ char *argv[];
 	char nettyp[BUFLEN];
 	char *p;
 	int i;
-	char uboard[30];
 
 	for (i = 0; i < 4; i++)
 		if (!fgets(myarg[i], sizeof (myarg[i]), stdin))
@@ -477,14 +477,18 @@ char *argv[];
 		return -2;
 
 #if UBMAPNUM > 0
-	for(i=0;i<UBMAPNUM;i++){
-		if(!strcasecmp(ubmap[i][0], myarg[1])){
-			strcpy(uboard, ubmap[i][1]);
-			append_board(stdin, nettyp, myarg[0], uboard, myarg[2], myarg[3]);
-			break;
-		}
-	}
-#endif
+    do{
+        char uboard[32];
+        for(i=0;i<UBMAPNUM;i++){
+            if(!strcasecmp(ubmap[i][0], myarg[1])){
+                strcpy(uboard, ubmap[i][1]);
+                append_board(stdin, nettyp, myarg[0], uboard, myarg[2], myarg[3]);
+                break;
+            }
+        }
+    }
+    while(0);
+#endif /* UBMAPNUM > 0 */
 
 	return append_mail(stdin, nettyp, myarg[0], myarg[1], myarg[2],
 			   myarg[3]);
