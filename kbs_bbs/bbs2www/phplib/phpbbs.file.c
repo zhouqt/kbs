@@ -662,6 +662,7 @@ PHP_FUNCTION(bbs_originfile)
 
 PHP_FUNCTION(bbs_decode_att_hash)
 {
+#ifdef ATPPP_YMSW_YTJH
     char *info;
     int infolen;
     char decoded[30];
@@ -704,4 +705,7 @@ PHP_FUNCTION(bbs_decode_att_hash)
     add_assoc_long(return_value, "bid", bid);
     add_assoc_long(return_value, "id", id);
     add_assoc_long(return_value, "pos", pos);
+#else
+    RETURN_FALSE;
+#endif
 }
