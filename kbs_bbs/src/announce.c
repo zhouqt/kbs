@@ -1307,6 +1307,44 @@ void a_manager(MENU *pm,int ch)
             pm->page = 9999;
 	    }
             break;
+
+        case '`':
+            if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||!HAS_PERM(getCurrentUser(),PERM_ANNOUNCE)||!item)
+                break;
+            strnzhcpy(genbuf,item->title,39);
+            strcpy(item->title,genbuf);
+            move(t_lines-1,0);
+            clrtoeol();
+            if(a_savenames(pm)){
+                prints("\033[1;31;47m%s\033[K\033[m","操作过程中发生错误, 按回车键继续...");
+                WAIT_RETURN;
+                a_loadnames(pm,getSession());
+            }
+            else{
+                prints("\033[1;34;47m%s\033[K\033[m","操作[清空整理者]成功, 按回车键继续...");
+                WAIT_RETURN;
+            }
+            pm->page=9999;
+            break;
+        case '~':
+            if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||!HAS_PERM(getCurrentUser(),PERM_ANNOUNCE)||!item)
+                break;
+            strnzhcpy(genbuf,item->title,39);
+            sprintf(item->title,"%-38.38s(BM: SYSOPS)",genbuf);
+            move(t_lines-1,0);
+            clrtoeol();
+            if(a_savenames(pm)){
+                prints("\033[1;31;47m%s\033[K\033[m","操作过程中发生错误, 按回车键继续...");
+                WAIT_RETURN;
+                a_loadnames(pm,getSession());
+            }
+            else{
+                prints("\033[1;34;47m%s\033[K\033[m","操作[设置整理者为 (BM: SYSOPS)]成功, 按回车键继续...");
+                WAIT_RETURN;
+            }
+            pm->page=9999;
+            break;
+
         case 'e':
 	    if (item) {
             if (dashf(fpath)) {
