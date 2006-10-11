@@ -1286,23 +1286,13 @@ void a_manager(MENU *pm,int ch)
                     sprintf(genbuf, "改变文件 %s 的标题", fpath + 17);
                     a_report(genbuf);
                 } else if (dashd(fpath)) {
-                    if (HAS_PERM(getCurrentUser(), PERM_SYSOP || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE))) {
-                        move(1, 0);
-                        clrtoeol();
-                        /*
-                         * usercomplete("版主: ",uident) ; 
-                         */
-                        /*
-                         * $$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$ 
-                         */
-                        getdata(1, 0, "版主: ", uident, STRLEN - 1, DOECHO, NULL, false);
-                        if (uident[0] != '\0')
-                            sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
-                        else
-                            sprintf(genbuf, "%-38.38s", changed_T);
-                    } else
+                    move(1, 0);
+                    clrtoeol();
+                    getdata(1, 0, "版主: ", uident, STRLEN - 1, DOECHO, NULL, false);
+                    if (uident[0] != '\0')
+                        sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
+                    else
                         sprintf(genbuf, "%-38.38s", changed_T);
-
                     strcpy(item->title, genbuf);
                     sprintf(genbuf, "改变目录 %s 的标题", fpath + 17);
                     a_report(genbuf);
