@@ -5308,6 +5308,8 @@ static void read_top_title(struct _select_def *conf){
             }
             sprintf(q,"%s","\033[m");
         }
+        else
+            sprintf(header,"°æÖ÷: %s",BM);
     }
     chkmailflag=chkmail();
     if(chkmailflag==2)
