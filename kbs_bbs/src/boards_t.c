@@ -1380,23 +1380,69 @@ static int fav_key(struct _select_def *conf, int command)
         }
         break;
     case 'T':                  /* added by bad 2002.8.3*/
-        if (BOARD_FAV == arg->yank_flag) {
-            char bname[STRLEN];
-
-			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(getCurrentUser(),PERM_SYSOP))
-				return SHOW_REFRESH;
-
-
-            if (ptr->dir == 1 && ptr->tag >= 0) {
-                move(0, 0);
+#ifdef BM_CHANGE_BOARD_TITLE
+        if(!(ptr->dir)){
+            struct boardheader bh;
+            char buf[STRLEN],title[STRLEN];
+            int bid,row,col;
+            if(!(bid=getboardnum(ptr->name,&bh))||!chk_currBM(bh.BM,getCurrentUser()))
+                return SHOW_REFRESH;
+            getyx(&row,&col);
+            sprintf(buf,"\033[1;33m设置 \033[1;32m%s\033[1;33m 版面标题: \033[m",ptr->name);
+            strnzhcpy(title,&bh.title[13],48);
+            move(row,0);
+            clrtoeol();
+            getdata(row,0,buf,title,48,DOECHO,NULL,false);
+            if(title[0]&&strcmp(title,&bh.title[13])){
+#ifdef FILTER
+                if(check_badword_str(title,strlen(title),getSession())){
+                    move(row,0);
+                    clrtoeol();
+                    prints("\033[1;33m%s\033[0;33m<Enter>\033[m","所输入的版面标题中可能含有不恰当内容, 操作取消...");
+                    WAIT_RETURN;
+                    return SHOW_REFRESH;
+                }
+#endif /* FILTER */
+                strcpy(&bh.title[13],title);
+                set_board(bid,&bh,NULL);
+                newbbslog(BBSLOG_USER,"BM_CHANGE_BOARD_TITLE: %s<%d> %s",bh.filename,bid,title);
+#ifdef BM_CHANGE_BOARD_TITLE_LOG
+                do{
+                    FILE *fp;
+                    char *desc;
+                    time_t current;
+                    current=time(NULL);
+                    if(!(desc=ctime(&current)))
+                        break;
+                    sprintf(buf,"log/BMCBT/%c/%s",(!isalnum(bh.filename[0])?'_':toupper(bh.filename[0])),bh.filename);
+                    if(!(fp=fopen(buf,"a")))
+                        break;
+                    fprintf(fp,"%-12.12s %-20.20s %s\n",getCurrentUser()->userid,&desc[4],title);
+                    fclose(fp);
+                }
+                while(0);
+#endif /* BM_CHANGE_BOARD_TITLE_LOG */
+                move(row,0);
                 clrtoeol();
-		strncpy(bname, ptr->title, 41);
-		bname[41] = '\0';
-                getdata(0, 0, "输入讨论区目录名: ", bname, 41, DOECHO, NULL, false);
-                if (bname[0]) {
-                    changeFavBoardDir(ptr->tag, bname, getSession());
-                    save_favboard(arg->favmode, getSession());
-		}
+                prints("\033[1;32m%s\033[0;33m<Enter>\033[m","操作已执行!");
+                WAIT_RETURN;
+            }
+            return SHOW_REFRESH;
+        }
+#endif /* BM_CHANGE_BOARD_TITLE */
+        if(arg->yank_flag==BOARD_FAV){
+            if((arg->favmode==2||arg->favmode==3)&&!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+                return SHOW_REFRESH;
+            if(ptr->dir==1&&!(ptr->tag<0)){
+                char title[STRLEN];
+                move(0,0);
+                clrtoeol();
+                strnzhcpy(title,ptr->title,41);
+                getdata(0,0,"请输入讨论区目录名: ",title,41,DOECHO,NULL,false);
+                if(title[0]&&strcmp(title,ptr->title)){
+                    changeFavBoardDir(ptr->tag,title,getSession());
+                    save_favboard(arg->favmode,getSession());
+                }
                 return SHOW_REFRESH;
             }
         }
