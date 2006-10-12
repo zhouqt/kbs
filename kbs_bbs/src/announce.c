@@ -1686,10 +1686,12 @@ MENU *father;
 		case KEY_END:
 			me.now = me.num - 1;
 			break;
-	case Ctrl('Q'):    /* pig2532: show file info */
-	    ann_showinfo(&me);
-	    me.page = 9999;
-	    break;
+        case Ctrl('Q'):    /* pig2532: show file info */
+            if(!me.num)
+                break;
+            ann_showinfo(&me);
+            me.page = 9999;
+            break;
         case Ctrl('C'):
         case Ctrl('P'):
             if (!HAS_PERM(getCurrentUser(), PERM_POST))
