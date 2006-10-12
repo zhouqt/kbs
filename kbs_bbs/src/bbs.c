@@ -1909,7 +1909,10 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
         return NEWDIRECT;
     }
     BBS_TRY{
+        cptr=MAP_FAILED;
         filedes=-1;
+        if(!HAS_PERM(getCurrentUser(),PERM_LOGINOK))
+            SM_QUIT("当前用户不具有处理自删文章的权限...");
         setbdir(DIR_MODE_JUNK,dir,currboard->filename);
         if(!safe_mmapfile(dir,O_RDONLY,PROT_READ,MAP_SHARED,&cptr,&size,NULL))
             SM_QUIT("目前没有自删文章, 按 <Enter> 键继续...");
