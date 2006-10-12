@@ -1413,7 +1413,7 @@ static int fav_key(struct _select_def *conf, int command)
                 }
                 strcpy(&newbh.title[13],title);
                 edit_group(&bh,&newbh);
-                set_board(bid,&bh,NULL);
+                set_board(bid,&newbh,NULL);
                 newbbslog(BBSLOG_USER,"BM_CHANGE_BOARD_TITLE: %s<%d> %s",bh.filename,bid,title);
 #ifdef BM_CHANGE_BOARD_TITLE_LOG
                 do{
