@@ -1382,7 +1382,7 @@ static int fav_key(struct _select_def *conf, int command)
     case 'T':                  /* added by bad 2002.8.3*/
 #ifdef BM_CHANGE_BOARD_TITLE
         if(!(ptr->dir)){
-            struct boardheader bh;
+            struct boardheader bh,newbh;
             char buf[STRLEN],title[STRLEN];
             int bid,row,col;
             if(!(bid=getboardnum(ptr->name,&bh))||!chk_currBM(bh.BM,getCurrentUser()))
@@ -1403,7 +1403,16 @@ static int fav_key(struct _select_def *conf, int command)
                     return SHOW_REFRESH;
                 }
 #endif /* FILTER */
-                strcpy(&bh.title[13],title);
+                newbh=bh;
+                if(!(bid=getboardnum(ptr->name,&bh))||memcmp(&newbh,&bh,sizeof(struct boardheader))){
+                    move(row,0);
+                    clrtoeol();
+                    prints("\033[1;33m%s\033[0;33m<Enter>\033[m","所修改的版面属性已经发生改变, 操作取消...");
+                    WAIT_RETURN;
+                    return SHOW_REFRESH;
+                }
+                strcpy(&newbh.title[13],title);
+                edit_group(&bh,&newbh);
                 set_board(bid,&bh,NULL);
                 newbbslog(BBSLOG_USER,"BM_CHANGE_BOARD_TITLE: %s<%d> %s",bh.filename,bid,title);
 #ifdef BM_CHANGE_BOARD_TITLE_LOG
