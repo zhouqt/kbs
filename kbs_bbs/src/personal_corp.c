@@ -65,14 +65,7 @@ int pc_add_user()
     if (ans[0] == 0 || ans[0] == '\n' || ans[0] == '\r')
         return 0;
 
-    if (getuser(ans, &lookupuser) != 0) {
-        if (!HAS_PERM(lookupuser, PERM_BASIC)) {
-            move(7, 0);
-            prints("此用户尚无基本权限，无法开启个人文集");
-            pressanykey();
-            return 0;
-        }
-    } else {
+    if (getuser(ans, &lookupuser) == 0) {
         move(7, 0);
         prints("此用户不存在");
         pressanykey();
@@ -110,6 +103,12 @@ int pc_add_user()
         } else if (ans[0] != '1')
             return 0;
     } else {
+        if (!HAS_PERM(lookupuser, PERM_BASIC)) {
+            move(7, 0);
+            prints("此用户尚无基本权限，无法开启个人文集");
+            pressanykey();
+            return 0;
+        }
         move(4, 0);
         prints("该用户尚没有个人文集,添加进行中,不输入个人文集名称自动取消");
     }
