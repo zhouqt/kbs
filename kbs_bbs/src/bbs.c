@@ -878,6 +878,11 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         return buf;
     }
 
+    if(toupper(type)=='Y'){
+        sprintf(buf," \033[1;33m[备份]\033[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %s ",ent->owner,date,attachch,TITLE);
+        return buf;
+    }
+
     if (uinfo.mode != RMAIL && arg->mode != DIR_MODE_DIGEST && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK
         && strcmp(currboard->filename, "sysmail")) { /* 新方法比较*/
         if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {
@@ -3255,34 +3260,23 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     return PARTUPDATE;
 }
 
-/* new del_ding function modified by pig2532@newsmth */
-int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
-{
-    char buf[STRLEN];
-    int ret;
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-
-    if ( arg->mode != DIR_MODE_NORMAL) return DONOTHING;
-
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !chk_currBM(currBM, getCurrentUser()))
+/* etnlegend, 2006.10.12, 修理置底问题... */
+int del_ding(struct _select_def *conf,struct fileheader *info,void *varg){
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    char ans[4];
+    if(arg->mode!=DIR_MODE_NORMAL||!chk_currBM(currBM,getCurrentUser()))
         return DONOTHING;
-
-    a_prompt(-1, "删除置顶，确认吗？(Y/N) [N] ", buf);
-    if (buf[0] != 'Y' && buf[0] != 'y') {     /* if not yes quit */
+    getdata((t_lines-1),0,"删除置底文章, 确认操作 (Y/N) [N]: ",ans,2,DOECHO,NULL,true);
+    if(toupper(ans[0])!='Y')
+        return FULLUPDATE;
+    if(do_del_ding(currboard->filename,arg->bid,(conf->pos-arg->filecount),info,getSession())==-1){
+        move(t_lines-1,0);
+        clrtoeol();
+        prints("\033[m%s\033[0;33m<Enter>\033[m","操作过程中发生错误...");
+        WAIT_RETURN;
         return FULLUPDATE;
     }
-
-    ret = do_del_ding(currboard->filename, arg->bid, conf->pos-arg->filecount, fileinfo, getSession());
-
-    if(ret == -1)
-    {
-        a_prompt(-1, "删除失败, 请按 Enter 继续 << ", buf);
-        return FULLUPDATE;
-    }
-    else
-    {
-        return DIRCHANGED;
-    }
+    return DIRCHANGED;
 }
 
 /* stiger, 置顶 */

@@ -405,15 +405,21 @@ int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, sessio
     }
     else
     {
-		char buf[256];
+		char buf[PATHLEN],fn_old[PATHLEN],fn_new[PATHLEN];
 		struct fileheader postfile;
 
         memcpy(&postfile, fh, sizeof(postfile));
     	snprintf(postfile.title, ARTICLE_TITLE_LEN, "%-32.32s - %s", fh->title, session->currentuser->userid);
     	postfile.accessed[sizeof(postfile.accessed) - 1] = time(0) / (3600 * 24) % 100;
 
+        setbfile(fn_old,boardname,postfile.filename);
+        postfile.filename[(postfile.filename[1]=='/')?2:0]='Y';
+        setbfile(fn_new,boardname,postfile.filename);
+
         setbdir(DIR_MODE_DELETED, buf, boardname);
         append_record(buf, &postfile, sizeof(postfile));
+
+        f_mv(fn_old,fn_new);
         board_update_toptitle(bid, true);
 
     }
@@ -1685,6 +1691,14 @@ char get_article_flag(struct fileheader *ent, struct userec *user, const char *b
         if (common_flag) *common_flag = 'd';
         return type;
     }
+
+    if(POSTFILE_BASENAME(ent->filename)[0]=='Y'){
+        type=(type==' '?'y':'Y');
+        if(common_flag)
+            *common_flag='y';
+        return type;
+    }
+
     /*
      * add end 
      */
