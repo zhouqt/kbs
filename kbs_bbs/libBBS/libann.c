@@ -920,8 +920,7 @@ int edit_group(const struct boardheader *oldbh,const struct boardheader *newbh){
         for(i=0;i<m.num;i++)
             if(!strcmp(m.item[i]->fname,p)){
                 sprintf(genbuf,"%s/%s",newbh->filename,&newbh->title[13]);
-                if((strlen(m.item[i]->title)>38&&!strncmp(&m.item[i]->title[38],"(BM: SYSOPS)",12)&&ann_show_board(oldbh))
-                    ||!ann_show_board(newbh))
+                if(!ann_show_board(newbh))
                     sprintf(m.item[i]->title,"%-38.38s(BM: SYSOPS)",genbuf);
                 else
                     sprintf(m.item[i]->title,"%-38.38s",genbuf);
