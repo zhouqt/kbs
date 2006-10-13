@@ -22,6 +22,7 @@
                	exit();
         }
 
+
 	if(!$pc["ANONYCOMMENT"]) {
 		if ($loginok != 1) {
 			html_nologin();
@@ -34,39 +35,38 @@
 			exit();
 		}
 	}
-	else
+
+	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",1);		
+		
+	if(!$rows)
 	{
-		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog","","","",1);		
-		
-		if(!$rows)
+		html_error_quit("所评论的文章不存在!");
+		exit();
+	}
+	
+	$uid = $rows["uid"];
+	
+	if(!$pc["ANONYCOMMENT"])
+		if(!pc_can_comment($link , $uid))
 		{
-			html_error_quit("所评论的文章不存在!");
+			html_error_quit("对不起，您尚无该BLOG的评论权限！");
 			exit();
-		}
-		
-		$uid = $rows["uid"];
-		
-		if(!$pc["ANONYCOMMENT"])
-			if(!pc_can_comment($link , $uid))
-			{
-				html_error_quit("对不起，您尚无该BLOG的评论权限！");
-				exit();
-			}	
-		
-	               
-	        $userPermission = pc_get_user_permission($currentuser,$pc);
-		$sec = $userPermission["sec"];
-		$pur = $userPermission["pur"];
-		$tags = $userPermission["tags"];
-		if(!$tags[$rows["access"]])
-		{
-			html_error_quit("对不起，您不能查看本条记录!");
-			exit();
-		}
+		}	
+	
+               
+    $userPermission = pc_get_user_permission($currentuser,$pc);
+	$sec = $userPermission["sec"];
+	$pur = $userPermission["pur"];
+	$tags = $userPermission["tags"];
+	if(!$tags[$rows["access"]])
+	{
+		html_error_quit("对不起，您不能查看本条记录!");
+		exit();
+	}
 		
 		
-		if($act == "pst")
-		{
+	if($act == "pst")
+	{
 ?>
 <br><center>		
 <form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="return submitwithcopy();">
@@ -122,33 +122,31 @@
 ?>
 <p>
 <?php
-		}
-		else
+	}
+	else
+	{
+		if(!$_POST["subject"])
 		{
-			if(!$_POST["subject"])
-			{
-				html_error_quit("请输入评论标题!");
-				exit();
-			}
-			$ret = pc_add_comment($link,$pc,$nid,intval(($_POST["emote"])),$currentuser["userid"],$_POST["subject"],html_editorstr_format($_POST["blogbody"]),(($_POST["htmltag"]==1)?1:0),false);
-            switch($ret) {
-                case -6:
-                    html_error_quit("由于系统原因导致评论失败");
-                    break;
-                case -9:
-                    echo "<script language=\"javascript\">alert('您的文章可能含有不当词汇，请等待管理员审核。');</script>";
-                    break;
-                default:    
-            }
+			html_error_quit("请输入评论标题!");
+			exit();
+		}
+		$ret = pc_add_comment($link,$pc,$nid,intval(($_POST["emote"])),$currentuser["userid"],$_POST["subject"],html_editorstr_format($_POST["blogbody"]),(($_POST["htmltag"]==1)?1:0),false);
+        switch($ret) {
+            case -6:
+                html_error_quit("由于系统原因导致评论失败");
+                break;
+            case -9:
+                echo "<script language=\"javascript\">alert('您的文章可能含有不当词汇，请等待管理员审核。');</script>";
+                break;
+            default:    
+        }
             
 ?>
 <script language="javascript">
 window.location.href="pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>";
 </script>
 <?php
-		}
-		
-		pc_db_close($link);
-		html_normal_quit();
-	} 
+    }		
+	pc_db_close($link);
+	html_normal_quit();
 ?>
