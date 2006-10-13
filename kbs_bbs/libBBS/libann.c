@@ -121,19 +121,13 @@ ITEM *ann_alloc_items(size_t num)
     return it;
 }
 
-void ann_free_items(ITEM * it, size_t num)
-{
-    size_t i;
-
-    if (it != NULL) {
-        for (i = 0; i < num; i++) {
-            if (it[i].host != NULL) {
-                free(it[i].host);
-                it[i].host = NULL;
-            }
-        }
-        free(it);
-    }
+void ann_free_items(ITEM * it,size_t num){
+    if(!it)
+        return;
+    while(num--)
+        free(it[num].host);
+    free(it);
+    return;
 }
 
 void ann_set_items(MENU * pm, ITEM * it, size_t num)
@@ -474,12 +468,16 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
     return path;
 }
 
-void a_freenames(MENU * pm)
-{
-    int i;
-
-    for (i = 0; i < pm->num; i++)
-        free(pm->item[i]);
+void a_freenames(MENU *pm){
+    if(!pm)
+        return;
+    while(pm->num--){
+        if(!(pm->item[pm->num]))
+            continue;
+        free(pm->item[pm->num]->host);
+        free(pm->item[pm->num]);
+    }
+    return;
 }
 
 void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,long attachpos)    /* 产生ITEM object,并初始化 */
@@ -492,8 +490,9 @@ void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,
         if (host != NULL) {
             newitem->host = (char *) malloc(sizeof(char) * (strlen(host) + 1));
             strcpy(newitem->host, host);
-        } else
-            newitem->host = host;
+        }
+        else
+            newitem->host = NULL;
         newitem->port = port;
         newitem->attachpos = attachpos;
         strncpy(newitem->fname, fname, sizeof(newitem->fname) - 1);
