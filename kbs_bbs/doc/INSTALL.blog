@@ -60,7 +60,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     请改动相应的配置文件：
     在 $BBSSRC/site/***.h 中加入
     	#define PERSONAL_CORP
-    在 $BBSSRC/bbs2www/sites/***/site.php 中加入
+    在站点的web配置文件 site.php 中加入下面的定义：
     	define("HAVE_PC", 1);
     这里 *** 表示 --enable-site 所指定的配置文件或目录。
     4) 安装成功后,确认您的 $BBSHOME/etc/sysconf.ini 中含有下列字段:
