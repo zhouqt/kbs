@@ -1,161 +1,37 @@
 #include "bbs.h"
 
-static int ann_can_access(char *title, const char *board, struct userec *user)
-{
-    const struct boardheader *bp;
-    char BM[STRLEN];
-
-    if (strstr(title, "(BM: BMS)")) {
-        if (board[0] == '\0')
-            return 0;
-        bp = getbcache(board);
-        if (bp == NULL)
-            return 0;
-        strncpy(BM, bp->BM, sizeof(BM) - 1);
-        BM[sizeof(BM) - 1] = '\0';
-        if (chk_currBM(BM, user) == 0)
-            return 0;
-        return 2;
-    }
-    if (strstr(title, "(BM: SYSOPS)")) {
-        if (!HAS_PERM(user, PERM_SYSOP))
-            return 0;
-        return 3;
-    }
-    return 1;
-}
-
-void ann_add_item(MENU * pm, ITEM * it)
-{
-    ITEM *newitem;
-
-    if (pm->num < MAXITEMS) {
-        newitem = pm->item[pm->num];
-        strncpy(newitem->title, it->title, sizeof(newitem->title) - 1);
-        if (it->host != NULL) {
-            newitem->host = (char *) malloc(sizeof(char) * (strlen(it->host) + 1));
-            strcpy(newitem->host, it->host);
-        } else
-            newitem->host = it->host;
-        newitem->port = it->port;
-        newitem->attachpos= it->attachpos;
-        strncpy(newitem->fname, it->fname, sizeof(newitem->fname) - 1);
-        (pm->num)++;
-    }
-}
-
-int ann_load_directory(MENU * pm, session_t* session)
-{
-    FILE *fn;
-    ITEM litem;
-    char buf[PATHLEN];
-    char *ptr;
-    char hostname[STRLEN];
-    char board[STRLEN];
-
-    pm->num = 0;
-    if ((ptr = strstr(pm->path, "groups/")) != NULL)
-        ann_get_board(ptr, board, sizeof(board));
-    else
-        board[0] = '\0';
-    snprintf(buf, sizeof(buf), "%s/.Names", pm->path);  /*.Names记录菜单信息 */
-    if ((fn = fopen(buf, "r")) == NULL)
-        return -1;
-    bzero(&litem, sizeof(litem));
-    hostname[0] = '\0';
-    while (fgets(buf, sizeof(buf), fn) != NULL) {
-        if ((ptr = strchr(buf, '\n')) != NULL)
-            *ptr = '\0';
-        if (strncmp(buf, "Name=", 5) == 0) {
-            strncpy(litem.title, buf + 5, sizeof(litem.title) - 1);
-            litem.title[sizeof(litem.title) - 1] = '\0';
-            litem.attachpos = 0;
-        } else if (strncmp(buf, "Path=", 5) == 0) {
-            if (strncmp(buf, "Path=~/", 7) == 0)
-                strncpy(litem.fname, buf + 7, sizeof(litem.fname) - 1);
-            else
-                strncpy(litem.fname, buf + 5, sizeof(litem.fname) - 1);
-            if (strstr(litem.fname,"..")) continue;
-            litem.fname[sizeof(litem.fname) - 1] = '\0';
-            /*if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(session->getCurrentUser(),PERM_BOARDS))&&
-               (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(session->getCurrentUser(),PERM_SYSOP))) */
-            //if (ann_can_access(litem.title, board, session->currentuser)) {
-                if (strstr(litem.fname, "!@#$%")) {     /*取 host & port */
-                    char *ptr1, *ptr2, gtmp[STRLEN];
-
-                    strncpy(gtmp, litem.fname, STRLEN - 1);
-                    /* Warning: NOT thread safe */
-                    ptr1 = strtok(gtmp, "!#$%@");
-                    strcpy(hostname, ptr1);
-                    ptr2 = strtok(NULL, "@");
-                    strncpy(litem.fname, ptr2, sizeof(litem.fname) - 1);
-                    litem.fname[sizeof(litem.fname) - 1] = '\0';
-                    litem.port = atoi(strtok(NULL, "@"));
-                }
-                ann_add_item(pm, &litem);
-            //}
-            hostname[0] = '\0';
-        } else if (strncmp(buf, "# Title=", 8) == 0) {
-            if (pm->mtitle[0] == '\0') {
-                strncpy(pm->mtitle, buf + 8, sizeof(pm->mtitle) - 1);
-                pm->mtitle[sizeof(pm->mtitle) - 1] = '\0';
-            }
-        } else if (strncmp(buf, "Host=", 5) == 0) {
-            strncpy(hostname, buf + 5, sizeof(hostname) - 1);
-            hostname[sizeof(hostname) - 1] = '\0';
-        } else if (strncmp(buf, "Port=", 5) == 0) {
-            litem.port = atoi(buf + 5);
-        } else if (strncmp(buf, "Attach=", 7) == 0) {
-            litem.attachpos= atol(buf + 7);
-        }
-    }
-    fclose(fn);
-    return 0;
-}
-
-ITEM *ann_alloc_items(size_t num)
-{
-    ITEM *it;
-
-    it = (ITEM *) calloc(num, sizeof(ITEM));
-    return it;
-}
-
-void ann_free_items(ITEM * it,size_t num){
-    if(!it)
-        return;
-    while(num--)
-        free(it[num].host);
-    free(it);
-    return;
-}
-
-void ann_set_items(MENU * pm, ITEM * it, size_t num)
-{
-    size_t i;
-
-    for (i = 0; i < num; i++)
-        pm->item[i] = it + i;
-}
-
-struct _tmp_findboard {
-    char *path;
-    char *board;
-    size_t len;
+struct _tmp_findboard{
+    char   *path;
+    char   *board;
+    size_t  len;
 };
 
-static int findboard(struct boardheader* bh,void* data)
-{
+static int findboard(struct boardheader *bh,void *data){
     struct _tmp_findboard *arg = (struct _tmp_findboard*)data;
-
-	if(! bh->ann_path || ! bh->ann_path[0] ) return 0;
-
-    if (!strncmp(bh->ann_path,arg->path,strlen(bh->ann_path))) {
+	if(!bh||!(bh->ann_path[0]))
+        return 0;
+    if(!strncmp(bh->ann_path,arg->path,strlen(bh->ann_path))){
         strncpy(arg->board,bh->filename,arg->len);
         arg->board[arg->len-1]=0;
         return QUIT;
     }
     return 0;
+}
+
+static int ann_can_access(char *title,const char *board,struct userec *user){
+    const struct boardheader *bp;
+    char BM[BM_LEN];
+    if(strstr(title,"(BM: BMS)")){
+        if(board[0]&&getbid(board,&bp)){
+            memcpy(BM,bp->BM,(BM_LEN*sizeof(char)));
+            return (!chk_currBM(BM,user)?0:2);
+        }
+        return 0;
+    }
+    else if(strstr(title,"(BM: SYSOPS)"))
+        return (!HAS_PERM(user,PERM_SYSOP)?0:3);
+    else
+        return 1;
 }
 
 /*
@@ -468,38 +344,6 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
     return path;
 }
 
-void a_freenames(MENU *pm){
-    if(!pm)
-        return;
-    while(pm->num--){
-        if(!(pm->item[pm->num]))
-            continue;
-        free(pm->item[pm->num]->host);
-        free(pm->item[pm->num]);
-    }
-    return;
-}
-
-void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,long attachpos)    /* 产生ITEM object,并初始化 */
-{
-    ITEM *newitem;
-
-    if (pm->num < MAXITEMS) {
-        newitem = (ITEM *) malloc(sizeof(ITEM));
-        strncpy(newitem->title, title, sizeof(newitem->title) - 1);
-        if (host != NULL) {
-            newitem->host = (char *) malloc(sizeof(char) * (strlen(host) + 1));
-            strcpy(newitem->host, host);
-        }
-        else
-            newitem->host = NULL;
-        newitem->port = port;
-        newitem->attachpos = attachpos;
-        strncpy(newitem->fname, fname, sizeof(newitem->fname) - 1);
-        pm->item[(pm->num)++] = newitem;
-    }
-}
-
 #ifdef FB2KPC
 int fb2kpc_is_owner(char *path)
 {
@@ -520,131 +364,229 @@ int fb2kpc_is_owner(char *path)
 }
 #endif
 
-int a_loadnames(MENU* pm, session_t* session)             /* 装入 .Names */
-{
-    FILE *fn;
-    ITEM litem;
-    char buf[PATHLEN], *ptr;
-    char hostname[STRLEN];
-    struct stat st;
+/* etnlegend, 2006.10.14, 精华区 .Names 文件相关操作修正... */
+void a_freenames(MENU *pm){
+    if(!pm)
+        return;
+    while(pm->total){
+        pm->total--;
+        I_FREE(pm->pool[pm->total]);
+    }
+    pm->num=0;
+    return;
+}
 
-    a_freenames(pm);
-    pm->num = 0;
-#ifdef ANN_COUNT
-	sprintf(buf, "%s/counter.person", pm->path);
-	if(fn=fopen(buf,"r")){
-		fscanf(fn,"%d", &(pm->count));
-		fclose(fn);
-	}else
-		pm->count = 0;
-
-	pm->count++;
-	if(fn=fopen(buf,"w")){
-		fprintf(fn,"%d",pm->count);
-		fclose(fn);
-	}
-#endif
-    sprintf(buf, "%s/.Names", pm->path);        /*.Names记录菜单信息 */
-    if ((fn = fopen(buf, "r")) == NULL)
+static int a_trim_menu(MENU *pm){   /* 规整 MENU 的 `pool` 指针组, 如果规整后尚有空余位置则返回真值... */
+    int i,j,k,*offset;
+    if(!(pm->total))
+        return 1;
+    if(!(offset=(int*)calloc((pm->total+1),sizeof(int))))
         return 0;
-    if (fstat(fileno(fn), &st) != -1)
-        pm->modified_time = st.st_mtime;
-    hostname[0] = '\0';
-    while (fgets(buf, sizeof(buf), fn) != NULL) {
-        if ((ptr = strchr(buf, '\n')) != NULL)
-            *ptr = '\0';
-        if (strncmp(buf, "Name=", 5) == 0) {
-            strncpy(litem.title, buf + 5, sizeof(litem.title));
-            litem.attachpos = 0;
-        } else if (strncmp(buf, "Path=", 5) == 0) {
-            if (strncmp(buf, "Path=~/", 7) == 0)
-                strncpy(litem.fname, buf + 7, sizeof(litem.fname));
-            else
-                strncpy(litem.fname, buf + 5, sizeof(litem.fname));
-            if (strstr(litem.fname,"..")) continue;
-#ifdef ANN_CTRLK
-			if (!canread(pm->level, pm->path, litem.fname, litem.title)) continue;
-#endif
-            if (HAS_PERM(session->currentuser, PERM_SYSOP)
-                ||((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(session->currentuser, PERM_BOARDS))
-                 &&(!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(session->currentuser, PERM_SYSOP)) 
-                 &&(!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(session->currentuser, PERM_SECANC)))){
-                if (strstr(litem.fname, "!@#$%")) {     /*取 host & port */
-                    char *ptr1, *ptr2, gtmp[STRLEN];
-
-                    strncpy(gtmp, litem.fname, STRLEN - 1);
-                    ptr1 = strtok(gtmp, "!#$%@");
-                    strcpy(hostname, ptr1);
-                    ptr2 = strtok(NULL, "@");
-                    strncpy(litem.fname, ptr2, sizeof(litem.fname) - 1);
-                    litem.port = atoi(strtok(NULL, "@"));
-                }
-                a_additem(pm, litem.title, litem.fname, (strlen(hostname) == 0) ?       /*产生ITEM */
-                          NULL : hostname, litem.port, litem.attachpos);
-            }
-            hostname[0] = '\0';
-        } else if (strncmp(buf, "# Title=", 8) == 0) {
-            if (pm->mtitle[0] == '\0')
-                strncpy(pm->mtitle, buf + 8, STRLEN);
-        } else if (strncmp(buf, "Host=", 5) == 0) {
-            strcpy(hostname, buf + 5);
-        } else if (strncmp(buf, "Port=", 5) == 0) {
-            litem.port = atoi(buf + 5);
-        } else if (strncmp(buf, "Attach=", 7) == 0) {
-            litem.attachpos= atoi(buf + 7);
+    for(i=0;i<pm->total;i++){
+        if(!(pm->pool[i]))
+            offset[i]++;
+        offset[i+1]=offset[i];
+    }
+    for(i=0;i<pm->num;i++){
+        if(*(pm->p_item[i]))
+            pm->p_item[i]-=offset[pm->p_item[i]-pm->pool];
+    }
+    free(offset);
+    for(j=0,k=0,i=0;i<pm->total;i++){
+        if(pm->pool[i]){
+            j++;
+            continue;
+        }
+        if(j){
+            memmove(&pm->pool[k],&pm->pool[i-j],(j*sizeof(ITEM*)));
+            k+=j;
+            j=0;
         }
     }
-    fclose(fn);
+    if(j){
+        memmove(&pm->pool[k],&pm->pool[pm->total-j],(j*sizeof(ITEM*)));
+        k+=j;
+    }
+    pm->total=k;
+    return (pm->total<MAXITEMS);
+}
+
+static int a_additem_base(MENU *pm,const char *title,const char *fname,char *host,int port,long attachpos){
+    ITEM *it;
+    if(!(pm->total<MAXITEMS)&&!a_trim_menu(pm))
+        return -2;
+    if(!(it=I_ALLOC()))
+        return -1;
+    strnzhcpy(it->title,title,ITITLE_LEN);
+    it->host=(!host?NULL:strdup(host));
+    it->port=port;
+    it->attachpos=attachpos;
+    strncpy(it->fname,fname,(STRLEN-1));
+    pm->pool[pm->total++]=it;
+    return 0;
+}
+
+int a_additem(MENU *pm,const char *title,const char *fname,char *host,int port,long attachpos){
+    if(a_additem_base(pm,title,fname,host,port,attachpos))
+        return -1;
+    pm->p_item[pm->num++]=&pm->pool[pm->total-1];
+    return 0;
+}
+
+int a_delitem(MENU *pm,int index){
+    if(index<0||!(index<pm->num))
+        return -1;
+    I_FREE(M_ITEM(pm,index));
+    M_ITEM(pm,index)=NULL;
+    pm->num--;
+    memmove(&pm->p_item[index],&pm->p_item[index+1],((pm->num-index)*sizeof(ITEM**)));
+    return 0;
+}
+
+int a_loadnames(MENU *pm,session_t *session){
+    FILE *fp;
+    ITEM it;
+    struct stat st;
+    char buf[PATHLEN],name[PATHLEN],host[STRLEN],*p;
+    int i;
+    a_freenames(pm);
+    memset(pm->p_item,0,(MAXITEMS*sizeof(ITEM**)));
+    memset(pm->pool,0,(MAXITEMS*sizeof(ITEM*)));
+#ifdef ANN_COUNT
+    sprintf(name,"%s/counter.person",pm->path);
+    pm->count=0;
+    if((fp=fopen(name,"r"))){
+        fgets(buf,PATHLEN,fp);
+        if(isdigit(buf[0]))
+            pm->count=atoi(buf);
+        fclose(fp);
+    }
+    pm->count++;
+    if((fp=fopen(name,"w"))){
+        fprintf(fp,"%d",pm->count);
+        fclose(fp);
+    }
+#endif /* ANN_COUNT */
+    sprintf(name,"%s/.Names",pm->path);
+    if(stat(name,&st)==-1||!S_ISREG(st.st_mode))
+        return 0;
+    pm->modified_time=st.st_mtime;
+    if(!(fp=fopen(name,"r")))
+        return -1;
+    pm->mtitle[MTITLE_LEN-1]=0;
+    it.title[ITITLE_LEN-1]=0;
+    it.fname[STRLEN-1]=0;
+    host[STRLEN-1]=0;
+    while(fgets(buf,PATHLEN,fp)){
+        if((p=strchr(buf,'\n')))
+            *p=0;
+        if(!strncmp(buf,"Name=",5)){
+            strncpy(it.title,&buf[5],(ITITLE_LEN-1));
+            it.attachpos=0;
+            host[0]=0;
+        }
+        else if(!strncmp(buf,"Path=",5)){
+            strncpy(it.fname,&buf[(buf[5]=='~'&&buf[6]=='/')?7:5],(STRLEN-1));
+            if(it.fname[0]=='.'&&it.fname[1]=='.')
+                continue;
+            if(strstr(it.fname,"!@#$%")){
+                strcpy(name,it.fname);
+                if((p=strtok(name,"!@#$%")))
+                    strncpy(host,p,(STRLEN-1));
+                if((p=strtok(NULL,"!@#$%")))
+                    strncpy(it.fname,p,(STRLEN-1));
+                if((p=strtok(NULL,"!@#$%")))
+                    it.port=atoi(p);
+            }
+            if(a_additem_base(pm,it.title,it.fname,(!host[0]?NULL:host),it.port,it.attachpos)==-2)
+                break;
+        }
+        else if(!strncmp(buf,"# Title=",8)){
+            if(!(pm->mtitle[0]))
+                strncpy(pm->mtitle,&buf[8],(MTITLE_LEN-1));
+        }
+        else if(!strncmp(buf,"Host=",5))
+            strncpy(host,&buf[5],(STRLEN-1));
+        else if(!strncmp(buf,"Port=",5))
+            it.port=atoi(&buf[5]);
+        else if(!strncmp(buf,"Attach=",7))
+            it.attachpos=atol(&buf[7]);
+        else
+            continue;
+    }
+    fclose(fp);
+    for(i=0;i<pm->total;i++){
+#ifdef ANN_CTRLK
+        if(!canread(pm->level,pm->path,pm->pool[i]->fname,pm->pool[i]->title))
+            continue;
+#endif /* ANN_CTRLK */
+        if(session&&!HAS_PERM(session->currentuser,PERM_SYSOP)){
+            if(!HAS_PERM(session->currentuser,PERM_BOARDS)&&(p=strstr(pm->pool[i]->title,"(BM: BMS)"))){
+                if(!(p-pm->pool[i]->title<38))
+                    continue;
+            }
+            if((p=strstr(pm->pool[i]->title,"(BM: SYSOPS)"))){
+                if(!(p-pm->pool[i]->title<38))
+                    continue;
+            }
+            if(!HAS_PERM(session->currentuser,PERM_SECANC)&&(p=strstr(pm->pool[i]->title,"(BM: ZIXIAs)"))){
+                if(!(p-pm->pool[i]->title<38))
+                    continue;
+            }
+        }
+        pm->p_item[pm->num++]=&pm->pool[i];
+    }
     return 1;
 }
 
-int a_savenames(MENU* pm)             /*保存当前MENU到 .Names */
-{
-    FILE *fn;
-    ITEM *item;
-    char fpath[PATHLEN];
-    int n;
+int a_savenames(MENU *pm){
+    FILE *fp;
+    ITEM *it;
     struct stat st;
-
-    sprintf(fpath, "%s/.Names", pm->path);
-    if (stat(fpath, &st) != -1) {
-        if (st.st_mtime != pm->modified_time)
-            return -3;
-    }
-    if ((fn = fopen(fpath, "w")) == NULL)
+    char name[PATHLEN];
+    int i;
+    sprintf(name,"%s/.Names",pm->path);
+    if(!stat(name,&st)&&S_ISREG(st.st_mode)&&st.st_mtime!=pm->modified_time)
+        return -2;
+    if(!(fp=fopen(name,"w")))
         return -1;
-    fprintf(fn, "#\n");
-    if (!strncmp(pm->mtitle, "[目录] ", 7) || !strncmp(pm->mtitle, "[文件] ", 7)
-        || !strncmp(pm->mtitle, "[连线] ", 7)) {
-        fprintf(fn, "# Title=%s\n", pm->mtitle + 7);
-    } else {
-        fprintf(fn, "# Title=%s\n", pm->mtitle);
+    fprintf(fp,"%s\n","#");
+    if(!strncmp(pm->mtitle,"[文件] ",7)
+        ||!strncmp(pm->mtitle,"[目录] ",7)
+        ||!strncmp(pm->mtitle,"[连线] ",7)
+        )
+        fprintf(fp,"# Title=%s\n",&pm->mtitle[7]);
+    else
+        fprintf(fp,"# Title=%s\n",pm->mtitle);
+    fprintf(fp,"%s\n","#");
+    for(i=0;i<pm->total;i++){
+        if(!(it=pm->pool[i]))
+            continue;
+        if(!strncmp(it->title,"[文件] ",7)
+            ||!strncmp(it->title,"[目录] ",7)
+            ||!strncmp(it->title,"[连线] ",7)
+            )
+            fprintf(fp,"Name=%s\n",&it->title[7]);
+        else
+            fprintf(fp,"Name=%s\n",it->title);
+        fprintf(fp,"Attach=%ld\n",it->attachpos);
+        if(it->host){
+            fprintf(fp,"Host=%s\n",it->host);
+            fprintf(fp,"Port=%d\n",it->port);
+            fprintf(fp,"Type=%d\n",1);
+            fprintf(fp,"Path=%s\n",it->fname);
+        }
+        else
+            fprintf(fp,"Path=~/%s\n",it->fname);
+        fprintf(fp,"Numb=%d\n",(i+1));
+        fprintf(fp,"%s\n","#");
     }
-    fprintf(fn, "#\n");
-    for (n = 0; n < pm->num; n++) {
-        item = pm->item[n];
-        if (!strncmp(item->title, "[目录] ", 7) || !strncmp(item->title, "[文件] ", 7)
-            || !strncmp(item->title, "[连线] ", 7)) {
-            fprintf(fn, "Name=%s\n", item->title + 7);
-        } else
-            fprintf(fn, "Name=%s\n", item->title);
-        fprintf(fn, "Attach=%ld\n", item->attachpos);
-        if (item->host != NULL) {
-            fprintf(fn, "Host=%s\n", item->host);
-            fprintf(fn, "Port=%d\n", item->port);
-            fprintf(fn, "Type=1\n");
-            fprintf(fn, "Path=%s\n", item->fname);
-        } else
-            fprintf(fn, "Path=~/%s\n", item->fname);
-        fprintf(fn, "Numb=%d\n", n + 1);
-        fprintf(fn, "#\n");
-    }
-    fclose(fn);
-    if (stat(fpath, &st) != -1)
-        pm->modified_time = st.st_mtime;
-    chmod(fpath, 0644);
+    fclose(fp);
+    if(!stat(name,&st)&&S_ISREG(st.st_mode))
+        pm->modified_time=st.st_mtime;
     return 0;
 }
+/* END - etnlegend, 2006.10.14, 精华区 .Names 文件相关操作修正... */
 
 int save_import_path(char **i_path,char **i_title,time_t* i_path_time, session_t* session)
 {
@@ -788,7 +730,7 @@ int add_group(const struct boardheader *bh){
     int ret,i;
     if(!bh)
         return 0;
-    bzero(&m,sizeof(MENU));
+    memset(&m,0,sizeof(MENU));
     ret=0;
     if(!dashd("0Announce")){
         mkdir("0Announce",0755);
@@ -846,6 +788,7 @@ int add_group(const struct boardheader *bh){
         if(a_savenames(&m))
             ret|=(1<<3);
     }
+    a_freenames(&m);
     return ret;
 }
 int del_group(const struct boardheader *bh){
@@ -854,7 +797,7 @@ int del_group(const struct boardheader *bh){
     int ret,i;
     if(!bh)
         return 0;
-    bzero(&m,sizeof(MENU));
+    memset(&m,0,sizeof(MENU));
     ret=0;
     sprintf(path,"0Announce/groups/%s",bh->ann_path);
     my_f_rm(path);
@@ -862,12 +805,10 @@ int del_group(const struct boardheader *bh){
     p=strrchr(path,'/');
     *p++=0;
     a_loadnames(&m,getSession());
-    for(i=0;i<m.num;i++)
-        if(!strcmp(m.item[i]->fname,p)){
-            free(m.item[i]);
-            m.num--;
-            memmove(&m.item[i],&m.item[i+1],(m.num-i)*sizeof(ITEM*));
-        }
+    for(i=0;i<m.num;i++){
+        if(!strcmp(M_ITEM(&m,i)->fname,p))
+            a_delitem(&m,i--);
+    }
     if(a_savenames(&m))
         ret|=(1<<0);
     a_freenames(&m);
@@ -917,12 +858,12 @@ int edit_group(const struct boardheader *oldbh,const struct boardheader *newbh){
         *p++=0;
         a_loadnames(&m,getSession());
         for(i=0;i<m.num;i++)
-            if(!strcmp(m.item[i]->fname,p)){
+            if(!strcmp(M_ITEM(&m,i)->fname,p)){
                 sprintf(genbuf,"%s/%s",newbh->filename,&newbh->title[13]);
                 if(!ann_show_board(newbh))
-                    sprintf(m.item[i]->title,"%-38.38s(BM: SYSOPS)",genbuf);
+                    sprintf(M_ITEM(&m,i)->title,"%-38.38s(BM: SYSOPS)",genbuf);
                 else
-                    sprintf(m.item[i]->title,"%-38.38s",genbuf);
+                    sprintf(M_ITEM(&m,i)->title,"%-38.38s",genbuf);
             }
         if(a_savenames(&m))
             ret|=(1<<1);

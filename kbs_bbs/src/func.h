@@ -673,18 +673,14 @@ int pc_logs(struct pc_logs *pn);
 #ifdef FB2KPC
 	int fb2kpc_is_owner(char *path);
 #endif
-    void ann_add_item(MENU * pm, ITEM * it);
-    int ann_load_directory(MENU * pm, session_t* session);
-    ITEM *ann_alloc_items(size_t num);
-    void ann_free_items(ITEM * it, size_t num);
-    void ann_set_items(MENU * pm, ITEM * it, size_t num);
     int ann_get_board(char *path, char *board, size_t len);
     int ann_get_path(char *board, char *path, size_t len);
 	int valid_fname(char *str);
-    void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,long attachpos);    /* 产生ITEM object,并初始化 */
-    int a_loadnames(MENU* pm, session_t* session);             /* 装入 .Names */
-    int a_savenames(MENU* pm);             /*保存当前MENU到 .Names */
-    void a_freenames(MENU * pm);
+    int a_additem(MENU *pm,const char *title,const char *fname,char *host,int port,long attachpos);    /* 产生ITEM object,并初始化 */
+    int a_delitem(MENU *pm,int index);
+    int a_loadnames(MENU *pm, session_t *session);             /* 装入 .Names */
+    int a_savenames(MENU *pm);             /*保存当前MENU到 .Names */
+    void a_freenames(MENU *pm);
     int save_import_path(char ** i_path,char ** i_title,time_t* i_path_time, session_t* session );
     void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select, session_t* session);
     void free_import_path(char ** i_path,char ** i_title,time_t* i_path_time);

@@ -552,7 +552,6 @@ PHP_FUNCTION(bbs_read_ann_dir)
     char pathbuf[256];
     int len;
     MENU me;
-    ITEM *its;
     int i,j;
     char *id,*ptr;
     char buf[256];
@@ -593,90 +592,86 @@ PHP_FUNCTION(bbs_read_ann_dir)
 			RETURN_LONG(-1);
     } else
         strcpy(pathbuf, "0Announce");
-    
-    if ((its = ann_alloc_items(MAXITEMS)) == NULL)
-        RETURN_LONG(-9);
-    
+
     ZVAL_STRING(path2,pathbuf,1);
-    ann_set_items(&me, its, MAXITEMS);
+
+    bzero(&me,sizeof(MENU));
     me.path = pathbuf;
-    if (ann_load_directory(&me, getSession()) == 0) {
-        buf[0] = '\0';
-        ann_get_board(pathbuf, buf, sizeof(buf));
-        ZVAL_STRING(board,buf,1);
-        if (me.num <= 0) 
-            RETURN_LONG(-3);
-        me.now = 0;
-        j = 0;
-        for (i = 0; i < me.num; i++) {
-            strncpy(r_title, me.item[i]->title, sizeof(r_title) - 1);
-            r_title[sizeof(r_title) - 1] = '\0';
-            if (strlen(r_title) <= 39) {
+    if(a_loadnames(&me,NULL)==-1)
+        RETURN_LONG(-2);
+
+    buf[0] = '\0';
+    ann_get_board(pathbuf, buf, sizeof(buf));
+    ZVAL_STRING(board,buf,1);
+    if (me.num <= 0) 
+        RETURN_LONG(-3);
+
+    me.now = 0;
+    j = 0;
+    for (i = 0; i < me.num; i++) {
+        strncpy(r_title, M_ITEM(&me,i)->title, sizeof(r_title) - 1);
+        r_title[sizeof(r_title) - 1] = '\0';
+        if (strlen(r_title) <= 39) {
+            id = "";
+        } else {
+            if ((ptr = strchr(r_title + 38, '(')) != NULL) {
+                *ptr = '\0';
+                id = ptr + 1;
+                if (strncmp(id, "BM: ", 4) == 0)
+                    id += 4;
+                if ((ptr = strchr(id, ')')) != NULL)
+                    *ptr = '\0';
+            } else if ((ptr = strchr(r_title + 38, ' ')) != NULL) {
+                *ptr = '\0';
+                id = ptr + 1;
+            } else
                 id = "";
-            } else {
-                if ((ptr = strchr(r_title + 38, '(')) != NULL) {
-                    *ptr = '\0';
-                    id = ptr + 1;
-                    if (strncmp(id, "BM: ", 4) == 0)
-                        id += 4;
-                    if ((ptr = strchr(id, ')')) != NULL)
-                        *ptr = '\0';
-                } else if ((ptr = strchr(r_title + 38, ' ')) != NULL) {
-                    *ptr = '\0';
-                    id = ptr + 1;
-                } else
-                    id = "";
-            }
-            snprintf(buf, sizeof(buf), "%s/%s", me.path,me.item[i]->fname);
-            ptr = strchr(me.path, '/');
-            
-            if (stat(buf, &st) == -1) {
-                r_time = 0;
-                r_flag = 0;
-            } else {
-                r_time = st.st_mtime;
-                if (S_ISDIR(st.st_mode))
-                    r_flag = 1;
-                else 
-                    r_flag = me.item[i]->attachpos?3:2;
-            }
-            
-            snprintf(r_path, sizeof(r_path), "%s/%s", ptr == NULL ? "" : ptr, me.item[i]->fname);
-            strncpy(r_bm,id[0]?id:"",sizeof(r_bm)-1);
-            r_bm[sizeof(r_bm)-1] = '\0';
-            
-            cansee = false;
-            if (strcmp(r_bm, "BMS")==0) {
-                if (HAS_PERM(getCurrentUser(), PERM_BOARDS) && (seespecial!=0))
-                    cansee = true;
-            }
-            else if (strcmp(r_bm, "SYSOPS")==0) {
-                if (HAS_PERM(getCurrentUser(), PERM_SYSOP) && (seespecial!=0))
-                    cansee = true;
-            }
-            else
-                cansee = true;
-            if (cansee) {
-                MAKE_STD_ZVAL(element);
-                array_init(element);
-                add_assoc_string(element,"TITLE",r_title,1);
-                add_assoc_string(element,"PATH",r_path,1);
-                add_assoc_string(element,"BM",r_bm,1);
-                add_assoc_long(element,"FLAG",r_flag);
-                add_assoc_long(element,"TIME",r_time);
-                add_assoc_string(element,"FNAME",me.item[i]->fname,1);
-                zend_hash_index_update(Z_ARRVAL_P(articles),j,(void*) &element, sizeof(zval*), NULL);
-                j ++;
-            }
-            me.now++;
         }
-        ann_free_items(its, MAXITEMS);
-        RETURN_LONG(0);
+        snprintf(buf, sizeof(buf), "%s/%s", me.path, M_ITEM(&me,i)->fname);
+        ptr = strchr(me.path, '/');
+        
+        if (stat(buf, &st) == -1) {
+            r_time = 0;
+            r_flag = 0;
+        } else {
+            r_time = st.st_mtime;
+            if (S_ISDIR(st.st_mode))
+                r_flag = 1;
+            else 
+                r_flag = M_ITEM(&me,i)->attachpos?3:2;
+        }
+        
+        snprintf(r_path, sizeof(r_path), "%s/%s", ptr == NULL ? "" : ptr, M_ITEM(&me,i)->fname);
+        strncpy(r_bm,id[0]?id:"",sizeof(r_bm)-1);
+        r_bm[sizeof(r_bm)-1] = '\0';
+        
+        cansee = false;
+        if (strcmp(r_bm, "BMS")==0) {
+            if (HAS_PERM(getCurrentUser(), PERM_BOARDS) && (seespecial!=0))
+                cansee = true;
+        }
+        else if (strcmp(r_bm, "SYSOPS")==0) {
+            if (HAS_PERM(getCurrentUser(), PERM_SYSOP) && (seespecial!=0))
+                cansee = true;
+        }
+        else
+            cansee = true;
+        if (cansee) {
+            MAKE_STD_ZVAL(element);
+            array_init(element);
+            add_assoc_string(element,"TITLE",r_title,1);
+            add_assoc_string(element,"PATH",r_path,1);
+            add_assoc_string(element,"BM",r_bm,1);
+            add_assoc_long(element,"FLAG",r_flag);
+            add_assoc_long(element,"TIME",r_time);
+            add_assoc_string(element,"FNAME",M_ITEM(&me,i)->fname,1);
+            zend_hash_index_update(Z_ARRVAL_P(articles),j,(void*) &element, sizeof(zval*), NULL);
+            j ++;
+        }
+        me.now++;
     }
-    else
-        ann_free_items(its, MAXITEMS);
-    
-    RETURN_LONG(-2);
+    a_freenames(&me);
+    RETURN_LONG(0);
 }
 
 /* get ann dir's title from parent .Names, pig2532 2006.3
@@ -719,7 +714,7 @@ PHP_FUNCTION(bbs_ann_get_title)
     a_loadnames(&me, getSession());
     for(i=0; i<me.num; i++)
     {
-        if(strcmp(fname, me.item[i]->fname) == 0)
+        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
         {
             find = true;
             break;
@@ -730,7 +725,7 @@ PHP_FUNCTION(bbs_ann_get_title)
         a_freenames(&me);
         RETURN_STRING("找不到精华区项目", 1);
     }
-    strncpy(title, me.item[i]->title, STRLEN);
+    strncpy(title, M_ITEM(&me,i)->title, STRLEN);
     title[STRLEN - 1] = '\0';
     a_freenames(&me);
     RETURN_STRING(title, 1);
@@ -972,14 +967,14 @@ PHP_FUNCTION(bbs_ann_editdir)
     a_loadnames(&me, getSession());
     for(i=0; i<me.num; i++)
     {
-        if(strcmp(fname, me.item[i]->fname) == 0)
+        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
         {
-            strncpy(me.item[i]->fname, newfname, 80);
-            me.item[i]->fname[79] = '\0';
+            strncpy(M_ITEM(&me,i)->fname, newfname, 80);
+            M_ITEM(&me,i)->fname[79] = '\0';
             if(bm[0] == '\0')
-                sprintf(me.item[i]->title, "%-38.38s", title);
+                sprintf(M_ITEM(&me,i)->title, "%-38.38s", title);
             else
-                sprintf(me.item[i]->title, "%-38.38s(BM: %s)", title, bm);
+                sprintf(M_ITEM(&me,i)->title, "%-38.38s(BM: %s)", title, bm);
             find = true;
             break;
         }
@@ -1124,11 +1119,11 @@ PHP_FUNCTION(bbs_ann_editfile)
     a_loadnames(&me, getSession());
     for(i=0; i<me.num; i++)
     {
-        if(strcmp(fname, me.item[i]->fname) == 0)
+        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
         {
-            strncpy(me.item[i]->fname, newfname, 80);
-            me.item[i]->fname[79] = '\0';
-            sprintf(me.item[i]->title, "%-38.38s %s ", title, getCurrentUser()->userid);
+            strncpy(M_ITEM(&me,i)->fname, newfname, 80);
+            M_ITEM(&me,i)->fname[79] = '\0';
+            sprintf(M_ITEM(&me,i)->title, "%-38.38s %s ", title, getCurrentUser()->userid);
             find = true;
             break;
         }
@@ -1192,7 +1187,7 @@ PHP_FUNCTION(bbs_ann_delete)
     a_loadnames(&me, getSession());
     for(i=0; i<me.num; i++)
     {
-        if(strcmp(fname, me.item[i]->fname) == 0)
+        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
         {
             find = true;
             break;
@@ -1203,10 +1198,7 @@ PHP_FUNCTION(bbs_ann_delete)
         a_freenames(&me);
         RETURN_LONG(-2);
     }
-    free(me.item[i]);
-    me.num--;
-    for(;i<me.num;i++)
-        me.item[i] = me.item[i + 1];
+    a_delitem(&me,i);
     if(a_savenames(&me) != 0)
     {
         a_freenames(&me);
@@ -1372,7 +1364,7 @@ PHP_FUNCTION(bbs_ann_paste)
                     find = false;
                     for(i=0; i<sme.num; i++)
                     {
-                        if(strcmp(fname, sme.item[i]->fname) == 0)
+                        if(strcmp(fname, M_ITEM(&sme,i)->fname) == 0)
                         {
                             find = true;
                             break;
@@ -1380,14 +1372,9 @@ PHP_FUNCTION(bbs_ann_paste)
                     }
                     if(find)
                     {
-                        strncpy(title, sme.item[i]->title, STRLEN);
+                        strncpy(title, M_ITEM(&sme,i)->title, STRLEN);
                         if(delsource)
-                        {
-                            free(sme.item[i]);
-                            sme.num--;
-                            for(; i<sme.num; i++)
-                                sme.item[i] = sme.item[i + 1];
-                        }
+                            a_delitem(&sme,i);
                     }
                     a_additem(&dme, title, fname, NULL, 0, 0);
                 }
@@ -1507,18 +1494,18 @@ PHP_FUNCTION(bbs_ann_move)
         newnum = me.num;
     oldnum--;
     newnum--;
-    tmp = me.item[oldnum];
+    tmp = M_ITEM(&me,oldnum);
     if(oldnum > newnum)
     {
         for(i=oldnum; i>newnum; i--)
-            me.item[i] = me.item[i - 1];
+            M_ITEM(&me,i) = M_ITEM(&me,i-1);
     }
     else
     {
         for(i=oldnum; i<newnum; i++)
-            me.item[i] = me.item[i + 1];
+            M_ITEM(&me,i) = M_ITEM(&me,i+1);
     }
-    me.item[newnum] = tmp;
+    M_ITEM(&me,newnum)=tmp;
 
     if(a_savenames(&me) != 0)
     {

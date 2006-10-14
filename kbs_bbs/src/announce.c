@@ -373,8 +373,8 @@ MENU *pm;
 
         /* etnlegend, 2006.04.29, 天哪这原来都是什么写法... */
 
-        snprintf(title,2*STRLEN,"%s",pm->item[n]->title);
-        snprintf(fname,STRLEN,"%s",pm->item[n]->fname);
+        snprintf(title,2*STRLEN,"%s",M_ITEM(pm,n)->title);
+        snprintf(fname,STRLEN,"%s",M_ITEM(pm,n)->fname);
         snprintf(genbuf,MAXPATH,"%s/%s",pm->path,fname);
 
         if(lstat(genbuf,&st)==-1||!(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)||S_ISLNK(st.st_mode))){
@@ -393,7 +393,7 @@ MENU *pm;
             ch=' ';
         }
 
-        if(!(pm->item[n]->host)){
+        if(!(M_ITEM(pm,n)->host)){
             switch(st.st_mode&S_IFMT){
                 case S_IFDIR:
                     snprintf(kind,32,"%s","[\033[0;37m目录\033[m]");
@@ -423,7 +423,7 @@ MENU *pm;
             sprintf(genbuf,"%-s %-55.55s%-s%c",kind,title,fname,ch);
 
         snprintf(title,2*STRLEN,"%s",genbuf);
-        sprintf(genbuf,"  %3d %c%s\n",(n+1),(!(pm->item[n]->attachpos)?' ':'@'),title);
+        sprintf(genbuf,"  %3d %c%s\n",(n+1),(!(M_ITEM(pm,n)->attachpos)?' ':'@'),title);
         prints("%s",genbuf);
 
         /* --END--, etnlegend, 2006.04.29, 天哪这都是什么写法... */
@@ -480,7 +480,6 @@ int ent;
 
     char fname[STRLEN], bname[PATHLEN];
     char buf[PATHLEN];
-    int ch;
     MENU pm;
     char ans[STRLEN];
     char importpath[MAXPATH];
@@ -557,8 +556,7 @@ int ent;
             }
             ret = 3;
         }
-        for (ch = 0; ch < pm.num; ch++)
-            free(pm.item[ch]);
+        a_freenames(&pm);
         return ret;
     }
     return 1;
@@ -734,48 +732,33 @@ int mode;
         if (mode != ADDGROUP)
             sprintf(buf, "%-38.38s %s ", title, getCurrentUser()->userid);
         else {
-            /*
-             * Add by SmallPig 
-             */
-            if (HAS_PERM(getCurrentUser(), PERM_SYSOP || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE))) {
-                move(1, 0);
-                clrtoeol();
-                /*
-                 * $$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$ 
-                 */
-                getdata(1, 0, "版主: ", uident, STRLEN - 1, DOECHO, NULL, true);
-                if (uident[0] != '\0')
-                    sprintf(buf, "%-38.38s(BM: %s)", title, uident);
-                else
-                    sprintf(buf, "%-38.38s", title);
-            } else
+            move(1, 0);
+            clrtoeol();
+            getdata(1, 0, "版主: ", uident, STRLEN - 1, DOECHO, NULL, true);
+            if (uident[0] != '\0')
+                sprintf(buf, "%-38.38s(BM: %s)", title, uident);
+            else
                 sprintf(buf, "%-38.38s", title);
         }
         a_additem(pm, buf, fname, NULL, 0, attachpos);
-        if (a_savenames(pm) == 0) {
-            if (mode == ADDGROUP) {
-                sprintf(fpath2, "%s/%s/.Names", pm->path, fname);
-                if ((pn = fopen(fpath2, "w")) != NULL) {
-                    fprintf(pn, "#\n");
-                    fprintf(pn, "# Title=%s\n", buf);
-                    fprintf(pn, "#\n");
-                    fclose(pn);
-                }
+        if(a_savenames(pm)){
+            a_loadnames(pm,getSession());
+            a_additem(pm,buf,fname,NULL,0,attachpos);
+            if(a_savenames(pm)){
+                sprintf(buf," 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
+                a_prompt(-1,buf,ans);
+                a_loadnames(pm,getSession());
+                return;
             }
-            if (mode == ADDMAIL)
-                bmlog(getCurrentUser()->userid, currboard->filename, 12, 1);
-            else
-                bmlog(getCurrentUser()->userid, currboard->filename, 13, 1);
-        } else {
-            //retry
-            a_loadnames(pm, getSession());
-            a_additem(pm, buf, fname, NULL, 0, attachpos);
-            if (a_savenames(pm) != 0) {
-                sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-                a_prompt(-1, buf, ans);
-            }
-            a_loadnames(pm, getSession());
         }
+        if(mode==ADDGROUP){
+            sprintf(fpath2,"%s/%s/.Names",pm->path,fname);
+            if((pn=fopen(fpath2,"w"))){
+                fprintf(pn,"#\n#Title=%s\n#\n",buf);
+                fclose(pn);
+            }
+        }
+        bmlog(getCurrentUser()->userid,currboard->filename,(mode==ADDMAIL?12:13),1);
     }
 }
 
@@ -790,20 +773,24 @@ MENU *pm;
     temp = pm->now + 1;
     a_prompt(-2, genbuf, newnum);
     num = (newnum[0] == '$') ? 9999 : atoi(newnum) - 1;
+
+    if(num<0||num==pm->now)
+        return;
     if (num >= pm->num)
         num = pm->num - 1;
-    else if (num < 0)
-        return;
-    tmp = pm->item[pm->now];
-    if (num > pm->now) {
-        for (n = pm->now; n < num; n++)
-            pm->item[n] = pm->item[n + 1];
-    } else {
-        for (n = pm->now; n > num; n--)
-            pm->item[n] = pm->item[n - 1];
+
+    tmp=M_ITEM(pm,pm->now);
+    if(num>pm->now){
+        for(n=pm->now;n<num;n++)
+            M_ITEM(pm,n)=M_ITEM(pm,n+1);
     }
-    pm->item[num] = tmp;
+    else{
+        for(n=pm->now;n>num;n--)
+            M_ITEM(pm,n)=M_ITEM(pm,n-1);
+    }
+    M_ITEM(pm,num)=tmp;
     pm->now = num;
+
     if (a_savenames(pm) == 0) {
         sprintf(genbuf, "改变 %s 下第 %d 项的次序到第 %d 项", pm->path + 17, temp, pm->now + 1);
         bmlog(getCurrentUser()->userid, currboard->filename, 13, 1);
@@ -834,7 +821,7 @@ void a_copypaste(MENU *pm,int mode){
     if(!(fp=fopen(genbuf,(!(mode==0||mode==1)?"r":"w"))))
         ACP_ANY_RETURN("使用粘贴命令前应先使用剪切或复制命令...");
     if(mode==0||mode==1){
-        item=pm->item[pm->now];
+        item=M_ITEM(pm,pm->now);
         snprintf(title,STRLEN,"%s",item->title);
         snprintf(filename,STRLEN,"%s",item->fname);
         snprintf(path,PATHLEN,"%s/%s",pm->path,filename);
@@ -893,6 +880,15 @@ void a_copypaste(MENU *pm,int mode){
     else
         snprintf(genbuf,STRLEN,"剪切方式粘贴%s %.38s, 确认? (Y/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
     getdata(t_lines-1,0,genbuf,ans,2,DOECHO,NULL,true);
+    a_additem(pm,title,filename,NULL,0,ap);
+    if(a_savenames(pm)){
+        a_loadnames(pm,getSession());
+        a_additem(pm,title,filename,NULL,0,ap);
+        if(a_savenames(pm)){
+            a_loadnames(pm,getSession());
+            ACP_ANY_RETURN("整理精华区失败...");
+        }
+    }
     move(t_lines-1,0);clrtoeol();
     ans[0]=toupper(ans[0]);copy=0;
     if(ans[0]=='Y'||(type==PASTE_COPY&&ans[0]=='C')){
@@ -931,15 +927,6 @@ void a_copypaste(MENU *pm,int mode){
         pm->page=9999;
         return;
     }
-    a_additem(pm,title,filename,NULL,0,ap);
-    if(a_savenames(pm)){
-        a_loadnames(pm,getSession());
-        a_additem(pm,title,filename,NULL,0,ap);
-        ret=a_savenames(pm);
-        a_loadnames(pm,getSession());
-        if(ret)
-            ACP_ANY_RETURN("整理精华区失败...");
-    }
     bmlog(getCurrentUser()->userid,currboard->filename,13,1);
     if(type==PASTE_CUT){
         sethomefile(genbuf,getCurrentUser()->userid,".CP");
@@ -952,14 +939,8 @@ void a_copypaste(MENU *pm,int mode){
         menu.path=path;
         a_loadnames(&menu,getSession());
         for(i=0;i<menu.num;i++)
-            if(!strcmp(menu.item[i]->fname,filename))
-                break;
-        free(menu.item[i]);
-        menu.num--;
-        while(i<menu.num){
-            menu.item[i]=menu.item[i+1];
-            i++;
-        }
+            if(!strcmp(M_ITEM(&menu,i)->fname,filename))
+                a_delitem(&menu,i--);
         ret=a_savenames(&menu);
         a_freenames(&menu);
         if(ret)
@@ -974,11 +955,10 @@ void a_copypaste(MENU *pm,int mode){
 void a_delete(MENU *pm){
     struct stat st;
     char path[PATHLEN],ans[4];
-    int i;
-    sprintf(genbuf,"%5d  %s",(pm->now+1),pm->item[pm->now]->title);
+    sprintf(genbuf,"%5d  %s",(pm->now+1),M_ITEM(pm,pm->now)->title);
     move(t_lines-2,0);clrtobot();
     prints("\033[1;37m%s\033[m",genbuf);
-    snprintf(path,PATHLEN,"%s/%s",pm->path,pm->item[pm->now]->fname);
+    snprintf(path,PATHLEN,"%s/%s",pm->path,M_ITEM(pm,pm->now)->fname);
     if(!lstat(path,&st)&&(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)||S_ISLNK(st.st_mode))){
         sprintf(genbuf,"\033[1;37m确认删除该%s? (Y/N) [N]: \033[m",
             (S_ISLNK(st.st_mode)?"链接":(S_ISDIR(st.st_mode)?"目录":"文件")));
@@ -989,19 +969,15 @@ void a_delete(MENU *pm){
         }
         S_ISLNK(st.st_mode)?unlink(path):(S_ISDIR(st.st_mode)?my_f_rm(path):my_unlink(path));
     }
-    free(pm->item[pm->now]);
-    pm->num--;
-    for(i=pm->now;i<pm->num;i++)
-        pm->item[i]=pm->item[i+1];
+    a_delitem(pm,pm->now);
     if(a_savenames(pm)){
         a_loadnames(pm,getSession());
         move(t_lines-1,0);
         prints("\033[1;37m%s\033[0;33m<Any>\033[m","整理精华区失败...");
-        igetch();
-        pm->page=9999;
-        return;
+        igetkey();
     }
-    bmlog(getCurrentUser()->userid,currboard->filename,13,1);
+    else
+        bmlog(getCurrentUser()->userid,currboard->filename,13,1);
     pm->page=9999;
     return;
 }
@@ -1009,12 +985,10 @@ void a_delete(MENU *pm){
 void a_newname(pm)
 MENU *pm;
 {
-    ITEM *item;
     char fname[STRLEN];
     char fpath[PATHLEN];
     char *mesg;
 
-    item = pm->item[pm->now];
     a_prompt(-2, "新文件名: ", fname);
     if (*fname == '\0')
         return;
@@ -1024,8 +998,8 @@ MENU *pm;
     } else if (dashf(fpath) || dashd(fpath)) {
         mesg = "系统中已有此文件存在了.";
     } else {
-        sprintf(genbuf, "%s/%s", pm->path, item->fname);
-        strcpy(item->fname, fname);
+        sprintf(genbuf, "%s/%s", pm->path, M_ITEM(pm,pm->now)->fname);
+        strcpy(M_ITEM(pm,pm->now)->fname, fname);
         if (a_savenames(pm) == 0) {
             if (f_mv(genbuf, fpath) == 0) {
                 char r_buf[256];
@@ -1067,7 +1041,7 @@ int a_repair(MENU *pm)
 		if(!strcmp(direntp->d_name,"counter.person")) continue;
 #endif
 		for( i=0; i < pm->num; i++ ){
-			if(strcmp(pm->item[i]->fname, direntp->d_name)==0){
+			if(strcmp(M_ITEM(pm,i)->fname, direntp->d_name)==0){
 				i=-1;
 				break;
 			}
@@ -1149,7 +1123,7 @@ void a_manager(MENU *pm,int ch)
     char fpath[PATHLEN], changed_T[STRLEN], ans[STRLEN];
 
     if (pm->num > 0) {
-        item = pm->item[pm->now];
+        item = M_ITEM(pm,pm->now);
         sprintf(fpath, "%s/%s", pm->path, item->fname);
     }
     switch (ch) {
@@ -1284,7 +1258,6 @@ void a_manager(MENU *pm,int ch)
                     sprintf(genbuf, "%-38.38s %s ", changed_T, getCurrentUser()->userid);
                     strcpy(item->title, genbuf);
                     sprintf(genbuf, "改变文件 %s 的标题", fpath + 17);
-                    a_report(genbuf);
                 } else if (dashd(fpath)) {
                     move(1, 0);
                     clrtoeol();
@@ -1295,14 +1268,14 @@ void a_manager(MENU *pm,int ch)
                         sprintf(genbuf, "%-38.38s", changed_T);
                     strcpy(item->title, genbuf);
                     sprintf(genbuf, "改变目录 %s 的标题", fpath + 17);
-                    a_report(genbuf);
                 }
                 if (a_savenames(pm) != 0) {
-
                     sprintf(genbuf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
                     a_prompt(-1, genbuf, ans);
                     a_loadnames(pm, getSession());
                 }
+                else
+                    a_report(genbuf);
             }
             pm->page = 9999;
 	    }
@@ -1360,11 +1333,17 @@ void a_manager(MENU *pm,int ch)
                         /* retry */
                         a_loadnames(pm, getSession());
                         for (i=0;i<pm->num;i++) {
-                            if (!strcmp(pm->item[i]->fname,saveitem.fname)) {
-                                pm->item[i]->attachpos=attachpos;
-                                a_savenames(pm);
-                                break;
-                            }
+                            if (!strcmp(M_ITEM(pm,i)->fname,saveitem.fname))
+                                M_ITEM(pm,i)->attachpos=attachpos;
+                        }
+                        if(a_savenames(pm)){
+                            a_loadnames(pm,getSession());
+                            move(t_lines-1,0);
+                            clrtoeol();
+                            prints("\033[1;31;47m%s\033[K\033[m","文章附件大小发生变化, 写入索引文件失败, 按回车键继续...");
+                            WAIT_RETURN;
+                            pm->page=9999;
+                            break;
                         }
                     }
                 }
@@ -1403,7 +1382,7 @@ void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
 	int sz;
 
  	/* "bbs0an.php" or "bbsanc.php", by pig2532 */
- 	snprintf(path, MAXPATH, "%s/%s", m->path, m->item[m->now]->fname);
+ 	snprintf(path, MAXPATH, "%s/%s", m->path, M_ITEM(m,m->now)->fname);
  	if(dashd(path))
  	{
  	    strcpy(phpname, "bbs0an.php");
@@ -1423,7 +1402,7 @@ void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
     ann_get_board(m->path, board, sizeof(board));
 	if(board[0] =='\0' || (bid=getbnum_safe(board,getSession()))==0){
         snprintf(buf,buf_len-9,"http://%s/%s?path=%s/%s",
-          get_my_webdomain(0), phpname, m->path+10, m->item[m->now]->fname);
+          get_my_webdomain(0), phpname, m->path+10, M_ITEM(m,m->now)->fname);
 	  return;
 	}
 
@@ -1696,9 +1675,9 @@ MENU *father;
         case Ctrl('P'):
             if (!HAS_PERM(getCurrentUser(), PERM_POST))
                 break;
-            if (!me.item[me.now])
+            if (!M_ITEM(&me,me.now))
                 break;
-            sprintf(fname, "%s/%s", path, me.item[me.now]->fname);
+            sprintf(fname, "%s/%s", path, M_ITEM(&me,me.now)->fname);
             if (!dashf(fname))
                 break;
             if (me.now < me.num) {
@@ -1743,7 +1722,7 @@ MENU *father;
 #endif /* NEWSMTH */
                     sprintf(tmp, "你确定要转贴到 %s 版吗", bname);
                     if (askyn(tmp, 0) == 1) {
-                        post_file(getCurrentUser(), "", fname, bname, me.item[me.now]->title, 0, 2, getSession());
+                        post_file(getCurrentUser(), "", fname, bname, M_ITEM(&me,me.now)->title, 0, 2, getSession());
                         move(2, 0);
                         sprintf(tmp, "\033[1m已经帮你转贴至 %s 版了\033[m", bname);
                         prints(tmp);
@@ -1770,7 +1749,7 @@ MENU *father;
         case 'r':
         case KEY_RIGHT:
             if (me.now < me.num) {
-                if (me.item[me.now]->host != NULL) {
+                if (M_ITEM(&me,me.now)->host != NULL) {
                     /*
                      * gopher(me.item[ me.now ]->host,me.item[ me.now ]->fname,
                      * me.item[ me.now ]->port,me.item[ me.now ]->title); 
@@ -1778,7 +1757,7 @@ MENU *father;
                     me.page = 9999;
                     break;
                 } else
-                    snprintf(fname, sizeof(fname), "%s/%s", path, me.item[me.now]->fname);
+                    snprintf(fname, sizeof(fname), "%s/%s", path, M_ITEM(&me,me.now)->fname);
                 if (dashf(fname)) {
                     /*
                      * ansimore( fname, true ); 
@@ -1789,7 +1768,7 @@ MENU *father;
                      */
 					//register_attach_link(ann_attach_link, fname);
 					register_attach_link(ann_attach_link_num, &me);
-                    ansimore_withzmodem(fname, false, me.item[me.now]->title);
+                    ansimore_withzmodem(fname, false, M_ITEM(&me,me.now)->title);
 					register_attach_link(NULL,NULL);
                     move(t_lines - 1, 0);
                     prints("\033[1m\033[44m\033[31m[阅读精华区资料]  \033[33m结束 Q,← │ 上一项资料 U,↑│ 下一项资料 <Enter>,<Space>,↓ \033[m");
@@ -1807,7 +1786,7 @@ MENU *father;
                         ch = KEY_RIGHT;
                         goto EXPRESS;
                     case Ctrl('Y'):
-                        zsend_file(fname, me.item[me.now]->title);
+                        zsend_file(fname, M_ITEM(&me,me.now)->title);
                         break;
                     case Ctrl('Z'):
                     case 'h':
@@ -1816,7 +1795,7 @@ MENU *father;
                         break;
                     }
                 } else if (dashd(fname)) {
-                    a_menu(me.item[me.now]->title, fname, me.level, bmonly, &me);
+                    a_menu(M_ITEM(&me,me.now)->title, fname, me.level, bmonly, &me);
 					me.nowmenu = NULL;
                     a_loadnames(&me, getSession());   /* added by bad 03-2-10 */
                 }
@@ -1829,7 +1808,7 @@ MENU *father;
             break;
         case 'F':
             if (me.now < me.num && HAS_PERM(getCurrentUser(), PERM_BASIC) && HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
-                a_forward(path, me.item[me.now]);
+                a_forward(path, M_ITEM(&me,me.now));
                 me.page = 9999;
             }
             break;
@@ -1867,7 +1846,7 @@ MENU *father;
              */
         case Ctrl('Y'):
             if (me.now < me.num) {
-                if (me.item[me.now]->host != NULL) {
+                if (M_ITEM(&me,me.now)->host != NULL) {
                     /*
                      * gopher(me.item[ me.now ]->host,me.item[ me.now ]->fname,
                      * me.item[ me.now ]->port,me.item[ me.now ]->title); 
@@ -1875,9 +1854,9 @@ MENU *father;
                     me.page = 9999;
                     break;
                 } else
-                    sprintf(fname, "%s/%s", path, me.item[me.now]->fname);
+                    sprintf(fname, "%s/%s", path, M_ITEM(&me,me.now)->fname);
                 if (dashf(fname)) {
-                    zsend_file(fname, me.item[me.now]->title);
+                    zsend_file(fname, M_ITEM(&me,me.now)->title);
                     me.page = 9999;
                 }
             }
@@ -1910,8 +1889,7 @@ MENU *father;
 			a_newitem(&me, ADDITEM);
 #endif
     }
-    for (ch = 0; ch < me.num; ch++)
-        free(me.item[ch]);
+    a_freenames(&me);
 #ifdef NEW_HELP
 	helpmode = oldhelpmode;
 #endif

@@ -1,31 +1,52 @@
-#ifndef _ANN_H
-#define _ANN_H
+#ifndef _KBSBBS_ANN_H_
+#define _KBSBBS_ANN_H_
+
+/* etnlegend, 2006.10.14, 精华区底层操作修正... */
 
 #define MAXITEMS        1024
 #define PATHLEN         256
-#define MTITLE_LEN      100
+#define MTITLE_LEN      128
+#define ITITLE_LEN      88
 
-typedef struct {
-    /* changed by period from 72 to 84 2000-10-17 (%38s + "(BM:   )" + 12*3) */
-    char title[84 /*72 */ ];
-    char fname[80];
-    char *host;
-    int port;
+typedef struct _ann_item{
+    char    title[ITITLE_LEN];
+    char    fname[STRLEN];
+    char   *host;
+    int     port;
     long    attachpos;
-} ITEM;
+}
+ITEM;
 
-typedef struct {
-    ITEM *item[MAXITEMS];
-    char mtitle[MTITLE_LEN];
-    char *path;
-	void * nowmenu;
-	void * father; 
-    int num, page, now;
-    int level;
-    time_t modified_time;
+typedef struct _ann_menu{
+    ITEM  **p_item[MAXITEMS];       /* 可见 ITEM 指针列表 */
+    ITEM   *pool[MAXITEMS];         /* 全部 ITEM 列表 */
+    char    mtitle[MTITLE_LEN];     /* 当前 .Names 标题内容 */
+    char   *path;                   /* 当前 .Names 文件路径 */
+    void   *nowmenu;
+    void   *father;
+    int     num;                    /* 当前 .Names 中可显示的 ITEM 数量, 对应于 `item[]` 数组 */
+    int     page;
+    int     now;                    /* 当前位置 */
+    int     level;
+    int     total;                  /* 当前 .Names 的所有 ITEM 数量, 对应于 `pool[]` 数组 */
+    time_t  modified_time;          /* 加载 .Names 时文件的时间戳 */
 #ifdef ANN_COUNT
-	int count;
-#endif
-} MENU;
+    int     count;
+#endif /* ANN_COUNT */
+}
+MENU;
 
-#endif
+#define I_FREE(i)                                           \
+    do{                                                     \
+        if(i){                                              \
+            free((i)->host);                                \
+            free(i);                                        \
+        }                                                   \
+    }while(0)
+#define I_ALLOC()       ((ITEM*)calloc(1,sizeof(ITEM)))
+
+/* 取菜单(m)中序号(n)位置的项目 */
+#define M_ITEM(m,n)     (*((m)->p_item[n]))
+
+#endif /* _KBSBBS_ANN_H_ */
+
