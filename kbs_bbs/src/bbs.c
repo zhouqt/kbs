@@ -5416,123 +5416,126 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
     resetcolor();
     setreadpost(conf,fh);
     ret=FULLUPDATE;
-    if(!(key==KEY_RIGHT||key==KEY_PGUP||key==KEY_UP||key==KEY_DOWN)&&(!(key>0)||!strchr("RrEexp",key))){
-        do{
-            repeat=0;
-            switch((key=igetkey())){
-                case KEY_LEFT:
-                case 'Q':
-                case 'q':
-                case KEY_REFRESH:
-                    break;
-                case KEY_DOWN:
-                case KEY_PGDN:
-                case ' ':
-                case 'j':
-                case 'n':
+    if(!(key==KEY_RIGHT||key==KEY_PGUP||key==KEY_UP||key==KEY_DOWN)&&(!(key>0)||!strchr("RrEexp",key)))
+        key=igetkey();
+    repeat=0;
+    do{
+        if(repeat)
+            key=igetkey();
+        repeat=0;
+        switch(key){
+            case KEY_LEFT:
+            case 'Q':
+            case 'q':
+            case KEY_REFRESH:
+                break;
+            case KEY_DOWN:
+            case KEY_PGDN:
+            case ' ':
+            case 'j':
+            case 'n':
+                return READ_NEXT;
+            case KEY_UP:
+            case KEY_PGUP:
+            case 'k':
+            case 'l':
+                return READ_PREV;
+            case KEY_RIGHT:
+            case 'p':
+            case Ctrl('X'):
+            case Ctrl('S'):
+            case Ctrl('U'):
+            case Ctrl('H'):
+                if(arg->readmode!=READ_NORMAL)
                     return READ_NEXT;
-                case KEY_UP:
-                case KEY_PGUP:
-                case 'k':
-                case 'l':
-                    return READ_PREV;
-                case KEY_RIGHT:
-                case 'p':
-                case Ctrl('X'):
-                case Ctrl('S'):
-                case Ctrl('U'):
-                case Ctrl('H'):
-                    if(arg->readmode!=READ_NORMAL)
-                        return READ_NEXT;
-                    move(t_lines-1,0);
-                    clrtoeol();
-                    sprintf(genbuf,"%s",
-                        (key==Ctrl('U')||key==Ctrl('H'))?
-                        "\033[36;44m[十大模式] \033[31;44m[同作者阅读]\033[33;44m "
-                        "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ ":
-                        "\033[36;44m[十大模式] \033[31;44m[同主题阅读]\033[33;44m "
-                        "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ "
-                        );
-                    prints(DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?"\033[1m%s\033[m":"%s\033[m",genbuf);
-                    arg->readmode=((key==Ctrl('U')||key==Ctrl('H'))?READ_AUTHOR:READ_THREAD);
-                    arg->oldpos=((key==KEY_RIGHT||key==Ctrl('X')||key==Ctrl('H'))?conf->pos:0);
-                    repeat=1;
-                    break;
-                case 'R':
-                case 'r':
-                case 'Y':
-                case 'y':
-                    clear();
-                    move(5,0);
-                    if(currboard->flag&BOARD_NOREPLY)
-                        prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","该版面已设置为不可回复文章...");
-                    else if(fh->accessed[1]&FILE_READ)
-                        prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","本文已设置为不可回复, 请勿试图讨论...");
-                    else{
-                        do_reply(conf,fh);
-                        return DIRCHANGED;
-                    }
-                    WAIT_RETURN;
-                    break;
-                case Ctrl('R'):
-                    post_reply(conf,fh,NULL);
-                    break;
-                case Ctrl('A'):
-                    clear();
-                    read_showauthor(conf,fh,NULL);
+                move(t_lines-1,0);
+                clrtoeol();
+                sprintf(genbuf,"%s",
+                    (key==Ctrl('U')||key==Ctrl('H'))?
+                    "\033[36;44m[十大模式] \033[31;44m[同作者阅读]\033[33;44m "
+                    "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ ":
+                    "\033[36;44m[十大模式] \033[31;44m[同主题阅读]\033[33;44m "
+                    "结束 Q,← | 上一篇 ↑ | 下一篇 <Space>,↓ "
+                    );
+                prints(DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?"\033[1m%s\033[m":"%s\033[m",genbuf);
+                arg->readmode=((key==Ctrl('U')||key==Ctrl('H'))?READ_AUTHOR:READ_THREAD);
+                arg->oldpos=((key==KEY_RIGHT||key==Ctrl('X')||key==Ctrl('H'))?conf->pos:0);
+                repeat=1;
+                break;
+            case 'R':
+            case 'r':
+            case 'Y':
+            case 'y':
+                clear();
+                move(5,0);
+                if(currboard->flag&BOARD_NOREPLY)
+                    prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","该版面已设置为不可回复文章...");
+                else if(fh->accessed[1]&FILE_READ)
+                    prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","本文已设置为不可回复, 请勿试图讨论...");
+                else{
+                    do_reply(conf,fh);
+                    return DIRCHANGED;
+                }
+                WAIT_RETURN;
+                break;
+            case Ctrl('R'):
+                post_reply(conf,fh,NULL);
+                break;
+            case Ctrl('A'):
+                clear();
+                read_showauthor(conf,fh,NULL);
+                return READ_NEXT;
+            case Ctrl('Z'):
+            case 'H':
+                r_lastmsg();
+                break;
+            case 'Z':
+            case 'z':
+                if(HAS_PERM(getCurrentUser(),PERM_PAGE)){
+                    read_sendmsgtoauthor(conf,fh,NULL);
                     return READ_NEXT;
-                case Ctrl('Z'):
-                case 'H':
-                    r_lastmsg();
-                    break;
-                case 'Z':
-                case 'z':
-                    if(HAS_PERM(getCurrentUser(),PERM_PAGE)){
-                        read_sendmsgtoauthor(conf,fh,NULL);
-                        return READ_NEXT;
-                    }
-                    break;
-                case 'u':
-                    clear();
-                    modify_user_mode(QUERY);
-                    t_query(NULL);
-                    break;
-                case 'L':
-                    if(uinfo.mode==LOOKMSGS)
-                        return DONOTHING;
-                    show_allmsgs();
-                    break;
-                case 'O':
-                case 'o':
-                    if(HAS_PERM(getCurrentUser(),PERM_BASIC)){
-                        t_friends();
-                    }
-                    break;
-                case 'U':
-                    return board_query();
-                case Ctrl('O'):
-                    clear();
-                    read_addauthorfriend(conf,fh,NULL);
-                    return READ_NEXT;
-                case '~':
-                    ret=read_authorinfo(conf,fh,NULL);
-                    break;
-                case Ctrl('W'):
-                    ret=read_showauthorBM(conf,fh,NULL);
-                    break;
-                case Ctrl('D'):
-                    zsend_attach(conf->pos,fh,read_getcurrdirect(conf));
-                    break;
-                case Ctrl('Y'):
-                    read_zsend(conf,fh,NULL);
-                    break;
-                case '!':
-                    Goodbye();
-                    break;
-            }
+                }
+                break;
+            case 'u':
+                clear();
+                modify_user_mode(QUERY);
+                t_query(NULL);
+                break;
+            case 'L':
+                if(uinfo.mode==LOOKMSGS)
+                    return DONOTHING;
+                show_allmsgs();
+                break;
+            case 'O':
+            case 'o':
+                if(HAS_PERM(getCurrentUser(),PERM_BASIC)){
+                    t_friends();
+                }
+                break;
+            case 'U':
+                return board_query();
+            case Ctrl('O'):
+                clear();
+                read_addauthorfriend(conf,fh,NULL);
+                return READ_NEXT;
+            case '~':
+                ret=read_authorinfo(conf,fh,NULL);
+                break;
+            case Ctrl('W'):
+                ret=read_showauthorBM(conf,fh,NULL);
+                break;
+            case Ctrl('D'):
+                zsend_attach(conf->pos,fh,read_getcurrdirect(conf));
+                break;
+            case Ctrl('Y'):
+                read_zsend(conf,fh,NULL);
+                break;
+            case '!':
+                Goodbye();
+                break;
         }
-        while(repeat);
     }
+    while(repeat);
     if(ret==FULLUPDATE&&arg->oldpos!=0){
         conf->new_pos=arg->oldpos;
 	    arg->oldpos=0;
