@@ -94,9 +94,15 @@ void new_register()
                     prints("目前无法注册帐号%s，请与系统管理人员联系。\n", newuser.userid);
                     sprintf(genbuf, "IP %s new id %s failed[home changed in past 30 days]", getSession()->fromhost, newuser.userid);
                     bbslog("user","%s",genbuf);
-                } else
-                /*---	---*/
+                }
+                else{
+                    /* etnlegend, 2006.10.14, 新用户可能继承原有同名用户信件... */
+                    sethomepath(genbuf,newuser.userid);
+                    my_f_rm(genbuf);
+                    setmailpath(genbuf,newuser.userid);
+                    my_f_rm(genbuf);
                     break;
+                }
             }
         }
     }

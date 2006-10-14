@@ -603,11 +603,17 @@ PHP_FUNCTION(bbs_createnewid)
 
 	//检查是否有前人的信件
 	sethomepath(tmpstr,userid);
+    my_f_rm(tmpstr);
+/*
 	sprintf(buf,"/bin/mv -f %s " BBSHOME "/homeback/%s",tmpstr,userid);
 	system(buf);
+*/
 	setmailpath(tmpstr,userid);
+    my_f_rm(tmpstr);
+/*
 	sprintf(buf,"/bin/mv -f %s " BBSHOME "/mailback/%s",tmpstr,userid);
 	system(buf);
+*/
 
 	//创建新目录
 	sethomepath(tmpstr,userid);
