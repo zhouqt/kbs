@@ -1,8 +1,8 @@
 $Id$
 
-              kbsbbs 在 Fedora Core 3/4 上的安装指南
+              kbsbbs 在 Fedora Core 4/5 上的安装指南
 
-    本文介绍如何在 Fedora Core 3/4 系统上安装 kbsbbs 系统。与以往
+    本文介绍如何在 Fedora Core 4/5 系统上安装 kbsbbs 系统。与以往
 安装方法不同的是，本文的方法尽可能使用 Fedora Core 自带的软件，例如
 apache 和 php 等。此外，本文的方法可使 kbsbbs 的 www 模块同时适合 
 apache 和 apache2。
