@@ -48,5 +48,15 @@ MENU;
 /* 取菜单(m)中序号(n)位置的项目 */
 #define M_ITEM(m,n)     (*((m)->p_item[n]))
 
+enum ANN_SORT_MODE{
+    ANN_SORT_BY_FILENAME,
+    ANN_SORT_BY_TITLE,
+    ANN_SORT_BY_BM,
+    ANN_SORT_BY_FILENAME_R,
+    ANN_SORT_BY_TITLE_R,
+    ANN_SORT_BY_BM_R,
+    ANN_SORT_UNKNOWN
+};
+
 #endif /* _KBSBBS_ANN_H_ */
 

@@ -586,6 +586,91 @@ int a_savenames(MENU *pm){
         pm->modified_time=st.st_mtime;
     return 0;
 }
+
+static int a_sort_items_filename(const void *vp,const void *vq){
+    ITEM *p=*((ITEM**)vp),*q=*((ITEM**)vq);
+    return strcmp(p->fname,q->fname);
+}
+
+static int a_sort_items_title(const void *vp,const void *vq){
+    ITEM *p=*((ITEM**)vp),*q=*((ITEM**)vq);
+    int ret;
+    if(!(ret=strncmp(p->title,q->title,38)))
+        return a_sort_items_filename(vp,vq);
+    return ret;
+}
+
+static int a_sort_items_bm(const void *vp,const void *vq){
+    ITEM *p=*((ITEM**)vp),*q=*((ITEM**)vq);
+    const char *sysops_p,*sysops_q,*bms_p,*bms_q;
+    int ret,sz_p,sz_q;
+    sz_p=strlen(p->title);
+    sz_q=strlen(q->title);
+    if((sz_p>38)&&(sz_q>38)){
+        sysops_p=strstr(&p->title[38],"(BM: SYSOPS)");
+        sysops_q=strstr(&q->title[38],"(BM: SYSOPS)");
+        bms_p=strstr(&p->title[38],"(BM: BMS)");
+        bms_q=strstr(&q->title[38],"(BM: BMS)");
+        if((sysops_p&&sysops_q)||(bms_p&&bms_q))
+            return a_sort_items_title(vp,vq);
+        else if((!sysops_p&&!sysops_q)&&(!bms_p&&!bms_q)){
+            if(!(ret=strcmp(&p->title[38],&q->title[38])))
+                return a_sort_items_title(vp,vq);
+            return ret;
+        }
+        else
+            return ((sysops_p||sysops_q)?(sysops_p-sysops_q):(bms_p-bms_q));
+    }
+    else if((sz_p>38)||(sz_q>38))
+        return (sz_p-sz_q);
+    else
+        return a_sort_items_title(vp,vq);
+}
+
+static int a_sort_items_filename_r(const void *vp,const void *vq){
+    return -a_sort_items_filename(vp,vq);
+}
+
+static int a_sort_items_title_r(const void *vp,const void *vq){
+    return -a_sort_items_title(vp,vq);
+}
+
+static int a_sort_items_bm_r(const void *vp,const void *vq){
+    return -a_sort_items_bm(vp,vq);
+}
+
+int a_sort_items(MENU *pm,enum ANN_SORT_MODE mode,session_t *session){
+    int ret;
+    if(a_loadnames(pm,session)!=1)
+        return -1;
+    switch(mode){
+        case ANN_SORT_BY_FILENAME:
+            qsort(pm->pool,pm->total,sizeof(ITEM**),a_sort_items_filename);
+            break;
+        case ANN_SORT_BY_TITLE:
+            qsort(pm->pool,pm->total,sizeof(ITEM**),a_sort_items_title);
+            break;
+        case ANN_SORT_BY_BM:
+            qsort(pm->pool,pm->total,sizeof(ITEM**),a_sort_items_bm);
+            break;
+        case ANN_SORT_BY_FILENAME_R:
+            qsort(pm->pool,pm->total,sizeof(ITEM**),a_sort_items_filename_r);
+            break;
+        case ANN_SORT_BY_TITLE_R:
+            qsort(pm->pool,pm->total,sizeof(ITEM**),a_sort_items_title_r);
+            break;
+        case ANN_SORT_BY_BM_R:
+            qsort(pm->pool,pm->total,sizeof(ITEM**),a_sort_items_bm_r);
+            break;
+        default:
+            return -4;
+    }
+    ret=a_savenames(pm);
+    if(a_loadnames(pm,session)!=1)
+        return -3;
+    return (!ret?0:-2);
+}
+
 /* END - etnlegend, 2006.10.14, 精华区 .Names 文件相关操作修正... */
 
 int save_import_path(char **i_path,char **i_title,time_t* i_path_time, session_t* session)

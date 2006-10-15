@@ -1289,12 +1289,12 @@ void a_manager(MENU *pm,int ch)
             move(t_lines-1,0);
             clrtoeol();
             if(a_savenames(pm)){
-                prints("\033[1;31;47m%s\033[K\033[m","操作过程中发生错误, 按回车键继续...");
+                prints("\033[1;31;47m\t%s\033[K\033[m","操作过程中发生错误, 按回车键继续...");
                 WAIT_RETURN;
                 a_loadnames(pm,getSession());
             }
             else{
-                prints("\033[1;34;47m%s\033[K\033[m","操作[清空整理者]成功, 按回车键继续...");
+                prints("\033[1;34;47m\t%s\033[K\033[m","操作[清空整理者]成功, 按回车键继续...");
                 WAIT_RETURN;
             }
             pm->page=9999;
@@ -1307,14 +1307,74 @@ void a_manager(MENU *pm,int ch)
             move(t_lines-1,0);
             clrtoeol();
             if(a_savenames(pm)){
-                prints("\033[1;31;47m%s\033[K\033[m","操作过程中发生错误, 按回车键继续...");
+                prints("\033[1;31;47m\t%s\033[K\033[m","操作过程中发生错误, 按回车键继续...");
                 WAIT_RETURN;
                 a_loadnames(pm,getSession());
             }
             else{
-                prints("\033[1;34;47m%s\033[K\033[m","操作[设置整理者为 (BM: SYSOPS)]成功, 按回车键继续...");
+                prints("\033[1;34;47m\t%s\033[K\033[m","操作[设置整理者为 (BM: SYSOPS)]成功, 按回车键继续...");
                 WAIT_RETURN;
             }
+            pm->page=9999;
+            break;
+
+        case 'S':
+            if(!item)
+                break;
+            do{
+                char ans[4];
+                enum ANN_SORT_MODE mode;
+                getdata(t_lines-1,0,"\033[1;33m[排序] \033[1;37m按文件名升/降序\033[1;32m{n/N} "
+                    "\033[1;37m按标题升/降序\033[1;32m{t/T} \033[1;37m按整理字段升/降序\033[1;32m{b/B} "
+                    "\033[1;37m[]: \033[m",ans,2,DOECHO,NULL,true);
+                move(t_lines-1,0);
+                clrtoeol();
+                switch(ans[0]){
+                    case 'n':
+                        mode=ANN_SORT_BY_FILENAME;
+                        break;
+                    case 'N':
+                        mode=ANN_SORT_BY_FILENAME_R;
+                        break;
+                    case 't':
+                        mode=ANN_SORT_BY_TITLE;
+                        break;
+                    case 'T':
+                        mode=ANN_SORT_BY_TITLE_R;
+                        break;
+                    case 'b':
+                        mode=ANN_SORT_BY_BM;
+                        break;
+                    case 'B':
+                        mode=ANN_SORT_BY_BM_R;
+                        break;
+                    default:
+                        prints("\033[1;34;47m\t%s\033[K\033[m","取消排序操作, 按回车键继续...");
+                        WAIT_RETURN;
+                        continue;
+                }
+                switch(a_sort_items(pm,mode,getSession())){
+                    case 0:
+                        prints("\033[1;34;47m\t%s\033[K\033[m","排序操作成功, 按回车键继续...");
+                        WAIT_RETURN;
+                        break;
+                    case -1:
+                    case -3:
+                        prints("\033[1;31;47m\t%s\033[K\033[m","排序操作中发生错误[加载索引失败], 按回车键继续...");
+                        WAIT_RETURN;
+                        break;
+                    case -2:
+                        prints("\033[1;31;47m\t%s\033[K\033[m","排序操作中发生错误[保存索引失败], 按回车键继续...");
+                        WAIT_RETURN;
+                        break;
+                    case -4:
+                    default:
+                        prints("\033[1;31;47m\t%s\033[K\033[m","排序操作中发生错误[未知错误], 按回车键继续...");
+                        WAIT_RETURN;
+                        break;
+                }
+            }
+            while(0);
             pm->page=9999;
             break;
 

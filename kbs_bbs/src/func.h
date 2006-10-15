@@ -681,6 +681,7 @@ int pc_logs(struct pc_logs *pn);
     int a_loadnames(MENU *pm, session_t *session);             /* 装入 .Names */
     int a_savenames(MENU *pm);             /*保存当前MENU到 .Names */
     void a_freenames(MENU *pm);
+    int a_sort_items(MENU *pm,enum ANN_SORT_MODE mode,session_t *session);
     int save_import_path(char ** i_path,char ** i_title,time_t* i_path_time, session_t* session );
     void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select, session_t* session);
     void free_import_path(char ** i_path,char ** i_title,time_t* i_path_time);
