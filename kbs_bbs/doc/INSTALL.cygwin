@@ -111,7 +111,10 @@ identity.pub 文件可预先在 Linux 或 FreeBSD 下生成，然后复制到 cygwin 里面
     修改 Port 参数为 80，修改 User 和 Group 参数为你自己的用户名和所属组。
 可参考 /etc/passwd 和 /etc/group 文件。
 
-    将 kbsbbs 源代码目录 bbs2www/html 下的文件复制到 /usr/local/www/htdocs。
+    如果你使用的是 snapshot: 
+        将 kbsbbs 源代码目录 bbs2www/html 下的文件复制到 /usr/local/www/htdocs。
+    如果你使用的是 cvs:
+        在 /usr/local/www 目录下 checkout www2 模块，并将 www2 目录改名为 htdocs。
 
     php 的配置文件可以从 php 源代码目录得到，将 php.ini-dist 复制为
 /usr/local/lib/php.ini，然后编辑 php.ini 文件，将 short_open_tag 的值修改为

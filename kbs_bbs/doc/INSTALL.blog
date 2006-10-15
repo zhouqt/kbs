@@ -16,14 +16,14 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 1. 快速安装
     如果您已经安装好了支持web界面和MySQL数据库的 kbsbbs 系统，可按照下面方法快速
 将 KBS.Blog 加入到 kbsbbs 中，否则请阅读 3. 全新安装 部分。
-	1.1 确认您的系统为 kbsbbs1.1.1 或以上版本，支持 web，并带有MySQL数据库。
+	1.1 确认您的系统支持 web，并带有MySQL数据库。
 	1.2 确认您的 kbsbbs 源文件中已含有 KBS.Blog 所需的代码，这里约定
 	    $BBSHOME为 kbsbbs 主目录;
-	    $WWWHOME为 apache 的安装目录; 
+	    $WWWHOME为 web 主目录; 
 	    $BBSSRC为 kbsbbs 源文件所在的目录：
 	    $BBSSRC/libBBS/libpc.c
 	    $BBSSRC/src/personal_corp.c
-	    $BBSSRC/bbs2www/html/pc/ 目录
+	    $WWWHOME/pc/ 目录
 	    如果缺少上述代码，请通过 cvs 更新您的kbsbbs或下载最新的kbsbbs-snapshot
 	    代码。
 	1.3 确认您的系统配置文件($BBSHOME/etc/sysconf.ini)中含有下面的字段:
@@ -39,7 +39,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 	1.6 配置 web 部分。具体方法为在站点的web配置文件 site.php 中加入下面的定义：
 		define("HAVE_PC", 1);
 	1.7 升级： make ; make install ;
-	1.8 将 $WWWHOME/htdocs/pc/pcconf.sample.php 复制为 $WWWHOME/htdocs/pc/pcconf.php,
+	1.8 将 $WWWHOME/pc/pcconf.sample.php 复制为 $WWWHOME/pc/pcconf.php,
 	    编辑 pcconf.php 配置WWW下的BLOG参数。
 	1.9 完成快速安装。
 
