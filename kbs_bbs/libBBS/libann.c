@@ -536,6 +536,10 @@ int a_loadnames(MENU *pm,session_t *session){
         }
         pm->p_item[pm->num++]=&pm->pool[i];
     }
+    if(!(pm->now<pm->num))
+        pm->now=(pm->num-1);
+    if(pm->now<0)
+        pm->now=0;
     return 1;
 }
 
