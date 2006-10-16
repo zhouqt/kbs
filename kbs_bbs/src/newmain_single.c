@@ -470,22 +470,14 @@ void login_query()
 	setpublicshmreadonly(1);
 #endif
 	
-#ifndef NINE_BUILD
     prints("\033[1m欢迎光临 ◆\033[31m%s\033[37m◆ \033[36m上线人数 \033[1m%d[最高: %d](%d WWW GUEST)\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), get_publicshm()->max_user,getwwwguestcount());
-#else
-    prints("\033[1m欢迎光临 ◆\033[31m%s\033[37m◆ \033[36m上线人数 \033[1m%d[最高: %d]\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(),get_publicshm()->max_user);
-#endif
 
 #ifndef SSHBBS
     attempts = 0;
 #ifdef LOGINASNEW
     prints("\n\033[1m\033[37m试用请输入 `\033[36mguest\033[37m', 注册请输入`\033[36mnew\033[37m',add `\033[36m.\33[37m' after your ID for BIG5\033[m");
 #else
-#ifdef NINE_BUILD
-    prints("\n\033[1m\033[37m请输入代号(试用请输入 `\033[36mguest^[[37m)\033[m");
-#else
     prints("\n\033[1m\033[37m请输入代号(试用请输入 `\033[36mguest\033[37m', 暂停注册新帐号,add '\033[36m.\33[37m' after your ID for BIG5\033[m");
-#endif //NINE_BUILD
 #endif //LOGINASNEW
     while (1) {
         if (attempts++ >= LOGINATTEMPTS) {

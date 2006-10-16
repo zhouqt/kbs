@@ -95,7 +95,6 @@ int raw_write(int fd,const char *buf, int len)
     int i, retlen=0;
 #endif
 
-#ifndef NINE_BUILD
 #ifdef ZMODEM_RATE
         nowcounter = time(0);
         if (lastcounter == nowcounter) {
@@ -112,7 +111,6 @@ int raw_write(int fd,const char *buf, int len)
             bufcounter = len;
         }
         lastcounter = nowcounter;
-#endif    
 #endif    
 #ifdef SSHBBS
     return ssh_write(fd, buf, len);
@@ -567,16 +565,11 @@ int igetch()
     case Ctrl('L'):
         redoscr();
         icurrchar++;
-#if !defined(NINE_BUILD) && !defined(ALLOW_CTRL_L_ANTIIDLE) //Ctrl+L 是 CTerm 的默认防发呆字符
-        if (c == Ctrl('@'))
-#endif
-        {
-        	now = time(0);
-            uinfo.freshtime = now;
-            if (now - old > 60) {
-               UPDATE_UTMP(freshtime, uinfo);
-               old = now;
-            }
+    	now = time(0);
+        uinfo.freshtime = now;
+        if (now - old > 60) {
+           UPDATE_UTMP(freshtime, uinfo);
+           old = now;
         }
         goto igetagain;
     case Ctrl('Z'):
@@ -595,10 +588,7 @@ int igetch()
     while ((icurrchar != ibufsize) && (inbuf[icurrchar] == 0))
         icurrchar++;
     now = time(0);
-    /*---	Ctrl-T disabled as anti-idle key	period	2000-12-05	---*/
-#ifndef NINE_BUILD
     if (Ctrl('T') != c)
-#endif	    
         uinfo.freshtime = now;
     /*
      * add by KCN , decrease temp_numposts 
@@ -870,7 +860,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             ingetdata = false;
             return -ch;
         }
-#ifdef NINE_BUILD
+#if 0 //#ifdef NINE_BUILD
 	if (true == RMSG && ch == Ctrl('Z') && clen == 0) break;
 #endif
         if (ch == '\n' || ch == '\r')
@@ -1130,7 +1120,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             ingetdata = false;
             return -ch;
         }
-#ifdef NINE_BUILD
+#if 0 //#ifdef NINE_BUILD
         if (RMSG && (ch == Ctrl('Z')) && (!buf[0])) {
             ingetdata = false;
             return -ch;

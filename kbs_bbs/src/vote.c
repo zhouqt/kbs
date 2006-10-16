@@ -512,11 +512,7 @@ static int mk_result(int num)
     sug = NULL;
     sprintf(title, "[公告] %s 版的投票结果", currboard->filename);
     mail_file("deliver", nname, currvote.userid, title, 0, NULL);
-#ifdef NINE_BUILD
-    if (1)
-#else
     if (normal_board(currboard->filename))
-#endif
     {
         post_file(getCurrentUser(), "", nname, "vote", title, 0, 1, getSession());
     }

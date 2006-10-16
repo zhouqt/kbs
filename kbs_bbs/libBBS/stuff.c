@@ -501,7 +501,7 @@ int id_invalid(const char *userid)
     if (!isalpha(userid[0]))
         return 1;
     for (s = userid; *s != '\0'; s++) {
-#if defined(NINE_BUILD) || defined(FREE)
+#if defined(FREE)
         if (*s < 1 || !isalpha(*s)) {
 #else
         if (*s < 1 || !isalnum(*s)) {

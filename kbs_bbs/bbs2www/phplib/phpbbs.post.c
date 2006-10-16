@@ -955,10 +955,8 @@ PHP_FUNCTION(bbs_docross)
         RETURN_LONG(-2);
     strcpy(target, dst_bp->filename);
 
-#ifndef NINE_BUILD    
     if (!strcmp(board,target))
         RETURN_LONG(-8);
-#endif
 
     strcpy(ispost ,((dst_bp->flag & BOARD_OUTFLAG) && out_go)?"s":"l");
     

@@ -660,12 +660,10 @@ void r_msg()
                                 clrtoeol();
                                 prints("%s", buf);
                             }
-#ifndef NINE_BUILD
                             if(j==1) {
                                 refresh();
                                 sleep(1);
                             }
-#endif
                         }
                     }
                     ch = '\n';

@@ -1054,7 +1054,6 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
          */
         if (uinfo.mode == POSTING) {
             /*strcpy(p_buf,"(S)发表, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [S]: "); */
-#ifndef NINE_BUILD        
             move(4, 0);         /* Haohmaru 99.07.17 */
 #ifdef NEWSMTH
             prints("        请注意，本站规定，同样或相近内容文章一周内不得在本站各版面\n"
@@ -1064,7 +1063,6 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
 #else
             prints
                 ("请注意：本站站规规定：同样内容的文章严禁在 5 (含)个以上讨论区内重复张贴。\n\n违反者除所贴文章会被删除之外，还将被剥夺继续发表文章的权力。详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n");
-#endif
 #endif
         } else if (uinfo.mode == SMAIL)
             strcpy(p_buf, "(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");

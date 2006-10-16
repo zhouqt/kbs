@@ -75,7 +75,7 @@ void disply_userinfo(struct userec *u, int real)
            u->numposts, post_in_tin( u->userid ));
            }  removed by stephen 2000-11-02 */
         /*    } */
-#ifdef NINE_BUILD
+#if 0
         {
            int exp;
            exp=countexp(u);

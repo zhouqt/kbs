@@ -1076,10 +1076,6 @@ static int fav_key(struct _select_def *conf, int command)
         return SHOW_REFRESH;
     case 'O':
     case 'o':                  /* Luzi 1997.10.31 */
-#ifdef NINE_BUILD
-    case 'C':
-    case 'c':
-#endif
         {                       /* Leeward 98.10.26 fix a bug by saving old mode */
             int savemode;
 
@@ -1091,13 +1087,8 @@ static int fav_key(struct _select_def *conf, int command)
             modify_user_mode(savemode);
             return SHOW_REFRESH;
         }
-#ifdef NINE_BUILD
-    case 'F':
-    case 'f':
-#else
     case 'C':
     case 'c':                  /*ÔÄ¶ÁÄ£Ê½ */
-#endif
         if (arg->newflag == 1)
             arg->newflag = 0;
         else

@@ -5,10 +5,6 @@
 #ifndef __SYS_DEFAULT_H_
 #define __SYS_DEFAULT_H_
 
-#if NINE_BUILD == 0  /* 9#,3.0K专有代码*/
-#undef NINE_BUILD
-#endif
-
 #ifndef USE_TMPFS  /* 使用TMPFS */
 #define USE_TMPFS 0
 #else
@@ -34,12 +30,6 @@
 #ifdef FREE
 #if FREE == 0 /* FREE BBS专有代码 */
 #undef FREE
-#endif
-#endif
-
-#ifdef DQPI
-#if DQPI == 0		/* 北极星(DQPI)专有代码 */
-#undef DQPI
 #endif
 #endif
 
@@ -180,10 +170,6 @@
 #error must define SECNUM in your site.h
 #endif
 
-#ifndef SQUID_ACCL /*www前端使用squid加速*/ /*这个应该没用了，需要清查 php - atppp 20060415 */
-#undef SQUID_ACCL
-#endif
-
 #ifndef DEFAULTBOARD
 #define DEFAULTBOARD    	"test"
 #endif
@@ -289,11 +275,11 @@
 #endif
 
 #ifndef	NAME_BBS_CHINESE
-#define	NAME_BBS_CHINESE	"水木清华"
+#define	NAME_BBS_CHINESE	"水木社区"
 #endif
 
 #ifndef BBS_FULL_NAME
-#define BBS_FULL_NAME "BBS 水木清华站"
+#define BBS_FULL_NAME "BBS 水木社区站"
 #endif
 
 #ifndef FOOTER_MOVIE

@@ -436,12 +436,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         return DONOTHING;
     }
 #if 0 //atppp 20051230
-#if !defined(NINE_BUILD) && !defined(FREE)
-    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)
-#ifdef ZIXIA
-	&& !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
-#endif
-	) {
+    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         clear();
         move(1, 0);
         prints("本文章已经转贴过一次，无法再次转贴");
@@ -449,7 +444,6 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         pressreturn();
         return FULLUPDATE;
     }
-#endif
 #endif //atppp 20051230
     if (uinfo.mode != RMAIL)
         sprintf(q_file, "boards/%s/%s", currboard->filename, fileinfo->filename);
@@ -458,16 +452,16 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     strcpy(quote_title, fileinfo->title);
 
     clear();
-#ifndef NINE_BUILD
+
     move(4, 0);                 /* Leeward 98.02.25 */
     prints
         ("\033[1m\033[33m请注意：\033[31m本站站规规定：同样内容的文章严禁在 5 (含) 个以上讨论区内重复张贴。\n\n违反者\033[33m除所贴文章会被删除之外，还将被\033[31m剥夺继续发表文章的权力。\033[33m详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n\033[m");
-#endif
+
     move(1, 0);
     if (!get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
         return FULLUPDATE;
     }
-#ifndef NINE_BUILD
+
     if (!strcmp(bname, currboard->filename) && (uinfo.mode != RMAIL)) {
         move(3, 0);
         clrtobot();
@@ -476,7 +470,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         clear();
         return FULLUPDATE;
     }
-#endif
+
     if (!haspostperm(getCurrentUser(), bname)) {
         move(3, 0);
         clrtobot();
@@ -1462,10 +1456,6 @@ reget:
         break;
     case 'O':
     case 'o':                  /* Luzi 1997.11.1 */
-#ifdef NINE_BUILD
-    case 'C':
-    case 'c':
-#endif
         if (!HAS_PERM(getCurrentUser(), PERM_BASIC))
             break;
         t_friends();
@@ -3632,7 +3622,7 @@ int show_b_note(struct _select_def* conf,struct fileheader *fileinfo,void* extra
     return FULLUPDATE;
 }
 
-#ifdef NINE_BUILD
+#if 0
 int show_sec_board_notes(char bname[30])
 {                               /* 显示版主的话 */
     char buf[256];
