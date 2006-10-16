@@ -2808,13 +2808,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
          */
         sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s%s\033[1;32mEnter\033[m继续: ", 
                 (replymode) ? "\033[1;32mS/Y/N/R/A\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
-				(currboard->flag&BOARD_ATTACH)?"\033[1;32mu\033[m传附件, ":"",
-#ifdef POST_QUIT
-				"\033[1;32mQ\033[m放弃, "
-#else
-				""
-#endif
-				);
+				(currboard->flag&BOARD_ATTACH)?"\033[1;32mu\033[m传附件, ":"", "\033[1;32mQ\033[m放弃, ");
         getdata(t_lines - 1, 0, buf2, ans, 4, DOECHO, NULL, true);
         ooo = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ooo - '0') >= 0 && ooo - '0' <= 9) {
@@ -2844,10 +2838,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             Anony = (Anony == 1) ? 0 : 1;
         } else if (ooo == RAND_SIG_KEY) {
             getCurrentUser()->signature = -1;
-#ifdef POST_QUIT
 		} else if (ooo == 'Q') {
         	return FULLUPDATE;
-#endif
         } else if (ooo == 'V') {     /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2, getCurrentUser()->userid, "signatures");
             move(t_lines - 1, 0);
