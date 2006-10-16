@@ -616,7 +616,7 @@ void brc_update(const char *userid,session_t* session)
 {
     int i;
     gzFile fd = NULL;
-    char dirfile[MAXPATH];
+    char dirfile[MAXPATH], dirfile_tmp[MAXPATH];
     unsigned int data[MAXBOARD][BRC_MAXNUM];
     int count;
 
@@ -624,6 +624,7 @@ void brc_update(const char *userid,session_t* session)
     /*干脆不搞guest的这个算了*/
     if (!strcmp(userid,"guest")) return;
     sethomefile(dirfile, userid, BRCFILE);
+    sethomefile(dirfile_tmp, userid, BRCFILE ".tmp");
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (session->brc_cache_entry[i].changed) {
             break;
@@ -640,8 +641,8 @@ void brc_update(const char *userid,session_t* session)
         if (errno == Z_ERRNO)
             errstr = strerror(errno);
         bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
-        f_rm(dirfile);
-//        return;
+//      f_rm(dirfile);
+        return;
     } else {
         count = 0;
         while (count < BRC_FILESIZE) {
@@ -655,15 +656,15 @@ void brc_update(const char *userid,session_t* session)
         gzclose(fd);
     }
 
-    if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
+    if ((fd = gzopen(dirfile_tmp, "w+b6")) == NULL) {
         const char *errstr;
         int gzerrno;
 
         errstr = gzerror(fd, &gzerrno);
         if (errno == Z_ERRNO)
             errstr = strerror(errno);
-        bbslog("3error", "can't %s open to write:%s", dirfile, errstr);
-        //f_rm(dirfile);
+        bbslog("3error", "can't %s open to write:%s", dirfile_tmp, errstr);
+        f_rm(dirfile_tmp);
         return;
     }
 
@@ -683,6 +684,9 @@ void brc_update(const char *userid,session_t* session)
         count += ret;
     }
     gzclose(fd);
+    if (count == BRC_FILESIZE) {
+        f_mv(dirfile_tmp, dirfile);
+    }
     return;
 }
 
