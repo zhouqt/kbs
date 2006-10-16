@@ -137,34 +137,6 @@ int full_utmp(struct user_info *uentp, int *count)
     return COUNT;
 }
 
-#ifdef NINE_BUILD
-
-//增加按ip排序，shiyao 2003.5.31
-
-int SortBy = 0;
-
-void sort_user_record(left, right)
-int left, right;
-{
-    int i, last;
-
-    if (left >= right)
-        return;
-    swap_user_record(left, (left + right) / 2);
-    last = left;
-    if (SortBy == 0) {
-    	for (i = left + 1; i <= right; i++)
-       	 if (strcasecmp(user_record[i]->userid, user_record[left]->userid) < 0)
-            		swap_user_record(++last, i);
-    } else 
-    	for (i = left + 1; i <= right; i++)
-       	 if (ntohl(inet_addr(user_record[i]->from)) < ntohl(inet_addr(user_record[left]->from)))
-            		swap_user_record(++last, i);
-    swap_user_record(left, last);
-    sort_user_record(left, last - 1);
-    sort_user_record(last + 1, right);
-}
-#endif
 int fill_userlist()
 {
     static int i, i2;
@@ -176,17 +148,6 @@ int fill_userlist()
     i2 = 0;
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
-#ifdef NINE_BUILD
-//changed by shiyao, 2003.6.1
-        numf = 0;
-        for (i = 0; i < i2; i++) {
-            if (myfriend(user_record[i]->uid, NULL)) {
-                swap_user_record(numf++, i);
-            }
-        }
-	sort_user_record(0, numf-1);
-	sort_user_record(numf, i2-1);
-#endif
     } else {
         struct user_info* u;
 	u=get_utmpent(getSession()->utmpent);
@@ -194,9 +155,6 @@ int fill_userlist()
             if (u->friends_uid[i])
                 apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
     }
- #ifdef NINE_BUILD
- 	if (i2>0) sort_user_record(0, i2-1);
- #endif
    } range = i2;
     return i2 == 0 ? -1 : 1;
 }
@@ -263,48 +221,7 @@ int do_userlist()
     char fexp[30];
     struct user_info uentp;
 	struct userec *lookupuser;
-#ifdef NINE_BUILD
-  #define FRIENDSIG "□"
-    char *p;
-    int padding_count;
-  #define FROMSTR uentp.from   
-#else    
-  #define FRIENDSIG "．"
-  #define FROMSTR "*"  
-#endif    
 
-    /*
-     * _SHOW_ONLINE_USER 
-     */
-    /*
-     * to print on line user to a file 
-     */
-    /*
-     * char online_users[STRLEN+10];
-     * 
-     * if(!strcmp(getCurrentUser()->userid,"guest")){
-     * fd=open("onlineulist",O_RDWR|O_TRUNC, 0600);
-     * if(fd!=-1)
-     * {
-     * flock(fd,LOCK_EX);
-     * for(i=0; i<range ; i++)
-     * {
-     * uentp=user_record[i];
-     * len = sprintf(online_users, " %3d %-12.12s %-24.24s %-20.20s %-17.17s %5.5s\n", i+1,uentp->userid,uentp->username,uentp->from,modestring(uentp->mode, uentp->destuid, 0, (uentp->in_chat ? uentp->chatid : NULL)),uentp->invisible? "#":" ");
-     * write(fd,online_users,len);
-     * }
-     * flock(fd,LOCK_UN);
-     * close(fd);
-     * }
-     * }
-     */
-    /*
-     * end of this insertion 
-     */
-
-    /*
-     * end of this insertion 
-     */
     move(3, 0);
     print_user_info_title();
     for (i = 0; i < BBS_PAGESIZE && i + page < range; i++) {
@@ -332,14 +249,10 @@ int do_userlist()
             override = (i + page < numf) || friendmode;
 
         else {
-#ifdef NINE_BUILD
-            override = myfriend(uentp.uid, fexp);
-#else
             if ((i + page < numf) || friendmode)
                 override = myfriend(uentp.uid, fexp, getSession());
             else
                 override = false;
-#endif
         }
         if (readplan == true) {
             return 0;
@@ -366,14 +279,14 @@ int do_userlist()
         move(y, x);
         sprintf(user_info_str,
                 " %4d%2s%s%-12.12s%s%s ", 
-                i + 1 + page, (override) ? (uentp.invisible ? "＃" : FRIENDSIG) : (uentp.invisible ? "＊" : ""),
+                i + 1 + page, (override) ? (uentp.invisible ? "＃" : "．") : (uentp.invisible ? "＊" : ""),
                 (override) ? "\033[1;32m" : "", uentp.userid, (override) ? "\033[m" : "", 
                 (override && showexplain) ? "\033[1;31m" : "");
         prints("%s", user_info_str);
         resetcolor();
         move(y, 42);
         sprintf(user_info_str, " %-16.16s %c %c %s%-10.10s\033[m%5.5s\n",  
-                (HAS_PERM(getCurrentUser(), PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(lookupuser, uentp.from) : FROMSTR ),
+                (HAS_PERM(getCurrentUser(), PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(lookupuser, uentp.from) : "*" ),
                 pagec, msgchar(&uentp, &isfriend), 
                 (uentp.invisible == true)? (uentp.pid==1?"\033[33m":"\033[34m") : (uentp.pid==1?"\033[1;36m":""), 
 				modestring(modebuf,uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
@@ -382,8 +295,6 @@ int do_userlist()
         prints("%s", user_info_str);
         resetcolor();
     }
-#undef FROMSTR    
-#undef FRIENDSIG    
     return 0;
 }
 
