@@ -176,16 +176,7 @@
 /* PERM_MANAGER will be used to allow 2 windows and 
 bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
-#define PERM_SENDMAIL   0
-#define PERM_READMAIL   PERM_BASIC
-#define PERM_VOTE       PERM_BASIC
 
-/* These are used only in Internet Mail Forwarding */
-/* You may want to be more restrictive than the default, especially for an
-   open access BBS. */
-
-#define PERM_SETADDR    PERM_BASIC      /* to set address for forwarding */
-#define PERM_FORWARD    PERM_BASIC      /* to do the forwarding */
 
 /* Don't mess with this. */
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)

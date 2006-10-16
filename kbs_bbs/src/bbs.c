@@ -5093,9 +5093,7 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'J', (READ_KEY_FUNC)Semi_save,NULL},
     {'I', (READ_KEY_FUNC)Import_post,NULL},
 
-#ifdef INTERNET_EMAIL
     {'F', (READ_KEY_FUNC)mail_forward,NULL},
-#endif
     {Ctrl('R'), (READ_KEY_FUNC)post_reply,NULL},
 
     {'c', (READ_KEY_FUNC)clear_new_flag,NULL},
@@ -5604,9 +5602,7 @@ static struct key_command read_top_comms[]={
     {'&',(READ_KEY_FUNC)jump_changed_title,NULL},
     {'z',(READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
     {'p',(READ_KEY_FUNC)thread_read,(void*)SR_READ},
-#ifdef INTERNET_EMAIL
     {'F',(READ_KEY_FUNC)mail_forward,NULL},
-#endif
     {'f',(READ_KEY_FUNC)clear_all_new_flag,NULL},
     {'c',(READ_KEY_FUNC)clear_new_flag,NULL},
     {'E',(READ_KEY_FUNC)edit_post,NULL},

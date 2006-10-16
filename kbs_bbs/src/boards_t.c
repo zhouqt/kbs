@@ -1564,7 +1564,7 @@ static int fav_key(struct _select_def *conf, int command)
         }
         break;
     case 'v':                  /*Haohmaru.2000.4.26 */
-        if(!strcmp(getCurrentUser()->userid, "guest") || !HAS_PERM(getCurrentUser(), PERM_READMAIL)) return SHOW_CONTINUE;
+        if(!strcmp(getCurrentUser()->userid, "guest") || !HAS_PERM(getCurrentUser(), PERM_BASIC)) return SHOW_CONTINUE;
         clear();
 		if (HAS_MAILBOX_PROP(&uinfo, MBP_MAILBOXSHORTCUT))
 			MailProc();

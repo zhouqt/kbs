@@ -1358,7 +1358,6 @@ int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extr
 }
 
 
-#ifdef INTERNET_EMAIL
 int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct)
 {
     char buf[STRLEN];
@@ -1388,7 +1387,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct)
         return FULLUPDATE;
     }
 
-    if (!HAS_PERM(getCurrentUser(), PERM_FORWARD) || !HAS_PERM(getCurrentUser(),PERM_LOGINOK)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_BASIC) || !HAS_PERM(getCurrentUser(),PERM_LOGINOK)) {
         return DONOTHING;
     }
     strncpy(buf, direct, sizeof(buf));
@@ -1425,7 +1424,6 @@ int mail_forward(struct _select_def* conf, struct fileheader *fileinfo,void* ext
     return mail_forward_internal(conf->pos, fileinfo, ((struct read_arg*)conf->arg)->direct);
 }
 
-#endif
 
 int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
@@ -1596,9 +1594,7 @@ struct key_command mail_comms[] = {
     {'t',(READ_KEY_FUNC)mail_token,NULL},
     {'M', (READ_KEY_FUNC)mail_move,NULL},
     {'i', (READ_KEY_FUNC)mail_to_tmp,NULL},
-#ifdef INTERNET_EMAIL
     {'F', (READ_KEY_FUNC)mail_forward,NULL},
-#endif
     {Ctrl('P'), (READ_KEY_FUNC)m_sendnull,NULL},
     /*
      * Added by ming, 96.10.9
@@ -1658,7 +1654,6 @@ int m_read()
     return FULLUPDATE /* 0 */ ;
 }
 
-#ifdef INTERNET_EMAIL
 int g_send()
 {
     char uident[13], tmp[3];
@@ -1706,7 +1701,7 @@ int g_send()
         switch (tmp[0]) {
         case 'A':
         case 'a':
-            if (!(lookupuser->userlevel & PERM_READMAIL)) {
+            if (!(lookupuser->userlevel & PERM_BASIC)) {
                 move(2, 0);
                 prints("信件无法被寄给: \033[1m%s\033[m\n", lookupuser->userid);
                 break;
@@ -1771,7 +1766,7 @@ int g_send()
                         strcpy(uident, getuserid2(u->friends_uid[n - 1]));
                         if (!getuser(uident, &lookupuser)) {
                             errstr = "这个使用者代号是错误的.\n";
-                        } else if (!(lookupuser->userlevel & PERM_READMAIL)) {
+                        } else if (!(lookupuser->userlevel & PERM_BASIC)) {
                             errstr = "信件无法被寄给他\n";
                         } else if (seek_in_file(maillists, uident)) {
                             i--;
@@ -2012,7 +2007,7 @@ int do_gsend(char *userid[], char *title, int num)
             prints("%s 自杀中，不能收信，请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
-        } else if (!(user->userlevel & PERM_READMAIL)) {
+        } else if (!(user->userlevel & PERM_BASIC)) {
             prints("%s 没有收信的权力，不能收信，请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
@@ -2243,7 +2238,7 @@ int doforward(char *direct, struct fileheader *fh)
                 prints("%s 自杀中，不能收信\n", receiver);
                 return -5;
             }
-            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !(lookupuser->userlevel & PERM_READMAIL)) {
+            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !(lookupuser->userlevel & PERM_BASIC)) {
                 prints("%s 没有收信的权力，不能收信\n", receiver);
                 return -5;
             }
@@ -2304,7 +2299,7 @@ int doforward(char *direct, struct fileheader *fh)
     return (return_no);
 }
 
-#endif
+
 
 
 struct command_def {

@@ -465,16 +465,7 @@
 /* PERM_MANAGER will be used to allow 2 windows and 
 bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
-#define PERM_SENDMAIL   0
-#define PERM_READMAIL   PERM_BASIC
-#define PERM_VOTE       PERM_BASIC
 
-/* These are used only in Internet Mail Forwarding */
-/* You may want to be more restrictive than the default, especially for an
-   open access BBS. */
-
-#define PERM_SETADDR    PERM_BASIC      /* to set address for forwarding */
-#define PERM_FORWARD    PERM_BASIC      /* to do the forwarding */
 
 /* Don't mess with this. */
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
@@ -714,7 +705,7 @@ attach define
 #endif
 
 /*
- * max amount of attachments in one article
+ * max number of attachments in one article
  */
 #ifndef MAXATTACHMENTCOUNT
 #define MAXATTACHMENTCOUNT	20
@@ -724,10 +715,6 @@ attach define
 #define MAXATTACHMENTSIZE 5*1024*1024                     //文章附件文件长度上限
 #endif
 
-
-#ifndef WWW_PAGE_SIZE //www的每页条目数
-#define WWW_PAGE_SIZE 20
-#endif
 
 #if CHECK_IP_LINK==0
 #undef CHECK_IP_LINK
@@ -789,34 +776,13 @@ attach define
 /* old bbsconfig.h */
 
 /* 
-   You get this many chances to give a valid userid/password combination
-   before the bbs squawks at you and closes the connection. 
-   Don't comment out. 
-*/
-#define LOGINATTEMPTS 3
-
-/* 
    Turn this on to allow users to create their own accounts by typing 'new'
    at the "Enter userid:" prompt. Comment out to restrict access to accounts
    created by the Sysop (see important note in README.install). 
 */
 #define LOGINASNEW 1 
 
-/* 
-   Define this if you want the Internet Post/Mail Forwarding features
-   enabled. You MUST have the sendmail(8) program on your system and
-   a cron job to run the bbs mail queue every so often. The bbs does not
-   invoke sendmail, it simply creates the queue and data files for it. 
-*/
-#define INTERNET_EMAIL 1
-
-
 #define MAXSIGLINES    6 /* max. # of lines appended for post signature */
-
-/* Once you set this, do not change it unless you are restarting your
-   bbs from scratch! The PASSWDS file will not work if this is changed.
-   If commented out, no real name/address info can be kept in the passwd
-   file. Pretty useless to have this if LOGINASNEW is defined. */
 
 /*Define this for Use Notepad.*/
 #define USE_NOTEPAD 1

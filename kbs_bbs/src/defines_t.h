@@ -6,9 +6,7 @@
 
 #include "select.h"
 
-#ifdef INTERNET_EMAIL
 int mail_forward(struct _select_def* conf,struct fileheader* data,void* extradata);
-#endif
 
 #ifdef FLOWBANNER
 char * banner_filter(char * text); //filter text, no cur-cmds allowed, text should be \0 ended

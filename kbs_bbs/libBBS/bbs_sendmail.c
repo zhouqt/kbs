@@ -114,7 +114,7 @@ int check_mail_perm(struct userec *fromuser, struct userec *touser)
     if (touser) {
         if (touser->userlevel & PERM_SUICIDE)
             return 1;
-        if (!(touser->userlevel & PERM_READMAIL))
+        if (!(touser->userlevel & PERM_BASIC))
             return 1;
         if (chkusermail(touser) >= 3)
             return 3;
