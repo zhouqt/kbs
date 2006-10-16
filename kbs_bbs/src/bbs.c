@@ -1927,7 +1927,9 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
         ptr=(const struct fileheader*)cptr;
         count=size/sizeof(struct fileheader);
         for(selected=0,i=0;i<count;i++){
-            if(!strcmp(ptr[i].owner,getCurrentUser()->userid)){
+            if(getCurrentUser()->firstlogin
+                &&(get_posttime(&ptr[i])>getCurrentUser()->firstlogin)
+                &&!strcmp(ptr[i].owner,getCurrentUser()->userid)){
                 info=ptr[i];
                 strnzhcpy(info.title,ptr[i].title,34);
                 for(data=&info,length=sizeof(struct fileheader),writen=0;
