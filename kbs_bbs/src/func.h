@@ -674,6 +674,7 @@ int pc_logs(struct pc_logs *pn);
 #ifdef FB2KPC
 	int fb2kpc_is_owner(char *path);
 #endif
+    unsigned int check_ann(const struct boardheader* bh);
     int ann_get_board(char *path, char *board, size_t len);
     int ann_get_path(char *board, char *path, size_t len);
 	int valid_fname(char *str);

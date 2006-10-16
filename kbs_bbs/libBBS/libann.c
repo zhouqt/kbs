@@ -34,6 +34,33 @@ static int ann_can_access(char *title,const char *board,struct userec *user){
         return 1;
 }
 
+/*严格检查精华区路径的合法性*/
+unsigned int check_ann(const struct boardheader* bh){
+    char buf[PATHLEN],*ptr;
+    unsigned int ret,i;
+    ret=0;
+    sprintf(buf,"%s",bh->ann_path);
+    if(!(ptr=strrchr(buf,'/')))
+        return 0x080000;
+    *ptr++=0;
+    /*精华区路径与讨论区名称不符*/
+    if(strcmp(bh->filename,ptr))
+        ret|=0x010000;
+    /*精华区分区错误*/
+    for(i=0;groups[i];i++)
+        if(!strcmp(groups[i],buf))
+            break;
+    if(!groups[i])
+        ret|=0x020000;
+    else
+        ret|=(i&0xFFFF);
+    /*精华区目录不存在*/
+    sprintf(buf,"0Announce/groups/%s",bh->ann_path);
+    if(!dashd(buf))
+        ret|=0x040000;
+    return ret;
+}
+
 /*
  * Get a board name from an announce path.
 */
