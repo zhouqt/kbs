@@ -43,9 +43,9 @@
     for($i=0; $i<16; $i++) {
         $chk = ($perm & (1 << $i))?" checked":"";
         if($giveupperm & (1 << $i))
-            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> <span style=\"color:#ff0000\">{$permstrings[$i]}</span><br />");
+            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> <span style=\"color:#ff0000\">". constant("BBS_PERMSTRING{$i}") ."</span><br />");
         else
-            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> {$permstrings[$i]}<br />");
+            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> ". constant("BBS_PERMSTRING{$i}") ."<br />");
     }
 ?>
 <td width="100">&nbsp;</td>
@@ -54,9 +54,9 @@
     for($i=16; $i<30; $i++) {
         $chk = ($perm & (1 << $i))?" checked":"";
         if($giveupperm & (1 << $i))
-            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> <span style=\"color:#ff0000\">{$permstrings[$i]}</span><br />");
+            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> <span style=\"color:#ff0000\">". constant("BBS_PERMSTRING{$i}") ."</span><br />");
         else
-            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> {$permstrings[$i]}<br />");
+            print("<input type=\"checkbox\" name=\"p{$i}\" value=\"o\"{$chk}> ". constant("BBS_PERMSTRING{$i}") ."<br />");
     }
 ?>
 </td></tr>
