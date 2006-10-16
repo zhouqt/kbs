@@ -443,11 +443,6 @@ int allnum, pagenum;
     case Ctrl('T'):
         showcolor = !showcolor;
         break;
-#ifdef NINE_BUILD
-	case 'i' : SortBy = 1-SortBy;
-	           update_time = 0;
-	           break;
-#endif
     case 'k':
     case 'K':
         if (user_record[allnum]->logintime > update_time)
