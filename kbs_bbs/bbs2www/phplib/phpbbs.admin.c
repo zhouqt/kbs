@@ -314,5 +314,41 @@ PHP_FUNCTION(bbs_admin_newboard) {
 /* long bbs_admin_getboardparam(string boardname, array boardparams);
  */
 PHP_FUNCTION(bbs_admin_getboardparam) {
+    int ac, bid;
+    char *boardname;
+    int boardname_len;
+    zval *boardparams;
+    struct boardheader *bp = NULL;
+
+    ac = ZEND_NUM_ARGS();
+    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &boardname, &boardname_len, &boardparams) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    
+    bid = getbnum_safe(boardname, getSession());
+    if(!bid) {
+        RETURN_LONG(-1);
+    }
+    bp = (struct boardheader *)getboard(bid);
+    if(bp == NULL) {
+        RETURN_LONG(-2);
+    }
+    
+    if(array_init(boardparams) != SUCCESS) {
+        RETURN_LONG(-3);
+    }
+    add_assoc_long(boardparams, "BID", bid);
+    add_assoc_string(boardparams, "FILENAME", bp->filename, 1);
+    add_assoc_string(boardparams, "BM", bp->BM, 1);
+    add_assoc_string(boardparams, "TITLE", bp->title, 1);
+    add_assoc_long(boardparams, "LEVEL", bp->level);
+    add_assoc_long(boardparams, "CLUBNUM", bp->clubnum);
+    add_assoc_long(boardparams, "FLAG", bp->flag);
+    add_assoc_long(boardparams, "SCORELEVEL", bp->score_level);
+    add_assoc_string(boardparams, "ANNPATH", bp->ann_path, 1);
+    add_assoc_long(boardparams, "GROUP", bp->group);
+    add_assoc_long(boardparams, "TITLELEVEL", bp->title_level);
+    add_assoc_string(boardparams, "DES", bp->des, 1);
+    RETURN_LONG(0);
 }
 
