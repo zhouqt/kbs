@@ -925,12 +925,7 @@ int modify_board(int bid){
     /*身份限制*/
     sel[21].hotkey='M';
     sprintf(menustr[21],"%-15s%s <%d>",menuldr[21],
-#ifdef HAVE_CUSTOM_USER_TITLE
-        bh.title_level?get_user_title(bh.title_level):"无限制",
-#else
-        "无效选项",
-#endif
-        (unsigned char)bh.title_level);
+        bh.title_level?get_user_title(bh.title_level):"无限制",(unsigned char)bh.title_level);
     /*积分限制*/
     sel[22].hotkey='N';
 #ifdef NEWSMTH
@@ -1039,11 +1034,9 @@ int modify_board(int bid){
                         break;
                     /*身份限制*/
                     case 21:
-#ifdef HAVE_CUSTOM_USER_TITLE
                         newbh.title_level=bh.title_level;
                         sprintf(menustr[21],"%s",orig[21]);
                         change&=~(1<<21);
-#endif
                         break;
                     /*积分限制*/
                     case 22:
@@ -1526,7 +1519,6 @@ int modify_board(int bid){
                 break;
             /*身份限制*/
             case 21:
-#ifdef HAVE_CUSTOM_USER_TITLE
                 move(17,0);clrtoeol();getdata(17,2,"设定身份限制{(职务)|(#序号)|(@)}: ",buf,USER_TITLE_LEN,DOECHO,NULL,true);
                 /*取消修改*/
                 if(!*buf)
@@ -1580,7 +1572,6 @@ int modify_board(int bid){
                     sprintf(menustr[21],"%s",orig[21]);
                     change&=~(1<<21);
                 }
-#endif
                 break;
             /*积分限制*/
             case 22:
@@ -2997,11 +2988,7 @@ int edit_board_delete_read_perm(void){
         clear();
         return -1;
     }
-    if(!HAS_PERM(user,PERM_BOARDS)
-#ifdef HAVE_CUSTOM_USER_TITLE
-        ||!user->title
-#endif
-        ){
+    if(!HAS_PERM(user,PERM_BOARDS)||!user->title){
         prints("%s\033[0;33m<Enter>\033[m","所选择用户不具有访问特定版面回收站的权限和身份...");
         WAIT_RETURN;
         clear();

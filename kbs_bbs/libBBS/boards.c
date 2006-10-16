@@ -1177,11 +1177,7 @@ static int check_board_delete_read_perm_core(const struct userec *user,const str
 
     if(!user||!board)
         return 0;
-    if(!HAS_PERM(user,PERM_BOARDS)
-#ifdef HAVE_CUSTOM_USER_TITLE
-        ||!user->title
-#endif
-        )
+    if(!HAS_PERM(user,PERM_BOARDS)||!user->title)
         return 0;
     sethomefile(buf,user->userid,"board_delete_read");
     if(stat(buf,&st)||!S_ISREG(st.st_mode))

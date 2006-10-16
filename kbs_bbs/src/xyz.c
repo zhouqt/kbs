@@ -839,9 +839,7 @@ int a_edits()
         "forbm",
         "forcloak",
         "forlongid", "../innd/newsfeeds.bbs", "deny_reason", "initial_favboard","tonewuser", 
-        #ifdef HAVE_CUSTOM_USER_TITLE
         "../" USER_TITLE_FILE,
-        #endif
         #ifdef FLOWBANNER
         "banner",
         #endif
@@ -868,9 +866,7 @@ int a_edits()
         "给长期用户的信        ",
         "转信版和新闻组对应",
         "封禁理由列表", "新用户个人定制区","给新注册用户的信", 
-        #ifdef HAVE_CUSTOM_USER_TITLE
         "用户职务表",
-        #endif
         #ifdef FLOWBANNER
         "全站流动信息",
         #endif
@@ -966,11 +962,9 @@ int a_edits()
             prints("\n过滤词表更新");
 	}
 #endif
-#ifdef HAVE_CUSTOM_USER_TITLE
        if (!strcmp(e_file[ch],"../" USER_TITLE_FILE)) {
           load_user_title();
        }
-#endif
 #ifdef FLOWBANNER
        if (!strcmp(e_file[ch],"banner")) {
           load_site_banner(0);

@@ -123,10 +123,6 @@
 #endif
 #endif
 
-#ifndef HAVE_CUSTOM_USER_TITLE /*定义用户特定的title,default enable*/
-#define HAVE_CUSTOM_USER_TITLE
-#endif
-
 #if HAVE_PERSONAL_DNS == 0	/*个人域名服务，缺省不使能*/
 #undef HAVE_PERSONAL_DNS
 #endif

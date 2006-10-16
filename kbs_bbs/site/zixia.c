@@ -134,11 +134,9 @@ uleveltochar( char* buf, struct userec *lookupuser )
       	else if  ( lvl & PERM_BOARDS ) strcpy(buf,"二当家的");
       	else strcpy(buf, NAME_USER_SHORT);
 
-#ifdef HAVE_CUSTOM_USER_TITLE
     if (lookupuser->title != 0) {
         strcpy(buf, get_user_title(lookupuser->title));
     }
-#endif
 #if 0
 	//中文说明，根据 level
     	if( !strcmp(lookupuser->userid,"SYSOP"))
@@ -777,15 +775,11 @@ int board_change_report(char *log, struct boardheader *oldbh, struct boardheader
     else
         fprintf(se,"%s", "俱乐部:   无\n");
     fprintf(se,"限制 %s 权力: %s"
-#ifdef HAVE_CUSTOM_USER_TITLE
         "      需要的用户职务: %s(%d)"
-#endif
         ,
         (fh.level & PERM_POSTMASK) ? "POST" : "READ",
         (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限"
-#ifdef HAVE_CUSTOM_USER_TITLE
         ,fh.title_level? get_user_title(fh.title_level):"无",fh.title_level
-#endif
         );
 
                 fprintf(se,"\n\033[31m以下是版面被修改后的属性\033[m\n");
@@ -815,15 +809,11 @@ int board_change_report(char *log, struct boardheader *oldbh, struct boardheader
     else
         fprintf(se,"%s", "俱乐部:   无\n");
     fprintf(se,"限制 %s 权力: %s"
-#ifdef HAVE_CUSTOM_USER_TITLE
         "      需要的用户职务: %s(%d)"
-#endif
         ,
         (newfh.level & PERM_POSTMASK) ? "POST" : "READ",
         (newfh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限"
-#ifdef HAVE_CUSTOM_USER_TITLE
         ,newfh.title_level? get_user_title(newfh.title_level):"无",newfh.title_level
-#endif
         );
 
                 fprintf(se, "\n\n\033[32m以下是修改者个人资料\033[m");

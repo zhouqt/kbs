@@ -51,9 +51,7 @@ void disply_userinfo(struct userec *u, int real)
 #ifdef ZIXIA
     prints("您的修炼道行 : %d\n",u->altar);
 #endif
-#ifdef HAVE_CUSTOM_USER_TITLE
     prints("您的职务     : %s\n",get_user_title(u->title));
-#endif
 
     if (real) {
         prints("原始注册资料 : %s\n", ud.realemail);
@@ -224,7 +222,6 @@ int uinfo_query(struct userec *u, int real, int unum)
 #endif
 
         if (real) {
-#ifdef HAVE_CUSTOM_USER_TITLE
 	usertitle:
 	     sprintf(genbuf, "当前职务: %s[%d](可以直接输入职务，输入0除去职务): ", get_user_title(u->title),u->title);
          getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
@@ -255,7 +252,6 @@ int uinfo_query(struct userec *u, int real, int unum)
                 }
             }
         }
-#endif
             sprintf(genbuf, "真实Email[%s]: ", ud.realemail);
             getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
             if (buf[0])
@@ -1121,9 +1117,9 @@ int modify_userinfo(int uid,int mode){
         "发文统计","在线统计","用户积分","用户权限","结束操作"
     };
     static const char *title="\033[1;32m[设定用户资料]\033[m";
-#if !defined(HAVE_BIRTHDAY)||!defined(HAVE_CUSTOM_USER_TITLE)||!defined(NEWSMTH)
+#if !defined(HAVE_BIRTHDAY)||!defined(NEWSMTH)
     static const char *invalid="\033[0;33m<当前站点设定不支持该项功能>\033[m";
-#endif /* !HAVE_BIRTHDAY||!HAVE_CUSTOM_USER_TITLE||!NEWSMTH */
+#endif /* !HAVE_BIRTHDAY||!NEWSMTH */
     static const char *md5_mask="<MD5 加密过的密码>";
     FILE *fp;
     struct mu_item item[MU_ITEM+1];
@@ -1134,9 +1130,7 @@ int modify_userinfo(int uid,int mode){
     struct usermemo *memo;
     POINT loc[MU_ITEM];
     char omenu[MU_ITEM][MU_LENGTH],menu[MU_ITEM][MU_LENGTH],buf[MU_LENGTH],name[MU_LENGTH];
-#ifdef HAVE_CUSTOM_USER_TITLE
     unsigned char uc,uf;
-#endif /* HAVE_CUSTOM_USER_TITLE */
     int i,j,k,loop,pos,mail;
     unsigned int access,change,verify,level;
     time_t current;
@@ -1156,9 +1150,6 @@ int modify_userinfo(int uid,int mode){
 #ifndef HAVE_BIRTHDAY
     access&=(~0x00000030);
 #endif /* ! HAVE_BIRTHDAY */
-#ifndef HAVE_CUSTOM_USER_TITLE
-    access&=(~0x00000200);
-#endif /* ! HAVE_CUSTOM_USER_TITLE */
 #ifndef NEWSMTH
     access&=(~0x00020000);
 #endif /* ! NEWSMTH */
@@ -1213,12 +1204,8 @@ int modify_userinfo(int uid,int mode){
     MU_MENUFORM(6,N,"%-.64s",ndata.address);
     MU_MENUFORM(7,N,"%-.64s",ndata.email);
     MU_MENUFORM(8,N,"%-.64s",ndata.telephone);
-#ifndef HAVE_CUSTOM_USER_TITLE
-    MU_MENUFORM(9,N,"%s",invalid);
-#else /* HAVE_CUSTOM_USER_TITLE */
     snprintf(buf,MU_LENGTH,"[%s] <%u>",(nuser.title?get_user_title(nuser.title):"无"),nuser.title);
     MU_MENUFORM(9,N,"%s",buf);
-#endif /* ! HAVE_CUSTOM_USER_TITLE */
     MU_MENUFORM(10,N,"%-.64s",ndata.realemail);
     MU_GET_TIME(nuser.firstlogin);
     MU_MENUFORM(11,N,"%s",buf);
@@ -1440,7 +1427,6 @@ int modify_userinfo(int uid,int mode){
                     snprintf(ndata.telephone,STRLEN,"%s",buf);
                     MU_SET(i,data,telephone,str,"%s",0);
                     break;
-#ifdef HAVE_CUSTOM_USER_TITLE
                 case 9:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的职务{<名称>|<#序号>|<@>}: "),buf,(USER_TITLE_LEN-1));
@@ -1479,7 +1465,6 @@ int modify_userinfo(int uid,int mode){
                     snprintf(buf,MU_LENGTH,"[%s] <%u>",(nuser.title?get_user_title(nuser.title):"无"),nuser.title);
                     MU_SET(i,user,title,val,"%s",buf);
                     break;
-#endif /* HAVE_CUSTOM_USER_TITLE */
                 case 10:
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的原始注册资料..."));
@@ -1669,11 +1654,9 @@ int modify_userinfo(int uid,int mode){
                 case 8:
                     MU_RESET(i,data,telephone);
                     break;
-#ifdef HAVE_CUSTOM_USER_TITLE
                 case 9:
                     MU_RESET(i,user,title);
                     break;
-#endif /* HAVE_CUSTOM_USER_TITLE */
                 case 10:
                     MU_RESET(i,data,realemail);
                     break;
@@ -1738,9 +1721,7 @@ int modify_userinfo(int uid,int mode){
     MU_VERIFY(6,data,address,str);
     MU_VERIFY(7,data,email,str);
     MU_VERIFY(8,data,telephone,str);
-#ifdef HAVE_CUSTOM_USER_TITLE
     MU_VERIFY(9,user,title,val);
-#endif /* HAVE_CUSTOM_USER_TITLE */
     MU_VERIFY(10,data,realemail,str);
     MU_VERIFY(11,user,firstlogin,val);
     MU_VERIFY(12,user,lastlogin,val);
@@ -1777,9 +1758,7 @@ int modify_userinfo(int uid,int mode){
     MU_EXEC(6,data,address);
     MU_EXEC(7,data,email);
     MU_EXEC(8,data,telephone);
-#ifdef HAVE_CUSTOM_USER_TITLE
     MU_EXEC(9,user,title);
-#endif /* HAVE_CUSTOM_USER_TITLE */
     MU_EXEC(10,data,realemail);
     MU_EXEC(11,user,firstlogin);
     MU_EXEC(12,user,lastlogin);

@@ -130,12 +130,10 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     lvl = lookupuser->userlevel;
     strncpy(userid, lookupuser->userid, IDLEN + 2);
 
-#ifdef HAVE_CUSTOM_USER_TITLE
     if (lookupuser->title!=0) {
         strcpy(buf,get_user_title(lookupuser->title));
         if (buf[0]!=0) return 0;
     }
-#endif
     if (!(lvl & PERM_BASIC) && !(lookupuser->flags & GIVEUP_FLAG)) {
         strcpy(buf, "ĞÂÈË");
         return 0;

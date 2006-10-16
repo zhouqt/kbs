@@ -18,9 +18,7 @@ struct UCACHE {
     int next[MAXUSERS];
     time_t uptime;
     int number;
-#ifdef HAVE_CUSTOM_USER_TITLE
     char user_title[255][USER_TITLE_LEN]; //定义用户的称号字符串。
-#endif
     struct userec passwd[MAXUSERS];
 };
 
@@ -292,17 +290,13 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
     return 0;
 }
 
-#ifdef HAVE_CUSTOM_USER_TITLE
 static void flush_user_title();
-#endif
 
 int flush_ucache()
 {
     int ret;
     ret= substitute_record(PASSFILE, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
-#ifdef HAVE_CUSTOM_USER_TITLE
     flush_user_title();
-#endif
     return ret;
 }
 
@@ -322,9 +316,7 @@ int load_ucache()
         bbslog("4system", "load a exitist ucache shm!");
     } else {
 
-#ifdef HAVE_CUSTOM_USER_TITLE
         load_user_title();
-#endif
         if ((passwdfd = open(PASSFILE, O_RDWR | O_CREAT, 0644)) == -1) {
             bbslog("3system", "Can't open " PASSFILE "file %s", strerror(errno));
             ucache_unlock(fd);
@@ -1042,7 +1034,6 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
 	return 0;
 }
 
-#ifdef HAVE_CUSTOM_USER_TITLE
 /**
  * user_title数组是1 base,所以idx都要减一
  * 当title==0的时候，应该用原来的显示体系结构
@@ -1113,8 +1104,6 @@ void set_user_title(unsigned char titleidx,char* newtitle)
     }
     ucache_unlock(fd);
 }
-#endif
-
 
 /* WWW GUEST这样做有个同步问题，就是当被清除一个
  * GUEST的时候如果正好这个guest刷新了，那么会重写数据结构

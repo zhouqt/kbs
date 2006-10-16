@@ -290,10 +290,8 @@ int show_boardinfo(const char *bname)
         prints("\033[1;33m权限限制\033[m: %s <%s>\n",
             (bp->level&~PERM_POSTMASK)?((bp->level&PERM_POSTMASK)?"发表限制":"读取限制"):"无限制",
             gen_permstr(bp->level,genbuf));
-#ifdef HAVE_CUSTOM_USER_TITLE
         prints("\033[1;33m身份限制\033[m: %s <%d>\n",bp->title_level?get_user_title(bp->title_level):"无限制",
             (unsigned char)bp->title_level);
-#endif
 #ifdef NEWSMTH
         prints("\033[1;33m积分限制\033[m: %s <%d>\n",bp->score_level?"发表限制":"无限制",bp->score_level);
 #endif /* NEWSMTH */
