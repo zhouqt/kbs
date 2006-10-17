@@ -507,7 +507,7 @@ int cancel_article_front(char *msgid)
             }
             innbbsdlog("cancel post %s\n", filename);
             {
-                char *fp = strrchr(file, '/');
+                char *fp = strchr(file, '/');
 
                 if (fp != NULL) {
                     *fp = '\0';
@@ -674,18 +674,20 @@ char *pathname, *firstpath;
     return name;
 }
 
-int cancel_article(homepath, board, file)
-char *homepath;
-char *board, *file;
+int cancel_article(char *homepath, char *board, char *file)
 {
     struct fileheader header;
     struct stat state;
     char dirname[MAXPATHLEN];
     char buf[MAXPATHLEN];
+    char *basename;
     long size, time, now;
     int fd, lower, ent;
 
-    if (file == NULL || file[0] != 'M' || file[1] != '.' || (time = atoi(file + 2)) <= 0)
+    if (file == NULL || strlen(file) < 3)
+        return 0;
+    basename = (file[1]=='/') ? (file + 2) : file;
+    if (basename[0] != 'M' || basename[1] != '.' || (time = atoi(basename + 2)) <= 0)
         return 0;
     size = sizeof(header);
     sprintf(dirname, "%s/boards/%s/.DIR", homepath, board);
@@ -704,7 +706,7 @@ char *board, *file;
             ent = 0;
             break;
         }
-        now = atoi(header.filename + 2);
+        now = get_posttime(&header);
         lower = (now < time) ? lower + 1 : 0;
     }
     if (ent < 0)
@@ -721,7 +723,7 @@ char *board, *file;
             }
             break;
         }
-        now = atoi(header.filename + 2);
+        now = get_posttime(&header);
         if (now > time)
             break;
     }
