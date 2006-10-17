@@ -93,14 +93,6 @@ int readfilterfile(char *inndhome);
 int readnffile(const char *inndhome);
 int readnlfile(char *inndhome, char *outgoing);
 
-#ifdef PalmBBS
-void xbbslog(char* fmt,...);
-#else
 void innbbsdlog(char* fmt,...);
-#endif
-
-#ifdef PalmBBS
-#define innbbsdlog xbbslog
-#endif
 
 #endif

@@ -52,11 +52,6 @@ char *HEADER[LASTHEADER];
 char *BODY;
 char *FROM, *SUBJECT, *SITE, *DATE, *POSTHOST, *NNTPHOST, *PATH, *GROUPS, *MSGID, *CONTROL;
 
-#ifdef PalmBBS
-char **XHEADER;
-char *XPATH;
-#endif
-
 int isexcluded(path1, nl)
 char *path1;
 nodelist_t *nl;
@@ -490,10 +485,6 @@ void readlines(ClientType *client)
             HEADER[NNTPPOSTINGHOST_H] = POSTHOST;
         }
     }
-#ifdef PalmBBS
-    XPATH = PATH;
-    XHEADER = HEADER;
-#endif
 }
 
 

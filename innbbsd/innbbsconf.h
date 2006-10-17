@@ -186,10 +186,6 @@
 #  define ULONG unsigned long
 #endif
 
-#ifdef PalmBBS
-#undef WITH_RECORD_O
-#endif
-
 #ifdef HCCC
 #if defined(HC) || defined(WORDG2B)
 #  define Rfprintf b2gfprintf

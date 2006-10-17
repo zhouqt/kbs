@@ -110,11 +110,7 @@ void verboselog(const char* fmt,...)
     va_end(ap);
 }
 
-#ifdef PalmBBS
-void xbbslog(char* fmt,...)
-#else
 void innbbsdlog(char* fmt,...)
-#endif
 {
     va_list ap;
     char datebuf[40];
