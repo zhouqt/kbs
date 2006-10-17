@@ -445,20 +445,7 @@
 
 /* This is the default permission granted to all new accounts. */
 #define PERM_DEFAULT    (PERM_BASIC | PERM_CHAT | PERM_PAGE | PERM_POST | PERM_LOGINOK)
-
-/* These permissions are bitwise ORs of the basic bits. They work that way
-   too. For example, anyone with PERM_SYSOP or PERM_BOARDS or both has
-   PERM_SEEBLEVELS. */
-
 #define PERM_MULTILOG   (PERM_SYSOP | PERM_ANNOUNCE | PERM_OBOARDS)
-#define PERM_LOGINCLOAK (PERM_SYSOP | PERM_ACCOUNTS | PERM_BOARDS | PERM_OBOARDS | PERM_WELCOME)
-#define PERM_SEEULEVELS (PERM_SYSOP | PERM_BOARDS)
-#define PERM_SEEBLEVELS (PERM_SYSOP | PERM_BOARDS)
-#define PERM_MARKPOST   (PERM_SYSOP | PERM_BOARDS)
-#define PERM_UCLEAN     (PERM_SYSOP | PERM_ACCOUNTS)
-#define PERM_NOTIMEOUT  PERM_SYSOP
-/* PERM_MANAGER will be used to allow 2 windows and 
-bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
 
 #endif //permission define NUMPERMS
@@ -509,7 +496,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_HIDEIP			040000000001LL
 #define DEF_SHOWSIZE            040000000002LL
 
-#define NUMDEFINES 33
+#define NUMDEFINES 34
 #endif
 
 /* Don't mess with this. */

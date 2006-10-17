@@ -147,7 +147,6 @@ void u_enter()
     memset(&uinfo, 0, sizeof(uinfo));
     uinfo.active = true;
     uinfo.pid = getpid();
-/*    if( HAS_PERM(getCurrentUser(),PERM_LOGINCLOAK) && (getCurrentUser()->flags[0] & CLOAK_FLAG) && HAS_PERM(getCurrentUser(),PERM_SEECLOAK)) */
 
     /* Bigman 2000.8.29 智囊团能够隐身 */
     if ((HAS_PERM(getCurrentUser(), PERM_CHATCLOAK) || HAS_PERM(getCurrentUser(), PERM_CLOAK)) && (getCurrentUser()->flags & CLOAK_FLAG))
@@ -232,7 +231,6 @@ void u_exit()
         return;
 /*---		---*/
     setflags(PAGER_FLAG, (uinfo.pager & ALL_PAGER));
-/*    if (HAS_PERM(getCurrentUser(),PERM_LOGINCLOAK)&&HAS_PERM(getCurrentUser(),PERM_SEECLOAK))*/
 
     /* Bigman 2000.8.29 智囊团能够隐身 */
     if ((HAS_PERM(getCurrentUser(), PERM_CHATCLOAK) || HAS_PERM(getCurrentUser(), PERM_CLOAK)))
