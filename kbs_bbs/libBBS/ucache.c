@@ -883,8 +883,6 @@ int giveup_addpost(char *userid){
 }
 #endif
 
-#if USE_TMPFS==1
-
 void setcachehomefile(char* path,const char* user,int unum,char* file)
 {
     if (unum==-1) {
@@ -986,16 +984,14 @@ int clean_cachedata(const char* userid,int unum)
     }
     return 0;
 }
-#endif
+
 
 int do_after_login(struct userec* user,int unum,int mode)
 {
-#if USE_TMPFS==1
   if (mode==0)
     init_cachedata(user->userid,unum);
   else //www guest,使用负数来和telnet guest区分
     init_cachedata(user->userid,-unum);
-#endif
   return 0;
 }
 
@@ -1014,21 +1010,13 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
               f_rm(buf);
         }
         if (userinfo&&(mode==0)) {
-#if USE_TMPFS==0
-            if (userinfo->utmpkey!=0) {
-                snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,userinfo->userid,unum);
-                f_rm(buf);
-            }
-#endif
         }
-#if USE_TMPFS==1
         if (user) {
             if (mode==0)
                 clean_cachedata(user->userid,unum);
             else //www guest,使用负数来和telnet guest区分
                 clean_cachedata(user->userid,-unum);
         }
-#endif
         unlock_user(lockfd);
     }
 	return 0;

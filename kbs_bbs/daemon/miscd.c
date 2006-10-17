@@ -558,9 +558,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     struct sigaction act;
     char *commandline;
     char commbuf[10];
-#if USE_TMPFS==1
     char ch;
-#endif
 
 	if (!check_file_writable(PASSFILE))
 	{
@@ -579,7 +577,6 @@ static int miscd_dodaemon(char *argv1, char *daemon)
         exit(-1);
     }
 
-#if USE_TMPFS==1
     /* init tmpfs */
     sprintf(genbuf1,"%s/home",TMPFSROOT);
     mkdir(genbuf1,0700);
@@ -589,7 +586,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     sprintf(genbuf1,"%s/home/%c",TMPFSROOT,ch);
     mkdir(genbuf1,0700);
     }
-#endif
+
     resolve_boards();
 
     resolve_guest_table();

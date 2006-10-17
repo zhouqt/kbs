@@ -5,12 +5,8 @@
 #ifndef __SYS_DEFAULT_H_
 #define __SYS_DEFAULT_H_
 
-#ifndef USE_TMPFS  /* 使用TMPFS */
-#define USE_TMPFS 0
-#else
 #ifndef TMPFSROOT
-#error must define tmpfs root directory
-#endif
+#define TMPFSROOT "cache"
 #endif
 
 #ifndef SMTH /*水木清华专有代码,缺省使能*/

@@ -4,8 +4,6 @@
 #define BBSUID 			500
 #define BBSGID 			500
 
-/*#define USE_TMPFS 1*/
-#define TMPFSROOT "cache"
 #define SMTH    1 /*作为SMTH的测试站嘛*/
 
 /** 使用缺省的FILEHeader结构*/

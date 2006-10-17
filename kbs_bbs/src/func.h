@@ -65,12 +65,10 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     int do_after_login(struct userec* user,int unum,int mode);
     int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode,int locked);
 
-#if USE_TMPFS==1
 void setcachehomefile(char* path,const char* user,int unum, char* file);
 void init_cachedata(const char* userid,int unum);
 void flush_cachedata(const char* userid);
 int clean_cachedata(const char* userid,int unum);
-#endif
 
 char* get_user_title(unsigned char titleidx);
 void set_user_title(unsigned char titleidx,char* newtitle);
@@ -345,10 +343,8 @@ void unlock_sem_check(int lockid);
     int brc_initial(const char *userid, const char *boardname,session_t* session);
     int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, int sort,const char **input_namelist,session_t* session);
 
-#if USE_TMPFS==1
     void init_brc_cache(const char* userid,bool replace, session_t* session);
     void free_brc_cache(char* userid, session_t* session);
-#endif
     void brc_clear_new_flag(unsigned fid, int bid, session_t* session);      /* 清除版面的到这篇文章未读标记 */
     void brc_update(const char *userid,session_t* session);      /* 保存当前的brclist到用户的.boardrc */
     void brc_add_read(unsigned int fid, int bid, session_t* session);

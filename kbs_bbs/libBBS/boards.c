@@ -757,7 +757,6 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 }
 #endif
 
-#if USE_TMPFS==1
 void free_brc_cache(char *userid,session_t* session){
 
 	if( strcmp( userid ,"guest") ){
@@ -794,7 +793,6 @@ void init_brc_cache(const char* userid,bool replace,session_t* session) {
         close(brcfdr);
     }
 }
-#endif
 int brc_initial(const char *userid, const char *boardname,session_t* session)
 {                               /* 读取用户.boardrc文件，取出保存的当前版的brc_list */
     int entry;
@@ -813,11 +811,10 @@ int brc_initial(const char *userid, const char *boardname,session_t* session)
     bid = getbid(boardname,NULL);
     if (bid == 0)
         return 0;
-#if USE_TMPFS==1
+
     init_brc_cache(userid,false,session);
     if (session->brc_cache_entry==NULL) return 0;
     // if (session->brc_cache_entry==MAP_FAILED) return 0; //removed by atppp 20040724
-#endif
 
     for (i = 0; i < BRC_CACHE_NUM; i++)
         if (session->brc_cache_entry[i].bid == bid) {

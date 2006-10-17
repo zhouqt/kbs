@@ -383,11 +383,7 @@ PHP_RINIT_FUNCTION(kbs_bbs)
 
 
 #ifdef HAVE_BRC_CONTROL
-#if USE_TMPFS == 1
     getSession()->brc_cache_entry=NULL;
-#else
-    bzero(getSession()->brc_cache_entry, sizeof(struct _brc_cache_entry)*BRC_CACHE_NUM);
-#endif
     getSession()->brc_currcache=-1;
 #endif
 
@@ -409,11 +405,7 @@ PHP_RSHUTDOWN_FUNCTION(kbs_bbs)
 
 #ifdef HAVE_BRC_CONTROL
     if (getCurrentUser() && getCurrentUser()->userid && (getCurrentUser()->userid[0]) ) {
-#if USE_TMPFS == 1
         free_brc_cache( getCurrentUser()->userid, getSession() );
-#else
-        brc_update( getCurrentUser()->userid, getSession() );
-#endif
     }
 #endif
 

@@ -502,11 +502,7 @@ enum BBSPOST_MODE {
 #define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( unsigned int ))
 #define BRC_FILESIZE    BRC_ITEMSIZE*MAXBOARD
 
-#if USE_TMPFS == 0
-#define BRC_CACHE_NUM   20      /* 未读标记 cache 20 个版 */
-#else /* ! USE_TMPFS */
 #define BRC_CACHE_NUM   50      /* 未读标记被 cache 在 tmpfs 中了 */
-#endif /* ! USE_TMPFS */
 
 #define BRCFILE         ".boardrc.gz"
 

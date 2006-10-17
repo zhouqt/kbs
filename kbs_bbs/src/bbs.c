@@ -1071,11 +1071,7 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
             if (NULL !=(file = checkattach(p, left, &attach_len, &attach))) {
                 left-=(attach-p)+attach_len-1;
                 p=attach+attach_len-1;
-#if USE_TMPFS==1
                 setcachehomefile(name, getCurrentUser()->userid,getSession()->utmpent, "attach.tmp");
-#else
-                gettmpfilename(name, "attach%06d", rand()%100000);
-#endif
                 fp=fopen(name, "wb");
                 fwrite(attach, 1, attach_len, fp);
                 fclose(fp);

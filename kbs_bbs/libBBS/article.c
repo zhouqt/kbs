@@ -2672,14 +2672,13 @@ long ea_delete(int fd,struct ea_attach_info *ai,int pos){
 
 int getattachtmppath(char *buf, size_t buf_len, session_t *session)
 {
-#if USE_TMPFS==1 && ! defined(FREE)
+#if ! defined(FREE)
     /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
     snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(session->currentuser->userid[0]),
 			session->currentuser->userid, session->utmpent);
 #else
     snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,session->currentuser->userid,  session->utmpent);
 #endif
-    buf[buf_len-1] = '\0';
     return 0;
 }
 

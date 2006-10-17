@@ -29,9 +29,7 @@ void init_sessiondata(session_t * session)
 {
     bzero(session,sizeof(*session));
 #ifdef HAVE_BRC_CONTROL
-#if USE_TMPFS==1
     session->brc_cache_entry=NULL;
-#endif
     session->brc_currcache=-1;
 #endif
 
