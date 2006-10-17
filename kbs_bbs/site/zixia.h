@@ -31,11 +31,7 @@
 
 #define BUILD_PHP_EXTENSION 1   /*将php lib编成php extension */
 
-#define ALLOW_CTRL_L_ANTIIDLE 1 /* 允许 Ctrl+L 挂线 */
-
 #define HAVE_WFORUM 1
-
-#define TELNET_WORD_WRAP 1 //Telnet下长行自动词间换行
 
 #define SMTH			0		/* SMTH专有代码 */
 #define FILTER			1		/* 使用文章内容过滤 */
@@ -203,11 +199,6 @@ bigger mailbox. --stephen 2001.10.31*/
 #define PERM_NEWBOARD   PERM_OBOARDS
 
 
-/* Don't mess with this. */
-#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-//#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
-
 #define USE_DEFAULT_DEFINESTR
 
 /**
@@ -294,27 +285,6 @@ typedef struct fileheader fileheader_t;
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
 #define VALID_FILENAME(x) valid_filename(x,0)
 
-/**
- * Mailbox properties.
- * 
- * @author flyriver
- */
-
-#define MBP_SAVESENTMAIL      0x00000001
-#define MBP_FORCEDELETEMAIL   0x00000002
-#define MBP_MAILBOXSHORTCUT   0x00000004
-
-#define MBP_NUMS 3
-
-#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
-
-/**
- * Mailgroup macros.
- *
- * @author flyriver
- */
-#define MAX_MAILGROUP_NUM 30
-#define MAX_MAILGROUP_USERS 300
 
 #define HAVE_OWN_USERIP
 #define SHOW_USERIP(user,x) showuserip(user,x)

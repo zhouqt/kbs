@@ -178,16 +178,6 @@ bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
 
 
-/* Don't mess with this. */
-#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x) ((x)?((user)->userdefine[def_list(x)])&(x):1)   
-
-#define TDEFINE(x) ((x)?(tmpuser)&(x):1)
-
-#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
-#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
-#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
-
 /* 用户自订参数定义 */
 #define DEF_ACBOARD      000001
 #define DEF_COLOR        000002
@@ -226,8 +216,6 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWBANNER   040000000002
 #define NUMDEFINES 		 34
 
-#define TDEF_SPLITSCREEN 000001
-
 extern const char *permstrings[];
 extern const char    *groups[];
 extern const char    *explain[];
@@ -250,27 +238,6 @@ extern const char *mailbox_prop_str[];
 #define VALID_FILENAME(x) valid_filename(x,1)
 #define POSTFILE_BASENAME(x) (((char *)(x))+2)
 #define MAILFILE_BASENAME(x) (x)
-
-/**
- * Mailbox properties.
- * 
- * @author flyriver
- */
-#define MBP_SAVESENTMAIL      0x00000001
-#define MBP_FORCEDELETEMAIL   0x00000002
-#define MBP_MAILBOXSHORTCUT   0x00000004
-
-#define MBP_NUMS 3
-
-#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
-
-/**
- * Mailgroup macros.
- *
- * @author flyriver
- */
-#define MAX_MAILGROUP_NUM 30
-#define MAX_MAILGROUP_USERS 300
 
 /**
 attach define

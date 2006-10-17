@@ -523,7 +523,7 @@ void login_query()
             prints("\033[32m" MSG_ERR_USERID "\033[m\n");
         } else
 /* Add by KCN for let sysop can use extra 10 UTMP */
-        if (!HAS_PERM(getCurrentUser(), PERM_ADMINMENU) && (curr_login_num >= MAXACTIVE + 10)) {
+        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && (curr_login_num >= MAXACTIVE + 10)) {
             ansimore("etc/loginfull", false);
             oflush();
             sleep(1);

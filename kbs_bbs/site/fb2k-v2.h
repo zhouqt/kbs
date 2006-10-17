@@ -203,10 +203,6 @@ bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
 
 
-/* Don't mess with this. */
-#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
-
 #define USE_DEFAULT_DEFINESTR
 
 /**
@@ -220,27 +216,6 @@ bigger mailbox. --stephen 2001.10.31*/
 /** 使用缺省的FILEHeader结构*/
 #define HAVE_FILEHEADER_DEFINE
 
-/**
- * Mailbox properties.
- * 
- * @author flyriver
- */
-
-#define MBP_SAVESENTMAIL      0x00000001
-#define MBP_FORCEDELETEMAIL   0x00000002
-#define MBP_MAILBOXSHORTCUT   0x00000004
-
-#define MBP_NUMS 3
-
-#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
-
-/**
- * Mailgroup macros.
- *
- * @author flyriver
- */
-#define MAX_MAILGROUP_NUM 30
-#define MAX_MAILGROUP_USERS 300
 
 /**
 attach define

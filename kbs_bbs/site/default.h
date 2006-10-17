@@ -450,7 +450,6 @@
    too. For example, anyone with PERM_SYSOP or PERM_BOARDS or both has
    PERM_SEEBLEVELS. */
 
-#define PERM_ADMINMENU  (PERM_ACCOUNTS | PERM_SYSOP|PERM_OBOARDS|PERM_WELCOME)
 #define PERM_MULTILOG   (PERM_SYSOP | PERM_ANNOUNCE | PERM_OBOARDS)
 #define PERM_LOGINCLOAK (PERM_SYSOP | PERM_ACCOUNTS | PERM_BOARDS | PERM_OBOARDS | PERM_WELCOME)
 #define PERM_SEEULEVELS (PERM_SYSOP | PERM_BOARDS)
@@ -462,20 +461,18 @@
 bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
 
-
-/* Don't mess with this. */
-#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
-
 #endif //permission define NUMPERMS
+
+
+
+
 
 #ifndef PERM_AUTOSET
 #define PERM_AUTOSET	PERM_BASIC
 #endif
 
 
-#ifndef TDEFINE
-#define TDEFINE(x) ((x)?(tmpuser)&(x):1)
+#ifndef NUMDEFINES
 
 /* 用户自订参数定义 */
 #define DEF_ACBOARD      000001
@@ -511,16 +508,21 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWREALUSERDATA	010000000000
 #define DEF_HIDEIP			040000000001LL
 #define DEF_SHOWSIZE            040000000002LL
-#define DEF_BLOGANONYCOMMENT    040000000004LL
 
-#define NUMDEFINES 34
+#define NUMDEFINES 33
+#endif
 
+/* Don't mess with this. */
+#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
+#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
+#define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 #define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
 #define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
 #define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
 
+
 #define TDEF_SPLITSCREEN 000001
-#endif
+
 
 
 extern const char * const permstrings[];
@@ -639,21 +641,22 @@ typedef struct fileheader fileheader_t;
 #define SHOW_USERIP(y,x) x
 #endif
 
+
+
 /**
  * Mailbox properties.
  * 
  * @author flyriver
  */
-#ifndef MBP_DEFAULT //其实最好放在#ifndef MBP_NUMS里面，希望以后会整理define的... - atppp 20040719
-#define MBP_DEFAULT           0x00000000  //默认（新注册用户）的邮箱属性
-#endif
-
-#ifndef MBP_NUMS
 #define MBP_SAVESENTMAIL      0x00000001
 #define MBP_FORCEDELETEMAIL   0x00000002
 #define MBP_MAILBOXSHORTCUT   0x00000004
 
 #define MBP_NUMS 3
+
+#ifndef MBP_DEFAULT
+#define MBP_DEFAULT           0x00000001  //默认（新注册用户）的邮箱属性
+#endif
 
 #define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
 /**
@@ -663,8 +666,6 @@ typedef struct fileheader fileheader_t;
  */
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
-
-#endif //MBPNUMS
 
 
 /***

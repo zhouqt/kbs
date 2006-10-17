@@ -183,60 +183,8 @@
 bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
 
-/* Don't mess with this. */
-#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
 
-#define TDEFINE(x) ((x)?(tmpuser)&(x):1)
-
-/* 用户自订参数定义 */
-#define DEF_ACBOARD      000001
-#define DEF_COLOR        000002
-#define DEF_EDITMSG      000004
-#define DEF_NEWPOST      000010
-#define DEF_ENDLINE      000020
-#define DEF_LOGFRIEND    000040
-#define DEF_FRIENDCALL   000100
-#define DEF_LOGOUT       000200
-#define DEF_INNOTE       000400
-#define DEF_OUTNOTE      001000
-#define DEF_NOTMSGFRIEND 002000
-#define DEF_NORMALSCR    004000
-#define DEF_CIRCLE       010000
-#define DEF_FIRSTNEW     020000
-#define DEF_TITLECOLOR   040000
-#define DEF_ALLMSG       0100000
-#define DEF_FRIENDMSG    0200000
-#define DEF_SOUNDMSG     0400000
-#define DEF_MAILMSG      01000000
-#define DEF_LOGININFORM  02000000
-#define DEF_SHOWSCREEN   04000000
-#define DEF_SHOWHOT      010000000
-#define DEF_NOTEPAD      020000000
-#define DEF_IGNOREMSG    040000000      /* Added by Marco */
-#define DEF_HIGHCOLOR	0100000000      /*Leeward 98.01.12 */
-#define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
-#define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
-#define DEF_USEGB     01000000000       /* KCN,99.09.05 */
-#define DEF_CHCHAR    02000000000
-#define DEF_SHOWDETAILUSERDATA	04000000000
-#define DEF_SHOWREALUSERDATA	010000000000
-#define DEF_HIDEIP			040000000001
-#define DEF_SHOWSIZE		040000000002
-/*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
-
-/*#define PERM_POSTMASK  0100000  *//*
- * * means the rest is a post mask 
- */
-
-#define NUMDEFINES 33
-
-#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
-#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
-#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
-
-
-#define TDEF_SPLITSCREEN 000001
+#define USE_DEFAULT_DEFINESTR
 
 /**
  * 看在线用户时的按键处理字符。
@@ -260,27 +208,6 @@ bigger mailbox. --stephen 2001.10.31*/
 //修改密码之类的页面使用https
 #define SECURE_HTTPS
 
-/**
- * Mailbox properties.
- * 
- * @author flyriver
- */
-
-#define MBP_SAVESENTMAIL      0x00000001
-#define MBP_FORCEDELETEMAIL   0x00000002
-#define MBP_MAILBOXSHORTCUT   0x00000004
-
-#define MBP_NUMS 3
-
-#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
-
-/**
- * Mailgroup macros.
- *
- * @author flyriver
- */
-#define MAX_MAILGROUP_NUM 30
-#define MAX_MAILGROUP_USERS 300
 
 /**
 attach define

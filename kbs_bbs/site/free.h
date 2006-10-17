@@ -186,11 +186,6 @@
 bigger mailbox. --stephen 2001.10.31*/
 #define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
 
-/* Don't mess with this. */
-#define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
-
-#define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 
 /* 用户自订参数定义 */
 #define DEF_ACBOARD      000001
@@ -234,12 +229,6 @@ bigger mailbox. --stephen 2001.10.31*/
 
 #define NUMDEFINES 34
 
-#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
-#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
-#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
-
-
-#define TDEF_SPLITSCREEN 000001
 
 /**
  * 看在线用户时的按键处理字符。
@@ -296,33 +285,6 @@ struct userec {                 /* Structure used to hold information in */
 #define VALID_FILENAME(x) valid_filename(x,1)
 #define POSTFILE_BASENAME(x) (((char *)(x))+2)
 #define MAILFILE_BASENAME(x) (x)
-
-// WWW部分
-
-//修改密码之类的页面使用https
-//#define SECURE_HTTPS
-
-/**
- * Mailbox properties.
- * 
- * @author flyriver
- */
-
-#define MBP_SAVESENTMAIL      0x00000001
-#define MBP_FORCEDELETEMAIL   0x00000002
-#define MBP_MAILBOXSHORTCUT   0x00000004
-
-#define MBP_NUMS 3
-
-#define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
-
-/**
- * Mailgroup macros.
- *
- * @author flyriver
- */
-#define MAX_MAILGROUP_NUM 30
-#define MAX_MAILGROUP_USERS 300
 
 /**
 attach define
