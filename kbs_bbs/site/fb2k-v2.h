@@ -136,7 +136,7 @@
 #define LOGIN_PROMPT		"«Î ‰»Î¥˙∫≈"
 #define PASSWD_PROMPT		"«Î ‰»Î√‹¬Î"
 
-
+#define USE_DEFAULT_PERMSTRINGS
 #define USE_DEFAULT_DEFINESTR
 
 /**

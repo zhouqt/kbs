@@ -22,8 +22,9 @@
 #define HAVE_WFORUM		0
 #undef RAW_ARTICLE
 #define SMTH			0
+#ifndef FILTER
 #define FILTER			0
-
+#endif
 #define IDLE_TIMEOUT    (60*20)
 
 #define BBSUID 			510
@@ -120,48 +121,8 @@
 #define LOGIN_PROMPT		"请输入代号"
 #define PASSWD_PROMPT		"请输入密码"
 
-
-/* 用户自订参数定义 */
-#define DEF_ACBOARD      000001
-#define DEF_COLOR        000002
-#define DEF_EDITMSG      000004
-#define DEF_NEWPOST      000010
-#define DEF_ENDLINE      000020
-#define DEF_LOGFRIEND    000040
-#define DEF_FRIENDCALL   000100
-#define DEF_LOGOUT       000200
-#define DEF_INNOTE       000400
-#define DEF_OUTNOTE      001000
-#define DEF_NOTMSGFRIEND 002000
-#define DEF_NORMALSCR    004000
-#define DEF_CIRCLE       010000
-#define DEF_FIRSTNEW     020000
-#define DEF_TITLECOLOR   040000
-#define DEF_ALLMSG       0100000
-#define DEF_FRIENDMSG    0200000
-#define DEF_SOUNDMSG     0400000
-#define DEF_MAILMSG      01000000
-#define DEF_LOGININFORM  02000000
-#define DEF_SHOWSCREEN   04000000
-#define DEF_SHOWHOT      010000000
-#define DEF_NOTEPAD      020000000
-#define DEF_IGNOREMSG    040000000      /* Added by Marco */
-#define DEF_HIGHCOLOR	0100000000      /*Leeward 98.01.12 */
-#define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
-#define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
-#define DEF_USEGB     01000000000       /* KCN,99.09.05 */
-#define DEF_CHCHAR    02000000000
-#define DEF_SHOWDETAILUSERDATA	04000000000
-#define DEF_SHOWREALUSERDATA	010000000000
-#define DEF_HIDEIP			040000000001
-#define DEF_SHOWBANNER	040000000002
-/*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
-
-/*#define PERM_POSTMASK  0100000  *//*
- * * means the rest is a post mask 
- */
-
-#define NUMDEFINES 34
+#define USE_DEFAULT_PERMSTRINGS
+#define USE_DEFAULT_DEFINESTR
 
 
 /**

@@ -10,39 +10,6 @@ const char seccode[SECNUM][5] = {
     "0", "1", "2", "3", "4", "5", "6", "7", "8",
 };
 
-const char * const permstrings[] = {
-    "基本权力",                 /* PERM_BASIC */
-    "进入聊天室",               /* PERM_CHAT */
-    "呼叫他人聊天",             /* PERM_PAGE */
-    "发表文章",                 /* PERM_POST */
-    "使用者资料正确",           /* PERM_LOGINOK */
-    "实习站务",                 /* PERM_BMMANAGER */
-    "可隐身",                   /* PERM_CLOAK */
-    "可见隐身",                 /* PERM_SEECLOAK */
-    "长期帐号",                 /* PERM_XEMPT */
-    "编辑系统档案",             /* PERM_WELCOME */
-    "板主",                     /* PERM_BOARDS */
-    "帐号管理员",               /* PERM_ACCOUNTS */
-    "水木清华智囊团",           /* PERM_CHATCLOAK */
-    "封禁娱乐权限",             /* PERM_DENYRELAX */
-    "系统维护管理员",           /* PERM_SYSOP */
-    "Read/Post 限制",           /* PERM_POSTMASK */
-    "精华区总管",               /* PERM_ANNOUNCE */
-    "讨论区总管",               /* PERM_OBOARDS */
-    "活动看版总管",             /* PERM_ACBOARD */
-    "不能 ZAP(讨论区专用)",     /* PERM_NOZAP */
-    "聊天室OP(元老院专用)",     /* PERM_CHATOP */
-    "系统总管理员",             /* PERM_ADMIN */
-    "荣誉帐号",                 /* PERM_HONOR */
-    "特殊权限 5",               /* PERM_UNUSE? */
-    "仲裁委员",                 /* PERM_JURY */
-    "特殊权限 7",               /* PERM_UNUSE? */
-    "自杀进行中",               /*PERM_SUICIDE */
-    "集体专用帐号",             /* PERM_COLLECTIVE */
-    "看系统讨论版",             /* PERM_UNUSE? */
-    "封禁Mail",                 /* PERM_DENYMAIL */
-
-};
 
 const char *const groups[] = {
     "GROUP_0",
