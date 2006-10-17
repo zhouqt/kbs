@@ -328,7 +328,9 @@ int show_utmplist()
                 prints(" %s", bp->filename);
             prints(" %s", modestring(stbuf, uent.mode, uent.destuid, 0, ""));
         }
+        clrtoeol();
     }
+    clrtobot();
     return 0;
 }
 
@@ -357,6 +359,7 @@ int show_wwwguestlist()
         prints("   %5d %-15s %-24s %s", i+page, ips, ctime(&(wgentp->logintime)), bp?bp->filename:"");
         clrtoeol();
     }
+    clrtobot();
     return 0;
 }
 
