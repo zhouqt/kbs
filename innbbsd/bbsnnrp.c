@@ -976,7 +976,7 @@ ULONG low, high;
 }
 
 int NNRPxhdrget(artno, mid, iscontrol)
-int *artno;
+ULONG *artno;
 char **mid;
 int iscontrol;
 {

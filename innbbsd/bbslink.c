@@ -1527,7 +1527,7 @@ int bntplink(int argc, char **argv)
 
     if (!NoVisit) {
         sprintf(bbslink_lockfile, "%s/.bbslink.visit", INNDHOME);
-        if (!rename(fileglue("%s/out.bntp", INNDHOME), OUTING)
+        if (!f_mv(fileglue("%s/out.bntp", INNDHOME), OUTING)
             && bbslink_get_lock(bbslink_lockfile)) {
             /*
              * When try to visit new post, try to lock it 
