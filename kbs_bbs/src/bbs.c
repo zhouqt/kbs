@@ -1889,7 +1889,7 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
     struct read_arg *arg=(struct read_arg*)conf->arg;
     struct fileheader info;
     const struct fileheader *ptr;
-    char dir[STRLEN],*cptr;
+    char dir[STRLEN],*cptr,*p;
     int filedes,count,selected,i;
     const void *data;
     ssize_t length,writen;
@@ -1918,7 +1918,9 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
                 &&!strcmp(ptr[i].owner,getCurrentUser()->userid)){
                 info=ptr[i];
                 strnzhcpy(info.title,ptr[i].title,34);
-                for(data=&info,length=sizeof(struct fileheader),writen=0;
+                for(p=&info.title[32];p>info.title&&*p==' ';p--)
+                    continue;
+                for(*++p=0,data=&info,length=sizeof(struct fileheader),writen=0;
                     writen!=-1&&length>0;vpm(data,writen),length-=writen){
                     writen=write(filedes,data,length);
                 }
