@@ -9,6 +9,7 @@
 #define HAVE_REVERSE_DNS	0
 #define CHINESE_CHARACTER	1
 #define CNBBS_TOPIC		1       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#define USE_NCM_PATCH		1	/* innbbsd nocem support 转 tw.bbs.* 者必备 */
 #define MAIL2BOARD		1       /* 是否允许直接 mail to any board */
 #define MAILOUT			1       /* 是否允许向站外主动发信 */
 #define MANUAL_DENY		0       /*是否允许手动解封 */
