@@ -486,19 +486,6 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                  * user->userlevel &= ~PERM_POST;
                  */
             }
-#if 0
-	    else if(strlen(ud.realemail) >=3){
-		 strncpy(genbuf,ud.realemail+strlen(ud.realemail)-3,3);
-		 if(!strncasecmp(genbuf,"#TH",3))
-		 {
-			 getuser(user->userid,&uc);
-			 if(time(NULL) - uc->firstlogin >= REGISTER_TSINGHUA_WAIT_TIME)
-				if(auto_register(user->userid,ud.realemail,STRLEN, getSession())==0)user->userlevel |= PERM_DEFAULT;
-		 }
-		 read_userdata(user->userid,&ud);
-	    }
-#endif		  
-	    
         }
 
         memset(&ui, 0, sizeof(struct user_info));

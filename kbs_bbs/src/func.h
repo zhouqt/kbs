@@ -646,7 +646,6 @@ int pc_logs(struct pc_logs *pn);
     void set_posttime2(struct fileheader *dest, struct fileheader *src);
     char *ModeType(int mode);
     const char *email_domain(ARG_VOID);
-    int get_shmkey(char *s);
     int uleveltochar(char *buf, struct userec *lookupuser);
 
     int safe_kill(int x, int y);

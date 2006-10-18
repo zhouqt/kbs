@@ -1,9 +1,5 @@
 #include "bbs.h"
 
-#ifndef REGISTER_TSINGHUA_WAIT_TIME
-#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
-#endif
-
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 const char * const permstrings[] = {
@@ -72,47 +68,8 @@ const char secname[SECNUM][2][20]={
 	{"大圣取经", "[专业/申请]"},
 };
 
-const char * const mailbox_prop_str[] =
-{
-	    "发信时保存信件到发件箱",
-	    "删除信件时不保存到垃圾箱",
-	    "版面按 'v' 时进入: 收件箱(OFF) / 信箱主界面(ON)",
-};
 
-struct _shmkey
-{
-	char key[20];
-	int value;
-};
-
-static const struct _shmkey shmkeys[]= {
-{ "BCACHE_SHMKEY",  3693 },
-{ "UCACHE_SHMKEY",  3696 },
-{ "UTMP_SHMKEY",    3699 },
-{ "ACBOARD_SHMKEY", 9013 },
-{ "ISSUE_SHMKEY",   5010 },
-{ "GOODBYE_SHMKEY", 5020 },
-{ "PASSWDCACHE_SHMKEY", 3697 },
-{ "STAT_SHMKEY",    5100 },
-{ "CONVTABLE_SHMKEY",    5101 },
-{ "MSG_SHMKEY",    5200 },
-{    "",   0 }
-};
-
-int get_shmkey(char *s)
-{
-	int n=0;
-	while(shmkeys[n].key!=0)
-	{
-		if(!strcasecmp(shmkeys[n].key, s))
-			return shmkeys[n].value;
-		n++;
-	}
-	return 0;
-}
-
-int
-uleveltochar( char* buf, struct userec *lookupuser )
+int uleveltochar( char* buf, struct userec *lookupuser )
 {
 	unsigned lvl;
 	char userid[IDLEN+2];

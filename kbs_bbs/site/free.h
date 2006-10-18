@@ -73,9 +73,6 @@
 #define	REGISTER_WAIT_TIME	(48*60*60)
 #define	REGISTER_WAIT_TIME_NAME	"48 小时"
 
-#ifdef SMTH
-#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
-#endif
 #define MAIL_BBSDOMAIN      "ppjj.org"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
@@ -123,7 +120,7 @@
 
 #define USE_DEFAULT_PERMSTRINGS
 #define USE_DEFAULT_DEFINESTR
-
+#define USE_DEFAULT_MAILBOX_PROP_STR
 
 /**
  * 看在线用户时的按键处理字符。

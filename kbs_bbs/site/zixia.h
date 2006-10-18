@@ -134,6 +134,7 @@
 
 
 #define USE_DEFAULT_DEFINESTR
+#define USE_DEFAULT_MAILBOX_PROP_STR
 
 /**
  * 看在线用户时的按键处理字符。

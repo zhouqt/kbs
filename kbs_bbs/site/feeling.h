@@ -30,8 +30,6 @@
 #define SECNUM 9
 #define BBS_PAGE_SIZE 20
 
-#define SQUID_ACCL
-
 #define DEFAULTBOARD    	"sysop"
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
@@ -69,9 +67,6 @@
 #define	REGISTER_WAIT_TIME	(0)
 #define	REGISTER_WAIT_TIME_NAME	"1 分钟"
 
-#ifdef SMTH
-#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
-#endif
 #define MAIL_BBSDOMAIN      "feeling.cn-bbs.org"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
@@ -119,6 +114,7 @@
 
 #define USE_DEFAULT_PERMSTRINGS
 #define USE_DEFAULT_DEFINESTR
+#define USE_DEFAULT_MAILBOX_PROP_STR
 
 /**
  * 看在线用户时的按键处理字符。
@@ -137,11 +133,7 @@
 #define POSTFILE_BASENAME(x) (((char *)(x))+2)
 #define MAILFILE_BASENAME(x) (x)
 
-// WWW部分
-
-//修改密码之类的页面使用https
-#define SECURE_HTTPS
-
+#define USE_DEFAULT_MODE 1
 
 /**
 attach define
@@ -150,16 +142,12 @@ attach define
 
 #define CHECK_IP_LINK 1
 
-#define SMS_SUPPORT
-
 #define PERSONAL_CORP
 
 #define NEW_HELP
 #define HAVE_DEFAULT_HELPMODE
 
 #define COMMEND_ARTICLE "Recommend"
-
-#define NOT_USE_DEFAULT_SMS_FUNCTIONS
 
 #define HAVE_OWN_USERIP
 #define SHOW_USERIP(user,x) showuserip(user,x)

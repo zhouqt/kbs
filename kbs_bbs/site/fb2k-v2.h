@@ -77,10 +77,6 @@
 #define	REGISTER_WAIT_TIME	(1)
 #define	REGISTER_WAIT_TIME_NAME	"1 分钟"
 
-#ifdef SMTH
-#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
-#endif
-
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
 #define BBSDOMAIN_DEFAULT "bbs.mysite.net"   /* 站点域名 */
@@ -138,6 +134,7 @@
 
 #define USE_DEFAULT_PERMSTRINGS
 #define USE_DEFAULT_DEFINESTR
+#define USE_DEFAULT_MAILBOX_PROP_STR
 
 /**
  * 看在线用户时的按键处理字符。
