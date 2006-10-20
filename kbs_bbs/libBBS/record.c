@@ -325,7 +325,7 @@ int search_record_back(int fd,  /* file handle */
     BBS_TRY {
         if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &buf, &filesize) == 0)
             BBS_RETURN(0);
-        if (start > filesize / size)
+        if (start <= 0 || start > filesize / size)
             start = filesize / size;
         for (i = start, buf1 = buf + size * (start - 1); i > 0; i--, buf1 -= size) {
             if ((*fptr) (farg, buf1)) {
@@ -354,7 +354,7 @@ int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_AR
     BBS_TRY {
         if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &buf, &filesize) == 0)
             BBS_RETURN(0);
-        if (start > filesize / size)
+        if (start <= 0 || start > filesize / size)
             start = filesize / size;
         for (i = start, buf1 = buf + size * (start - 1); (i > 0 && i > start - num); i--, buf1 -= size) {
             if ((*fptr) (farg, buf1)) {
