@@ -47,16 +47,13 @@
 #define innbbslog(x) bbslog("3rror",x)
 extern int Junkhistory;
 
-char *post_article ARG((char *, char *, char *, int (*)(), char *, char *));
-int cancel_article ARG((char *, char *, char *));
+static char *post_article (char *, char *, char *, int (*)(), char *, char *);
+static int cancel_article (char *, char *);
 
 #define FAILED goto failed
 
 /* process post write */
-int bbspost_write_post(fh, board, filename)
-int fh;
-char *board;
-char *filename;
+static int bbspost_write_post(int fh, char *board, char *filename)
 {
     char *fptr, *ptr;
     FILE *fhfd;
@@ -119,10 +116,7 @@ char *filename;
     return -1;
 }
 
-int bbspost_write_control(fh, board, filename)
-int fh;
-char *board;
-char *filename;
+static int bbspost_write_control(int fh, char *board, char *filename)
 {
     char *fptr, *ptr;
     FILE *fhfd = fdopen(fh, "w");
@@ -511,7 +505,7 @@ int cancel_article_front(char *msgid)
 
                 if (fp != NULL) {
                     *fp = '\0';
-                    cancel_article(BBSHOME, file, fp + 1);
+                    cancel_article(file, fp + 1);
                     *fp = '/';
                 }
             }
@@ -542,7 +536,7 @@ int cancel_article_front(char *msgid)
 #include "bbs.h"
 #undef  OS_OSDEP_H
 
-int cmp_title(char *title, struct fileheader *fh1)
+static int cmp_title(char *title, struct fileheader *fh1)
 {
     char *p1;
 
@@ -555,7 +549,7 @@ int cmp_title(char *title, struct fileheader *fh1)
     return (!strncmp(p1, title, ARTICLE_TITLE_LEN));
 }
 
-int find_thread(struct fileheader *fh, char *board, char *title)
+static int find_thread(struct fileheader *fh, char *board, char *title)
 {
     char direct[255];
     char *p;
@@ -571,16 +565,12 @@ int find_thread(struct fileheader *fh, char *board, char *title)
         p = title + 6;
     else
         p = title;
-    ret = search_record_back_lite(fd, sizeof(struct fileheader), 0X7FFFF, 1000, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
+    ret = search_record_back_lite(fd, sizeof(struct fileheader), 0, 1000, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
     close(fd);
     return ret;
 }
 
-char *post_article(homepath, userid, board, writebody, pathname, firstpath)
-char *homepath;
-char *userid, *board;
-int (*writebody) ();
-char *pathname, *firstpath;
+static char *post_article(char *homepath, char *userid, char *board, int (*writebody)(), char *pathname, char *firstpath)
 {
     struct fileheader header;
     struct fileheader threadfh;
@@ -674,61 +664,49 @@ char *pathname, *firstpath;
     return name;
 }
 
-int cancel_article(char *homepath, char *board, char *file)
+static int cmp_filename(void *arg, void *this_fh) {
+    char *filename = (char *)arg;
+    struct fileheader *fh = (struct fileheader *)this_fh;
+    return (!strcmp(filename, fh->filename));
+}
+    
+static int cancel_article(char *board, char *file)
 {
     struct fileheader header;
-    struct stat state;
     char dirname[MAXPATHLEN];
-    char buf[MAXPATHLEN];
     char *basename;
-    long size, time, now;
-    int fd, lower, ent;
+    time_t time;
+    int fd, ent;
+    char old_path[255];
 
     if (file == NULL || strlen(file) < 3)
         return 0;
     basename = (file[1]=='/') ? (file + 2) : file;
     if (basename[0] != 'M' || basename[1] != '.' || (time = atoi(basename + 2)) <= 0)
         return 0;
-    size = sizeof(header);
-    sprintf(dirname, "%s/boards/%s/.DIR", homepath, board);
-    if ((fd = open(dirname, O_RDWR)) == -1)
+
+    getcwd(old_path, 255);
+    chdir(BBSHOME);
+    setbdir(DIR_MODE_NORMAL,dirname,board);
+    if ((fd = open(dirname, O_RDWR)) == -1) {
+        chdir(old_path);
         return 0;
-    flock(fd, LOCK_EX);
-    fstat(fd, &state);
-    ent = ((long) state.st_size) / size;
-    lower = 0;
-    while (1) {
-        ent -= 8;
-        if (ent <= 0 || lower >= 2)
-            break;
-        lseek(fd, (off_t) (size * ent), SEEK_SET);
-        if (read(fd, &header, size) != size) {
-            ent = 0;
-            break;
-        }
-        now = get_posttime(&header);
-        lower = (now < time) ? lower + 1 : 0;
     }
-    if (ent < 0)
-        ent = 0;
-    while (read(fd, &header, size) == size) {
-        if (strcmp(file, header.filename) == 0) {
-            if (header.owner[0] != '-') {
-                sprintf(buf, "-%s", header.owner);
-                strncpy(header.owner, buf, OWNER_LEN);
-                header.owner[OWNER_LEN - 1] = 0;
-                snprintf(header.title, ARTICLE_TITLE_LEN ,"<< cancelled from %-.50s >>", POSTHOST ? POSTHOST : "site of origin");
-                lseek(fd, (off_t) (-size), SEEK_CUR);
-                safewrite(fd, &header, size);
-            }
-            break;
-        }
-        now = get_posttime(&header);
-        if (now > time)
-            break;
+
+    ent = search_record_back(fd, sizeof(struct fileheader),0,cmp_filename, file, &header,1);
+    if (ent) {
+        struct write_dir_arg delarg;
+        struct userec user;
+        init_write_dir_arg(&delarg);
+        delarg.fd=fd;
+        delarg.ent=ent;
+        getCurrentUser() = &user;
+        strcpy(user.userid, "<innd>");
+        do_del_post(getCurrentUser(),&delarg,&header,board,DIR_MODE_NORMAL,0,getSession());
+        free_write_dir_arg(&delarg);
     }
-    flock(fd, LOCK_UN);
     close(fd);
+    chdir(old_path);
     return 0;
 }
 
