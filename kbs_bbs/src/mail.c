@@ -914,7 +914,7 @@ void mailtitle(struct _select_def* conf)
         UsedSpace = 1;
     else if (UsedSpace < 0)
         UsedSpace = 0;
-    prints("\033[44m编号    %-12s %6s  %-13s您的信箱上限容量%4dK，当前已用%4dK ", (strstr(arg->direct, ".SENT")) ? "收信者" : "发信者", "日  期", "标  题", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
+    prints("\033[44m 编号    %-12s %6s  %-12s您的信箱上限容量%4dK，当前已用%4dK ", (strstr(arg->direct, ".SENT")) ? "收信者" : "发信者", "日  期", "标  题", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
     clrtoeol();
     prints("\n");
     resetcolor();
@@ -1000,14 +1000,20 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c★ %s%.47s\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title);
     }                           /* modified by dong, 1998.9.19 */
   } else {
-    int size = 0;
+    int titlelen, size = 0, i;
+    char TITLE[ARTICLE_TITLE_LEN];
+    char *sign;
+    int is_original = strncmp("Re:", ent->title, 3);
     if (ent->eff_size > 0) size = (ent->eff_size-1) / 1024 + 1;
-    if (!strncmp("Re:", ent->title, 3)) {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%-45.45s%4dK\033[m", same ? c1 : "", num, reply_status, status, b2, date, attach, same ? c1 : "", ent->title, size);
-    } /* modified by dong, 1998.9.19 */
-    else {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c★ %s%-42.42s%4dK\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title, size);
-    }                           /* modified by dong, 1998.9.19 */
+
+    titlelen = scr_cols > 80 ? scr_cols - 80 + 44 : 44;
+    if (is_original) titlelen -= 3;
+    if (titlelen > ARTICLE_TITLE_LEN) titlelen = ARTICLE_TITLE_LEN;
+    strnzhcpy(TITLE, ent->title, titlelen);
+    for (i=strlen(TITLE); i<titlelen-1; i++) TITLE[i] = ' ';
+    TITLE[titlelen-1] = '\0';
+    sign = same ? (is_original ? c2 : c1) : "";
+    sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%s%s%4dK\033[m", sign, num, reply_status, status, b2, date, attach, is_original?"★ ":"", sign, TITLE, size);
   }
     return buf;
 }
