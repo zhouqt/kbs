@@ -205,7 +205,7 @@ int started = 0;
 static void sync_stay(void){
     time_t now,stay;
     if((stay=(now=time(NULL))-uinfo.logintime)<300) {
-        if (getCurrentUser()->numlogins > 0)
+        if (getCurrentUser()->numlogins > 5)
             getCurrentUser()->numlogins--;
     } else{
         if(!(now-uinfo.freshtime<IDLE_TIMEOUT))

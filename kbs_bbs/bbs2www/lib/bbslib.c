@@ -630,7 +630,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
         stay = 7200;
 #endif
     if(stay < 300) {
-        if (user->numlogins > 0)
+        if (user->numlogins > 5)
             user->numlogins--;
     } else {
         user->stay += stay;
