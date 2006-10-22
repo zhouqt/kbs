@@ -101,7 +101,7 @@ static int rm_dir(const char *path){
         if(!strcmp(de->d_name,".."))
             continue;
         sprintf(q,"%s",de->d_name);
-        if(stat(buf,&st))
+        if(lstat(buf,&st))
             continue;
         if(!S_ISDIR(st.st_mode))
             unlink(buf);
@@ -307,7 +307,7 @@ int f_mv(const char *src,const char *dst){
 */
 int f_rm(const char *path){
     struct stat st;
-    if(stat(path,&st))
+    if(lstat(path,&st))
         return -1;
     return (!S_ISDIR(st.st_mode)?unlink(path):rm_dir(path));
 }
