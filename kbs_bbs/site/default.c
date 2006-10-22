@@ -375,7 +375,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
 #define LIFE_DAY_NODIE		999
 #define LIFE_DAY_NEW		15
 #define LIFE_DAY_SUICIDE	15
-int compute_user_value(struct userec *urec)
+int compute_user_value(const struct userec *urec)
 {
     int value;
     int registeryear;

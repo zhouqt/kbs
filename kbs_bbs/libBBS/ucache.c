@@ -524,17 +524,10 @@ int searchuser(const char *userid)
     return 0;
 }
 
-int getuser(const char *userid, struct userec **user)
-{                               /* 取用户信息 */
-    int uid = searchuser(userid);
-
-    if (uid == 0) {
-        if (user)
-            *user = NULL;
-        return 0;
-    }
-    if (user)
-        *user = &uidshm->passwd[uid - 1];
+int getuser(const char *userid,struct userec **user){
+    int uid=searchuser(userid);
+    if(user)
+        *user=(!uid?NULL:&uidshm->passwd[uid-1]);
     return uid;
 }
 

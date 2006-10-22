@@ -486,22 +486,18 @@ PHP_FUNCTION(bbs_getuserlevel){
 
 PHP_FUNCTION(bbs_compute_user_value)
 {
+    struct userec *user;
 	char *userid;
 	int userid_len;
-    struct userec *lookupuser;
 
-    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
+    if(zend_parse_parameters(1 TSRMLS_CC,"s",&userid,&userid_len)!=SUCCESS){
         WRONG_PARAM_COUNT;
     }
-	
-	if( userid_len > IDLEN )
-		userid[IDLEN]=0;
-
-	if( getuser(userid, &lookupuser) == 0 )
+	if(userid_len>IDLEN)
+        userid[IDLEN]=0;
+	if(!getuser(userid,&user))
 		RETURN_LONG(0);
-
-	RETURN_LONG( compute_user_value(lookupuser) );
-
+	RETURN_LONG(compute_user_value(user));
 }
 
 PHP_FUNCTION(bbs_user_level_char)

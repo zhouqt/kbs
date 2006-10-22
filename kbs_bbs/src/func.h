@@ -48,7 +48,7 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     void setuserid(int num, const char *userid);        /* 设置user num的id为user id */
     int setuserid2(int num, const char *userid);        /* 设置user num的id为user id,userd使用 */
     int searchuser(const char *userid);
-    int getuser(const char *userid, struct userec **lookupuser);        /* 取用户信息 ，返回值在lookupuser里面 */
+    int getuser(const char *userid,struct userec **lookupuser);        /* 取用户信息 ，返回值在lookupuser里面 */
     char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag);
     char *getuserid2(int uid);
     int update_user(struct userec *user, int num, int all);
@@ -156,7 +156,7 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     char *modestring(char* buf,int mode, int towho, int complete, char *chatid);
     int countexp(struct userec *udata);
     int countperf(struct userec *udata);
-    int compute_user_value(struct userec *urec);
+    int compute_user_value(const struct userec *urec);
     void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate);
     void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr);
     void    remove_shm(char *shmstr, int defaultkey, int shmsize);
