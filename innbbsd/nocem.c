@@ -19,7 +19,9 @@ int NCMCOUNT = 0;
 
 #ifdef USE_NCM_PATCH            /* for FB3 */
 
+#ifndef PGP5
 #define	PGP5
+#endif /* PGP5 */
 #undef  PGP2
 
 int ncmdebug = 0;
