@@ -204,10 +204,9 @@ void setflags(mask, value)
 int started = 0;
 static void sync_stay(void){
     time_t now,stay;
-    if((stay=(now=time(NULL))-uinfo.logintime)<300) {
-        if (getCurrentUser()->numlogins > 5)
-            getCurrentUser()->numlogins--;
-    } else{
+    if(((stay=(now=time(NULL))-uinfo.logintime)<300)&&(started>1)&&(getCurrentUser()->numlogins>5))
+        getCurrentUser()->numlogins--;
+    else{
         if(!(now-uinfo.freshtime<IDLE_TIMEOUT))
             stay-=IDLE_TIMEOUT;
         getCurrentUser()->stay+=stay;
@@ -881,6 +880,8 @@ void user_login()
     getCurrentUser()->lastlogin = time(NULL);
     getCurrentUser()->numlogins++;
    }
+    /* etnlegend, 2006.10.22, 我看你们还怎么减上站数! */
+    started=2;
 
     /* Leeward 98.06.20 adds below 3 lines */
     if ((int) getCurrentUser()->numlogins < 1)
