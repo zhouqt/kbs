@@ -186,7 +186,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
 }
 
 
-int compute_user_value(struct userec *urec)
+int compute_user_value(const struct userec *urec)
 {
     int value;
     int registeryear;

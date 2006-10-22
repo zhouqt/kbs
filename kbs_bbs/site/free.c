@@ -353,7 +353,7 @@ int multilogin_user(struct userec *user, int usernum, int mode)
     return 0;
 }
 
-int old_compute_user_value(struct userec *urec)
+int old_compute_user_value(const struct userec *urec)
 {
     int value;
 
@@ -416,7 +416,7 @@ int old_compute_user_value(struct userec *urec)
     return (LIFE_DAY_USER * 24 * 60 - value) / (60 * 24);
 }
 
-int compute_user_value(struct userec *urec)
+int compute_user_value(const struct userec *urec)
 {
     int value;
     int registeryear;
