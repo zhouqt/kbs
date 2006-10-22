@@ -847,7 +847,26 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         attachch[0]=' ';
 	attachch[1]='\0';
 #endif
+
+    if (uinfo.mode != RMAIL && arg->mode != DIR_MODE_DIGEST && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK
+        && strcmp(currboard->filename, "sysmail")) { /* 新方法比较*/
+        if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(ent->title,"Re:",3)||!strncmp(ent->title,"回复:",5))) {
+			isreply=1;
+		}
+        if ((readfh&&readfh->groupid == ent->groupid))
+			isthread=1;
+	}else {
+        if (!strncmp("Re:", ent->title, 3)) {
+			isreply=1;
+            if (readfh&&isThreadTitle(readfh->title, ent->title))
+				isthread=1;
+		}else
+            if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))
+				isthread=1;
+	}
+    
     titlelen = scr_cols > 80 ? scr_cols - 80 + 45 : 45;
+    if (isreply) titlelen += 3;
     if (titlelen > ARTICLE_TITLE_LEN) {
         titlelen = ARTICLE_TITLE_LEN - 1;
     }
@@ -877,22 +896,6 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         return buf;
     }
 
-    if (uinfo.mode != RMAIL && arg->mode != DIR_MODE_DIGEST && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK
-        && strcmp(currboard->filename, "sysmail")) { /* 新方法比较*/
-        if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {
-			isreply=1;
-		}
-        if ((readfh&&readfh->groupid == ent->groupid))
-			isthread=1;
-	}else {
-        if (!strncmp("Re:", ent->title, 3)) {
-			isreply=1;
-            if (readfh&&isThreadTitle(readfh->title, ent->title))
-				isthread=1;
-		}else
-            if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))
-				isthread=1;
-	}
 
     if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
 		strcpy(highstr,"1;");
@@ -2021,7 +2024,7 @@ int search_x(char * b, char * s)
 int change_mode(struct _select_def *conf,struct fileheader *fh,int mode){
     static char title[32];
     struct read_arg *arg=(struct read_arg*)conf->arg;
-    char buf[STRLEN],echo[STRLEN],ans[4];
+    char buf[STRLEN],ans[4];
     if(!mode){
         move(t_lines-2,0);
         clrtoeol();
@@ -2055,10 +2058,8 @@ int change_mode(struct _select_def *conf,struct fileheader *fh,int mode){
                 clrtoeol();
                 move(t_lines-1,0);
                 clrtoeol();
-                sprintf(echo,"您希望查找哪位用户的文章[%s]: ",fh->owner);
-                getdata(t_lines-1,0,echo,buf,IDLEN+2,DOECHO,NULL,true);
-                if(!buf[0])
-                    strcpy(buf,fh->owner);
+                strcpy(buf,fh->owner);
+                getdata(t_lines-1,0,"您希望查找哪位用户的文章: ",buf,IDLEN+2,DOECHO,NULL,false);
                 if(!buf[0])
                     return FULLUPDATE;
                 break;
@@ -2068,13 +2069,11 @@ int change_mode(struct _select_def *conf,struct fileheader *fh,int mode){
                 clrtoeol();
                 move(t_lines-1,0);
                 clrtoeol();
-                snprintf(echo,STRLEN,"您希望查找的标题关键字[%s]: ",title);
-                getdata(t_lines-1,0,echo,buf,32,DOECHO,NULL,true);
-                if(buf[0])
-                    strcpy(title,buf);
-                if(!title[0])
-                    return FULLUPDATE;
                 strcpy(buf,title);
+                getdata(t_lines-1,0,"您希望查找的标题关键字: ",buf,32,DOECHO,NULL,false);
+                if(!buf[0])
+                    return FULLUPDATE;
+                strcpy(title,buf);
                 break;
             case '7':
                 mode=DIR_MODE_SUPERFITER;
@@ -2085,14 +2084,13 @@ int change_mode(struct _select_def *conf,struct fileheader *fh,int mode){
                 clrtoeol();
                 move(t_lines-1,0);
                 clrtoeol();
-                snprintf(echo,STRLEN,"您希望查找的全文关键字[%s]: ",title);
-                getdata(t_lines-1,0,echo,buf,64,DOECHO,NULL,true);
-                if(buf[0])
+                strcpy(buf,title);
+                getdata(t_lines-1,0,"您希望查找的全文关键字: ",buf,64,DOECHO,NULL,false);
+                if(!buf[0])
+                    return FULLUPDATE;
                     strcpy(title,buf);
-                if(title[0]){
-                    strcpy(buf,title);
-                    search_x(currboard->filename,buf);
-                }
+                strcpy(title,buf);
+                search_x(currboard->filename,buf);
                 return FULLUPDATE;
 #endif /* NEWSMTH */
             case '9':
