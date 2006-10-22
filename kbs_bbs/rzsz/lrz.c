@@ -41,7 +41,7 @@
 extern int errno;
 #endif
 
-#define MAX_BLOCK 8192
+#define MAX_BLOCK 20480
 
 /*
  * Max value for HOWMANY is 255 if NFGVMIN is not defined.

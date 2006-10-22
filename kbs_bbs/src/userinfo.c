@@ -446,6 +446,9 @@ int uinfo_query(struct userec *u, int real, int unum)
                     }
                 }
             update_user(&newinfo, unum, 1);
+			if(strcmp(um->ud.realname, ud.realname)){
+    			newbbslog(BBSLOG_USER, "ChangeName '%s' to '%s'", um->ud.realname, ud.realname);
+			}
 			memcpy(&(um->ud), &ud, sizeof(ud));
 			write_userdata(newinfo.userid, &ud);
             if (real)

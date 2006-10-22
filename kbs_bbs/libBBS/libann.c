@@ -11,6 +11,13 @@ static int findboard(struct boardheader *bh,void *data){
 	if(!bh||!(bh->ann_path[0]))
         return 0;
     if(!strncmp(bh->ann_path,arg->path,strlen(bh->ann_path))){
+        switch(arg->path[strlen(bh->ann_path)]){
+            case 0:
+            case '/':
+                break;
+            default:
+                return 0;
+        }
         strncpy(arg->board,bh->filename,arg->len);
         arg->board[arg->len-1]=0;
         return QUIT;

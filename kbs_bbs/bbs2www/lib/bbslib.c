@@ -201,6 +201,8 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
 	oldidx = WWW_GUEST_HASHTAB(hashkey);
 
 	num=0;
+    pub->wwwguestlogincount++;
+
 /* 如果已经有相同的登录 */
 if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip.s_addr ){
 
@@ -260,7 +262,6 @@ if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip
 		}
     	if (num != MAX_WWW_MAP_ITEM) {
         	pub->www_guest_count++;
-        	pub->wwwguestlogincount++;
         	if (get_utmp_number() + getwwwguestcount() > get_publicshm()->max_user) {
             	save_maxuser();
         	}

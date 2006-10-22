@@ -466,9 +466,12 @@ void login_query()
 	get_publicshm()->max_user = 0;
 	setpublicshmreadonly(1);
 #endif
-	
-    prints("\033[1m欢迎光临 ◆\033[31m%s\033[37m◆ \033[36m上线人数 \033[1m%d[最高: %d](%d WWW GUEST)\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), get_publicshm()->max_user,getwwwguestcount());
-
+	{
+		int nowon,nowmax;
+		nowon = curr_login_num + getwwwguestcount();
+		nowmax = get_publicshm()->max_user;
+    	prints("\033[1m欢迎光临 ◆\033[31m%s\033[37m◆ \033[36m上线人数 \033[1m%d[最高: %d](%d WWW GUEST)\033[m", BBS_FULL_NAME, nowon, nowon>nowmax?nowon:nowmax,getwwwguestcount());
+	}
 #ifndef SSHBBS
     attempts = 0;
 #ifdef LOGINASNEW
@@ -882,6 +885,33 @@ void user_login()
    }
     /* etnlegend, 2006.10.22, 我看你们还怎么减上站数! */
     started=2;
+
+#ifndef SSHBBS
+   if( (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_DISS) ) && strcmp(getSession()->fromhost, "127.0.0.1")){
+	   char pip[64];
+	   if(check_proxy_IP(getSession()->fromhost, pip) > 0){
+		   clear();
+		   move(3,0);
+		   prints("\033[1;31m警告:您有特殊权限,但是您现在是从穿梭地址访问本站\n     请注意密码等的安全\033[m\n");
+		   while(1){
+	           getdata(t_lines - 1, 0, "请输入`yes`表示您已知晓(不包括引号):", ans, 4, DOECHO, NULL, true);
+			   if(!strncasecmp(ans,"yes", 3)){
+				   break;
+			   }
+		   }
+	   }else{
+		   clear();
+		   move(3,0);
+		   prints("\033[1;31m警告:您有特殊权限,但是您现在是telnet访问本站\n     请尽量使用ssh方式,并且注意密码等的安全\033[m\n");
+		   while(1){
+	           getdata(t_lines - 1, 0, "请输入`y`表示您已知晓:", ans, 4, DOECHO, NULL, true);
+			   if(ans[0]=='y' || ans[0]=='Y'){
+				   break;
+			   }
+		   }
+	   }
+   }
+#endif
 
     /* Leeward 98.06.20 adds below 3 lines */
     if ((int) getCurrentUser()->numlogins < 1)

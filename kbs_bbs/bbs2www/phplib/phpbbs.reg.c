@@ -485,6 +485,10 @@ PHP_FUNCTION(bbs_modify_info)
 
     if(read_userdata(getCurrentUser()->userid,&ud) < 0)RETURN_LONG(-2);
 
+			if(strcmp(ud.realname, realname)){
+    			newbbslog(BBSLOG_USER, "ChangeName '%s' to1 '%s'", ud.realname, realname);
+			}
+
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address,address,STRLEN);
     strncpy(ud.email,email,STRLEN);

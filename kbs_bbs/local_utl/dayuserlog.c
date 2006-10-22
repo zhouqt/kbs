@@ -40,6 +40,18 @@ static int is_school(char *ip)
 		return 1;
 	if( !strncmp(ip, "166.111", 7))
 		return 1;
+	if( !strncmp(ip, "219.224", 7))
+		return 1;
+	if( !strncmp(ip, "211.151", 7))
+		return 1;
+	if( !strncmp(ip, "211.151.89.114", 14))
+		return 1;
+	if( !strncmp(ip, "220.194.55.56", 13))
+		return 1;
+	if( !strncmp(ip, "210.51.188.45", 13))
+		return 1;
+	if( !strncmp(ip, "202.205.10", 10))
+		return 1;
 	return 0;
 }
 

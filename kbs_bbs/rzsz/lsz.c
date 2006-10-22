@@ -104,7 +104,8 @@ char Myattn[] = { 03, (char)(0336), 0 };
 
 FILE *input_f;
 
-#define MAX_BLOCK 8192
+#define MAX_BLOCK 20480
+
 char txbuf[MAX_BLOCK];
 
 long vpos = 0;                  /* Number of bytes read from file */
