@@ -52,7 +52,8 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag);
     char *getuserid2(int uid);
     int update_user(struct userec *user, int num, int all);
-    int apply_users(int (*fptr) (struct userec *, void *), void *arg);
+    int apply_users(int(*func)(struct userec*,void*),void *arg);
+    int apply_uids(int(*func)(struct userec*,int,void*),void *arg);
     int getnewuserid(char *userid);
 
     int flush_ucache(ARG_VOID);

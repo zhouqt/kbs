@@ -1359,7 +1359,7 @@ int modify_userinfo(int uid,int mode){
 #define MU_PARSE2(p)                    ((((p)[0]*10)+((p)[1]*1))-('0'*11))
 #define MU_PARSE4(p)                    ((MU_PARSE2(p)*100)+(MU_PARSE2(&(p)[2])*1))
 #define MU_MON_CORR(m)                  (((abs(abs(((m)<<1)-15)-5))>>1)&0x01)
-#define MU_FEB_CORR(y)                  (2-((!(y%4)?1:0)-(!(y%100)?1:0)))
+#define MU_FEB_CORR(y)                  (2-(!(y%400)?1:(!(y%100)?0:(!(y%4)?1:0))))
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的出生日期(YYYYMMDD): "),buf,8);
                     trimstr(buf);

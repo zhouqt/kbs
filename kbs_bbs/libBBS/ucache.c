@@ -775,23 +775,43 @@ int update_user(struct userec *user, int num, int all)
     return 0;
 }
 
-int apply_users(int (*fptr) (struct userec *, void *), void *arg)
-{
-    int i;
-    int count;
-
-    count = 0;
-    for (i = 0; i < uidshm->number; i++)
-        if (fptr) {
-            int ret;
-
-            ret = (*fptr) (&uidshm->passwd[i], arg);
-            if (ret == QUIT)
-                break;
-            if (ret == COUNT)
-                count++;
-        } else
+int apply_users(int(*func)(struct userec*,void*),void *arg){
+    register int i,count;
+    for(count=0,i=0;i<uidshm->number;i++){
+        if(func){
+            switch((*func)(&uidshm->passwd[i],arg)){
+                case QUIT:
+                    return count;
+                case COUNT:
+                    count++;
+                default:
+                    break;
+            }
+        }
+        else{
             count++;
+        }
+    }
+    return count;
+}
+
+int apply_uids(int(*func)(struct userec*,int,void*),void *arg){
+    register int i,count;
+    for(count=0,i=0;i<uidshm->number;i++){
+        if(func){
+            switch((*func)(&uidshm->passwd[i],(i+1),arg)){
+                case QUIT:
+                    return count;
+                case COUNT:
+                    count++;
+                default:
+                    break;
+            }
+        }
+        else{
+            count++;
+        }
+    }
     return count;
 }
 
