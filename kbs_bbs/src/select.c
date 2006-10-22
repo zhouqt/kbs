@@ -303,7 +303,7 @@ static int do_select_internal(struct _select_def *conf, int key)
             int i;
             int idx = conf->pos - conf->page_pos;
             int x = 0;
-            int x2 = 1024;
+            int x2 = 0;
             int findidx = -1;
             int findidx2 = -1;
 
@@ -313,7 +313,7 @@ static int do_select_internal(struct _select_def *conf, int key)
                         x = conf->item_pos[i].x;
                         findidx = i;
                     }
-                    if ((conf->item_pos[i].x > conf->item_pos[idx].x) && (conf->item_pos[i].x < x2)) {
+                    if ((conf->item_pos[i].x > conf->item_pos[idx].x) && (conf->item_pos[i].x > x2)) {
                         x2 = conf->item_pos[i].x;
                         findidx2 = i;
                     }
@@ -337,7 +337,7 @@ static int do_select_internal(struct _select_def *conf, int key)
             int i;
             int idx = conf->pos - conf->page_pos;
             int x = 1024;
-            int x2 = 0;
+            int x2 = 1024;
             int findidx = -1;
             int findidx2 = -1;
 
@@ -347,7 +347,7 @@ static int do_select_internal(struct _select_def *conf, int key)
                         x = conf->item_pos[i].x;
                         findidx = i;
                     }
-                    if ((conf->item_pos[i].x < conf->item_pos[idx].x) && (conf->item_pos[i].x > x2)) {
+                    if ((conf->item_pos[i].x < conf->item_pos[idx].x) && (conf->item_pos[i].x < x2)) {
                         x2 = conf->item_pos[i].x;
                         findidx2 = i;
                     }
