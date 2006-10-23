@@ -1108,7 +1108,7 @@ static int fav_key(struct _select_def *conf, int command)
 		return SHOW_REFRESH;
     /* etnlegend, 2005.10.31, 查询在版用户 */
     case ':':
-        if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||ptr->dir)
+        if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||ptr->dir||(ptr->flag&BOARD_GROUP))
             break;
         else{
             char ans[4];
