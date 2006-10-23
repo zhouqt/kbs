@@ -250,6 +250,7 @@ PHP_MINIT_FUNCTION(kbs_bbs)
         if (c==NULL) c = ""; //ft, should I say TODO here?
 	}
     MY_REGISTER_STRING_CONSTANT("BBS_WEBDOMAIN",c,CONST_CS | CONST_PERSISTENT);
+    MY_REGISTER_STRING_CONSTANT("BBS_XPERMSTR", XPERMSTR, CONST_CS | CONST_PERSISTENT);
 
 #ifdef BUILD_PHP_EXTENSION
     REGISTER_LONG_CONSTANT("BUILD_PHP_EXTENSION", 1, CONST_CS | CONST_PERSISTENT);
@@ -304,6 +305,8 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     for(i=0;i<SECNUM;i++) {
         sprintf(buf, "BBS_SECCODE%d", i);
         MY_REGISTER_STRING_CONSTANT(buf, seccode[i], CONST_CS | CONST_PERSISTENT);
+        sprintf(buf, "BBS_GROUP%d", i);
+        MY_REGISTER_STRING_CONSTANT(buf, groups[i], CONST_CS | CONST_PERSISTENT);
         sprintf(buf, "BBS_SECNAME%d_0", i);
         MY_REGISTER_STRING_CONSTANT(buf, secname[i][0], CONST_CS | CONST_PERSISTENT);
         sprintf(buf, "BBS_SECNAME%d_1", i);
