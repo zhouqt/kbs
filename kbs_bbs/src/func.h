@@ -565,11 +565,11 @@ void unlock_sem_check(int lockid);
 /* define in sysconf.c */
     const char *sysconf_str(const char *key);
     const char *sysconf_str_default(const char *key, const char *default_value);
-    int sysconf_eval(char *key, int defaultval);
-    struct smenuitem *sysconf_getmenu(char *menu_name);
-    void build_sysconf(char *configfile, char *imgfile);
+    int sysconf_eval(const char *key, int defaultval);
+    struct smenuitem *sysconf_getmenu(const char *menu_name);
+    void build_sysconf(const char *configfile,const  char *imgfile);
     void load_sysconf(ARG_VOID);
-    char *sysconf_relocate(char *data); /*重新定位menuitem里面的字符串 */
+    char* sysconf_relocate(const char *data); /*重新定位menuitem里面的字符串 */
     int check_sysconf(ARG_VOID);
 
 /* libmsg.c */

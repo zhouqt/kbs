@@ -1393,8 +1393,7 @@ void showtitle(const char *title, const char *mid){
 }
 
 
-void docmdtitle(char *title, char *prompt)
-{
+void docmdtitle(const char *title,const char *prompt){
     char middoc[30];
     int chkmailflag = 0;
 	int chksmsmsg = 0;

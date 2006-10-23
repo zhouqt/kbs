@@ -58,7 +58,7 @@ const char *sysconf_str_default(const char *key, const char *default_value)
 		return default_value;
 }
 
-int sysconf_eval(char *key,int defaultval)
+int sysconf_eval(const char *key,int defaultval)
 {
     int n;
 
@@ -70,12 +70,11 @@ int sysconf_eval(char *key,int defaultval)
     return defaultval;
 }
 
-char *sysconf_relocate(char *data)
-{
-    return (char *) data + sysconf_diff;
+char* sysconf_relocate(const char *data){
+    return (char*)data+sysconf_diff;
 }
 
-struct smenuitem *sysconf_getmenu(char *menu_name)
+struct smenuitem *sysconf_getmenu(const char *menu_name)
 {
     if (sysconf_version == -1)
         load_sysconf();
@@ -193,7 +192,7 @@ static void sysconf_addblock(FILE * fp, char *key)
     }
 }
 
-static void parse_sysconf(char *fname)
+static void parse_sysconf(const char *fname)
 {
     FILE *fp;
     char buf[256];
@@ -255,7 +254,7 @@ static void parse_sysconf(char *fname)
     fclose(fp);
 }
 
-void build_sysconf(char *configfile, char *imgfile)
+void build_sysconf(const char *configfile,const char *imgfile)
 {
     struct smenuitem *old_menuitem;
     struct sdefine *old_sysvar;
@@ -263,7 +262,7 @@ void build_sysconf(char *configfile, char *imgfile)
     int old_menu, old_key, old_len;
     struct sysheader shead;
     int fh;
-    char *imgfilename;
+    const char *imgfilename;
     struct public_data *p=NULL;
     char buf[255];
     int old_diff;

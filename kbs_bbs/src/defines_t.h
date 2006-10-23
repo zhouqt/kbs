@@ -112,7 +112,7 @@ int dosearchuser(char *userid);
 void showtitle(const char *title, const char *mid);
 void abort_bbs(int);
 void update_endline();
-void docmdtitle(char *title, char *prompt);
+void docmdtitle(const char *title,const char *prompt);
 
 /* bbs.c*/
 int read_hot_info();
@@ -252,10 +252,6 @@ void disply_userinfo(struct userec *u, int real);
 int uinfo_query(struct userec *u, int real, int unum);
 int modify_userinfo(int uid,int mode);  /* etnlegend, 2006.09.21, 修改用户资料接口... */
 
-
-/* commlist.c */
-int domenu(char *menu_name);
-
 /* register.c */
 void check_register_info();
 void new_register();
@@ -297,7 +293,8 @@ int bbs_zsendfile(char* filename,char* sendname);
 char* bbs_zrecvfile();
 
 /* comm_lists.c */
-int exec_mbem(char *s);
+int exec_mbem(const char*);
+int domenu(const char*);
 
 /* super_filter.c */
 int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraarg);

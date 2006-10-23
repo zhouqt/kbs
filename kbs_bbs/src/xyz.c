@@ -6,14 +6,14 @@
 #include "bbs.h"
 extern int switch_code();       /* KCN,99.09.05 */
 extern int convcode;            /* KCN,99.09.05 */
-int modify_user_mode(mode)
-int mode;
-{
-    if (uinfo.mode == mode)
-        return 0;               /* 必须减少update_ulist的次数. ylsdd 2001.4.27 */
-    uinfo.mode = mode;
-    UPDATE_UTMP(mode, uinfo);
-    return 0;
+
+int modify_user_mode(int mode){
+    int ret=uinfo.mode;
+    if(uinfo.mode!=mode){
+        uinfo.mode=mode;
+        UPDATE_UTMP(mode,uinfo);
+    }
+    return ret;
 }
 
 /*
