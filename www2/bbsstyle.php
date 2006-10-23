@@ -150,7 +150,7 @@ div.stylesel img {
 		<ol>
 			<li>修改此功能请点上面的 保存设置 并重新登录才能生效。</li>
 			<li>IE6 或 IE7 浏览器可以直接使用。</li>
-			<li>Firefox 1.0 或 1.5 用户请安装 <a href="http://www.newsmth.net/kbsrc/index.html" target="_blank">KBSRC 插件</a>。</li>
+			<li>Firefox 1.0 - 2.0 用户请安装 <a href="http://www.newsmth.net/kbsrc/index.html" target="_blank">KBSRC 插件</a>。</li>
 			<li>其余浏览器不支持。</li>
 			<li>浏览结束请注意点左边的“离开本站”注销登录，以保证保存未读记录，程序也会每十分钟左右自动保存一次。</li>
 		</ol>
