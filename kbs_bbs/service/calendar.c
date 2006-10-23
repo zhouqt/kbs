@@ -100,7 +100,7 @@ char wFtv[][100] = {
 "0630 父亲节",
 "0911 劳动节",
 "1144 感恩节",
-"0480 清华校庆日",
+"0490 清华校庆日",
 ""};
 
 char lmonths[14][20] = {
@@ -322,7 +322,7 @@ void draw_main()
         i0=0;
         while(wFtv[i0][0]) {
             if(getnum(wFtv[i0])==month&&(wFtv[i0][3]-'0'==get_week(year,month,day))&&
-                ((wFtv[i0][2]-'1'==day/7)||('8'-wFtv[i0][2]==(get_day(year,month)+1-day)/7))) {
+                ((wFtv[i0][2]-'1'==day/7)||('9'-wFtv[i0][2]==(get_day(year,month)+1-day)/7))) {
                 strcpy(buf, wFtv[i0]+5);
                 move(23, k);
                 k+=strlen(buf)+1;
@@ -440,7 +440,7 @@ void draw_main()
         i0=0;
         while(wFtv[i0][0]) {
             if(getnum(wFtv[i0])==month&&(wFtv[i0][3]-'0'==get_week(year,month,day))&&
-                ((wFtv[i0][2]-'1'==day/7)||('8'-wFtv[i0][2]==(get_day(year,month)+1-day)/7))) {
+                ((wFtv[i0][2]-'1'==day/7)||('9'-wFtv[i0][2]==(get_day(year,month)+1-day)/7))) {
                 strcpy(buf, wFtv[i0]+5);
                 k-=strlen(buf);
                 move(13, k);
