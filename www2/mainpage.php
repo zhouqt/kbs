@@ -36,7 +36,7 @@ $brdarr = array();
 ?>
 	<div align="center"><table cellpadding="0" cellspacing="0" class="hot_title">
         <tr> 
-          <td>&nbsp;&nbsp;本日热点话题讨论</td>
+          <td>&nbsp;&nbsp;本日热点话题讨论 [<a href="rssi.php?h=1" target="_blank">RSS</a>]</td>
         </tr>
 	</table></div>
 	<table border="0" cellpadding="0" cellspacing="0" class="HotTable" align="center">
@@ -172,7 +172,8 @@ while($board = array_shift($boards))
 <?php
 		}
 ?>
-<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">&lt;更多&gt;</a></span></td></tr>
+<a href="rssi.php?h=2&s=<?php echo $t[$i]; ?>" target="_blank">[RSS]</a>
+<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">[更多]</a></span></td></tr>
 <?php
 		gen_sec_hot_subjects_html($t[$i]);
 ?>
