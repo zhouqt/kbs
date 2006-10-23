@@ -58,10 +58,12 @@
 			$item["author"] = find_content($board, "author");
 			$item["pubDate"] = gmt_date_format(find_content($board, "time"));
 			$item["guid"] = $item["link"];
-			$articles = bbs_getarticles($brdname, $gid, 1, $dir_modes["NORMAL"]);
-			if(!$articles)
+			
+			$articles = array ();
+			$num = bbs_get_records_from_id($brdname, $gid, $dir_modes["NORMAL"], $articles);
+			if ($num <= 0)
 				continue;
-			$article = $articles[0];
+			$article = $articles[1];
 			if(!$article)
 				continue;
 			$contentfile = bbs_get_board_filename($brdname, $article["FILENAME"]);
