@@ -1872,47 +1872,32 @@ char *ident;
     return 0;
 }
 
-int check_proxy_IP(ip, buf)
-                                /*
-                                 * added for rejection of register from proxy,
-                                 * Bigman, 2001.11.9 
-                                 */
- /*
-  * 与bbsd_single里面得local_check_ban_IP基本一样，可以考虑共用 
-  */
-char *ip;
-char *buf;
-{                               /* Leeward 98.07.31
-                                 * RETURN:
-                                 * - 1: No any banned IP is defined now
-                                 * 0: The checked IP is not banned
-                                 * other value over 0: The checked IP is banned, the reason is put in buf
-                                 */
-    FILE *Ban = fopen("etc/proxyIP", "r");
-    char IPBan[64];
-    int IPX = -1;
-    char *ptr;
-
-    if (!Ban)
-        return IPX;
-    else
-        IPX++;
-
-    while (fgets(IPBan, 64, Ban)) {
-        if ((ptr = strchr(IPBan, '\n')) != NULL)
-            *ptr = 0;
-        if ((ptr = strchr(IPBan, ' ')) != NULL) {
-            *ptr++ = 0;
-            strcpy(buf, ptr);
+int check_proxy_IP(const char *ip,char *reason){
+    FILE *fp;
+    char buf[128],*p;
+    int ip_len,buf_len,comp_len,ret;
+    if(!(fp=fopen("etc/proxyIP","r")))
+        return -1;
+    ip_len=strlen(ip);
+    ret=0;
+    while(fgets(buf,128,fp)){
+        if((p=strchr(buf,'\n')))
+            *p=0;
+        if((p=strchr(buf,' '))){
+            *p=0;
+            if(reason)
+                strcpy(reason,&p[1]);
         }
-        IPX = strlen(ip);
-        if (!strncmp(ip, IPBan, IPX))
+        buf_len=(p-buf);
+        if((comp_len=ip_len)>buf_len)
+            comp_len=buf_len;
+        if(!strncmp(ip,buf,comp_len)){
+            ret=comp_len;
             break;
-        IPX = 0;
+        }
     }
-
-    fclose(Ban);
-    return IPX;
+    fclose(fp);
+    return ret;
 }
 
 int apply_reg(regfile, fname, pid, num)

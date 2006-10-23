@@ -175,6 +175,7 @@ void stand_title(char *title);
 char* gen_permstr(unsigned int,char*);
 int select_user_title(const char*);
 void deliverreport(char *title,char *str);
+int check_proxy_IP(const char *ip,char *reason);
 
 /* talk.c */
 int friend_add();
