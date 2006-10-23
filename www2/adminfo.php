@@ -69,7 +69,7 @@
 <fieldset><legend>要修改的用户ID</legend><div class="inputs">
 <label>ID:</label><input type="text" name="userid" value="<?php print($userid); ?>" size="12" maxlength="12">
 <input type="submit" value="确定"><br>
-为了壁面重复提交网页表单导致重要数据破坏，用户ID和密码请用telnet方式登录修改。
+为了避免重复提交网页表单导致重要数据破坏，用户ID和密码请用telnet方式登录修改。
 </div></fieldset></form>
 <form method="post" action="adminfo.php" class="medium" onsubmit="return confirm('确实要修改用户资料吗？');">
 <fieldset><legend>个人资料</legend><div class="inputs">

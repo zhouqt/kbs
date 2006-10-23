@@ -2,13 +2,7 @@
 
 require_once('www2-funcs.php');
 require_once('www2-board.php');
-/* ignore ROAM, pig2532, the same below
-if (defined ("USE_ROAM")) {
-	include_once ('roam_server.php');
-	roam_login_init();
-}
-else */
-	login_init();
+login_init();
 bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
 
 if (isset($_GET["p"])) {

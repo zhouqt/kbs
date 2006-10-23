@@ -55,12 +55,7 @@ ta.t();
 
 require_once('www2-funcs.php');
 require_once('www2-board.php');
-if (defined ("USE_ROAM")) {
-	include_once ('roam_server.php');
-	roam_login_init();
-}
-else
-	login_init();
+login_init();
 bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
 
 if (isset($_GET["p"])) {
@@ -125,38 +120,17 @@ $up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
 $title = defined("www2dev") ? bbs_ann_get_title($path) : "";
 if ($board) {
 	$brdarr = array();
-	if (defined ('USE_ROAM')) {
-		$bid = bbs_roam_getboard ($board, $brdarr);
-		if ($bid < 0)
-			html_error_quit('系统错误');
-	}
-	else
-		$bid = bbs_getboard($board,$brdarr);
+	$bid = bbs_getboard($board,$brdarr);
 	if ($bid) {
 		$board = $brdarr['NAME'];
 		$usernum = $currentuser['index'];
-		if (defined ('USE_ROAM')) {
-			$ret = bbs_roam_checkreadperm($usernum, $bid);
-			if ( $ret <= 0)
-				html_error_quit('不存在该目录');
-			$ret = bbs_roam_normalboard($board);
-			if ( $ret < 0 )
-				html_error_quit('系统错误');
-			if ( $ret == 1 ) {
-				$dotnames = BBS_HOME . '/' . $path . '/.Names';
-				if (cache_header('public',filemtime($dotnames),300))
-					return;
-			}
-		}
-		else {
-			if (bbs_checkreadperm($usernum, $bid) == 0)
-				html_error_quit('不存在该目录');
-			bbs_set_onboard($bid,1);
-			if (bbs_normalboard($board)) {
-				$dotnames = BBS_HOME . '/' . $path . '/.Names';
-				if (cache_header('public',filemtime($dotnames),300))
-					return;
-			}
+		if (bbs_checkreadperm($usernum, $bid) == 0)
+			html_error_quit('不存在该目录');
+		bbs_set_onboard($bid,1);
+		if (bbs_normalboard($board)) {
+			$dotnames = BBS_HOME . '/' . $path . '/.Names';
+			if (cache_header('public',filemtime($dotnames),300))
+				return;
 		}
 		//bbs_board_header($brdarr,-1,0);
 		bbs_ann_header($board);
