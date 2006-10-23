@@ -316,9 +316,10 @@ PHP_FUNCTION(bbs_admin_newboard) {
 PHP_FUNCTION(bbs_admin_getboardparam) {
     int ac, bid;
     char *boardname;
-    int boardname_len;
+    int boardname_len, section;
     zval *boardparams;
     struct boardheader *bp = NULL;
+    unsigned int annstat;
 
     ac = ZEND_NUM_ARGS();
     if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &boardname, &boardname_len, &boardparams) == FAILURE) {
@@ -346,6 +347,10 @@ PHP_FUNCTION(bbs_admin_getboardparam) {
     add_assoc_long(boardparams, "FLAG", bp->flag);
     add_assoc_long(boardparams, "SCORELEVEL", bp->score_level);
     add_assoc_string(boardparams, "ANNPATH", bp->ann_path, 1);
+    annstat = check_ann(bp);
+    section = (annstat & 0x020000) ? -1 : (annstat & 0xFFFF);
+    add_assoc_long(boardparams, "ANNPATH_SECTION", section);
+    add_assoc_long(boardparams, "ANNPATH_STATUS", !(annstat&~0xFFFF) ? 0 : ((annstat & 0x040000) ? 1 : 2));
     add_assoc_long(boardparams, "GROUP", bp->group);
     add_assoc_long(boardparams, "TITLELEVEL", bp->title_level);
     add_assoc_string(boardparams, "DES", bp->des, 1);
