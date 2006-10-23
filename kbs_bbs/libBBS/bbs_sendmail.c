@@ -725,7 +725,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noans
 
 #else
 
-static int encode_imail_file(char *fromid, char *fromhost, char *fromip, char *to, char *oldfile, char *newfile, char *title, int isbig5){
+static int encode_imail_file(const char *fromid, const char *fromhost, const char *fromip, const char *to, const char *oldfile, const char *newfile, const char *title, int isbig5){
 	FILE *fp2;
 	time_t now;
 	char boundary[256];
