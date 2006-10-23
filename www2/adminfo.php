@@ -60,9 +60,9 @@
     if($uid > 0) {
         admin_header("改别人资料", "修改用户数据");
         
-        for($i=1; $i<256; $i++) {
-            $usertitles[$i-1] = bbs_admin_getusertitle($i);
-        }
+    for($i=1; $i<256; $i++) {
+        $usertitles[$i-1] = bbs_admin_getusertitle($i);
+    }
         
 ?>
 <form method="post" action="adminfo.php" class="medium">
