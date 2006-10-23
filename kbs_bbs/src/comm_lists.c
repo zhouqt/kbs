@@ -379,7 +379,10 @@ int domenu(const char *name){
                         clrtoeol();
                     }
                     set_alarm(0,0,NULL,NULL);
-                    (*func)(sysconf_relocate(pm[now].arg));
+                    if(func==exec_mbem||func==domenu)
+                        (*func)(sysconf_relocate(pm[now].arg));
+                    else
+                        (*func)();
                     domenu_screen(pm,prompt);
                     modify_user_mode(MMENU);
 #ifdef NEW_HELP
