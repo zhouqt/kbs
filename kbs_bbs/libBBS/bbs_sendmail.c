@@ -396,7 +396,7 @@ static char* encodestring(const char* string,char* encode)
 	return encodestr;
 }
 
-static int write_imail_file(FILE* fp2, char *oldfile, char *boundary, int isbig5) {
+static int write_imail_file(FILE* fp2,const char *oldfile,const char *boundary,int isbig5){
 	int fd;
 	char *ptr;
 	long size;
