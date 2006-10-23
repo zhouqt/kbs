@@ -2664,12 +2664,14 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #endif
     modify_user_mode(POSTING);
     setbdir(DIR_MODE_NORMAL, direct, currboard->filename);
-    if(!((cmdmode==DIR_MODE_MARK)||(cmdmode==DIR_MODE_THREAD)||(cmdmode==DIR_MODE_NORMAL)||(cmdmode==DIR_MODE_TOP10)))
-    {
-        move(3, 0);
+    if(!((cmdmode==DIR_MODE_MARK)||(cmdmode==DIR_MODE_THREAD)||(cmdmode==DIR_MODE_NORMAL)||(cmdmode==DIR_MODE_TOP10))){
+        move(3,0);
         clrtobot();
-        prints("\n\n     目前是文摘或主题模式, 所以不能发表文章.(按回车离开)\n");
-        pressreturn();
+        prints("\n\n\t%s","\033[1;37m当前模式为文摘, 主题或搜索模式, 无法发表文章,\n"
+            "\t按回车键后使用 \033[1;32m<q>\033[1;37m 键可返回文章列表对应的位置...\033[m");
+        move(t_lines-1,0);
+        prints("\033[1;34;47m\t%s\033[K\033[m","按回车键继续...");
+        WAIT_RETURN;
         clear();
         return FULLUPDATE;
     }
