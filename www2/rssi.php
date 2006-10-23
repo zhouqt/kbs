@@ -17,20 +17,22 @@
 	$channel["language"] = "zh-cn";
 	$channel["generator"] = "KBS RSS Generator";
 
-	switch($h) {
-	
-	case "1":		// 今日十大热门话题
-	case "2":		// 分区十大热门话题
 		if($h == 2) {
 			if(isset($_GET["s"]))
 				$s = $_GET["s"];
 			else
 				exit;
-			$xmlfile = BBS_HOME . "/xml/day_sec" . $s . ".xml";
+			$xmlfile = BBS_HOME . "/xml/day_sec" . $s . ".xml"; // 分区十大热门话题
+		} else if ($h == 1) {
+			$xmlfile = BBS_HOME . "/xml/day.xml";               // 今日十大热门话题
+		} else {
+			exit;
 		}
-		else
-			$xmlfile = BBS_HOME . "/xml/day.xml";
 		$modifytime = @filemtime($xmlfile);
+
+		if(cache_header("public", $modifytime, 1800))
+			return;
+		
 		$channel["title"] = BBS_FULL_NAME . " " . (($h == 2)?(constant("BBS_SECNAME" . $s . "_0") . "区"):"今日") . "十大热门话题";
 		$channel["description"] = BBS_FULL_NAME . date("Y年m月d日", $modifytime);
 		if($h == 2)
@@ -74,15 +76,8 @@
 				continue;
 			$items[] = $item;
 		}
-		break;
-
-	default:
-
-	}
 
 	$channel["lastBuildDate"] = gmt_date_format($modifytime);
-	if(cache_header("public", $modifytime, 3600))
-		return;
 
 	output_rss($channel, $items);
 
