@@ -170,6 +170,10 @@ table.hot_title td {
 	padding-left: 23px;
 }
 
+table.hot_title a {
+	color: #FFFFFF;
+}
+
 table.type_title {
 	font-size: 12px;
 	color: #FFFFFF;
