@@ -471,11 +471,16 @@ static int read_showcontent(struct _select_def* conf,int newpos)
     strcpy(buf, read_getcurrdirect(conf));
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
+
+    /* tmp fix by atppp 20061022 */
+    if (newpos <= 0) newpos = conf->item_count;
+    else if (newpos > conf->item_count) newpos = 1;
+    
     if ((newpos-conf->page_pos)>=0&&(newpos-conf->page_pos<conf->item_per_page)) {
-    h = (struct fileheader*)(arg->data+(newpos-conf->page_pos) * arg->ssize);
-    sprintf(genbuf, "%s/%s", buf, h->filename);
-    draw_content(genbuf,h);
-    outs("\x1b[m");
+        h = (struct fileheader*)(arg->data+(newpos-conf->page_pos) * arg->ssize);
+        sprintf(genbuf, "%s/%s", buf, h->filename);
+        draw_content(genbuf,h);
+        outs("\x1b[m");
     }
     return SHOW_CONTINUE;
 }
