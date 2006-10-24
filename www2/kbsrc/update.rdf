@@ -4,19 +4,19 @@
   <RDF:Description about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}">
     <em:updates>
       <RDF:Seq>
-        <RDF:li resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.4.2"/>
+        <RDF:li resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.5"/>
       </RDF:Seq>
     </em:updates>
-    <em:version>0.9.4.2</em:version>
+    <em:version>0.9.5</em:version>
     <em:updateLink>http://www.newsmth.net/kbsrc/kbsrc.xpi</em:updateLink>
   </RDF:Description>
-  <RDF:Description about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.4.2">
-    <em:version>0.9.4.2</em:version>
+  <RDF:Description about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.5">
+    <em:version>0.9.5</em:version>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>1.0</em:minVersion>
-        <em:maxVersion>2.0</em:maxVersion>
+        <em:maxVersion>3.0</em:maxVersion>
         <em:updateLink>http://www.newsmth.net/kbsrc/kbsrc.xpi</em:updateLink>
       </Description>
     </em:targetApplication>
