@@ -1,5 +1,11 @@
 <?php
 
+    require("site.php");
+    if(!defined("www2dev")) {
+        print("KBS administration pages are under constuction...");
+        exit;
+    }
+
     $adminperm = array(
         "reg" => BBS_PERM_ACCOUNTS,
         "info" => BBS_PERM_ACCOUNTS,
