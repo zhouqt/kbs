@@ -45,6 +45,16 @@
         print("</tr>");
     }
 
+    function bbs_admin_resolvepermtable($prefix, $count) {
+        $level = 0;
+        for($i=0; $i<$count; $i++) {
+            if(@$_POST["{$prefix}{$i}"] == "o") {
+                $level |= 1 << $i;
+            }
+        }
+        return($level);
+    }
+
     require("www2-funcs.php");
     login_init();  
     assert_login();

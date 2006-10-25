@@ -162,7 +162,7 @@ PHP_FUNCTION(bbs_admin_getusertitle) {
     }
 
     if((num < 1) || (num > 255)) {
-        RETURN_STRING("error", 1);
+        RETURN_STRING("", 1);
     }
     user_title = get_user_title((unsigned char)num);
     RETURN_STRING(user_title, 1);
@@ -354,6 +354,103 @@ PHP_FUNCTION(bbs_admin_getboardparam) {
     add_assoc_long(boardparams, "GROUP", bp->group);
     add_assoc_long(boardparams, "TITLELEVEL", bp->title_level);
     add_assoc_string(boardparams, "DES", bp->des, 1);
+    RETURN_LONG(0);
+}
+
+/* long bbs_admin_setboardparam(string boardname, string filename, string bm, string title, string des, long flag, string parentbname, long annpath_section, long level, long title_level);
+ */
+PHP_FUNCTION(bbs_admin_setboardparam) {
+    int ac, boardname_len, filename_len, bm_len, title_len, des_len, parentbname_len;
+    char *boardname, *filename, *bm, *title, *des, *parentbname;
+    long flag, annpath_section, level, title_level;
+    struct boardheader *bp, newbh;
+    int bid, parentbid;
+
+    ac = ZEND_NUM_ARGS();
+    if(ac != 10 || zend_parse_parameters(10 TSRMLS_CC, "ssssslslll", &boardname, &boardname_len,
+      &filename, &filename_len, &bm, &bm_len, &title, &title_len, &des, &des_len, &flag,
+      &parentbname, &parentbname_len, &annpath_section, &level, &title_level) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    
+    bid = getbid(boardname, (const struct boardheader **)&bp);
+    if(!bid) {
+        // 所修改的版面不存在
+        RETURN_LONG(-1);
+    }
+    memcpy(&newbh, bp, sizeof(struct boardheader));
+        
+    if(strcasecmp(boardname, filename) && (getbid(filename, NULL) > 0)) {
+        // 有同名版面
+        RETURN_LONG(-2);
+    }
+    if(strchr(filename, '/') || strchr(filename, ' ')) {
+        // 版面名称非法
+        RETURN_LONG(-3);
+    }
+    strcpy(newbh.filename, filename);
+    strncpy(newbh.BM, bm, BM_LEN - 1);
+    strncpy(newbh.title, title, STRLEN - 1);
+    strncpy(newbh.des, des, 194);
+    newbh.flag = (unsigned int)flag;
+    if(parentbname[0] != '\0') {
+        parentbid = getbnum_safe(parentbname, getSession());
+        if(!parentbid) {
+            // 所属目录不存在
+            RETURN_LONG(-4);
+        }
+        else if(!(getboard(parentbid)->flag & BOARD_GROUP)) {
+            // 所属目录不是目录讨论区
+            RETURN_LONG(-5);
+        }
+        newbh.group = parentbid;
+    }
+    else
+        newbh.group = 0;
+    if((annpath_section < 0) || (annpath_section >= SECNUM)) {
+        // 精华区分区不存在
+        RETURN_LONG(-6);
+    }
+    snprintf(newbh.ann_path, 127, "%s/%s", groups[annpath_section], newbh.filename);
+    newbh.level = level;
+    if((title_level < 0) || (title_level > 255)) {
+        // 身份不存在
+        RETURN_LONG(-7);
+    }
+    if(title_level != 0)
+        if(!*get_user_title((unsigned int)title_level)) {
+            // 身份不存在
+            RETURN_LONG(-7);
+        }
+    newbh.title_level = title_level;
+
+    // 版面名称修改过
+    if(strcmp(bp->filename, newbh.filename)) {
+        char spath[PATHLEN], dpath[PATHLEN];
+        sprintf(spath, "boards/%s", bp->filename);
+        sprintf(dpath, "boards/%s", newbh.filename);
+        if(dashd(dpath))
+            my_f_rm(dpath);
+        if(dashd(spath))
+            rename(spath, dpath);
+        else {
+            mkdir(dpath, 0755);
+            build_board_structure(newbh.filename);
+        }
+        sprintf(spath, "vote/%s", bp->filename);
+        sprintf(dpath, "vote/%s", newbh.filename);
+        if(dashd(dpath))
+            my_f_rm(dpath);
+        if(dashd(spath))
+            rename(spath, dpath);
+    }
+    edit_group(bp, &newbh);
+    set_board(bid, &newbh, bp);
+    
+    // TODO: auto post syssecurity log
+
+    newbbslog(BBSLOG_USER, "edit_board: %s <%4.4d>", bp->filename, bid);
+    // 修改成功
     RETURN_LONG(0);
 }
 

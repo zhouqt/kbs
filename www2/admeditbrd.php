@@ -4,7 +4,92 @@
     admin_check("editbrd");
 
     if(isset($_POST["oldfilename"])) {
-        $filename = $_POST["oldfilename"];
+        $boardname = $_POST["oldfilename"];
+        $filename = $_POST["filename"];
+        $bm = $_POST["bm"];
+        $chinesebname = $_POST["title"];
+        $secnum = $_POST["secnum"];
+        $btype = $_POST["btype"];
+        $innflag = $_POST["innflag"];
+        $title = sprintf("%-1.1s[%-4.4s]%-6.6s%s", constant("BBS_SECCODE{$secnum}"), $btype, $innflag, $chinesebname);
+        $des = $_POST["des"];
+        $flag = $_POST["flag"];
+        if(@$_POST["anony"] == "o")
+            $flag |= BBS_BOARD_ANONY;
+        else
+            $flag &= ~BBS_BOARD_ANONY;
+        if(@$_POST["notjunk"] == "o")
+            $flag &= ~BBS_BOARD_JUNK;
+        else
+            $flag |= BBS_BOARD_JUNK;
+        if(@$_POST["notpoststat"] == "o")
+            $flag &= ~BBS_BOARD_POSTSTAT;
+        else
+            $flag |= BBS_BOARD_POSTSTAT;
+        if(@$_POST["group"] == "o")
+            $flag |= BBS_BOARD_GROUP;
+        else
+            $flag &= ~BBS_BOARD_GROUP;
+        if(@$_POST["outflag"] == "o")
+            $flag |= BBS_BOARD_OUTFLAG;
+        else
+            $flag &= ~BBS_BOARD_OUTFLAG;
+        if(@$_POST["attach"] == "o")
+            $flag |= BBS_BOARD_ATTACH;
+        else
+            $flag &= ~BBS_BOARD_ATTACH;
+        if(@$_POST["emailpost"] == "o")
+            $flag |= BBS_BOARD_EMAILPOST;
+        else
+            $flag &= ~BBS_BOARD_EMAILPOST;
+        if(@$_POST["noreply"] == "o")
+            $flag |= BBS_BOARD_NOREPLY;
+        else
+            $flag &= ~BBS_BOARD_NOREPLY;
+        if(@$_POST["clubread"] == "o")
+            $flag |= BBS_BOARD_CLUB_READ;
+        else
+            $flag &= ~BBS_BOARD_CLUB_READ;
+        if(@$_POST["clubwrite"] == "o")
+            $flag |= BBS_BOARD_CLUB_WRITE;
+        else
+            $flag &= ~BBS_BOARD_CLUB_WRITE;
+        if(@$_POST["clubhide"] == "o")
+            $flag |= BBS_BOARD_CLUB_HIDE;
+        else
+            $flag &= ~BBS_BOARD_CLUB_HIDE;
+        $parentbname = $_POST["parentb"];
+        $annpath_section = $_POST["annpath"];
+        $level = bbs_admin_resolvepermtable("level", BBS_NUMPERMS);
+        $title_level = $_POST["title_level"];
+        $ret = bbs_admin_setboardparam($boardname, $filename, $bm, $title, $des, $flag, $parentbname, $annpath_section, $level, $title_level);
+        switch($ret) {
+            case 0:
+                html_success_quit("版面属性修改成功。", array("<a href=\"admeditbrd.php?board={$filename}\">请点击这里返回</a>"));
+                break;
+            case -1:
+                html_error_quit("您所要修改的版面不存在。");
+                break;
+            case -2:
+                html_error_quit("无法更改版面名称，同名版面已经存在。");
+                break;
+            case -3:
+                html_error_quit("版面名称包含不符合规定的字符。");
+                break;
+            case -4:
+                html_error_quit("您在“所属目录”中填写的版面不存在。");
+                break;
+            case -5:
+                html_error_quit("您在“所属目录”中填写的版面不是一个目录讨论区。");
+                break;
+            case -6:
+                html_error_quit("精华区分类不存在。");
+                break;
+            case -7:
+                html_error_quit("身份不存在。");
+                break;
+            default:
+        }
     }
 
     if(isset($_GET["board"]))
@@ -37,6 +122,7 @@
             $btype = substr($boardparams["TITLE"], 2, 4);
             $innflag = substr($boardparams["TITLE"], 7, 6);
             $des = $boardparams["DES"];
+            $flag = $boardparams["FLAG"];
             $anony = ($boardparams["FLAG"] & BBS_BOARD_ANNONY) ? " checked" : "";
             $notjunk = ($boardparams["FLAG"] & BBS_BOARD_JUNK) ? "" : " checked";
             $notpoststat = ($boardparams["FLAG"] & BBS_BOARD_POSTSTAT) ? "" : " checked";
@@ -77,6 +163,11 @@
     admin_header("修改版面", "修改讨论区说明与设定");
 ?>
 <script type="text/javascript">
+function loadBoardParam() {
+    var bname = document.getElementById('board').value;
+    location = 'admeditbrd.php?board=' + bname;
+    return false;
+}
 function setinnflag(ifstr) {
     document.getElementById('innflag').value = ifstr;
 }
@@ -90,9 +181,9 @@ function clubtypeChange() {
 		document.getElementById('clubhide').disabled = false;
 }
 </script>
-<form method="post" action="admeditbrd.php" class="medium">
+<form method="post" action="admeditbrd.php" class="medium" onsubmit="return loadBoardParam();">
 <fieldset><legend>要修改的版面</legend><div class="inputs">
-<label>版面英文名称:</label><input type="text" name="board" size="20" maxlength="30" value="<?php echo $boardname; ?>">
+<label>版面英文名称:</label><input type="text" id="board" name="board" size="20" maxlength="30" value="<?php echo $boardname; ?>">
 <input type="submit" value="确定"></div></fieldset></form>
 <?php if($boardname != "") { ?>
 <form method="post" action="admeditbrd.php" class="medium">
@@ -110,12 +201,13 @@ function clubtypeChange() {
     }
 ?>
 </select><br>
-<label>讨论区分类:</label>[<input type="text" name="title" size="4" maxlength="4" value="<?php echo $btype; ?>">]<br>
+<label>讨论区分类:</label>[<input type="text" name="btype" size="4" maxlength="4" value="<?php echo $btype; ?>">]<br>
 <label>转信标签:</label><input type="text" id="innflag" name="innflag" size="6" maxlength="6" value="<?php echo $innflag; ?>">
     &lt;<a href="javascript:setinnflag('      ');">无转信</a>&gt;
     &lt;<a href="javascript:setinnflag(' ●   ');">双向转信</a>&gt;
     &lt;<a href="javascript:setinnflag(' ⊙   ');">单向转信</a>&gt;<br>
 <label>讨论区描述:</label><input type="text" name="des" size="30" maxlength="194" value="<?php echo $des; ?>"><br>
+<input type="hidden" name="flag" value="<?php echo $flag; ?>">
 <label>匿名讨论区:</label><input type="checkbox" value="o" name="anony"<?php echo $anony; ?>>用户可以匿名在版面发文。<br>
 <label>统计文章数:</label><input type="checkbox" value="o" name="notjunk"<?php echo $notjunk; ?>>在版面发文则用户文章数增加。<br>
 <label>统计十大:</label><input type="checkbox" value="o" name="notpoststat"<?php echo $notpoststat; ?>>版面文章参加十大热门话题统计。<br>
@@ -131,7 +223,7 @@ function clubtypeChange() {
 <label>精华区路径:</label><select name="annpath">
 <?php
     for($i=0; $i<BBS_SECNUM; $i++) {
-        print("<option value=\"{$i}\"" . (($i==$annpath_section)?" selected":"") . ">[" . constant("BBS_SECCODE{$i}") . "] " . constant("BBS_SECNAME{$i}_0") . " " . constant("BBS_GROUP{$i}") . "/{$boardname}</option>");
+        print("<option value=\"{$i}\"" . (($i==$annpath_section)?" selected":"") . ">[" . constant("BBS_SECCODE{$i}") . "] " . constant("BBS_SECNAME{$i}_0") . " " . constant("BBS_GROUP{$i}") . "</option>");
     }
 ?>
 </select> <?php echo $annpath_status_str[$annpath_status]; ?><br>
