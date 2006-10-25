@@ -4,7 +4,6 @@
 */
 
 #include "bbs.h"
-extern int switch_code();       /* KCN,99.09.05 */
 extern int convcode;            /* KCN,99.09.05 */
 
 int modify_user_mode(int mode){
@@ -207,8 +206,7 @@ unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int 
 /* 删除过期的帐号 */
 /* 算是给奥运的献礼 */
 /* Bigman 2001.7.14 */
-int confirm_delete_id()
-{
+int confirm_delete_id(void){
     char buff[STRLEN];
     int usernum;
 
@@ -248,8 +246,7 @@ int confirm_delete_id()
     return 0;
 }
 
-int x_level()
-{
+int x_level(void){
     unsigned int newlevel;
     int flag = 0;               /*Haohmaru,98.10.05 */
     int flag1 = 0, flag2 = 0;   /* bigman 2000.1.5 */
@@ -415,12 +412,7 @@ int XCheckLevel(void){
     return 0;
 }
 
-
-
-
-
-int Xdelipacl()
-{
+int Xdelipacl(void){
     int id;
     struct userec *lookupuser;
 
@@ -452,8 +444,7 @@ int Xdelipacl()
     return 0;
 }
 
-int Xdeljunk()
-{
+int Xdeljunk(void){
     char buf[256], board[STRLEN];
 
     modify_user_mode(ADMIN);
@@ -484,8 +475,7 @@ int Xdeljunk()
 }
 
 /*得到别人的收藏夹和未度标记*/
-int get_favread()
-{
+int get_favread(void){
 	char destid[IDLEN+1];
 	char passwd[PASSLEN+1];
     struct userec *destuser;
@@ -585,10 +575,8 @@ int get_favread()
 }
 
 #ifdef SMS_SUPPORT
-int x_usersmsdef()
-{
+int x_usersmsdef(void){
     unsigned int newlevel;
-
     modify_user_mode(USERDEF);
 	clear();
     if (!strcmp(getCurrentUser()->userid, "guest"))
@@ -616,8 +604,7 @@ int x_usersmsdef()
 }
 #endif
 
-int x_userdefine1()
-{
+int x_userdefine1(void){
     int id;
     unsigned int newlevel;
     struct userec *lookupuser;
@@ -650,8 +637,7 @@ int x_userdefine1()
     return 0;
 }
 
-int x_userdefine()
-{
+int x_userdefine(void){
     int id;
     unsigned int newlevel;
     extern int nettyNN;
@@ -705,8 +691,7 @@ int x_userdefine()
     return 0;
 }
 
-int x_cloak()
-{
+int x_cloak(void){
     modify_user_mode(GMENU);
     bbslog("user","%s","toggle cloak");
     uinfo.invisible = (uinfo.invisible) ? false : true;
@@ -720,10 +705,8 @@ int x_cloak()
     return 0;
 }
 
-int x_date()
-{
+int x_date(void){
     time_t t;
-
     modify_user_mode(XMENU);
     clear();
     move(8, 0);
@@ -734,8 +717,7 @@ int x_date()
     return 0;
 }
 
-void x_edits()
-{
+int x_edits(void){
     int aborted;
     char ans[7], buf[STRLEN];
     int ch, num;
@@ -761,7 +743,7 @@ void x_edits()
 
     getdata(num + 5, 0, "你要编修哪一项个人档案: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] - '0' <= 0 || ans[0] - '0' > num || ans[0] == '\n' || ans[0] == '\0')
-        return;
+        return 0;
 
     ch = ans[0] - '0' - 1;
 
@@ -787,7 +769,7 @@ void x_edits()
         bbslog("user","%s",buf);
         pressreturn();
         clear();
-        return;
+        return 0;
     }
     modify_user_mode(EDITUFILE);
     aborted = vedit(genbuf, false, NULL, NULL, 0);
@@ -810,10 +792,10 @@ void x_edits()
     } else
         prints("%s 取消修改\n", explain_file[ch]);
     pressreturn();
+    return 0;
 }
 
-int a_edits()
-{
+int a_edits(void){
     int aborted;
     char ans[7], buf[STRLEN];
     int ch, num;
@@ -1180,12 +1162,11 @@ int find_ip( const char *ip, int flag, char *result)
     return 0;
 }
 
-int search_ip()
+int search_ip(void){
 /* 从管理菜单调用查询IP程序 */
 /* Bigman: 2002.8.20 */
 /* 返回：0 正常 */
 /*       1 数据文件无法打开 */
-{
 	char ip[17];
 	char result[256];
 	int back_flag;
@@ -1213,8 +1194,7 @@ int search_ip()
 	}
 }
 
-int kick_all_user()
-{
+int kick_all_user(void){
     struct user_info *uin;
 	char ans[3];
 	int i;

@@ -61,7 +61,7 @@ int m_template();
 /*int     b_jury_edit();  stephen 2001.11.1*/
 int add_author_friend();
 int m_read();                   /*Haohmaru.2000.2.25 */
-int Goodbye();
+int Goodbye(void);
 
 void RemoveAppendedSpace();     /* Leeward 98.02.13 */
 extern time_t login_start_time;
@@ -133,8 +133,7 @@ int check_stuffmode()
 }
 
 /*Add by SmallPig*/
-int shownotepad()
-{                               /* 显示 notepad */
+int shownotepad(void){          /* 显示 notepad */
     modify_user_mode(NOTEPAD);
     ansimore("etc/notepad", true);
     clear();
@@ -200,8 +199,7 @@ int Select(void){
     return (do_select(NULL,NULL,NULL)==CHANGEMODE?ReadBoard():0);
 }
 
-int Post()
-{                               /* 主菜单内的 在当前版 POST 文章 */
+int Post(void){                 /* 主菜单内的 在当前版 POST 文章 */
     if (!selboard) {
         prints("\n\n先用 (S)elect 去选择一个讨论区。\n");
         pressreturn();          /* 等待按return键 */
@@ -3687,8 +3685,7 @@ int haspc(char *userid)
 	return 0;
 }
 
-int Personal(char *userid)
-{
+int Personal(const char *userid){
    char    found[256], lookid[IDLEN];
    char buf[STRLEN];
    struct userec *lookupuser;
@@ -4025,8 +4022,7 @@ void record_exit_time()
 
 extern int icurrchar, ibufsize;
 
-int Goodbye()
-{                               /*离站 选单 */
+int Goodbye(void){                      /*离站 选单 */
     extern int started;
     time_t stay;
     char fname[STRLEN], notename[STRLEN];
@@ -4255,34 +4251,30 @@ int Goodbye()
 
 
 
-int Info()
-{                               /* 显示版本信息Version.Info */
+int Info(void){                 /* 显示版本信息Version.Info */
     modify_user_mode(XMENU);
-    ansimore("Version.Info", true);
+    ansimore("Version.Info",true);
     clear();
     return 0;
 }
 
-int Conditions()
-{                               /* 显示版权信息COPYING */
+int Conditions(void){           /* 显示版权信息COPYING */
     modify_user_mode(XMENU);
-    ansimore("COPYING", true);
+    ansimore("COPYING",true);
     clear();
     return 0;
 }
 
-int ShowWeather()
-{                               /* 显示版本信息Version.Info */
+int ShowWeather(void){          /* 显示版本信息Version.Info */
     modify_user_mode(XMENU);
-    ansimore("WEATHER", true);
+    ansimore("WEATHER",true);
     clear();
     return 0;
 }
 
-int Welcome()
-{                               /* 显示欢迎画面 Welcome */
+int Welcome(void){              /* 显示欢迎画面 Welcome */
     modify_user_mode(XMENU);
-    ansimore("Welcome", true);
+    ansimore("Welcome",true);
     clear();
     return 0;
 }
@@ -4547,8 +4539,7 @@ static int set_acl_list_getdata(struct _select_def *conf, int pos, int len)
     return SHOW_CONTINUE;
 }
 
-int set_ip_acl()
-{
+int set_ip_acl(void){
     struct _select_def grouplist_conf;
     POINT *pts;
 #ifndef HAVE_IPV6_SMTH

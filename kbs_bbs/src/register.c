@@ -40,7 +40,6 @@ char *Ctime();
 extern struct user_info uinfo;
 extern time_t login_start_time;
 extern int convcode;            /* KCN,99.09.05 */
-extern int switch_code();       /* KCN,99.09.05 */
 
 void new_register()
 {
@@ -510,8 +509,7 @@ void check_register_info()
 }
 
 /* 转让ID     by binxun  ... 2003.5 */
-void ConveyID()
-{
+int ConveyID(void){
     FILE* fn = NULL;
 	long now;
 	char buf[STRLEN],filename[STRLEN],systembuf[STRLEN];
@@ -527,7 +525,7 @@ void ConveyID()
         move(11, 28);
 		prints("\033[1;33m你有重任在身,不能转让ID!\033[m");
         pressanykey();
-        return;
+        return -1;
     }
 
 	//给出提示信息
@@ -549,7 +547,7 @@ void ConveyID()
         if (*buf == '\0' || !checkpasswd2(buf, getCurrentUser())) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
-            return;
+            return -1;
         }
 
         //记录备份信息
@@ -569,7 +567,7 @@ void ConveyID()
 		else{
 		    move(15,0);
 			prints("不能生成临时文件!转让ID失败,请与SYSOP联系.");
-			return;
+			return -1;
 		}
 
 		//清空所有存在的配置文件,信箱
@@ -591,7 +589,7 @@ void ConveyID()
 		else{
 		    move(15,0);
 		    prints("不能生成转让ID文件!转让ID失败,请与SYSOP联系.");
-			return;
+			return -1;
 		}
 		getCurrentUser()->userlevel = 0;
 		getCurrentUser()->userlevel |= PERM_BASIC;
@@ -629,13 +627,11 @@ void ConveyID()
 		//断线
         abort_bbs(0);
     }
-
-    return;
+    return 0;
 }
 
 /*设定ID密码保护 by binxun 2003.10 */
-int ProtectID()
-{
+int ProtectID(void){
 	char buf[STRLEN],print_buf[STRLEN];
 	struct protect_id_passwd protect;
 	FILE* fp;

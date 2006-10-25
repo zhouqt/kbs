@@ -25,11 +25,8 @@ static int pc_read_dir(int first);
 static int pc_read_comment();
 
 
-int pc_choose_user()
-{
-
+int pc_choose_user(void){
     pc_sec();
-
     return 0;
 }
 
@@ -48,8 +45,7 @@ static int pc_sel_user()
 
 }
 
-int pc_add_user()
-{
+int pc_add_user(void){
     char ans[201];
     char sql[100];
     struct userec *lookupuser;

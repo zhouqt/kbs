@@ -518,9 +518,7 @@ static int set_al_key(struct _select_def *conf, int key)
 	return SHOW_CONTINUE;
 }
 
-int al_read()
-{
-
+int al_read(void){
 	struct _select_def group_conf;
 	int i;
 	POINT *pts;

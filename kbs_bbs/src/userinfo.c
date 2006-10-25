@@ -469,16 +469,17 @@ int uinfo_query(struct userec *u, int real, int unum)
 	end_mmapfile(um, sizeof(struct usermemo), -1);
     return 0;
 }
-void x_info() 
-{
+int x_info(void){
     modify_user_mode(GMENU);
     disply_userinfo(getCurrentUser(), 1);
     if (!strcmp("guest", getCurrentUser()->userid)) {
         pressreturn();
-        return;
+        return -1;
     }
     uinfo_query(getCurrentUser(), 0, getSession()->currentuid);
+    return 0;
 }
+
     void getfield(line, info, desc, buf, len)  int line, len;
     char *info, *desc, *buf;
 
@@ -501,8 +502,7 @@ void x_info()
     prints("  %s: %s\n", desc, buf);
     clrtoeol();
 }
-void x_fillform() 
-{
+int x_fillform(void){
     char rname[NAMELEN], addr[STRLEN];
     char phone[STRLEN], career[STRLEN], birth[STRLEN];
     char ans[5], *mesg, *ptr;
@@ -516,19 +516,19 @@ void x_fillform()
     if (!strcmp("guest", getCurrentUser()->userid)) {
         prints("抱歉, 请用 new 申请一个新帐号后再填申请表.");
         pressreturn();
-        return;
+        return -1;
     }
     if (getCurrentUser()->userlevel & PERM_LOGINOK) {
         prints("您的身份确认已经成功, 欢迎加入本站的行列.");
         pressreturn();
-        return;
+        return -1;
     }
     if ((time(0) - getCurrentUser()->firstlogin) < REGISTER_WAIT_TIME)
 	{
         prints("您首次登入本站未满" REGISTER_WAIT_TIME_NAME "...");
         prints("请先四处熟悉一下，在满" REGISTER_WAIT_TIME_NAME "以后再填写注册单。");
         pressreturn();
-        return;
+        return -1;
 	}
     
 	if ((fn = fopen("new_register", "r")) != NULL) {
@@ -539,7 +539,7 @@ void x_fillform()
                 fclose(fn);
                 prints("站长尚未处理您的注册申请单, 请耐心等候.");
                 pressreturn();
-                return;
+                return -1;
             }
         }
         fclose(fn);
@@ -549,7 +549,7 @@ void x_fillform()
 	ansimore("etc/register.note", false);
     getdata(t_lines - 1, 0, "您确定要填写注册单吗 (Y/N)? [N]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] != 'Y' && ans[0] != 'y')
-        return;
+        return -1;
 //    memcpy(&ud,&curruserdata,sizeof(ud));
     memcpy(&ud,&(getSession()->currentmemo->ud),sizeof(ud));
     strncpy(rname, ud.realname, NAMELEN);
@@ -582,7 +582,7 @@ void x_fillform()
         mesg = "以上资料是否正确, 按 Q 放弃注册 (Y/N/Quit)? [N]: ";
         getdata(t_lines - 1, 0, mesg, ans, 3, DOECHO, NULL, true);
         if (ans[0] == 'Q' || ans[0] == 'q')
-            return;
+            return -1;
         if (ans[0] == 'Y' || ans[0] == 'y')
             break;
     }
@@ -607,6 +607,7 @@ void x_fillform()
         fprintf(fn, "----\n");
         fclose(fn);
     }
+    return 0;
 }
 
 /* etnlegend, 2006.09.21, 修改用户资料接口... */

@@ -13,7 +13,7 @@ int range, page, readplan, num;
 struct user_info *user_record[USHM_SIZE];
 struct userec *user_data;
 struct WWW_GUEST_S *wg_record[MAX_WWW_GUEST];
-int t_users();
+int t_users(void);
 int Show_Users();
 int print_title()
 {
@@ -404,13 +404,12 @@ int show_userlist()
     return 1;
 }
 
-void t_rusers()
-{
+int t_rusers(void){
     real_user_names = 1;
     t_users();
     real_user_names = 0;
+    return 0;
 }
-
 
 int deal_key(ch, allnum, pagenum)
 char ch;
@@ -857,8 +856,7 @@ int do_query2(int star, int curr)
     return 0;
 }
 
-void Users()
-{
+int Users(void){
 #ifdef NEW_HELP
 	int oldhelpmode=helpmode;
 #endif
@@ -875,11 +873,10 @@ void Users()
 #endif
     clear();
     free(user_data);
-    return;
+    return 0;
 }
 
-int t_friends()
-{
+int t_friends(void){
     char genbuf[STRLEN];
 #ifdef NEW_HELP
 	int oldhelpmode=helpmode;
@@ -933,8 +930,7 @@ int t_friends()
     return 0;
 }
 
-int t_users()
-{
+int t_users(void){
 #ifdef NEW_HELP
 	int oldhelpmode=helpmode;
 #endif
@@ -958,8 +954,7 @@ int t_users()
     return 0;
 }
 
-int t_utmp()
-{
+int t_utmp(void){
     if(!HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) {
         prints("您不具有查看该项目的权限（可见隐身）。");
         pressanykey();
@@ -969,10 +964,8 @@ int t_utmp()
     return 0;
 }
 
-int t_wwwguest()
-{
+int t_wwwguest(void){
    struct public_data *publicshm;
-
    publicshm = get_publicshm();
    range = publicshm->www_guest_count;
    if(range == 0) {
@@ -1137,10 +1130,8 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
     return -1;
 }
 
-int display_publicshm()
-{
+int display_publicshm(void){
     struct public_data *publicshm;
-
     publicshm = get_publicshm();
     clear();
     move(1, 0);
@@ -1159,3 +1150,4 @@ int display_publicshm()
     pressanykey();
     return 0;
 }
+

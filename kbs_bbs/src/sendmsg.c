@@ -57,8 +57,7 @@ int get_msg(char * uid, char * msg, int line, int sms)
     }
 }
 
-int s_msg()
-{
+int s_msg(void){
     return do_sendmsg(NULL, NULL, 0);
 }
 
@@ -233,8 +232,7 @@ int mode;
 
 
 
-int show_allmsgs()
-{
+int show_allmsgs(void){
     char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE*2], chk[STRLEN];
     int oldmode, count, i, j, page, ch, y, all=0, reload=0;
     struct msghead head;
@@ -413,8 +411,7 @@ int dowall(struct user_info *uin, char *buf2)
 }
 
 
-int wall()
-{
+int wall(void){
     char buf2[MAX_MSG_SIZE];
 
     if (check_systempasswd() == false)
@@ -714,8 +711,7 @@ int myfriend_wall(struct user_info *uin, char *buf, int i)
     return 0;
 }
 
-int friend_wall()
-{
+int friend_wall(void){
     char buf[MAX_MSG_SIZE];
 
     if (uinfo.invisible) {
@@ -742,8 +738,7 @@ int friend_wall()
 
 #ifdef SMS_SUPPORT
 
-int register_sms()
-{
+int register_sms(void){
     char ans[4];
     char buf2[80];
     clear();
@@ -817,8 +812,7 @@ int register_sms()
     */
 }
 
-int unregister_sms()
-{
+int unregister_sms(void){
     char ans[4];
     char buf2[80];
     int rr;
@@ -1038,9 +1032,9 @@ int do_send_sms_func(char * dest, char * msgstr)
     return ret;
 }
 
-int send_sms()
-{
-    return do_send_sms_func(NULL, NULL);
+int send_sms(void){
+    return do_send_sms_func(NULL,NULL);
 }
 
 #endif
+

@@ -44,7 +44,6 @@
 extern char page_requestor[];
 extern char *modestring();
 extern struct UTMPFILE *utmpshm;
-extern void t_pager();
 
 #define s_lines         (t_lines-2)
 #define b_lines         (t_lines-1)
@@ -313,13 +312,11 @@ int chat_checkparse(chatcontext * pthis)
 }
 
 /* KCN add chat 2 */
-int ent_chat2()
-{                               /* 进入聊天室 */
+int ent_chat2(void){
     return ent_chat(2);
 }
 
-int ent_chat1()
-{                               /* 进入聊天室 */
+int ent_chat1(void){
     return ent_chat(1);
 }
 

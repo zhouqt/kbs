@@ -13,21 +13,16 @@ extern int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* 
 extern int modify_board(int bid);
 static int check_newpost(struct newpostdata *ptr);
 
-void EGroup(cmd)
-char *cmd;
-{
+int EGroup(const char *cmd){
     char buf[STRLEN];
-    const char *boardprefix;
-
-    sprintf(buf, "EGROUP%c", *cmd);
-    boardprefix = sysconf_str(buf);
-    choose_board(DEFINE(getCurrentUser(), DEF_NEWPOST) ? 1 : 0, boardprefix,0,0);
+    const char *prefix;
+    sprintf(buf,"EGROUP%c",cmd[0]);
+    prefix=sysconf_str(buf);
+    return choose_board((DEFINE(getCurrentUser(),DEF_NEWPOST)?1:0),prefix,0,0);
 }
 
-void ENewGroup(cmd)
-char *cmd;
-{
-	choose_board(DEFINE(getCurrentUser(),DEF_NEWPOST) ? 1 : 0, NULL, -2, 0);
+int ENewGroup(const char *cmd){
+    return choose_board((DEFINE(getCurrentUser(),DEF_NEWPOST)?1:0),NULL,-2,0);
 }
 
 static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
@@ -39,8 +34,7 @@ static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
     return 0;
 }
 
-int clear_all_board_read_flag()
-{
+int clear_all_board_read_flag(void){
     char ans[4];
     struct boardheader* save_board;
     int bid;
@@ -57,14 +51,12 @@ int clear_all_board_read_flag()
     return 0;
 }
 
-void Boards()
-{
-    choose_board(0, NULL,0,0);
+int Boards(void){
+    return choose_board(0,NULL,0,0);
 }
 
-void New()
-{
-    choose_board(1, NULL,0,0);
+int New(void){
+    return choose_board(1,NULL,0,0);
 }
 
 int unread_position(dirfile, ptr)
@@ -1863,20 +1855,18 @@ int choose_board(int newflag, const char *boardprefix,int group,int favmode)
 
 extern int mybrd_list_t;
 
-void FavBoard()
-{
- 	load_favboard(1, getSession());
-    choose_board(1, NULL,0,1);
+int FavBoard(void){
+    load_favboard(1,getSession());
+    return choose_board(1,NULL,0,1);
 }
 
-void AllBoard()
-{
-	load_favboard(2, getSession());
-	choose_board(1, NULL,0,2);
+int AllBoard(void){
+    load_favboard(2,getSession());
+    return choose_board(1,NULL,0,2);
 }
 
-void WwwBoard()
-{
-	load_favboard(3, getSession());
-	choose_board(1, NULL,0,3);
+int WwwBoard(void){
+    load_favboard(3,getSession());
+    return choose_board(1,NULL,0,3);
 }
+

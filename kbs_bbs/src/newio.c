@@ -1420,8 +1420,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     return y-starty+1;
 }
 
-int lock_scr()
-{                               /* Leeward 98.02.22 */
+int lock_scr(void){                             /* Leeward 98.02.22 */
     char passbuf[STRLEN];
 
     if (!strcmp(getCurrentUser()->userid, "guest"))

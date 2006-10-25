@@ -754,9 +754,7 @@ static int set_clock_key(struct _select_def *conf, int key)
 	return SHOW_CONTINUE;
 }
 
-int set_clock()
-{
-
+int set_clock(void){
 	struct _select_def group_conf;
 	int i;
 	POINT *pts;

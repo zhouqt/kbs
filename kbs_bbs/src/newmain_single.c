@@ -76,8 +76,7 @@ static int i_domode = INPUT_ACTIVE;
 extern time_t calltime;
 extern char calltimememo[];
 
-int switch_code()
-{
+int switch_code(void){
     convcode = !convcode;
     redoscr();
     return convcode;

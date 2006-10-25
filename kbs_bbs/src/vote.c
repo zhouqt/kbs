@@ -1362,18 +1362,15 @@ int b_vote(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
     return /*user_vote( currboard->filename ) */ FULLUPDATE;
 }
 
-int m_vote()
-{
+int m_vote(void){
     modify_user_mode(ADMIN);
     vote_maintain(DEFAULTBOARD);
     return 0;
 }
 
-int x_vote()
-{
+int x_vote(void){
     struct boardheader* bh;
     int bid;
-
     modify_user_mode(XMENU);
     bh=currboard;
     bid=currboardent;
@@ -1383,8 +1380,8 @@ int x_vote()
     return 0;
 }
 
-int x_results()
-{
+int x_results(void){
     modify_user_mode(XMENU);
     return vote_results(DEFAULTBOARD);
 }
+

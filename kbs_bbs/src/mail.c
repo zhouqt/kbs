@@ -139,8 +139,7 @@ static int mailtoall(POINTDIFF mode)
     return apply_users(mailto, (void *) mode);
 }
 
-int mailall()
-{
+int mailall(void){
     char ans[4], ans4[4], ans2[4], fname[STRLEN], title[STRLEN];
     char doc[4][STRLEN], buf[STRLEN];
     char buf2[STRLEN], include_mode = 'Y';
@@ -267,8 +266,7 @@ int mailall()
     }
 }
 
-int m_internet()
-{
+int m_internet(void){
     char receiver[STRLEN], title[STRLEN];
 
     modify_user_mode(SMAIL);
@@ -864,8 +862,7 @@ int read_new_mail(struct fileheader *fptr, int idc, char *direct)
     return 0;
 }
 
-int m_new()
-{
+int m_new(void){
     char direct[PATHLEN];
     clear();
     mrd = 0;
@@ -1640,8 +1637,7 @@ struct key_command mail_comms[] = {
     {'\0', NULL},
 };
 
-int m_read()
-{
+int m_read(void){
     char curmaildir[STRLEN];
 #ifdef NEW_HELP
 	int oldhelpmode = helpmode;
@@ -1660,8 +1656,7 @@ int m_read()
     return FULLUPDATE /* 0 */ ;
 }
 
-int g_send()
-{
+int g_send(void){
     char uident[13], tmp[3];
     int cnt, i, n, fmode = false;
     char maillists[STRLEN];
@@ -2052,8 +2047,7 @@ int do_gsend(char *userid[], char *title, int num)
 }
 
 /*Add by SmallPig*/
-int ov_send()
-{
+int ov_send(void){
     int all, i;
     struct user_info *u;
 
@@ -2315,8 +2309,6 @@ struct command_def {
     void *arg;
 };
 
-void t_override();
-
 const static char *mail_sysbox[] = {
     ".DIR",
     ".SENT",
@@ -2352,11 +2344,9 @@ static int m_clean()
     return 0;
 }
 
-int m_sendnull()
-{
-    if (HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
+int m_sendnull(void){
+    if(HAS_PERM(getCurrentUser(),PERM_LOGINOK))
        m_send(NULL);
-    }
     return FULLUPDATE;
 }
 
@@ -2709,8 +2699,7 @@ static int maillist_key(struct _select_def *conf, int command)
     return SHOW_CONTINUE;
 }
 
-int MailProc()
-{
+int MailProc(void){
     struct _select_def maillist_conf;
     struct mail_proc_arg arg;
     POINT *pts;

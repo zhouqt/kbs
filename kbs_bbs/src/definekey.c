@@ -587,8 +587,7 @@ static int set_keydefine_select(struct _select_def *conf)
 
 extern int skip_key;
 
-int define_key()
-{
+int define_key(void){
     struct _select_def group_conf;
     struct key_struct key;
     POINT *pts;

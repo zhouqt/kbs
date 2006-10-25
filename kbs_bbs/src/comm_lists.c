@@ -3,138 +3,137 @@
 #include "bbs.h"
 #include "comm_lists.h"
 
-KBS_COMM_LISTS_GENE(t_query_null,t_query,(NULL))
-KBS_COMM_LISTS_GENE(d_user_nul,d_user,(""))
+KBS_COMM_LISTS_GENERATE(V,t_query_null,t_query,(NULL))
+KBS_COMM_LISTS_GENERATE(V,d_user_nul,d_user,(""))
 
 static const CMD_LIST CMD[]={
-    {"EditSFiles",a_edits},
-    {"AllBoard",AllBoard},
-    {"Announce",Announce},
-    {"BadList",badlist},
-    {"BoardsAll",Boards},
-    {"ClearAllNew",clear_all_board_read_flag},
-    {"ShowLicense",Conditions},
-    {"ConfirmDelete",confirm_delete_id},
-    {"ConveyID",ConveyID},
-    {"DelBoard",d_board},
-    {"DefineKeys",define_key},
-    {"DisplayPublic",display_publicshm},
-    {"DelUser",d_user_nul},
-    {"DelView",edit_board_delete_read_perm},
-    {"EGroups",EGroup},
-    {"ENewGroups",ENewGroup},
-    {"EnterChat",ent_chat1},
-    {"EnterChat2",ent_chat2},
-    {"FavBoard",FavBoard},
-    {"FriendWall",friend_wall},
-    {"GetFavRead",get_favread},
-    {"GiveupNet",giveupnet},
-    {"LeaveBBS",Goodbye},
-    {"GroupSend",g_send},
-    {"ShowVersion",Info},
-    {"InnReload",inn_reload},
-    {"InnStart",inn_start},
-    {"InnStop",inn_stop},
-    {"Kickalluser",kick_all_user},
-    {"KickUser",kick_user_menu},
-    {"LockScreen",lock_scr},
-    {"MailAll",mailall},
-    {"MailProc",MailProc},
-    {"EditBoard",m_editbrd},
-    {"ModifyInfo",m_info},
-    {"SendNetMail",m_internet},
-    {"ReadNewMail",m_new},
-    {"NewBoard",m_newbrd},
-    {"ModifyUserAdmin",modify_userinfo_admin},
-    {"ModifyUserCurrent",modify_userinfo_current},
-    {"ReadMail",m_read},
-    {"CheckForm",m_register},
-    {"SendMail",m_sendnull},
-    {"StopLogin",m_stoplogin},
-    {"SetTrace",m_trace},
-    {"OpenVote",m_vote},
-    {"BoardsNew",New},
-    {"OverrideSend",ov_send},
-    {"PostArticle",Post},
-    {"ProtectID",ProtectID},
-    {"QueryBUser",query_bm},
-    {"ReadBoard",ReadBoard},
-    {"SearchIP",search_ip},
-    {"SearchTrace",searchtrace},
-    {"SelectBoard",Select},
-    {"XBoardManager",set_BM},
-    {"SetAlarm",set_clock},
-    {"SetACL",set_ip_acl},
-    {"Setsyspass",setsystempasswd},
-    {"ShowMsg",show_allmsgs},
-    {"Notepad",shownotepad},
-    {"ReadWeather",ShowWeather},
-    {"SendMsg",s_msg},
-    {"OffLine",suicide},
-    {"ConvCode",switch_code},
-    {"ShowFriends",t_friends},
-    {"ListLogins",t_list},
-    {"Monitor",t_monitor},
-    {"SetFriends",t_override},
-    {"SetPager",t_pager},
-    {"QueryUser",t_query_null},
-    {"RealLogins",t_rusers},
-    {"Talk",t_talk},
-    {"ShowLogins",t_users},
-    {"ViewUTMP",t_utmp},
-    {"ViewWWWguest",t_wwwguest},
-    {"SpecialUser",Users},
-    {"WaitFriend",wait_friend},
-    {"Announceall",wall},
-    {"ShowWelcome",Welcome},
-    {"WwwBoard",WwwBoard},
-    {"XCheckLevel",XCheckLevel},
-    {"SetCloak",x_cloak},
-    {"ShowDate",x_date},
-    {"Xdelipacl",Xdelipacl},
-    {"Xdeljunk",Xdeljunk},
-    {"Xlevel",x_deny},
-    {"EditUFiles",x_edits},
-    {"FillForm",x_fillform},
-    {"SetInfo",x_info},
-    {"ModifyLevel",x_level},
-    {"VoteResult",x_results},
-    {"UserDefine",x_userdefine},
-    {"UDefine",x_userdefine1},
-    {"DoVote",x_vote},
+    {"EditSFiles",          a_edits,                                0},
+    {"AllBoard",            AllBoard,                               0},
+    {"Announce",            Announce,                               0},
+    {"BadList",             badlist,                                0},
+    {"BoardsAll",           Boards,                                 0},
+    {"ClearAllNew",         clear_all_board_read_flag,              0},
+    {"ShowLicense",         Conditions,                             0},
+    {"ConfirmDelete",       confirm_delete_id,                      0},
+    {"ConveyID",            ConveyID,                               0},
+    {"DelBoard",            d_board,                                0},
+    {"DefineKeys",          define_key,                             0},
+    {"DisplayPublic",       display_publicshm,                      0},
+    {"domenu",              domenu,                                 1},
+    {"DelUser",             d_user_nul,                             0},
+    {"DelView",             edit_board_delete_read_perm,            0},
+    {"EGroups",             EGroup,                                 1},
+    {"ENewGroups",          ENewGroup,                              1},
+    {"EnterChat",           ent_chat1,                              0},
+    {"EnterChat2",          ent_chat2,                              0},
+    {"RunMBEM",             exec_mbem,                              1},
+    {"FavBoard",            FavBoard,                               0},
+    {"FriendWall",          friend_wall,                            0},
+    {"GetFavRead",          get_favread,                            0},
+    {"GiveupNet",           giveupnet,                              0},
+    {"LeaveBBS",            Goodbye,                                0},
+    {"GroupSend",           g_send,                                 0},
+    {"ShowVersion",         Info,                                   0},
+    {"InnReload",           inn_reload,                             0},
+    {"InnStart",            inn_start,                              0},
+    {"InnStop",             inn_stop,                               0},
+    {"Kickalluser",         kick_all_user,                          0},
+    {"KickUser",            kick_user_menu,                         0},
+    {"LockScreen",          lock_scr,                               0},
+    {"MailAll",             mailall,                                0},
+    {"MailProc",            MailProc,                               0},
+    {"EditBoard",           m_editbrd,                              0},
+    {"ModifyInfo",          m_info,                                 0},
+    {"SendNetMail",         m_internet,                             0},
+    {"ReadNewMail",         m_new,                                  0},
+    {"NewBoard",            m_newbrd,                               0},
+    {"ModifyUserAdmin",     modify_userinfo_admin,                  0},
+    {"ModifyUserCurrent",   modify_userinfo_current,                0},
+    {"ReadMail",            m_read,                                 0},
+    {"CheckForm",           m_register,                             0},
+    {"SendMail",            m_sendnull,                             0},
+    {"StopLogin",           m_stoplogin,                            0},
+    {"SetTrace",            m_trace,                                0},
+    {"OpenVote",            m_vote,                                 0},
+    {"BoardsNew",           New,                                    0},
+    {"OverrideSend",        ov_send,                                0},
+    {"PostArticle",         Post,                                   0},
+    {"ProtectID",           ProtectID,                              0},
+    {"QueryBUser",          query_bm,                               0},
+    {"ReadBoard",           ReadBoard,                              0},
+    {"SearchIP",            search_ip,                              0},
+    {"SearchTrace",         searchtrace,                            0},
+    {"SelectBoard",         Select,                                 0},
+    {"XBoardManager",       set_BM,                                 0},
+    {"SetAlarm",            set_clock,                              0},
+    {"SetACL",              set_ip_acl,                             0},
+    {"Setsyspass",          setsystempasswd,                        0},
+    {"ShowMsg",             show_allmsgs,                           0},
+    {"Notepad",             shownotepad,                            0},
+    {"ReadWeather",         ShowWeather,                            0},
+    {"SendMsg",             s_msg,                                  0},
+    {"OffLine",             suicide,                                0},
+    {"ConvCode",            switch_code,                            0},
+    {"ShowFriends",         t_friends,                              0},
+    {"ListLogins",          t_list,                                 0},
+    {"Monitor",             t_monitor,                              0},
+    {"SetFriends",          t_override,                             0},
+    {"SetPager",            t_pager,                                0},
+    {"QueryUser",           t_query_null,                           0},
+    {"RealLogins",          t_rusers,                               0},
+    {"Talk",                t_talk,                                 0},
+    {"ShowLogins",          t_users,                                0},
+    {"ViewUTMP",            t_utmp,                                 0},
+    {"ViewWWWguest",        t_wwwguest,                             0},
+    {"SpecialUser",         Users,                                  0},
+    {"WaitFriend",          wait_friend,                            0},
+    {"Announceall",         wall,                                   0},
+    {"ShowWelcome",         Welcome,                                0},
+    {"WwwBoard",            WwwBoard,                               0},
+    {"XCheckLevel",         XCheckLevel,                            0},
+    {"SetCloak",            x_cloak,                                0},
+    {"ShowDate",            x_date,                                 0},
+    {"Xdelipacl",           Xdelipacl,                              0},
+    {"Xdeljunk",            Xdeljunk,                               0},
+    {"Xlevel",              x_deny,                                 0},
+    {"EditUFiles",          x_edits,                                0},
+    {"FillForm",            x_fillform,                             0},
+    {"SetInfo",             x_info,                                 0},
+    {"ModifyLevel",         x_level,                                0},
+    {"VoteResult",          x_results,                              0},
+    {"UserDefine",          x_userdefine,                           0},
+    {"UDefine",             x_userdefine1,                          0},
+    {"DoVote",              x_vote,                                 0},
 
 #if HAVE_MYSQL_SMTH+0 == 1
-    {"Addrlist",al_read},
+    {"Addrlist",            al_read,                                0},
 #endif /* HAVE_MYSQL_SMTH+0 == 1 */
 
 #ifdef PERSONAL_CORP
-    {"PcorpManage",pc_add_user},
-    {"Pcorp",pc_choose_user},
+    {"PcorpManage",         pc_add_user,                            0},
+    {"Pcorp",               pc_choose_user,                         0},
 #endif /* PERSONAL_CORP */
 
 #ifdef ZIXIA
-    {"ModifyAltar",m_altar},
+    {"ModifyAltar",         m_altar,                                0},
 #endif /* ZIXIA */
 
 #ifdef FB2KPC
-    {"AddFBPC",AddPCorpus},
-    {"Personal",Personal},
+    {"AddFBPC",             AddPCorpus,                             0},
+    {"Personal",            Personal,                               1},
 #endif /* FB2KPC */
 
 #ifdef SMS_SUPPORT
-    {"RegisterSMS",register_sms},
-    {"SendSMS",send_sms},
+    {"RegisterSMS",         register_sms,                           0},
+    {"SendSMS",             send_sms,                               0},
 #if HAVE_MYSQL_SMTH+0 == 1
-    {"SMSmsg",smsmsg_read},
+    {"SMSmsg",              smsmsg_read,                            0},
 #endif /* HAVE_MYSQL_SMTH+0 == 1 */
-    {"UnRegisterSMS",unregister_sms},
-    {"SMSdef",x_usersmsdef},
+    {"UnRegisterSMS",       unregister_sms,                         0},
+    {"SMSdef",              x_usersmsdef,                           0},
 #endif /* SMS_SUPPORT */
 
-    {"RunMBEM",exec_mbem},
-    {"domenu",domenu},
-
-    {NULL,NULL}
+    {NULL,                  NULL,                                  -1}
 };
 
 static CMD_MENU *menu;
@@ -157,13 +156,16 @@ static int decode_string(const char *s){
     return 0;
 }
 
-static CMD_FUNC search_func(const char *name){
+static CMD_FUNC search_func(const char *name,int *type){
     register const CMD_LIST *p=CMD;
     while(p->name){
-        if(!strcmp(name,p->name))
+        if(!strcmp(name,p->name)){
+            *type=p->type;
             return p->func;
+        }
         p++;
     }
+    *type=-1;
     return NULL;
 }
 
@@ -279,12 +281,12 @@ static int domenu_screen(const struct smenuitem *pm,const char *prompt){
     }
 }
 
-static int dump_menu_pos(){
+static int dump_menu_pos(void){
     register int i;
     for(i=0;i<sysconf_menu;i++){
         menu[i].row=menuitem[i].line;
         menu[i].col=menuitem[i].col;
-        menu[i].func=search_func(sysconf_relocate(menuitem[i].func_name));
+        menu[i].func=search_func(sysconf_relocate(menuitem[i].func_name),&(menu[i].type));
     }
     return 0;
 }
@@ -379,7 +381,7 @@ int domenu(const char *name){
                         clrtoeol();
                     }
                     set_alarm(0,0,NULL,NULL);
-                    if(func==exec_mbem||func==domenu)
+                    if(menu[n+now].type)
                         (*func)(sysconf_relocate(pm[now].arg));
                     else
                         (*func)();

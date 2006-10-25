@@ -248,7 +248,7 @@ int NoSpaceBdT(char *title);
 int CountDenyPic(char *fn);
 int GetDenyPic(FILE* denyfile,char * fn,unsigned int i,int count);
 
-int m_altar();
+int m_altar(void);
 struct userec;
 int uinfo_altar(struct userec *u);
 struct boardheader;

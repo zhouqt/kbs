@@ -113,6 +113,7 @@ void showtitle(const char *title, const char *mid);
 void abort_bbs(int);
 void update_endline();
 void docmdtitle(const char *title,const char *prompt);
+int switch_code(void);
 
 /* bbs.c*/
 int read_hot_info();
@@ -133,7 +134,7 @@ int Read();
 void printutitle();             /* 屏幕显示 用户列表 title */
 int check_readonly(char *checked);      /* Leeward 98.03.28 */
 void record_exit_time();        /* 记录离线时间  Luzi 1998/10/23 */
-int shownotepad();
+int shownotepad(void);
 int check_stuffmode();
 int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int do_reply(struct _select_def* conf,struct fileheader *fileinfo);
@@ -144,7 +145,7 @@ int mark_post(int ent, struct fileheader *fhdr, char *direct);
 int process_upload(int nUpload, int maxShow, char *ans, struct ea_attach_info* ai);
 int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_file);             /*用户 POST 文章 */
 int do_send(char *userid, char *title,char* q_file);
-int Goodbye();
+int Goodbye(void);
 int sequential_read2(int ent);
 void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user);
 void setqtitle(char *stitle);
@@ -159,8 +160,8 @@ int b_closepolls();
 int vote_flag(char *bname, char val, int mode);
 
 /* mail.c */
-int MailProc();
-int m_read();
+int MailProc(void);
+int m_read(void);
 int chkmail();
 int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
@@ -192,12 +193,14 @@ void talk_request();
 int num_user_logins(char *uid);
 int listfilecontent(char *fname);
 int m_send(char* userid);
-int m_sendnull(); /* m_send的一个封装*/
+int m_sendnull(void);   /* m_send的一个封装*/
 int t_cmpuids(int uid, struct user_info *up);
+int t_override(void);
+int t_pager(void);
 
 /* delete.c */
 int kick_user(int uid, char *userid, struct user_info *userinfo);
-int kick_user_menu();
+int kick_user_menu(void);
 int d_user(char cid[IDLEN]);
 
 /* read.c */
@@ -217,15 +220,15 @@ int do_send_sms_func(char * dest, char * msgstr);
 #endif
 void r_msg();
 extern int msg_count;
-int s_msg();
+int s_msg(void);
 void r_lastmsg();
-int show_allmsgs();
+int show_allmsgs(void);
 int do_sendmsg(struct user_info *uentp, const char msgstr[256], int mode);
 
 /* list.c */
 void show_message(char *msg);
 void setlistrange(int i);
-int t_friends();
+int t_friends(void);
 int fill_userlist();
 int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), int (*list_show) (), int (*read) ());
 

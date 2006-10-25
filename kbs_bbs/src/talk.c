@@ -32,7 +32,7 @@
 extern int numf, friendmode;
 int talkidletime = 0;
 int ulistpage;
-int badlist();                  /* Bigman 2000.12.26 */
+int badlist(void);
 static int do_talk(int fd);
 
 /* Bigman 2000.9.15 Talk的记录 */
@@ -105,8 +105,7 @@ void creat_list()
     apply_ulist_addr((APPLY_UTMP_FUNC) listcuent, 0);
 }
 
-int t_pager()
-{
+int t_pager(void){
     if (uinfo.pager & ALL_PAGER) {
         uinfo.pager &= ~ALL_PAGER;
         if (DEFINE(getCurrentUser(), DEF_FRIENDCALL))
@@ -858,14 +857,13 @@ int ttt_talk(struct user_info *userinfo)
     return 0;
 }
 
-int t_talk()
-{
+int t_talk(void){
     int netty_talk;
-
     netty_talk = ttt_talk(NULL);
     clear();
     return (netty_talk);
 }
+
 struct user_info ui;
 char page_requestor[STRLEN];
 char page_requestorid[STRLEN];
@@ -1500,8 +1498,7 @@ char *modestr;
     return 0;
 }
 
-int t_list()
-{
+int t_list(void){
     modify_user_mode(LUSERS);
     bbslog("user","%s","t_list");
     do_list("使用者状态");
@@ -1522,10 +1519,8 @@ void sig_catcher(void *data)
     UNUSED_ARG(data);
 }
 
-int t_monitor()
-{
+int t_monitor(void){
     int i;
-
     set_alarm(0, 0, NULL, NULL);
     /*
      * idle_monitor_time = 0; 
@@ -1874,13 +1869,12 @@ struct key_command friend_list[] = {
     {'\0', NULL},
 };
 
-void t_override()
-{
+int t_override(void){
     char genbuf[PATHLEN];
     sethomefile(genbuf, getCurrentUser()->userid, "friends");
     new_i_read(DIR_MODE_FRIEND, genbuf, friend_title, (READ_ENT_FUNC) friend_doentry, friend_list, sizeof(struct friends));
     clear();
-    return;
+    return 0;
 }
 
 int cmpfuid(a, b)
@@ -1889,8 +1883,7 @@ struct friends *a, *b;
     return strncasecmp(a->id, b->id, IDLEN);
 }
 
-int wait_friend()
-{
+int wait_friend(void){
     FILE *fp;
     int tuid;
     char buf[STRLEN];
@@ -1982,8 +1975,7 @@ void clear_press()
     clrtoeol();
 }
 
-int badlist()
-{
+int badlist(void){
     char userid[IDLEN + 1], tmp[3];
     int cnt, nIdx;
     char ignoreuser[IDLEN + 1], path[40];

@@ -636,7 +636,7 @@ int del_pc_node_junk(unsigned int nid , int access , int uid );
 int del_pc_comments( unsigned long nid, unsigned long cid );
 int pc_paste_node(unsigned long nid, int newuid, int newaccess, unsigned long newpid ) ;
 int pc_add_visitcount(unsigned long nid);
-int pc_add_user(ARG_VOID);
+int pc_add_user(void);
 int import_to_pc(int ent, struct fileheader *fileinfo, char *direct);
 
 int pc_read(char *userid);

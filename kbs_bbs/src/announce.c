@@ -1534,8 +1534,7 @@ void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
 }
 
 #ifdef FB2KPC
-int AddPCorpus()
-{
+int AddPCorpus(void){
 	FILE *fn;
 	char    personalpath[PATHLEN], title[200];
 	struct userec *lookupuser;
@@ -1955,11 +1954,11 @@ MENU *father;
 #endif
 }
 
-void Announce()
-{
-    sprintf(genbuf, "%s 精华区公布栏", BBS_FULL_NAME);
-    a_menu(genbuf, "0Announce", HAS_PERM(getCurrentUser(), PERM_ANNOUNCE) ? PERM_BOARDS : 0, 0, NULL);
+int Announce(void){
+    sprintf(genbuf,"%s 精华区公布栏",BBS_FULL_NAME);
+    a_menu(genbuf,"0Announce",(HAS_PERM(getCurrentUser(),PERM_ANNOUNCE)?PERM_BOARDS:0),0,NULL);
     clear();
+    return 0;
 }
 
 int set_import_path(char* path)

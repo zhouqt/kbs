@@ -345,9 +345,7 @@ static int set_smsg_key(struct _select_def *conf, int key)
 	return SHOW_CONTINUE;
 }
 
-int smsmsg_read()
-{
-
+int smsmsg_read(void){
 	struct _select_def group_conf;
 	int i;
 	POINT *pts;

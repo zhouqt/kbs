@@ -25,8 +25,7 @@
 
 #include "bbs.h"
 
-int d_board()
-{
+int d_board(void){
     char bname[STRLEN+1];
     char buf[STRLEN];
     const struct boardheader *bh;
@@ -93,8 +92,7 @@ int d_board()
     return 0;
 }
 
-void suicide()
-{
+int suicide(void){
     char buf[STRLEN];
     FILE *fn;
     time_t now;
@@ -114,7 +112,7 @@ void suicide()
         move(11, 28);
         prints("\033[1m\033[33m你有重任在身，不能自杀！\033[m");
         pressanykey();
-        return;
+        return -1;
     }
 
     clear();
@@ -139,7 +137,7 @@ void suicide()
         if (*buf == '\0' || !checkpasswd2(buf, getCurrentUser())) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
-            return;
+            return -1;
         }
 
         oldXPERM = getCurrentUser()->userlevel;
@@ -168,17 +166,17 @@ void suicide()
            exit(0); */
         abort_bbs(0);
     }
+    return 0;
 }
 
-int giveupnet()
-{                               /* bad 2002.7.5 */
+int giveupnet(void){
 /*
-PERM_BASIC   上站
-PERM_POST    发表
-PERM_CHAT    聊天
-PERM_PAGE    呼叫
-PERM_DENYMAIL发信
-PERM_DENYRELAX娱乐
+    PERM_BASIC      上站
+    PERM_POST       发表
+    PERM_CHAT       聊天
+    PERM_PAGE       呼叫
+    PERM_DENYMAIL   发信
+    PERM_DENYRELAX  娱乐
 */
     static const char *desc[GIVEUPINFO_PERM_COUNT]={
         "登录上站权限","发表文章权限","聊天广场权限","站内信息权限", "站内信件权限","休闲娱乐权限"};
@@ -512,7 +510,7 @@ int kick_user(int uid, char *userid, struct user_info *userinfo) {
     return kick_user_utmp(uid, userinfo, 0);
 }
 
-int kick_user_menu() {
+int kick_user_menu(void){
     char userid[STRLEN], ans[10];
     int uid;
     struct userec *u;

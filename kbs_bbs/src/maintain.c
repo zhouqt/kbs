@@ -69,8 +69,7 @@ int check_systempasswd()
     return true;
 }
 
-int setsystempasswd()
-{
+int setsystempasswd(void){
     FILE *pass;
     char passbuf[40], prepass[40];
 
@@ -129,8 +128,7 @@ char *title;
     prints("\x1b[7m%s\x1b[m", title);
 }
 
-int m_info()
-{
+int m_info(void){
     struct userec uinfo;
     int id;
     struct userec *lookupuser;
@@ -172,8 +170,7 @@ int m_info()
     return 0;
 }
 
-int m_newbrd()
-{
+int m_newbrd(void){
     struct boardheader newboard;
     char vbuf[PATHLEN], buf[PATHLEN];
     int bid;
@@ -1806,8 +1803,7 @@ char *name;
     prints("%s记录 %s\n", name, buf);
 }
 
-int m_trace()
-{
+int m_trace(void){
     struct stat ostatb, cstatb;
     int otflag, ctflag, done = 0;
     char ans[3];
@@ -2544,8 +2540,7 @@ if (ret==-2) {
     return (0);
 }
 
-int m_register()
-{
+int m_register(void){
     FILE *fn;
     char ans[3], *fname;
     int x, y, wid, len;
@@ -2598,14 +2593,11 @@ int m_register()
     return 0;
 }
 
-int m_stoplogin()
-{
+int m_stoplogin(void){
     char ans[4];
-
     modify_user_mode(ADMIN);
-    if (!check_systempasswd()) {
+    if(!check_systempasswd())
         return -1;
-    }
     getdata(t_lines - 1, 0, "禁止登录吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         if (vedit("NOLOGIN", false, NULL, NULL, 0) == -1)
@@ -2615,10 +2607,8 @@ int m_stoplogin()
 }
 
 /* czz added 2002.01.15 */
-int inn_start()
-{
+int inn_start(void){
     char ans[4], tmp_command[80];
-
     getdata(t_lines - 1, 0, "启动转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         sprintf(tmp_command, BBSHOME "/innd/innbbsd");
@@ -2627,10 +2617,8 @@ int inn_start()
     return 0;
 }
 
-int inn_reload()
-{
+int inn_reload(void){
     char ans[4], tmp_command[80];
-
     getdata(t_lines - 1, 0, "重读配置吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         sprintf(tmp_command, BBSHOME "/innd/ctlinnbbsd reload");
@@ -2639,10 +2627,8 @@ int inn_reload()
     return 0;
 }
 
-int inn_stop()
-{
+int inn_stop(void){
     char ans[4], tmp_command[80];
-
     getdata(t_lines - 1, 0, "停止转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         sprintf(tmp_command, BBSHOME "/innd/ctlinnbbsd shutdown");
@@ -2653,8 +2639,7 @@ int inn_stop()
 
 /* added end */
 /* 封禁权限管理*/
-int x_deny()
-{
+int x_deny(void){
     int sel;
     char userid[IDLEN + 2];
     struct userec *lookupuser;
