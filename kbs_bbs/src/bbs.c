@@ -342,6 +342,13 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
         if (ret==0) {
 //prompt...
             ret=DIRCHANGED;
+        } else if(ret==4 && flag==FILE_DIGEST_FLAG){
+    		move(t_lines -1, 0);
+    		clrtoeol();
+    		move(t_lines -1, 0);
+			prints("操作失败, 文摘区已满，任意键继续");
+			pressanykey();
+			ret = FULLUPDATE;
         } else {
             char buf[STRLEN];
             a_prompt(-1, "操作失败, 请按 Enter 继续 << ", buf);
