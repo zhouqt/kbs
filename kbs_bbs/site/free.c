@@ -280,6 +280,8 @@ int mode;
         return "帮助";
     case POSTTMPL:
         return "模板发文";
+    case POSTCROSS:
+        return "转载文章":
     default:
         return "去了那里!?";
     }

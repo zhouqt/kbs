@@ -1647,7 +1647,7 @@ int club_maintain_send_mail(const char *userid,const char *comment,int type,int 
     write_header(fp,session->currentuser,0,bh->filename,title,0,0,session);
     fprintf(fp,"¸½¼ÓËµÃ÷: %s\n",comment);
     fclose(fp);
-    post_file(session->currentuser,"",fn,bh->filename,title,0,3,session);
+    post_file(session->currentuser,"",fn,bh->filename,title,0,-1,session);
     mail_file(session->currentuser->userid,fn,(char*)userid,title,BBSPOST_MOVE,NULL);
     unlink(fn);
     return 0;

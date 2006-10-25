@@ -349,7 +349,7 @@ int addtodeny(char *uident)
             sprintf(buffer, "%s ·âÄ³°æ" NAME_BM " %s ÔÚ %s", getCurrentUser()->userid, uident, currboard->filename);
         else
             sprintf(buffer, "%s ·â %s ÔÚ %s", getCurrentUser()->userid, uident, currboard->filename);
-        post_file(getCurrentUser(), "", filename, "denypost", buffer, 0, 8, getSession());
+        post_file(getCurrentUser(), "", filename, "denypost", buffer, 0, -1, getSession());
         unlink(filename);
         bmlog(getCurrentUser()->userid, currboard->filename, 10, 1);
     }

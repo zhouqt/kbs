@@ -1706,28 +1706,34 @@ int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user)
     return 0;
 }
 
-int gettmpfilename(char *retchar, char *fmt, ...){
-		/* stiger : 这里没有对fname做检查 */
-	char fname[STRLEN];
-	va_list ap;
-
-	va_start(ap, fmt);
-	vsnprintf(fname, STRLEN-20, fmt, ap);
-	va_end(ap);
-
-	sprintf(retchar, "tmp/%d/", (int)getpid());
-    if (!dashd(retchar)) {
-        mkdir(retchar, 0755);
-        chmod(retchar, 0755);
-	}
-	strcat(retchar, getCurrentUser()->userid);
-    if (!dashd(retchar)) {
-        mkdir(retchar, 0755);
-        chmod(retchar, 0755);
-	}
-	strcat(retchar,"/");
-	strcat(retchar, fname);
-	return 1;
+char* gettmpfilename(char *name,const char *format,...){
+    struct stat st;
+    char buf[STRLEN],file[STRLEN],*p;
+    va_list ap;
+    va_start(ap,format);
+    vsnprintf(file,STRLEN,format,ap);
+    va_end(ap);
+    snprintf(buf,STRLEN,"tmp/%d/%s/%s",(int)getpid(),getCurrentUser()->userid,file);
+    for(p=&buf[4];*p;p++){
+        if(*p=='/'){
+            *p=0;
+            if(!stat(buf,&st)){
+                if(!S_ISDIR(st.st_mode))
+                    return NULL;
+            }
+            else{
+                if(mkdir(buf,0755)==-1)
+                    return NULL;
+            }
+            if(chmod(buf,0755)==-1)
+                return NULL;
+            *p='/';
+        }
+    }
+    if(!stat(buf,&st)&&(!S_ISREG(st.st_mode)||chmod(buf,0644)==-1))
+        return NULL;
+    strcpy(name,buf);
+    return name;
 }
 
 int setutmpmailcheck(struct user_info *uentp, char *arg, int count)

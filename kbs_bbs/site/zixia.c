@@ -223,6 +223,8 @@ int     mode;
                 return "俄罗斯方块";
     case WINMINE:
                 return "扫雷";
+    case POSTCROSS:
+        return "转载文章";
     default: return "去了那里!?" ;
     }
 }

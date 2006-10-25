@@ -804,89 +804,71 @@ void write_header(FILE * fp, struct userec *user, int in_mail, const char *board
 
 }
 
-static int getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *sourceboard, const char *title, int Anony, int mode, int local_article, const struct boardheader *toboard, session_t* session)
-{                               /* 把quote_file复制到filepath (转贴或自动发信) */
-    FILE *inf, *of;
+static int getcross(const char *filepath,const char *quote_file,struct userec *user,int in_mail,const char *sourceboard,
+    const char *title,int Anony,int mode,int local_article,const struct boardheader *toboard,session_t* session){
+    FILE *fin,*fout;
     char buf[256];
-    char owner[256];
-    int count;
-    time_t now;
-    int asize;
-    int attachok = (toboard->flag&BOARD_ATTACH);
-
-    now = time(0);
-    inf = fopen(quote_file, "rb");
-    of = fopen(filepath, "w");
-    if (inf == NULL || of == NULL) {
-        /*---	---*/
-        if (NULL != inf)
-            fclose(inf);
-        if (NULL != of)
-            fclose(of);
-        /*---	---*/
+    int size;
+    if(!(fin=fopen(quote_file,"r")))
+        return -1;
+    if(!(fout=fopen(filepath,"w"))){
+        fclose(fin);
         return -1;
     }
-    if (mode == 0 /*转贴 */ ) {
-        int normal_file;
-        int header_count;
-
-        normal_file = 1;
-
-        write_header(of, user, in_mail, toboard->filename, title, Anony, (local_article ? 1 : 2 ), session /*不写入 .posts */ );
-        if (skip_attach_fgets(buf, 256, inf) != NULL) {
-            for (count = 8; buf[count] != ' ' && count < 256; count++)
-                owner[count - 8] = buf[count];
-            owner[count - 8] = '\0';
-        } else
-            strcpy(owner, "");
-        if (in_mail == true)
-            fprintf(of, "\033[1;37m【 以下文字转载自 \033[32m%s \033[37m的信箱 】\033[m\n", user->userid);
+    if(mode==0||(mode==3&&in_mail)){
+        write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
+        if(in_mail)
+            fprintf(fout,"\033[1;37m【 以下文字转载自 \033[1;32m%s \033[1;37m的信箱 】\033[m\n",user->userid);
         else
-            fprintf(of, "【 以下文字转载自 %s 讨论区 】\n", sourceboard);
-        if (id_invalid(owner))
-            normal_file = 0;
-        if (normal_file) {
-            for (header_count = 0; header_count < 3; header_count++) {
-                if (skip_attach_fgets(buf, 256, inf) == NULL)
-                    break;      /*Clear Post header */
-            }
-            if ((header_count != 2) || (buf[0] != '\n'))
-                normal_file = 0;
-        }
-        if (normal_file)
-            fprintf(of, "【 原文由 %s 所发表 】\n", owner);
-        else
-            fseek(inf, 0, SEEK_SET);
-
-    } else if (mode == 1 /*自动发信 */ ) {
-        fprintf(of, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", sourceboard);
-        fprintf(of, "标  题: %s\n", title);
-        fprintf(of, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
-        fprintf(of, "【此篇文章是由自动发信系统所张贴】\n\n");
-    } else if (mode == 2) {
-        write_header(of, user, in_mail, toboard->filename, title, Anony, 0 /*写入 .posts */ ,session);
+            fprintf(fout,"【 以下文字转载自 %s 讨论区 】\n",sourceboard);
     }
-    if(attachok) {
-        while ((asize = -attach_fgets(buf, 256, inf)) != 0) {
-            if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
-                continue;           /* 避免引用重复 */
-            if(asize<0)
-                fprintf(of, "%s", buf);
-            else {
-                put_attach(inf, of, asize);
-            }
+    else if(mode==1){
+        time_t current=time(NULL);
+        fprintf(fout,"发信人: "DELIVER" (自动发信系统), 信区: %s\n",sourceboard);
+        fprintf(fout,"标  题: %s\n",title);
+        fprintf(fout,"发信站: %s自动发信系统 (%24.24s)\n\n",BBS_FULL_NAME,ctime(&current));
+        fprintf(fout,"【此篇文章是由自动发信系统所张贴】\n\n");
+    }
+    else if(mode==2){
+        write_header(fout,user,in_mail,toboard->filename,title,Anony,0,session);
+    }
+    else if(mode==3){
+        write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
+        if((!skip_attach_fgets(buf,256,fin)||strncmp(buf,"发信人: ",8))
+            ||(!skip_attach_fgets(buf,256,fin)||strncmp(buf,"标  题: ",8))
+            ||(!skip_attach_fgets(buf,256,fin)||strncmp(buf,"发信站: ",8))){
+            fseek(fin,0,SEEK_SET);
+        }
+        else{
+            while(skip_attach_fgets(buf,256,fin)&&buf[0]!='\n')
+                continue;
+            fprintf(fout,"\033[0;33m[ 用户 %s 在转载时选择了隐藏内部转载来源 ]\033[m\n\n",user->userid);
         }
     }
-    else {
-        while ((asize = skip_attach_fgets(buf, 256, inf)) != 0) {
-            if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
-                continue;           /* 避免引用重复 */
-            if(asize>0)
-                fprintf(of, "%s", buf);
+    else if(mode==4){
+        write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
+        fprintf(fout,"\033[0;33m[ 用户 %s 在转载时对%s内容进行了编辑 ]\033[m\n\n",user->userid,(!in_mail?"文章":"信件"));
+    }
+    if((toboard->flag&BOARD_ATTACH)||HAS_PERM(user,PERM_SYSOP)){
+        while((size=-attach_fgets(buf,256,fin))){
+            if(!strncmp(buf,"【 以下文字转载自 ",18)&&strstr(&buf[18]," 讨论区 】"))
+                continue;
+            if(size<0)
+                fprintf(fout,"%s",buf);
+            else
+                put_attach(fin,fout,size);
         }
     }
-    fclose(inf);
-    fclose(of);
+    else{
+        while((size=skip_attach_fgets(buf,256,fin))){
+            if(!strncmp(buf,"【 以下文字转载自 ",18)&&strstr(&buf[18]," 讨论区 】"))
+                continue;
+            if(size>0)
+                fprintf(fout,"%s",buf);
+        }
+    }
+    fclose(fin);
+    fclose(fout);
     return 0;
 }
 
@@ -971,14 +953,10 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
 
     memset(&postfile, 0, sizeof(postfile));
 
-    if (!mode) {
-        if (!strstr(title, "(转载)"))
-            sprintf(buf4, "%s (转载)", title);
-        else
-            strcpy(buf4, title);
-    } else
-        strcpy(buf4, title);
-    strncpy(save_title, buf4, STRLEN);
+    strcpy(buf4,title);
+    if((mode==0||mode==3||mode==4)&&!strstr(buf4," (转载)"))
+        strcat(buf4," (转载)");
+    strncpy(save_title,buf4,STRLEN);
 
     setbfile(filepath, toboard->filename, "");
 
@@ -995,11 +973,7 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
     postfile.owner[OWNER_LEN - 1] = '\0';
     setbfile(filepath, toboard->filename, postfile.filename);
 
-    local_article = 1;          /* default is local article */
-    if (islocal != 'l' && islocal != 'L') {
-        if (is_outgo_board(toboard->filename))
-            local_article = 0;
-    }
+    local_article=((toupper(islocal)!='L'&&(toboard->flag&BOARD_OUTFLAG))?0:1);
 
     if (-1 == getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, local_article, toboard, session)) {
         return -1;

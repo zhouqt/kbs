@@ -761,18 +761,8 @@ int valid_article(pmt, abort)
         else //local_article == 1
             strcpy(pmt, "(L)站内, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
     }
-
-
-    getdata(0, 0, pmt, abort, 3, DOECHO, NULL, true);
-    switch (abort[0]) {
-    case 'A':
-    case 'a':                  /* abort */
-    case 'E':
-    case 'e':                  /* keep editing */
-        return temp;
-    }
+    getdata(0, 0, pmt, abort, 2, DOECHO, NULL, true);
     return temp;
-
 }
 
 void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Anony)
@@ -1078,9 +1068,14 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
              *  即对文章的文本内容的修改将保存并产生修改标记(如果定义了的话)
              *  仅在函数末尾时调用 edit_attach 函数来实现附件的操作
              */
+        else if(uinfo.mode==POSTCROSS)
+            sprintf(p_buf,"%s","(S)保存编辑 (F)自动换行保存编辑 (E)继续编辑 (A)取消操作 [S]: ");
+            /* etnlegend, 2006.10.25, 转载文章时修改内容... 这地方用 READING 貌似不太鲁棒... */
         else
             strcpy(p_buf, "(S)储存档案, (F)自动换行存储, (A)放弃编辑, (E)继续编辑? [S]: ");
+
         ret = valid_article(p_buf, abort);
+
         if((uinfo.mode==EDIT)&&(abort[0]=='c'||abort[0]=='C')){
             do_edit_attach=1;
             abort[0]=0;

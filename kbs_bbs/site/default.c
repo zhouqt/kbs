@@ -351,6 +351,8 @@ char *ModeType(mode)
         return "查询版面";
     case BLOG:
         return "BLOG浏览";
+    case POSTCROSS:
+        return "转载文章";
     default:
         return "去了那里!?";
     }

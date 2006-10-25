@@ -1687,7 +1687,7 @@ int modify_board(int bid){
                 fprintf(fp,"  %s\n  \033[1;32m%s\033[m\n\n",orig[i],menustr[i]);
         }
         fclose(fp);
-        post_file(getCurrentUser(),"",src,"syssecurity",buf,0,3,getSession());
+        post_file(getCurrentUser(),"",src,"syssecurity",buf,0,-1,getSession());
         unlink(src);
     }
     newbbslog(BBSLOG_USER,"edit_board: %s <%4.4d,%#6.6x>",bh.filename,bid,change);

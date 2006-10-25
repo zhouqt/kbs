@@ -103,4 +103,5 @@
 #define PC 75
 #define QUERYBOARD 76
 #define BLOG 77
+#define POSTCROSS 78
 

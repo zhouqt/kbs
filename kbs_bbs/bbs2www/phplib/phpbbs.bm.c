@@ -451,7 +451,7 @@ PHP_FUNCTION(bbs_denyadd)
             sprintf(buffer, "%s ·âÄ³°æ" NAME_BM " %s ÔÚ %s", getCurrentUser()->userid, userid, board);
         else
             sprintf(buffer, "%s ·â %s ÔÚ %s", getCurrentUser()->userid, userid, board);
-        post_file(getCurrentUser(), "", path, "denypost", buffer, 0, 8, getSession());
+        post_file(getCurrentUser(), "", path, "denypost", buffer, 0, -1, getSession());
         unlink(path);
         bmlog(getCurrentUser()->userid, board, 10, 1);
     }

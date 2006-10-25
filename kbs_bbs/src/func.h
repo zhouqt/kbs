@@ -140,7 +140,7 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
 
     int my_unlink(char *fname);/*封装unlink,用于定义备份的文件*/
     int my_f_rm(char *fname);/*封装f_rm,用于定义备份的文件*/
-    int gettmpfilename(char *retchar, char *fmt, ...); /*获得临时文件名*/
+    char* gettmpfilename(char *name,const char *format,...);    /* 在 tmp 目录下散列出临时文件名, 出错时返回 NULL ... */
     int setmailcheck(char *userid); /*设置mail检查标志*/
     void save_maxuser(ARG_VOID);
     void detach_publicshm(ARG_VOID);

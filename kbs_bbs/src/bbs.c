@@ -427,185 +427,205 @@ int do_commend(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 }
 #endif	/* COMMEND_ARTICLE */
 
-/* Add by SmallPig */
-int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
-{                               /* ×ªÌù Ò»Æª ÎÄÕÂ */
-    char bname[STRLEN];
-    char ispost[10];
-    char q_file[STRLEN];
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-    int outgo_board = true, proceed = false;
-    const struct boardheader* bh;
+static inline int edit_cross_content(const char *name,char *new_file_name,unsigned int cut_attach){
+    int orig_mode,ret;
+    char line_buffer[2][400];
+    if(!gettmpfilename(new_file_name,"%s","cross"))
+        return -1;
+    if(!cut_attach){
+        if(f_cp(name,new_file_name,0)){
+            unlink(new_file_name);
+            return -1;
+        }
+    }
+    else{
+#define EC_BLOCK_SIZE 4096
+        FILE *fin,*fout;
+        char buf[EC_BLOCK_SIZE];
+        if(!(fin=fopen(name,"r")))
+            return -1;
+        if(!(fout=fopen(new_file_name,"w"))){
+            fclose(fin);
+            return -1;
+        }
+        while(!(EC_BLOCK_SIZE>cut_attach)){
+            if(fread(buf,(EC_BLOCK_SIZE*sizeof(char)),1,fin)!=1||fwrite(buf,(EC_BLOCK_SIZE*sizeof(char)),1,fout)!=1){
+                fclose(fin);
+                fclose(fout);
+                unlink(new_file_name);
+                return -1;
+            }
+            cut_attach-=EC_BLOCK_SIZE;
+        }
+        if((cut_attach>0)&&(fread(buf,(cut_attach*sizeof(char)),1,fin)!=1||fwrite(buf,(cut_attach*sizeof(char)),1,fout)!=1)){
+            fclose(fin);
+            fclose(fout);
+            unlink(new_file_name);
+            return -1;
+        }
+        fclose(fin);
+        fclose(fout);
+#undef EC_BLOCK_SIZE
+    }
+    saveline(0,0,line_buffer[0]);
+    saveline(1,0,line_buffer[1]);
+    orig_mode=modify_user_mode(POSTCROSS);
+    ret=vedit(new_file_name,false,NULL,NULL,0);
+    modify_user_mode(orig_mode);
+    saveline(0,1,line_buffer[0]);
+    saveline(1,1,line_buffer[1]);
+    if(ret==-1){
+        unlink(new_file_name);
+        return -1;
+    }
+    if(ADD_EDITMARK+0)
+        add_edit_mark(new_file_name,0,NULL,getSession());
+    return 0;
+}
 
-    if (fileinfo==NULL)
+int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
+    const struct boardheader *bh;
+    char board[STRLEN],name[STRLEN],ans[4];
+    int inmail=(((struct read_arg*)conf->arg)->mode==DIR_MODE_MAIL),mode,need_unlink=0;
+    unsigned int cut_attach=0;
+    if(!info||!HAS_PERM(getCurrentUser(),PERM_POST))
         return DONOTHING;
-    if (!HAS_PERM(getCurrentUser(), PERM_POST)) {    /* ÅĞ¶ÏÊÇ·ñÓĞPOSTÈ¨ */
-        return DONOTHING;
-    }
-#if 0 //atppp 20051230
-    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
-        clear();
-        move(1, 0);
-        prints("±¾ÎÄÕÂÒÑ¾­×ªÌù¹ıÒ»´Î£¬ÎŞ·¨ÔÙ´Î×ªÌù");
-        move(2, 0);
-        pressreturn();
-        return FULLUPDATE;
-    }
-#endif //atppp 20051230
-    if (uinfo.mode != RMAIL)
-        sprintf(q_file, "boards/%s/%s", currboard->filename, fileinfo->filename);
+    if(!inmail)
+        setbfile(name,currboard->filename,info->filename);
     else
-        setmailfile(q_file, getCurrentUser()->userid, fileinfo->filename);
-    strcpy(quote_title, fileinfo->title);
-
-    clear();
-
-    move(4, 0);                 /* Leeward 98.02.25 */
-    prints
-        ("\033[1m\033[33mÇë×¢Òâ£º\033[31m±¾Õ¾Õ¾¹æ¹æ¶¨£ºÍ¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚ 5 (º¬) ¸öÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´ÕÅÌù¡£\n\nÎ¥·´Õß\033[33m³ıËùÌùÎÄÕÂ»á±»É¾³ıÖ®Íâ£¬»¹½«±»\033[31m°ş¶á¼ÌĞø·¢±íÎÄÕÂµÄÈ¨Á¦¡£\033[33mÏêÏ¸¹æ¶¨Çë²ÎÕÕ£º\n\n    Announce °æµÄÕ¾¹æ£º¡°¹ØÓÚ×ªÌùºÍÕÅÌùÎÄÕÂµÄ¹æ¶¨¡±¡£\n\nÇë´ó¼Ò¹²Í¬Î¬»¤ BBS µÄ»·¾³£¬½ÚÊ¡ÏµÍ³×ÊÔ´¡£Ğ»Ğ»ºÏ×÷¡£\n\n\033[m");
-
-    move(1, 0);
-    if (!get_a_boardname(bname, "ÇëÊäÈëÒª×ªÌùµÄÌÖÂÛÇøÃû³Æ: ")) {
+        setmailfile(name,getCurrentUser()->userid,info->filename);
+    strcpy(quote_title,info->title);
+    clear();move(4,0);
+    prints("%s","\033[1;33mÇë×¢Òâ: \033[1;31m±¾Õ¾Õ¾¹æ¹æ¶¨, Í¬ÑùÄÚÈİµÄÎÄÕÂÑÏ½ûÔÚÎå¸ö(º¬)ÒÔÉÏÌÖÂÛÇøÄÚÖØ¸´·¢±í,\n\n        \033[1;33m¶Ô\033[1;31mÎ¥·´ÉÏÊö¹æ¶¨Õß\033[1;33m, ¹ÜÀíÈËÔ±½«ÒÀ¾İ\033[1;31m±¾Õ¾ÕÊºÅ¹ÜÀí°ì·¨ÖĞÏà¹ØÌõ¿î\033[1;33m½øĞĞ´¦Àí!\n\n        Çë´ó¼Ò¹²Í¬Î¬»¤Á¼ºÃµÄÌÖÂÛÖÈĞò,½ÚÔ¼ÏµÍ³×ÊÔ´, Ğ»Ğ»ºÏ×÷!\033[m");
+    move(1,0);
+    if(!get_a_boardname(board,"ÇëÊäÈëÒª×ªÔØµÄÌÖÂÛÇøÃû³Æ: ")||!(bh=getbcache(board)))
+        return FULLUPDATE;
+    /* Í¬°æ×ªÔØ */
+    if(!inmail&&!strcmp(board,currboard->filename)){
+        move(3,0);clrtobot();
+        prints("\n\n    %s\033[0;33m<Enter>\033[m","±¾°æµÄÎÄÕÂÎŞĞë×ªÔØµ½±¾°æ...");
+        WAIT_RETURN;
         return FULLUPDATE;
     }
-
-    if (!strcmp(bname, currboard->filename) && (uinfo.mode != RMAIL)) {
-        move(3, 0);
-        clrtobot();
-        prints("\n\n                          ±¾°æµÄÎÄÕÂ²»ĞèÒª×ªÌùµ½±¾°æ!");
-        pressreturn();
-        clear();
+    /* È¨ÏŞ¼ì²é */
+    if(!haspostperm(getCurrentUser(),board)){
+        move(3,0);clrtobot();
+        ans[0]=(HAS_PERM(getCurrentUser(),PERM_LOGINOK)?'1':'0');
+        ans[1]=(('0'+'1')-ans[0]);
+        sprintf(genbuf,"\n\n    ÄúÄ¿Ç°ÎŞ·¨ÔÚ¸ÃÌÖÂÛÇø·¢±íÎÄÕÂ!\n\n    µ¼ÖÂÉÏÊöÎÊÌâµÄÔ­Òò¿ÉÄÜÊÇ\033[%c;33m°æÃæµÄ·¢ÎÄÈ¨ÏŞÖÆ\033[m»òÕß\033[%c;33mÄúÉĞÎ´Í¨¹ı×¢²á\033[m,\n    ÉĞÎ´Í¨¹ı×¢²áµÄÓÃ»§¿ÉÔÚ\033[%c;33m¸öÈË¹¤¾ßÏä\033[mÄÚÌîĞ´×¢²á×ÊÁÏÒÔÍê³É×¢²á:)\n\n    °´»Ø³µ¼ü¼ÌĞø...\033[0;33m<Enter>\033[m",ans[0],ans[1],ans[1]);
+        prints("%s",genbuf);
+        WAIT_RETURN;
         return FULLUPDATE;
     }
-
-    if (!haspostperm(getCurrentUser(), bname)) {
-        move(3, 0);
-        clrtobot();
-        prints("ÄúÉĞÎŞÈ¨ÏŞÔÚ %s ·¢±íÎÄÕÂ.\n", bname);
-        prints("Èç¹ûÄúÉĞÎ´×¢²á£¬ÇëÔÚ¸öÈË¹¤¾ßÏäÄÚÏêÏ¸×¢²áÉí·İ\n");
-        prints("Î´Í¨¹ıÉí·İ×¢²áÈÏÖ¤µÄÓÃ»§£¬Ã»ÓĞ·¢±íÎÄÕÂµÄÈ¨ÏŞ¡£\n");
-        prints("Ğ»Ğ»ºÏ×÷£¡ :-) \n");
-        pressreturn();
-        clear();
+    /* Ö»¶Á°æÃæ */
+    if(check_readonly(board)){
+        move(3,0);clrtobot();
+        prints("\n\n    %s\033[0;33m<Enter>\033[m","\033[1;33mÄ¿µÄ°æÃæÄ¿Ç°Îª\033[1;31mÖ»¶Á\033[1;33mÄ£Ê½, È¡Ïû×ªÔØ²Ù×÷...\033[m");
+        WAIT_RETURN;
         return FULLUPDATE;
     }
-
-    if(!(bh=getbcache(bname)))
-        return FULLUPDATE;
-
 #ifdef NEWSMTH
+    /* »ı·ÖÏŞÖÆ */
     if(!check_score_level(getCurrentUser(),bh)){
-        move(3,0);
-        clrtobot();
-        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m",
-            "ÄúµÄ»ı·Ö²»·ûºÏµ±Ç°ÌÖÂÛÇøµÄÉè¶¨, ÔİÊ±ÎŞ·¨ÔÚµ±Ç°ÌÖÂÛÇø·¢±íÎÄÕÂ...");
+        move(3,0);clrtobot();
+        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m","ÄúµÄ»ı·Ö²»·ûºÏÄ¿µÄÌÖÂÛÇøµÄÉè¶¨, ÔİÊ±ÎŞ·¨ÏòÄ¿µÄÌÖÂÛÇø×ªÔØÎÄÕÂ...");
         WAIT_RETURN;
         return FULLUPDATE;
     }
 #endif
-
-        /* Leeward 98.01.13 ¼ì²é×ªÌùÕßÔÚÆäÓû×ªµ½µÄ°æÃæÊÇ·ñ±»½ûÖ¹ÁË POST È¨ */
-
-
-        if (normal_board(bname) && !normal_board(currboard->filename) && (uinfo.mode != RMAIL)) {
-            char ans[4];
-            move(2,0);clrtobot();
-            move(4,4);prints("\033[1;31m×¢Òâ:\033[m ÄúÊÔÍ¼½«ÄÚ²¿°æÃæ(%s)µÄÎÄÕÂ×ªÔØµ½¹«¿ª°æÃæ£¬",currboard->filename);
-            getdata(5,4,"ÕâÖÖ×ö·¨Í¨³£ÊÇ\033[1;33m²»ÔÊĞí\033[mµÄ»ò\033[1;33m²»½¨Òé\033[mµÄ, ÄúÈ·ÈÏ×ªÔØ²Ù×÷? [y/N]: ",ans,2,DOECHO,NULL,true);
-            if(!(ans[0]=='y'||ans[0]=='Y'))
+    /* ÄÚ²¿°æÃæ */
+    if(!inmail&&public_board(bh)&&!public_board(currboard)){
+        move(3,0);clrtobot();
+        prints("\n\n    \033[1;31m×¢Òâ:\033[m ÄúÊÔÍ¼½«ÄÚ²¿°æÃæ(%s)µÄÎÄÕÂ×ªÔØµ½¹«¿ª°æÃæ,",currboard->filename);
+        getdata(6,4,"ÕâÑùµÄ×ö·¨Í¨³£ÊÇ\033[1;33m²»ÔÊĞí\033[mµÄ»ò\033[1;33m²»½¨Òé\033[mµÄ, È·ÈÏ×ªÔØ²Ù×÷? [y/N]: ",ans,2,DOECHO,NULL,true);
+        if(toupper(ans[0])!='Y')
+            return FULLUPDATE;
+    }
+    /* ¸½¼şÎÄÕÂ */
+    if(info->attachment&&!(bh->flag&BOARD_ATTACH)&&!HAS_PERM(getCurrentUser(),PERM_SYSOP)){
+        move(3,0);clrtobot();
+        prints("\n\n    ÄúÕıÔÚ×ªÔØµÄÎÄÕÂ´øÓĞ¸½¼ş, µ« %s °æÄ¿Ç°²»ÔÊĞí´ø¸½¼şÎÄÕÂ,",board);
+        getdata(6,4,"ÊÇ·ñ¶ªÆú¸½¼ş¼ÌĞø×ªÔØ? [y/N]: ",ans,2,DOECHO,NULL,true);
+        if(toupper(ans[0])!='Y')
+            return FULLUPDATE;
+        cut_attach=info->attachment;
+    }
+    /* ÒÑ±»·â½û */
+    if(deny_me(getCurrentUser()->userid,board)){
+        move(3,0);clrtobot();
+        if(HAS_PERM(getCurrentUser(),PERM_SYSOP)){
+            getdata(5,0,"ÄúÒÑ±»È¡ÏûÔÚÄ¿µÄ°æÃæµÄ·¢ÎÄÈ¨ÏŞ, ÊÇ·ñÇ¿ÖÆ×ªÔØ? [y/N]: ",ans,2,DOECHO,NULL,true);
+            if(toupper(ans[0])!='Y')
                 return FULLUPDATE;
         }
-        if ((fileinfo->attachment!=0)&&!(bh->flag&BOARD_ATTACH)) {
-            char ans[4];
-            move(3, 0);
-            clrtobot();
-            prints("\n\n  ÄúÒª×ªÌùµÄÎÄÕÂ´øÓĞ¸½¼ş£¬¶ø%s°æ²»ÄÜÕ³Ìù¸½¼ş¡£", bh->filename);
-            getdata(8, 2, "ÊÇ·ñ¶ªÆú¸½¼ş¼ÌĞø×ªÌù [y/N]: ", ans, 2, DOECHO, NULL, true);
-            if(!(ans[0]=='y'||ans[0]=='Y'))
-                return FULLUPDATE;
-        }
-        if (deny_me(getCurrentUser()->userid, bname) ) {    /* °æÖ÷½ûÖ¹POST ¼ì²é */
-			if( HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
-				char buf[3];
-
-				clear();
-                getdata(3,0,"ÄúÒÑ±»È¡ÏûÔÚÄ¿µÄ°æÃæµÄ·¢ÎÄÈ¨ÏŞ, ÊÇ·ñÇ¿ÖÆ×ªÔØ? [y/N]: ",buf,2,DOECHO,NULL,true);
-				if( buf[0]!='y' && buf[0]!='Y' ){
-					clear();
-					return FULLUPDATE;
-				}
-			}else{
-            	move(3, 0);
-            	clrtobot();
-                prints("\n\n\t\tÄúÒÑ±»¹ÜÀíÈËÔ±È¡ÏûÔÚÄ¿µÄ°æÃæµÄ·¢ÎÄÈ¨ÏŞ...\n");
-            	pressreturn();
-            	clear();
-            	return FULLUPDATE;
-			}
-        }
-		if (true == check_readonly(bname)) { /* Leeward 98.03.28 */
+        else{
+            prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m","ÄúÒÑ±»¹ÜÀíÈËÔ±È¡ÏûÔÚÄ¿µÄ°æÃæµÄ·¢ÎÄÈ¨ÏŞ...");
+            WAIT_RETURN;
             return FULLUPDATE;
         }
-        outgo_board = (bh->flag & BOARD_OUTFLAG);
-
-
-    move(0, 0);
-    prints("×ªÌù ' %s ' µ½ %s °æ ", quote_title, bname);
-    clrtoeol();
-    move(1, 0);
-    if (outgo_board) {
-        getdata(1, 0, "(S)×ªĞÅ (L)±¾Õ¾ (A)È¡Ïû? [A]: ", ispost, 9, DOECHO, NULL, true);
-        proceed = (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l');
-    } else {
-        getdata(1, 0, "(L)±¾Õ¾ (A)È¡Ïû? [A]: ", ispost, 9, DOECHO, NULL, true);
-        proceed = (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l');
     }
-    if (proceed) {
-		if(!outgo_board)
-			ispost[0]='l';
-        /*add by stiger
-        if(conf->pos<=arg->filecount) {
-            int i=0;
-            for (i = conf->pos-arg->filecount; i > 0; i--) {
-                if (0 == strcmp(arg->boardstatus->topfh[i].filename, fileinfo->filename)) {
-                    conf->new_pos=i;
-                    break;
+    clear();move(0,0);
+    sprintf(genbuf,"×ªÔØ \033[1;33m%-.45s\033[m µ½ \033[1;32m%s\033[m °æ",quote_title,board);
+    prints("%s",genbuf);
+    move(3,0);
+    prints("\033[0;33m²Ù×÷ÌáÊ¾: %s\033[m",((bh->flag&BOARD_OUTFLAG)?
+        "µ±Ê¹ÓÃ·Ç 'S'/'L' µÄ·¢±íÑ¡ÏîÊ±, ÊäÈë´óĞ´×ÖÄ¸½«Ê¹ÓÃ×ªĞÅ·¢±í, ·ñÔòÊ¹ÓÃÕ¾ÄÚ·¢±í...":
+        "Ä¿±ê°æÃæ²»ÊÇ×ªĞÅ°æÃæ, ÊäÈë 'S' ½«µÈÍ¬ÓÚ 'L' ¶øÊ¹ÓÃÕ¾ÄÚ·¢±í..."));
+    sprintf(genbuf,"%s(L)Õ¾ÄÚ·¢±í %s(E)ĞŞ¸ÄÄÚÈİ (A)È¡Ïû [A]: ",
+        ((bh->flag&BOARD_OUTFLAG)?"(S)×ªĞÅ·¢±í ":""),((!inmail&&!public_board(currboard))?"(H)Òş²ØÀ´Ô´ ":""));
+    getdata(1,0,genbuf,ans,2,DOECHO,NULL,true);
+    switch(ans[0]){
+        case 's':
+        case 'S':
+            ans[0]=(!(bh->flag&BOARD_OUTFLAG)?'L':'S');
+            mode=0;
+            break;
+        case 'l':
+        case 'L':
+            ans[0]='L';
+            mode=0;
+            break;
+        case 'h':
+        case 'H':
+            ans[0]=((ans[0]=='h'||!(bh->flag&BOARD_OUTFLAG))?'L':'S');
+            mode=((inmail||public_board(currboard))?0:3);
+            break;
+        case 'e':
+        case 'E':
+            ans[0]=((ans[0]=='e'||!(bh->flag&BOARD_OUTFLAG))?'L':'S');
+            mode=4;
+            do{
+                char new_file_name[STRLEN];
+                if(edit_cross_content(name,new_file_name,cut_attach)==-1){
+                    move(3,0);clrtobot();
+                    prints("\033[1;33m%s\033[0;33m<Enter>\033[m","È¡Ïû×ªÔØ²Ù×÷»ò×ªÔØ¹ı³ÌÖĞ·¢Éú´íÎó...");
+                    WAIT_RETURN;
+                    return FULLUPDATE;
                 }
-           }
-	    if (i==0){
-                move(2, 0);
-	        prints("ÄÕÂÁĞ±í·¢Éú±ä»¯£¬È¡Ïû");
-		move(2,0);
-		pressreturn();
-		return FULLUPDATE;
-	    }
-        } else conf->new_pos=conf->pos; */
-        /*add old*/
-        if (post_cross(getCurrentUser(), bh, currboard->filename, 
-            quote_title, q_file, Anony, 
-            arg->mode==DIR_MODE_MAIL?1:0, 
-            ispost[0], 0, getSession()) == -1) { /* ×ªÌù */
-            pressreturn();
-            move(2, 0);
+                strcpy(name,new_file_name);
+                need_unlink=1;
+            }
+            while(0);
+            break;
+        default:
+            move(3,0);clrtoeol();
+            prints("\033[1;33m%s\033[0;33m<Enter>\033[m","È¡Ïû×ªÔØ²Ù×÷...");
+            WAIT_RETURN;
             return FULLUPDATE;
-        }
-        move(2, 0);
-        prints("' %s ' ÒÑ×ªÌùµ½ %s °æ \n", quote_title, bname);
-#if 0 //atppp 20051230
-        fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
-        if(conf->pos<=arg->filecount)
-            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
-    /* ÖÃ¶¥Ìù¿ÉÒÔ¶à´Î×ªÔØÓ¦¸ÃÃ»ÓĞÎÊÌâ°É...
-        else
-            substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->new_pos);
-    */
-#endif //atppp 20051230
-        conf->new_pos=0;
-    } else {
-        prints("È¡Ïû");
     }
-    move(2, 0);
-    pressreturn();
+    if(post_cross(getCurrentUser(),bh,currboard->filename,quote_title,name,Anony,inmail,ans[0],mode,getSession())==-1){
+        if(need_unlink)
+            unlink(name);
+        move(3,0);clrtoeol();
+        prints("\033[1;33m%s\033[0;33m<Enter>\033[m","×ªÔØ¹ı³ÌÖĞ·¢Éú´íÎó...");
+        WAIT_RETURN;
+        return FULLUPDATE;
+    }
+    if(need_unlink)
+        unlink(name);
+    move(3,0);clrtoeol();
+    prints("\033[1;32m%s\033[0;33m<Enter>\033[m","×ªÔØ³É¹¦!");
+    WAIT_RETURN;
     return FULLUPDATE;
 }
 

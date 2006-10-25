@@ -1849,7 +1849,7 @@ int modify_userinfo(int uid,int mode){
                     fprintf(fp," \033[1;33m[%-8.8s]: \033[0;33m%s\033[m\n%-13.13s\033[1;32m%s\033[m\n\n",prefix[j],omenu[j],"",menu[j]);
             }
             fclose(fp);
-            post_file(getCurrentUser(),"",name,"syssecurity",buf,0,3,getSession());
+            post_file(getCurrentUser(),"",name,"syssecurity",buf,0,-1,getSession());
             unlink(name);
         }
         newbbslog(BBSLOG_USER,"modify_userinfo: %s <%d,%#6.6x>",urec->userid,uid,change);
