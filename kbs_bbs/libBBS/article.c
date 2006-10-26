@@ -564,43 +564,9 @@ void cancelpost(const char *board, const char *userid, struct fileheader *fh, in
     sprintf(oldpath, "/board/%s/%s.html", board, fh->filename);
     ca_expire_file(oldpath);*/
 
-    if ((fh->innflag[1] == 'S')
-        && (fh->innflag[0] == 'S')
+    if ((fh->innflag[1] == 'S') && (fh->innflag[0] == 'S')
         && (get_posttime(fh) > now - 14 * 86400)) {
-        FILE *fp;
-        char buf[256];
-        char from[STRLEN];
-        int len;
-        char *ptr;
-
-        setbfile(buf, board, fh->filename);
-        if ((fp = fopen(buf, "rb")) == NULL)
-            return;
-        while (skip_attach_fgets(buf, sizeof(buf), fp) != NULL) {
-            /*
-             * 首先滤掉换行符 
-             */
-            len = strlen(buf) - 1;
-            buf[len] = '\0';
-            if (len < 8)
-                break;
-            if (strncmp("发信人: ", buf, 8) == 0) {
-                if ((ptr = strrchr(buf, ')')) == NULL)
-                    break;
-                *ptr = '\0';
-                if ((ptr = strchr(buf, '(')) == NULL)
-                    break;
-                strncpy(from, ptr + 1, sizeof(from) - 1);
-                from[sizeof(from) - 1] = '\0';
-                break;
-            }
-        }
-        fclose(fp);
-        sprintf(buf, "%s\t%s\t%s\t%s\t%s\n", board, fh->filename, fh->owner, from, fh->title);
-        if ((fp = fopen("innd/cancel.bntp", "a")) != NULL) {
-            fputs(buf, fp);
-            fclose(fp);
-        }
+        cancel_inn(board, fh);
     }
 
     setbfile(oldpath, board, fh->filename);
