@@ -2871,7 +2871,7 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
 #define DRBP_MODE       0644
 #define DRBP_LEN        _POSIX_PATH_MAX
 
-static inline int delete_range_cancel_inn(const char *board,const struct fileheader *file){
+int cancel_inn(const char *board,const struct fileheader *file){
     FILE *fp,*fp_bntp;
     char buf[DRBP_LEN],nick[DRBP_LEN],*p;
     int len;
@@ -2912,7 +2912,7 @@ static inline int delete_range_cancel_post_mv(const char *board,struct fileheade
     setbfile(nbuf,board,file->filename);
     currtime=time(NULL);
     if(file->innflag[0]=='S'&&file->innflag[1]=='S'&&(get_posttime(file)>(currtime-(14*86400))))
-        delete_range_cancel_inn(board,file);
+        cancel_inn(board,file);
     file->accessed[sizeof(((const struct fileheader*)NULL)->accessed)-1]=((currtime/86400)%100);
     if(getCurrentUser()){
         snprintf(buf,ARTICLE_TITLE_LEN,"%-32.32s - %s",file->title,getCurrentUser()->userid);
@@ -2925,7 +2925,7 @@ static inline int delete_range_cancel_post_del(const char *board,struct filehead
     char buf[DRBP_LEN];
     setbfile(buf,board,file->filename);
     if(file->innflag[0]=='S'&&file->innflag[1]=='S'&&(get_posttime(file)>(time(NULL)-(14*86400))))
-        delete_range_cancel_inn(board,file);
+        cancel_inn(board,file);
     return unlink(buf);
 }
 
