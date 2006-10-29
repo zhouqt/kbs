@@ -420,16 +420,16 @@ int allnum, pagenum;
 
     switch (ch) {
     case UL_CHANGE_NICK_UPPER:
-       if(!strcmp(getCurrentUser()->userid,"guest")) break;
-       strncpy(buf,getCurrentUser()->username, NAMELEN);
-       getdata( BBS_PAGESIZE+3, 0, "ÓÀ¾Ã±ä»»êÇ³Æ: ",buf,NAMELEN,DOECHO,NULL,false);
-       if(buf[0]!='\0')
-       {	       
-		   strncpy( getCurrentUser()->username, buf, NAMELEN );
-	    strncpy(uinfo.username,buf,NAMELEN);
-	    UPDATE_UTMP_STR(username,uinfo);
-       }	    
-        break;	    
+        if(!strcmp(getCurrentUser()->userid,"guest"))
+            break;
+        strncpy(buf,getCurrentUser()->username,NAMELEN);
+        getdata(t_lines-1,0,"ÓÀ¾Ã±ä»»êÇ³Æ: ",buf,NAMELEN,DOECHO,NULL,false);
+        if(!buf[0]||!strcmp(buf,getCurrentUser()->username))
+            break;
+        update_username(getCurrentUser()->userid,getCurrentUser()->username,buf);
+        strncpy(getCurrentUser()->username,buf,NAMELEN);
+        strncpy(uinfo.username,buf,NAMELEN);
+        break;
     case UL_CHANGE_NICK_LOWER:
        if(!strcmp(getCurrentUser()->userid,"guest")) break;
        strncpy(buf,uinfo.username,NAMELEN);

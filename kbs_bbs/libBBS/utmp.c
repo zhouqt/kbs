@@ -836,3 +836,17 @@ bool hisfriend(int uid,struct user_info* him)
     }
     return found;
 }
+
+/* etnlegend, 2006.10.29, 更新用户昵称... */
+static int update_username_proc(struct user_info *in,void *varg,int pos){
+    const char *o_name=(((const char**)varg)[0]),*n_name=(((const char**)varg)[1]);
+    if(!o_name||!strcmp(in->username,o_name))
+        strcpy(in->username,n_name);
+    return 0;
+}
+
+int update_username(const char *userid,const char *o_name,const char *n_name){
+    const char *arg[2]={o_name,n_name};
+    return apply_utmp(update_username_proc,0,userid,arg);
+}
+

@@ -1749,7 +1749,6 @@ int modify_userinfo(int uid,int mode){
         MU_PUT((MU_ITEM+2),MU_MSG(R,"修改用户数据时发生致命错误..."));
         return -8;
     }
-    MU_EXEC(2,user,username);
     MU_EXEC(3,data,realname);
 #ifdef HAVE_BIRTHDAY
     MU_EXEC(4,data,gender);
@@ -1772,6 +1771,15 @@ int modify_userinfo(int uid,int mode){
     MU_EXEC(17,user,score_user);
 #endif /* NEWSMTH */
     MU_EXEC(18,user,userlevel);
+    if(change&0x04){
+        if(mode)
+            update_username(urec->userid,NULL,nuser.username);
+        else{
+            update_username(urec->userid,vuser.username,nuser.username);
+            strncpy(uinfo.username,nuser.username,NAMELEN);
+        }
+        MU_EXEC(2,user,username);
+    }
     i=(verify&0x01);
     do{
         if(change&0x01){

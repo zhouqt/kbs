@@ -121,6 +121,7 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     int getfriendstr(struct userec *user, struct user_info *puinfo,session_t* session);
     int myfriend(int uid, char *fexp,session_t* session);
     bool hisfriend(int uid, struct user_info *him);
+    int update_username(const char *userid,const char *o_name,const char *n_name);
 
 /* defined in stuff.c */
 	int calc_numofsig();
