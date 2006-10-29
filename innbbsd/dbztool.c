@@ -1,4 +1,5 @@
 #include <time.h>
+#include <unistd.h>
 #include <sys/file.h>
 #include "his.h"
 #include "inn_funcs.h"
