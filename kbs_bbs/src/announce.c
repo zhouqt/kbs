@@ -880,18 +880,18 @@ void a_copypaste(MENU *pm,int mode){
     else
         snprintf(genbuf,STRLEN,"剪切方式粘贴%s %.38s, 确认? (Y/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
     getdata(t_lines-1,0,genbuf,ans,2,DOECHO,NULL,true);
-    a_additem(pm,title,filename,NULL,0,ap);
-    if(a_savenames(pm)){
-        a_loadnames(pm,getSession());
-        a_additem(pm,title,filename,NULL,0,ap);
-        if(a_savenames(pm)){
-            a_loadnames(pm,getSession());
-            ACP_ANY_RETURN("整理精华区失败...");
-        }
-    }
     move(t_lines-1,0);clrtoeol();
     ans[0]=toupper(ans[0]);copy=0;
     if(ans[0]=='Y'||(type==PASTE_COPY&&ans[0]=='C')){
+        a_additem(pm,title,filename,NULL,0,ap);
+        if(a_savenames(pm)){
+            a_loadnames(pm,getSession());
+            a_additem(pm,title,filename,NULL,0,ap);
+            if(a_savenames(pm)){
+                a_loadnames(pm,getSession());
+                ACP_ANY_RETURN("整理精华区失败...");
+            }
+        }
         if(!(type==PASTE_CUT&&!rename(path,newpath))){
             if(S_ISDIR(st.st_mode)){
                 sprintf(genbuf,"/bin/cp -pr %s %s",path,newpath);
@@ -906,6 +906,15 @@ void a_copypaste(MENU *pm,int mode){
         }
     }
     else if(type==PASTE_COPY&&ans[0]=='L'){
+        a_additem(pm,title,filename,NULL,0,ap);
+        if(a_savenames(pm)){
+            a_loadnames(pm,getSession());
+            a_additem(pm,title,filename,NULL,0,ap);
+            if(a_savenames(pm)){
+                a_loadnames(pm,getSession());
+                ACP_ANY_RETURN("整理精华区失败...");
+            }
+        }
         if(path[0]!='/'){
             if(!getcwd(genbuf,PATHLEN))
                 ACP_ANY_RETURN("发生致命错误...");
