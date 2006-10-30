@@ -1294,6 +1294,17 @@ void a_manager(MENU *pm,int ch)
             if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||!HAS_PERM(getCurrentUser(),PERM_ANNOUNCE)||!item)
                 break;
             strnzhcpy(genbuf,item->title,39);
+            do{
+                char *p,*q;
+                for(q=NULL,p=&genbuf[0];*p;p++)
+                    if(*p!=' ')
+                        q=p;
+                if(q)
+                    *++q=0;
+                else
+                    strcpy(genbuf,"<ÎÞ±êÌâ>");
+            }
+            while(0);
             strcpy(item->title,genbuf);
             move(t_lines-1,0);
             clrtoeol();
