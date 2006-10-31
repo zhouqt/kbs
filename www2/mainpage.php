@@ -214,19 +214,7 @@ $doc = domxml_open_file($newboard_file);
 
 $root = $doc->document_element();
 $boards = $root->child_nodes();
-	if (0) { //defined("SITE_NEWSMTH")) {
 ?>
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
-        <tr>
-          <td width="100%"><a href="http://gceclub.sun.com.cn/chinese_java_docs.html" target="_blank"><img src="/guangg/200510/sun/sdn_china_logo.gif" border="0" /></a></td>
-        </tr>
-          <td>&nbsp;</td>
-        <tr>
-          <td width="100%"><a href="http://gceclub.sun.com.cn/download.html" target="_blank">Java APIÎÄµµÖÐÎÄ°æ</a></td>
-        </tr>
-          <td>&nbsp;</td>
-      </table>
-<?php } ?>
       <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
           <td class="helpert_left"></td>
