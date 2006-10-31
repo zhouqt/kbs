@@ -901,14 +901,11 @@ docWriter.prototype.t = function() {
 			ret += '其他操作： [<a href="javascript:if(confirm(\'确定要删除吗？\')){mansubmit(' + bbsman_modes['DEL'] + ');}">删除</a>]';
 			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['NOREPLY'] + ');">切换不可回复</a>]';
 			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['ZHIDING'] + ');">置底</a>]';
-			if (www2dev) {
-				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['ANNOUNCE'] + ');">收精华区</a>]<br>';
-				ret += '暂 存 档： [<a href="bbsimport.php" target="_blank">看暂存档</a>]';
-				ret += ' [<a href="bbsimport.php?act=clear" target="_blank">清空</a>]';
-				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_I'] + ');">保留头尾</a>]';
-				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_J'] + ');">去掉头尾</a>]';
-				
-			}
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['ANNOUNCE'] + ');">收精华区</a>]<br>';
+			ret += '暂 存 档： [<a href="bbsimport.php" target="_blank">看暂存档</a>]';
+			ret += ' [<a href="bbsimport.php?act=clear" target="_blank">清空</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_I'] + ');">保留头尾</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_J'] + ');">去掉头尾</a>]';
 		}
 		else
 		{
@@ -999,9 +996,7 @@ docWriter.prototype.f = function(rss,related,isclub) {
 		if (isclub) {
 			ret += ' [<a href="bbsclub.php?board=' + this.board + '">俱乐部成员</a>]';
 		}
-		if (www2dev) {
-			ret += ' [<a href="bbs0anbm.php?path=' + escape(this.apath) + '">精华区管理</a>]';
-		}
+		ret += ' [<a href="bbs0anbm.php?path=' + escape(this.apath) + '">精华区管理</a>]';
 	}
 	ret += '</div>';
 	document.write(ret);
@@ -1088,9 +1083,7 @@ conWriter.prototype.t = function() {
 		ret += '[<a href="bbspstmail.php' + qry + '">回信</a>] ';
 		ret += '[<a href="bbsedit.php' + qry + '&ftype=' + this.ftype + '">修改</a>] ';
 		if (!zd) {
-			if (www2dev) {
-				ret += '[<a href="bbsprop.php' + qry + '">属性</a>] ';
-			}
+			ret += '[<a href="bbsprop.php' + qry + '">属性</a>] ';
 			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&id=' + this.id + '">删除</a>] ';
 		}
 	}
@@ -1120,7 +1113,7 @@ function tconWriter(board, bid, gid, start, tpage, pno, serial, prevgid, nextgid
 }
 tconWriter.prototype.h = function() {
 	var ret = '<div class="tnav smaller"><span style="float:right">';
-	if(www2dev && isBM(this.bid))
+	if(isBM(this.bid))
 	{
 		ret += '[<a href="bbsthreads.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '">同主题操作</a>] ';
 	}
