@@ -117,7 +117,7 @@ switch ($ret) {
 $path = $path_tmp;
 $isBoard = false;
 $up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
-$title = defined("www2dev") ? bbs_ann_get_title($path) : "";
+$title = bbs_ann_get_title($path);
 if ($board) {
 	$brdarr = array();
 	$bid = bbs_getboard($board,$brdarr);
