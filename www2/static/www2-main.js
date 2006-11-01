@@ -855,7 +855,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 	str += '<td><nobr>' + this.monthStr[fd.getMonth()].substr(0,3) + "&nbsp;"
 	var dd = fd.getDate();
 	str += ((dd < 10) ? ' ' : '') + dd + '</nobr></td>';
-	str += '<td><b>';
+	str += '<td>';
 
 	if (title.substr(0,4)!="Re: ") title = "¡ñ " + title;
 
@@ -877,7 +877,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '">' + title + '</a>';
 			break;
 	}
-	str += '</b></td></tr>';
+	str += '</td></tr>';
 	document.write(str);
 	this.num++;
 };
