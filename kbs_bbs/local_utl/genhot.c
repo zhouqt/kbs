@@ -18,7 +18,7 @@ int gen_commend_xml(void){
 	char url_buf[1024]; //changed from 256 to 1024, for <brief> - atppp
 	struct stat st;
 	int numrecords;
-	int i;
+	int i, brieflen, len;
 	char *c;
 	struct boardheader *bh;
 
@@ -69,6 +69,7 @@ int gen_commend_xml(void){
 			}
 			fprintf(fp, "<o_groupid>%d</o_groupid>\n<brief>", dirfh.o_groupid);
 			for(i=0;i<3;i++) fgets(buf, 255, fp1);
+            brieflen = 240;
 			for(i=0;i<4;){
 				if(fgets(buf, 255, fp1) ){
 					if( buf[0] == '\n' || buf[0] == '\r' || buf[0]=='\0' )
@@ -76,8 +77,19 @@ int gen_commend_xml(void){
 					buf[255]=0;
                     /* etnlegend, 2006.09.17, ¹ýÂË¿ØÖÆ×Ö·û... */
                     process_control_chars(buf);
+                    
+                    len = strlen(buf);
+                    if (len > brieflen) {
+                        strnzhcpy(buf, buf, brieflen);
+                        len = brieflen;
+                    }
+
 					fprintf(fp, "%s", encode_url(url_buf,encode_xml(xml_buf, buf, sizeof(xml_buf)),sizeof(url_buf)) );
 					i++;
+
+                    brieflen -= len;
+                    if (brieflen <= 0)
+                        break;
 				}else
 					break;
 			}
