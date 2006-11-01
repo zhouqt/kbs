@@ -71,10 +71,10 @@ int gen_commend_xml(void){
             for(i=0;i<3;i++) fgets(buf, 255, fp1);
             brieflen = 240;
             for(i=0;i<4;){
-                if(fgets(buf, 255, fp1) ){
+                if(fgets(buf, 240, fp1) ){
                     if( buf[0] == '\n' || buf[0] == '\r' || buf[0]=='\0' )
                         continue;
-                    buf[255]=0;
+                    buf[240]=0;
                     /* etnlegend, 2006.09.17, ¹ýÂË¿ØÖÆ×Ö·û... */
                     process_control_chars(buf);
                     
@@ -82,6 +82,9 @@ int gen_commend_xml(void){
                     if (len > brieflen) {
                         strnzhcpy(buf, buf, brieflen);
                         len = brieflen;
+                    } else {
+                        buf[len++] = ' ';
+                        buf[len] = '\0';
                     }
 
                     fprintf(fp, "%s", encode_url(url_buf,encode_xml(xml_buf, buf, sizeof(xml_buf)),sizeof(url_buf)) );
