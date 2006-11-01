@@ -1273,6 +1273,8 @@ int modify_userinfo(int uid,int mode){
         else if(arg.type==MU_MENU_SELECT){
             switch((i=(pos-1))){
 #define MU_CURR_ROW                     (i+2)
+#define MU_BREAK_TRIM(s)                if(!((s)[0]))break;trimstr(s)
+#define MU_TRIM_BREAK(s)                trimstr(s);if(!((s)[0]))break
                 case 0:
                     MU_SHOW_HINT(i);
                     if(!strcmp(nuser.userid,getCurrentUser()->userid)){
@@ -1280,7 +1282,6 @@ int modify_userinfo(int uid,int mode){
                         break;
                     }
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户名: "),buf,IDLEN);
-                    trimstr(buf);
                     if(!buf[0]||!strcmp(buf,nuser.userid))
                         break;
                     if(id_invalid(buf)){
@@ -1346,9 +1347,7 @@ int modify_userinfo(int uid,int mode){
                 case 3:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的真实姓名: "),buf,(NAMELEN-1));
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_BREAK_TRIM(buf);
                     snprintf(ndata.realname,NAMELEN,"%s",buf);
                     MU_SET(i,data,realname,str,"%s",0);
                     break;
@@ -1366,9 +1365,7 @@ int modify_userinfo(int uid,int mode){
 #define MU_FEB_CORR(y)                  (2-(!(y%400)?1:(!(y%100)?0:(!(y%4)?1:0))))
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的出生日期(YYYYMMDD): "),buf,8);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_TRIM_BREAK(buf);
                     if(!mu_digit_string(buf)){
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的出生日期不符合预定格式..."));
                         break;
@@ -1403,9 +1400,7 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的通信地址..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,64);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_BREAK_TRIM(buf);
                     snprintf(ndata.address,STRLEN,"%s",buf);
                     MU_SET(i,data,address,str,"%s",0);
                     break;
@@ -1413,9 +1408,7 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的电子邮件地址..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,64);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_BREAK_TRIM(buf);
                     snprintf(ndata.email,STRLEN,"%s",buf);
                     MU_SET(i,data,email,str,"%s",0);
                     break;
@@ -1423,18 +1416,14 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的联系电话..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,64);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_BREAK_TRIM(buf);
                     snprintf(ndata.telephone,STRLEN,"%s",buf);
                     MU_SET(i,data,telephone,str,"%s",0);
                     break;
                 case 9:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的职务{<名称>|<#序号>|<@>}: "),buf,(USER_TITLE_LEN-1));
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_TRIM_BREAK(buf);
                     if(buf[0]=='@'&&!buf[1]){
                         j=select_user_title(NULL);
                         if(j==-1)
@@ -1471,9 +1460,7 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的原始注册资料..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,60);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_BREAK_TRIM(buf);
                     snprintf(ndata.realemail,(STRLEN-16),"%s",buf);
                     MU_SET(i,data,realemail,str,"%s",0);
                     break;
@@ -1514,9 +1501,7 @@ int modify_userinfo(int uid,int mode){
                 case 14:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的登录数量{<N>|<+N>|<-N>}: "),buf,9);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_TRIM_BREAK(buf);
                     if(buf[0]=='+'||buf[0]=='-'){
                         if(!mu_digit_string(&buf[1])){
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
@@ -1539,9 +1524,7 @@ int modify_userinfo(int uid,int mode){
                 case 15:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的文章数量{<N>|<+N>|<-N>}: "),buf,9);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_TRIM_BREAK(buf);
                     if(buf[0]=='+'||buf[0]=='-'){
                         if(!mu_digit_string(&buf[1])){
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
@@ -1575,9 +1558,7 @@ int modify_userinfo(int uid,int mode){
                 case 17:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户积分数量{<N>|<+N>|<-N>}: "),buf,9);
-                    trimstr(buf);
-                    if(!buf[0])
-                        break;
+                    MU_TRIM_BREAK(buf);
                     if(buf[0]=='+'||buf[0]=='-'){
                         if(!mu_digit_string(&buf[1])){
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
@@ -1615,6 +1596,8 @@ int modify_userinfo(int uid,int mode){
                     MU_SET(i,user,userlevel,val,"%s",buf);
                     break;
 #undef MU_CURR_ROW
+#undef MU_BREAK_TRIM
+#undef MU_TRIM_BREAK
                 case (MU_ITEM-1):
                     if(!change)
                         return 0;
