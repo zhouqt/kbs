@@ -552,6 +552,8 @@ int allnum, pagenum;
 #endif
     case 'o':
     case 'O':
+		if (friendmode)
+            return 0;
         if (!strcmp("guest", getCurrentUser()->userid))
             return 0;
         if (addtooverride(user_record[allnum]->userid) == -1) {
