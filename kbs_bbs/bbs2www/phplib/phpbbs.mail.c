@@ -570,7 +570,7 @@ PHP_FUNCTION(bbs_postmail){
 
 	strncpy(targetID, touser->userid, sizeof(targetID));
 	targetID[sizeof(targetID)-1] = '\0';
-    process_control_chars(title);
+    process_control_chars(title,NULL);
 	if (title[0] == 0)
         strcpy(mail_title,"Ã»Ö÷Ìâ");
 	else 

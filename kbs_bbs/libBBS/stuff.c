@@ -2449,8 +2449,8 @@ char * filter_upload_filename(char *s) {
 }
 
 /* etnlegend, 2006.10.04, ¹ýÂË¿ØÖÆ×Ö·û... */
-char* process_control_chars(char *s){
-    static const unsigned char T[256]={
+char* process_control_chars(char *s,const char *reserved_chars){
+    static const unsigned char TD[256]={
         0x00,0x10,0x10,0x10,0x10,0x10,0x10,0x10,
         0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,
         0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,
@@ -2484,9 +2484,22 @@ char* process_control_chars(char *s){
         0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
         0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x10
     };
-    register unsigned char *p,*q;
+    static unsigned char TU[256];
+    static const unsigned char *T;
+    register const unsigned char *p;
+    register unsigned char *q;
     register unsigned int n,t;
-    for(n=0x00,q=(unsigned char*)s,p=(unsigned char*)s;*p;p++){
+    if(!reserved_chars){
+        T=TD;
+    }
+    else{
+        memcpy(TU,TD,(256*sizeof(unsigned char)));
+        for(p=(const unsigned char*)s;*p;p++){
+            TU[*p]=0x00;
+        }
+        T=TU;
+    }
+    for(n=0x00,q=(unsigned char*)s,p=(const unsigned char*)s;*p;p++){
         switch((t=T[*p])){
             case 0x02:
             case 0x04:

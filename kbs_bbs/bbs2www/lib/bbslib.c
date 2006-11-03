@@ -91,7 +91,7 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
 {
     uinfo_t *uin;
 
-    process_control_chars(msg);
+    process_control_chars(msg,"\n");
     uin = t_search(destid, destpid);
     if (uin == NULL)
         return -1;

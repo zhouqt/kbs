@@ -761,31 +761,6 @@ static int encode_imail_file(
 	return 0;
 }
 
-void my_ansi_filter(char *source)
-{
-    char result[500];
-    int i, flag = 0, loc = 0;
-    int len;
-
-    len = strlen(source);
-    len = len >= sizeof(result) ? sizeof(result) - 1 : len;
-    for (i = 0; i < len; i++) {
-        if (source[i] == '\x1B') {
-            flag = 1;
-            continue;
-        } else if (flag == 1 && isalpha(source[i])) {
-            flag = 0;
-            continue;
-        } else if (flag == 1) {
-            continue;
-        } else {
-            result[loc++] = source[i];
-        }
-    }
-    result[loc] = '\0';
-    strncpy(source, result, loc + 1);
-}
-
 int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noansi,session_t *session)
 {                               /* Modified by ming, 96.10.9  KCN,99.12.16 */
     FILE *fin;
@@ -808,7 +783,8 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noans
 	}
 
 	while (fgets(gbuf, 255, fin) != NULL) {
-		if(noansi)  my_ansi_filter(gbuf);
+		if(noansi)
+            process_control_chars(gbuf,"\n");
 		if (gbuf[0] == '.' && gbuf[1] == '\n')
 			fputs(". \n", fout);
 		else

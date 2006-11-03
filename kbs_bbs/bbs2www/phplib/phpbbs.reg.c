@@ -472,10 +472,10 @@ PHP_FUNCTION(bbs_modify_info)
             WRONG_PARAM_COUNT;
     }
 
-    process_control_chars(username);
-    process_control_chars(realname);
-    process_control_chars(address);
-    process_control_chars(email);
+    process_control_chars(username,NULL);
+    process_control_chars(realname,NULL);
+    process_control_chars(address,NULL);
+    process_control_chars(email,NULL);
 
     if(username_len >= NAMELEN || realname_len >= NAMELEN || address_len >= STRLEN || email_len>= STRLEN)
        RETURN_LONG(-1);

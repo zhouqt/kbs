@@ -1300,7 +1300,7 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
 
 	if(strcmp(buf,fileinfo->title))
 	{
-	    process_control_chars(buf);
+	    process_control_chars(buf,NULL);
         strnzhcpy(fileinfo->title, buf, ARTICLE_TITLE_LEN);
 
 		strcpy(tmp,arg->direct);

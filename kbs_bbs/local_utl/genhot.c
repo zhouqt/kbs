@@ -76,22 +76,20 @@ int gen_commend_xml(void){
                         continue;
                     buf[240]=0;
                     /* etnlegend, 2006.09.17, ¹ýÂË¿ØÖÆ×Ö·û... */
-                    process_control_chars(buf);
-                    
+                    process_control_chars(buf,"\n");
+
                     len = strlen(buf);
-                    if (len > brieflen) {
-                        strnzhcpy(buf, buf, brieflen);
-                        len = brieflen;
-                    } else {
-                        buf[len++] = ' ';
-                        buf[len] = '\0';
+                    if(!(len<brieflen)){
+                        strnzhcpy(buf,buf,brieflen);
+                        len=brieflen;
                     }
 
                     fprintf(fp, "%s", encode_url(url_buf,encode_xml(xml_buf, buf, sizeof(xml_buf)),sizeof(url_buf)) );
                     i++;
 
                     brieflen -= len;
-                    if (brieflen <= 0)
+
+                    if(brieflen<2)
                         break;
                 }else
                     break;

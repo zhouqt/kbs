@@ -356,7 +356,7 @@ PHP_FUNCTION(bbs_denyadd)
 	    RETURN_LONG(-4);  
 
     if (exp_len >= 28) exp[27] = '\0';
-    process_control_chars(exp);
+    process_control_chars(exp,NULL);
 	
 	if (!*exp)
 	    RETURN_LONG(-6);

@@ -11,32 +11,6 @@
 
 extern void str_decode(unsigned char *dst, unsigned char *src);
 
-void my_ansi_filter(char *source)
-{
-        char result[500];
-        int  i, flag = 0, loc=0;
-		int len;
-
-		len = strlen(source);
-		len = len >= sizeof(result) ? sizeof(result)-1 : len;
-        for ( i = 0 ; i < len ; i++ )
-		{
-			if ( source[i] == '\x1B' ) {
-					flag = 1;
-					continue;
-			} else if ( flag == 1 && isalpha(source[i]) ) {
-					flag = 0;
-					continue;
-			} else if ( flag == 1 ) {
-					continue;
-			} else {
-					result[loc++]=source[i];
-			}
-        }
-        result[loc]='\0';
-        strncpy(source, result, loc+1);
-}
-
 #ifdef MAIL2BOARD
 void strmov(char *source, int offset)
 {
@@ -167,7 +141,7 @@ append_board(fin, sender1, sender, bname, title, received, encoding, boundary)
 
 	str_decode((unsigned char*)conv_buf, (unsigned char*)title);
 	/* copy from flyriver qmailpost.c */
-	my_ansi_filter(conv_buf);
+	process_control_chars(conv_buf,NULL);
 	if (conv_buf[0] == '\0')
 		strcpy(conv_buf, "没主题");
 	eat_forward(conv_buf);
@@ -245,7 +219,7 @@ append_board(fin, sender1, sender, bname, title, received, encoding, boundary)
 			strncpy(sender_tmp, nameptrleft, sizeof(sender_tmp));
 			*nameptrright = name_tmp;
 			str_decode((unsigned char*)sender_conv, (unsigned char*)sender_tmp);
-			my_ansi_filter(sender_conv);
+			process_control_chars(sender_conv,NULL);
 		} else {
 			name_tmp = *nameptrright;
 			*nameptrright = '\0';
@@ -497,7 +471,7 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 
 	str_decode((unsigned char*)conv_buf, (unsigned char*)title);
 	/* copy from flyriver qmailpost.c */
-	my_ansi_filter(conv_buf);
+	process_control_chars(conv_buf,NULL);
 	if (conv_buf[0] == '\0')
 		strcpy(conv_buf, "无标题");
 	/* allocate a record for the new mail */
@@ -574,7 +548,7 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 			strncpy(sender_tmp, nameptrleft, sizeof(sender_tmp));
 			*nameptrright = name_tmp;
 			str_decode((unsigned char*)sender_conv, (unsigned char*)sender_tmp);
-			my_ansi_filter(sender_conv);
+			process_control_chars(sender_conv,NULL);
 		} else {
 			name_tmp = *nameptrright;
 			*nameptrright = '\0';

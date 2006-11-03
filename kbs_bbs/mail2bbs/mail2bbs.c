@@ -16,31 +16,6 @@ static char ubmap[UBMAPNUM][2][20] = {
 
 int str_decode(register unsigned char *dst, register unsigned char *src);
 
-void my_ansi_filter(char *source)
-{
-    char result[500];
-    int i, flag = 0, loc = 0;
-    int len;
-
-    len = strlen(source);
-    len = len >= sizeof(result) ? sizeof(result) - 1 : len;
-    for (i = 0; i < len; i++) {
-        if (source[i] == '\x1B') {
-            flag = 1;
-            continue;
-        } else if (flag == 1 && isalpha(source[i])) {
-            flag = 0;
-            continue;
-        } else if (flag == 1) {
-            continue;
-        } else {
-            result[loc++] = source[i];
-        }
-    }
-    result[loc] = '\0';
-    strncpy(source, result, loc + 1);
-}
-
 char* strsncpy(char *c,const char *d,size_t l){
 	strncpy(c,d,l);
 	c[l-1]=0;
@@ -249,7 +224,7 @@ char *bname, *sender1, *sender, *title, *received;
 
     str_decode((unsigned char*)conv_buf,(unsigned char*)title);
 /* copy from flyriver qmailpost.c */
-    my_ansi_filter(conv_buf);
+    process_control_chars(conv_buf,NULL);
     if (conv_buf[0] == '\0')
         strcpy(conv_buf, "没主题");
     eat_forward(conv_buf);
@@ -361,7 +336,7 @@ char *userid, *sender1, *sender, *title, *received;
 	str_decode((unsigned char*)conv_buf,(unsigned char*)sender);
 	strsncpy(sender, conv_buf, BUFLEN);
 	str_decode((unsigned char*)conv_buf,(unsigned char*)title);
-    my_ansi_filter(conv_buf);
+    process_control_chars(conv_buf,NULL);
     if (conv_buf[0] == '\0')
         strcpy(conv_buf, "没主题");
 

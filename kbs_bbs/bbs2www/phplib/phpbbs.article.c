@@ -18,7 +18,7 @@ void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, si
     add_assoc_stringl(array, "INNFLAG", fh->innflag, sizeof(fh->innflag), 1);
     add_assoc_string(array, "OWNER", fh->owner, 1);
     strcpy(title, fh->title);
-    //process_control_chars(title);
+    //process_control_chars(title,NULL);
     add_assoc_string(array, "TITLE", title, 1);
 /*    add_assoc_long(array, "LEVEL", fh->level);*/
     add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);

@@ -442,7 +442,7 @@ PHP_FUNCTION(bbs_modify_nick)
     {
             WRONG_PARAM_COUNT;
     }
-    process_control_chars(username);
+    process_control_chars(username,NULL);
 	if( username_len >= NAMELEN)
        RETURN_LONG(-1);
 

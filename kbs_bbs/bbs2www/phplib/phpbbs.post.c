@@ -368,7 +368,7 @@ PHP_FUNCTION(bbs_postarticle)
     strcpy(board, brd->filename);
 
     if (tlen > 256) title[256] = '\0';
-    process_control_chars(title);
+    process_control_chars(title,NULL);
     if (tlen == 0)
         RETURN_LONG(-3); //标题为NULL
     if (true == checkreadonly(board) || !haspostperm(getCurrentUser(), board))
@@ -780,7 +780,7 @@ PHP_FUNCTION(bbs_edittitle)
     if (title_len > 256) {
         title[256] = '\0';
     }
-    process_control_chars(title);
+    process_control_chars(title,NULL);
     if (!strcmp(title,f.title)) //无需修改
         RETURN_LONG(0);
 #ifdef FILTER

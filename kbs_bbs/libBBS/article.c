@@ -1054,7 +1054,7 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
         err = 1;
     }
-    process_control_chars(fh->title);
+    process_control_chars(fh->title,NULL);
     if (!err) {
         flock(fd, LOCK_EX);
         nowid = get_nextid(boardname);

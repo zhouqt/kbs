@@ -2887,7 +2887,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             /*
              * Changed by KCN,disable color title 
              */
-            process_control_chars(buf);
+            process_control_chars(buf,NULL);
             strnzhcpy(post_file.title, buf, ARTICLE_TITLE_LEN);
             strcpy(save_title, post_file.title);
             if (save_title[0] == '\0') {
@@ -3206,7 +3206,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         }
 #endif
         strcpy(tmp2, fileinfo->title);  /* Do a backup */
-        process_control_chars(buf);
+        process_control_chars(buf,NULL);
         strnzhcpy(fileinfo->title, buf, ARTICLE_TITLE_LEN);
 
         strcpy(tmp, arg->direct);
@@ -5584,7 +5584,7 @@ static int read_top_edit_title(struct _select_def *conf,struct fileheader *fh,vo
         return PARTUPDATE;
     }
 #endif /* FILTER */
-    process_control_chars(buf);
+    process_control_chars(buf,NULL);
     setbfile(path,currboard->filename,fh->filename);
     add_edit_mark(path,2,buf,getSession());
     newbbslog(BBSLOG_USER,"read_top_edit_title %s %s %s",currboard->filename,fh->title,buf);
