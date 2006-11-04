@@ -618,7 +618,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noans
     FILE *fin;
     char tmpfile[PATHLEN];
     char from[257];
-    int len;
+    int len,ret;
     smtp_session_t smtpsession;
     smtp_message_t message;
     smtp_recipient_t recipient;
@@ -716,11 +716,12 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noans
     /*
      * Free resources consumed by the program.
      */
+    ret=(status->code!=250);
     smtp_destroy_session(smtpsession);
     fclose(fin);
 
     unlink(tmpfile);
-    return (status->code != 250);
+    return ret;
 }
 
 #else
