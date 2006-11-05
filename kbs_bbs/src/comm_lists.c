@@ -312,7 +312,7 @@ int domenu(const char *name){
     n=(pm-menuitem);now=0;
     if(!strcmp(name,"TOPMENU")&&chkmail()){
         for(i=0;i<size;i++){
-            if((menu[n].row>0)&&(*sysconf_relocate(pm[i].name)=='M'))
+            if((menu[n+i].row>0)&&(*sysconf_relocate(pm[i].name)=='M'))
                 now=i;
         }
     }
