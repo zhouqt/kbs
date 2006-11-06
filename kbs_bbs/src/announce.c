@@ -1615,7 +1615,7 @@ int lastlevel, lastbmonly;
 MENU *father;
 {
     MENU me;
-    char fname[PATHLEN], tmp[STRLEN];
+    char fname[PATHLEN];
 #ifdef ANN_SHOW_WELCOME
 	char welcome[PATHLEN+20];
 #endif
@@ -1752,87 +1752,77 @@ MENU *father;
             break;
         case Ctrl('C'):
         case Ctrl('P'):
-            if (!HAS_PERM(getCurrentUser(), PERM_POST))
+            if(!HAS_PERM(getCurrentUser(),PERM_POST)||!M_ITEM(&me,me.now))
                 break;
-            if (!M_ITEM(&me,me.now))
+            sprintf(fname,"%s/%s",path,M_ITEM(&me,me.now)->fname);
+            if(!dashf(fname))
                 break;
-            sprintf(fname, "%s/%s", path, M_ITEM(&me,me.now)->fname);
-            if (!dashf(fname))
-                break;
-            if (me.now < me.num) {
-                char bname[30];
-
-                clear();
-                move(1, 0);
-                if (get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
-                    char innmode[2];
+            if(me.now<me.num){
+                do{
                     const struct boardheader *bh;
-                    move(1, 0);
-                    clrtoeol();
-                    if (deny_me(getCurrentUser()->userid, bname)) {
-                        prints("对不起，你在 %s 版被停止发表文章的权力", bname);
-                        pressreturn();
-                        me.page = 9999;
+                    char bname[32],ans[4];
+                    clear();
+                    move(1,0);
+                    if(!get_a_boardname(bname,"请输入要转贴的讨论区名称: ")||!(bh=getbcache(bname)))
+                        break;
+                    move(2,0);
+                    clrtobot();
+                    if(!haspostperm(getCurrentUser(),bname)){
+                        ans[0]=(HAS_PERM(getCurrentUser(),PERM_LOGINOK)?'1':'0');
+                        ans[1]=(('0'+'1')-ans[0]);
+                        sprintf(genbuf,"\n\n    您目前无法在该讨论区发表文章!\n\n    导致上述问题的原因可能是\033[%c;33m版面的发文权限制\033[m或者\033[%c;33m您尚未通过注册\033[m,\n    尚未通过注册的用户可在\033[%c;33m个人工具箱\033[m内填写注册资料以完成注册:)\n\n    按回车键继>续...\033[0;33m<Enter>\033[m",ans[0],ans[1],ans[1]);
+                        prints("%s",genbuf);
+                        WAIT_RETURN;
                         break;
                     }
-                    if (!haspostperm(getCurrentUser(), bname)) {
-                        move(1, 0);
-                        prints("您尚无权限在 %s 发表文章.\n", bname);
-                        prints("如果您尚未注册，请在个人工具箱内详细注册身份\n");
-                        prints("未通过身份注册认证的用户，没有发表文章的权限。\n");
-                        prints("谢谢合作！ :-) \n");
-                        pressreturn();
-                        me.page = 9999;
-                        break;
-                    }
-                    if (check_readonly(bname)) {
-                        me.page = 9999;
-                        break;
-                    }
-                    bh = getbcache(bname);
-                    if(!bh) {
-                        prints("错误的讨论区。");
+                    if(checkreadonly(bname)){
+                        prints("\n\n    %s\033[0;33m<Enter>\033[m","\033[1;33m目的版面目前为\033[1;31m只读\033[1;33m模式, 取消转载操作...\033[m");
                         WAIT_RETURN;
                         break;
                     }
 #ifdef NEWSMTH
                     if(!check_score_level(getCurrentUser(),bh)){
-                        move(1,0);
-                        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m",
-                            "您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
+                        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m","您的积分不符合目的讨论区的设定, 暂时无法向目的讨论区转载文章...");
                         WAIT_RETURN;
                         break;
                     }
 #endif /* NEWSMTH */
-                    innmode[0] = 'L';
-                    if(bh->flag & BOARD_OUTFLAG) {
-                        getdata(0, 0, "目标版面是转信版，请选择： (S)转信发表 (L)站内发表 [L]: ", innmode, 2, DOECHO, NULL, true);
-                        switch(innmode[0]) {
-                            case 's':
-                            case 'S':
-                                innmode[0] = 'S';
-                                break;
-                            default:
-                                innmode[0] = 'L';
-                                break;
-                        }
-
+                    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)&&deny_me(getCurrentUser()->userid,bname)){
+                        prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m","您已被管理人员取消在目的版面的发文权限...");
+                        WAIT_RETURN;
+                        break;
                     }
-                    
-                    sprintf(tmp, "你确定要转贴到 %s 版吗", bname);
-                    if (askyn(tmp, 0) == 1) {
-                        post_cross(getCurrentUser(), bh, "", M_ITEM(&me, me.now)->title, fname, 0, false, innmode[0], 2, getSession());
-                        //post_file(getCurrentUser(), "", fname, bname, M_ITEM(&me,me.now)->title, 0, 2, getSession());
-                        move(2, 0);
-                        sprintf(tmp, "\033[1m已经帮你转贴至 %s 版了\033[m", bname);
-                        prints(tmp);
-                        refresh();
-                        sleep(1);
+                    sprintf(genbuf,"确认转载至 %s 版 %s(L)站内发表 (A)取消操作 [A]: ",bh->filename,
+                        (!(bh->flag&BOARD_OUTFLAG)?"":"(S)转信发表 "));
+                    clrtoeol();
+                    getdata(1,0,genbuf,ans,2,DOECHO,NULL,true);
+                    switch(ans[0]){
+                        case 'S':
+                        case 's':
+                            ans[0]=(!(bh->flag&BOARD_OUTFLAG)?'L':'S');
+                            break;
+                        case 'L':
+                        case 'l':
+                            ans[0]='L';
+                            break;
+                        default:
+                            ans[0]=0;
+                            break;
                     }
+                    move(3,0);
+                    if(!ans[0]){
+                        prints("\033[1;33m%s\033[0;33m<Enter>\033[m","取消转载操作...");
+                        WAIT_RETURN;
+                        break;
+                    }
+                    post_cross(getCurrentUser(),bh,"",M_ITEM(&me, me.now)->title,fname,0,false,ans[0],2,getSession());
+                    prints("\033[1;32m%s\033[0;33m<Enter>\033[m","转载完成!");
+                    WAIT_RETURN;
                 }
-                me.page = 9999;
+                while(0);
+                update_endline();
+                me.page=9999;
             }
-            show_message(NULL);
             break;
         case 'h':
             show_help("help/announcereadhelp");
