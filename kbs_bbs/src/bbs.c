@@ -1168,7 +1168,9 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
 
-    if (arg->mode != DIR_MODE_NORMAL) return DONOTHING;
+    if(!(arg->mode==DIR_MODE_NORMAL||arg->mode==DIR_MODE_TOP10))
+        return DONOTHING;
+
     if (fileinfo->reid == fileinfo->id) return DONOTHING;
 
     BBS_TRY {
@@ -1205,7 +1207,7 @@ static int jump_changed_title(struct _select_def *conf,struct fileheader *fh,voi
     off_t size;
     struct fileheader *map;
     struct read_arg *arg=(struct read_arg*)conf->arg;
-    if(arg->mode!=DIR_MODE_NORMAL)
+    if(!(arg->mode==DIR_MODE_NORMAL||arg->mode==DIR_MODE_TOP10))
         return DONOTHING;
     if((fh->id==fh->groupid)||strncmp(fh->title,"Re: ",4))  /* ≥ı º≈–∂œ */
         return DONOTHING;
