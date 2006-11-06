@@ -1765,9 +1765,8 @@ MENU *father;
                 clear();
                 move(1, 0);
                 if (get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
-#ifdef NEWSMTH
+                    char innmode[2];
                     const struct boardheader *bh;
-#endif /* NEWSMTH */
                     move(1, 0);
                     clrtoeol();
                     if (deny_me(getCurrentUser()->userid, bname)) {
@@ -1790,8 +1789,14 @@ MENU *father;
                         me.page = 9999;
                         break;
                     }
+                    bh = getbcache(bname);
+                    if(!bh) {
+                        prints("错误的讨论区。");
+                        WAIT_RETURN;
+                        break;
+                    }
 #ifdef NEWSMTH
-                    if(!(bh=getbcache(bname))||!check_score_level(getCurrentUser(),bh)){
+                    if(!check_score_level(getCurrentUser(),bh)){
                         move(1,0);
                         prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m",
                             "您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
@@ -1799,9 +1804,25 @@ MENU *father;
                         break;
                     }
 #endif /* NEWSMTH */
+                    innmode[0] = 'L';
+                    if(bh->flag & BOARD_OUTFLAG) {
+                        getdata(0, 0, "目标版面是转信版，请选择： (S)转信发表 (L)站内发表 [L]: ", innmode, 2, DOECHO, NULL, true);
+                        switch(innmode[0]) {
+                            case 's':
+                            case 'S':
+                                innmode[0] = 'S';
+                                break;
+                            default:
+                                innmode[0] = 'L';
+                                break;
+                        }
+
+                    }
+                    
                     sprintf(tmp, "你确定要转贴到 %s 版吗", bname);
                     if (askyn(tmp, 0) == 1) {
-                        post_file(getCurrentUser(), "", fname, bname, M_ITEM(&me,me.now)->title, 0, 2, getSession());
+                        post_cross(getCurrentUser(), bh, "", M_ITEM(&me, me.now)->title, fname, 0, false, innmode[0], 2, getSession());
+                        //post_file(getCurrentUser(), "", fname, bname, M_ITEM(&me,me.now)->title, 0, 2, getSession());
                         move(2, 0);
                         sprintf(tmp, "\033[1m已经帮你转贴至 %s 版了\033[m", bname);
                         prints(tmp);

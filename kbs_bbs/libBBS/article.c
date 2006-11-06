@@ -796,7 +796,7 @@ static int getcross(const char *filepath,const char *quote_file,struct userec *u
         fprintf(fout,"【此篇文章是由自动发信系统所张贴】\n\n");
     }
     else if(mode==2){
-        write_header(fout,user,in_mail,toboard->filename,title,Anony,0,session);
+        write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
     }
     else if(mode==3){
         write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
