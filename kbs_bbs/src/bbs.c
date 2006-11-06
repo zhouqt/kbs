@@ -306,6 +306,9 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
     };
     if (fileinfo==NULL)
         return DONOTHING;
+
+    if(arg->mode==DIR_MODE_SELF)
+        return DONOTHING;
     
 #ifdef FILTER
 #ifdef SMTH
@@ -3316,6 +3319,7 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 	int can=0; /*0x1:noreply  0x2:ding 0x4:commend */
     int ret=FULLUPDATE;
 	char buf[100];
+    struct read_arg* arg=(struct read_arg*)conf->arg;
 
 #ifdef COMMEND_ARTICLE
     int bnum;
@@ -3327,6 +3331,10 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 #endif
     if (fileinfo==NULL)
         return DONOTHING;
+
+    if(arg->mode==DIR_MODE_DELETED||arg->mode==DIR_MODE_JUNK||arg->mode==DIR_MODE_SELF)
+        return DONOTHING;
+
 	if(chk_currBM(currBM, getCurrentUser())) mode |= 0x1;
 #if defined(OPEN_NOREPLY) || defined(COMMEND_ARTICLE)
 	if(!strcmp(getCurrentUser()->userid, fileinfo->owner)) mode |= 0x4;
@@ -3445,7 +3453,7 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (ent>arg->filecount)
         return del_ding(conf,fileinfo,extraarg);
 
-    if (arg->mode== DIR_MODE_DELETED|| arg->mode== DIR_MODE_JUNK)
+    if (arg->mode== DIR_MODE_DELETED|| arg->mode== DIR_MODE_JUNK || arg->mode==DIR_MODE_SELF)
         return DONOTHING;
 
     if (deny_del_article(currboard, fileinfo, getSession())) {
