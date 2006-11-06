@@ -1674,6 +1674,7 @@ int choose_board(int newflag, const char *boardprefix,int group,int favmode)
     int selectlevel=-1; /*保存在哪一级进入了s目录*/
 	int oldfavmode=favmode;
 	int lastloadfavmode = favmode;
+    int perform_select;
 
     oldmode = uinfo.mode;
     modify_user_mode(SELECT);
@@ -1744,21 +1745,27 @@ int choose_board(int newflag, const char *boardprefix,int group,int favmode)
             favboard_conf.get_data = fav_getdata;
         else
             favboard_conf.get_data = boards_getdata;
-        (*favboard_conf.get_data)(&favboard_conf, favboard_conf.page_pos, BBS_PAGESIZE);
-        if (favboard_conf.item_count==0) {
-            if (arg.favmode || arg.yank_flag == BOARD_BOARDALL)
-                break;
-	    else {
-                char ans[3];
-                getdata(t_lines - 1, 0, "该讨论区组的版面已经被你全部取消了，是否查看所有讨论区？(Y/N)[N]", ans, 2, DOECHO, NULL, true);
-                if (toupper(ans[0]) != 'Y')
-                    break;
-		arg.yank_flag=BOARD_BOARDALL;
-                (*favboard_conf.get_data)(&favboard_conf, favboard_conf.page_pos, BBS_PAGESIZE);
-                if (favboard_conf.item_count==0)
-		    break;
-	    }
+
+        perform_select=1;
+        (*favboard_conf.get_data)(&favboard_conf,favboard_conf.page_pos,BBS_PAGESIZE);
+        if(favboard_conf.item_count==0){
+            if(arg.favmode||arg.yank_flag==BOARD_BOARDALL)
+                perform_select=0;
+            else{
+                char ans[4];
+                getdata(t_lines-1,0,"当前位置没有可显示的讨论区, 是否查看已被取消订阅的讨论区? (Y/N) [N]: ",
+                    ans,2,DOECHO,NULL,true);
+                if(toupper(ans[0])!='Y')
+                    perform_select=0;
+                else{
+                    arg.yank_flag=BOARD_BOARDALL;
+                    (*favboard_conf.get_data)(&favboard_conf,favboard_conf.page_pos,BBS_PAGESIZE);
+                    if(favboard_conf.item_count==0)
+                        perform_select=0;
+                }
+            }
         }
+
         fav_gotonextnew(&favboard_conf);
         favboard_conf.on_select = fav_onselect;
         favboard_conf.show_data = fav_show;
@@ -1767,7 +1774,8 @@ int choose_board(int newflag, const char *boardprefix,int group,int favmode)
         favboard_conf.show_title = fav_refresh;
 
         update_endline();
-        if (list_select_loop(&favboard_conf) == SHOW_QUIT) {
+
+        if(perform_select==0||list_select_loop(&favboard_conf)==SHOW_QUIT){
             /*退出一层目录*/
             favlevel--;
             if (favlevel == -1)
