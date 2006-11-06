@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.17  2006/11/06 08:52:29  etnlegend
+ * 这地方真是土鳖!
+ *
  * Revision 1.16  2006/04/11 13:50:53  etnlegend
  * etn 你怎么就这么土!
  *
@@ -1018,6 +1021,7 @@ int main(int ac, char **av)
         setreuid(BBSUID, BBSUID);
         setregid(BBSGID, BBSGID);
 
+#if 0 /* etnlegend, 2006.10.31 ... */
         if (!debug_flag) {
             /* Record our pid in /etc/sshd_pid to make it easier to kill the
                correct sshd.  We don\'t want to do this before the bind above
@@ -1029,6 +1033,7 @@ int main(int ac, char **av)
                 fclose(f);
             }
         }
+#endif
 
         /* Start listening on the port. */
         log_msg("Server listening on port %d.", options.port);
@@ -1060,6 +1065,15 @@ int main(int ac, char **av)
 
         /* Arrange SIGCHLD to be caught. */
         signal(SIGCHLD, main_sigchld_handler);
+
+
+        if(!debug_flag){
+            sprintf(buf,"var/sshbbsd.%d.pid",options.port);
+            if((f=fopen(buf,"w"))){
+                fprintf(f,"%d\n",(int)getpid());
+                fclose(f);
+            }
+        }
 
         /* Stay listening for connections until the system crashes or the
            daemon is killed with a signal. */
