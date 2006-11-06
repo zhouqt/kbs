@@ -1242,6 +1242,7 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
     }
     move(++line,4);
     prints("\033[1;33m%s\033[m","区段操作可能需要较长时间, 请耐心等候...");
+    refresh();
     ret=delete_range_base(ident,src,dst,arg.id_from,arg.id_to,mode,NULL,&st_src);
     if(ret==0x21){
         move(line++,4);
