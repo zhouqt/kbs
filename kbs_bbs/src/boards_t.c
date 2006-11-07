@@ -1055,11 +1055,12 @@ static int fav_key(struct _select_def *conf, int command)
 		else
 			return SHOW_REFRESH;
 	/*add by stiger */
+
     case 'H':
-	{
-		read_hot_info();
+		if(read_hot_info()==CHANGEMODE)
+            ReadBoard();
     	return SHOW_REFRESH;
-	}
+
 	/* add end */
     case '!':
         Goodbye();

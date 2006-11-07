@@ -1309,28 +1309,22 @@ void showtitle(const char *title, const char *mid){
             colour = RED;
     }
 
-    if (selboard)
-	    sprintf(note, "讨论区 [%s]", currboard->filename);
-    else {
-        int bid;
-        bid = getbnum_safe(DEFAULTBOARD, getSession());
-        if (bid==0) {
-            bid=1; //try to get the first board
-        }
-        currboardent=bid;
-        currboard=(struct boardheader*)getboard(bid);
-        if (currboard==NULL)
+    if(currboard)
+	    sprintf(note,"讨论区 [%s]",currboard->filename);
+    else{
+        currboardent=getbnum_safe(DEFAULTBOARD,getSession());
+        currboard=(struct boardheader*)getboard(currboardent);
+        if(!currboard){
             currboardent=0;
+            strcpy(note,"目前尚未选定讨论区");
+        }
+        else{
 #ifdef HAVE_BRC_CONTROL
-        brc_initial(getCurrentUser()->userid, DEFAULTBOARD, getSession());
-#endif
-        if (currboardent) {
-            selboard = 1;
-            sprintf(note, "讨论区 [%s]", currboard->filename);
-        } else
-            sprintf(note, "目前并没有设定讨论区");
+            brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
+#endif /* HAVE_BRC_CONTROL */
+            sprintf(note,"讨论区 [%s]",currboard->filename);
+        }
     }
-
 
     spc1 = scr_cols/2 - 1 - strlen(mid) / 2;
     if ((strstr(title,"版主")!=NULL)&&(spc1-num_noans_chr(title)<4))

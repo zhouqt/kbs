@@ -31,8 +31,6 @@ extern struct boardheader* currboard;        /* name of currently selected board
 extern int currboardent;
 extern char currBM[];           /* BM of currently selected board */
 
-extern int selboard;            /* THis flag is true if above is active */
-
 extern char genbuf[1024];       /* generally used global buffer */
 
 extern jmp_buf byebye;          /* Used for exception condition like I/O error */

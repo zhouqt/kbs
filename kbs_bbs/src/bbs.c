@@ -37,7 +37,6 @@ int helpmode = 0;
 struct boardheader* currboard=NULL;
 int currboardent;
 char currBM[BM_LEN - 1];
-int selboard = 0;
 int check_upload = 0; //发表文章时是否要检查添加附件
 
 int Anony;
@@ -200,7 +199,7 @@ int Select(void){
 }
 
 int Post(void){                 /* 主菜单内的 在当前版 POST 文章 */
-    if (!selboard) {
+    if (!currboard) {
         prints("\n\n先用 (S)elect 去选择一个讨论区。\n");
         pressreturn();          /* 等待按return键 */
         clear();
@@ -1749,8 +1748,6 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     uinfo.currentboard = bid;
     UPDATE_UTMP(currentboard,uinfo);
     board_setcurrentuser(uinfo.currentboard, 1);
-    
-    selboard = 1;
 
     currboardent=bid;
     currboard=(struct boardheader*)getboard(bid);
@@ -2281,7 +2278,26 @@ int read_hot_info()
 /* etnlegend, 2006.05.30, 阅读十大 ... */
 
 #ifndef USE_PRIMORDIAL_TOP10
-        select_top();
+        do{
+            const struct boardheader *bh;
+            int bid;
+            if(!((bid=select_top())>0))
+                break;
+            /* 进入十大话题所在的版面... */
+            if(!(bh=getboard(bid))||!check_read_perm(getCurrentUser(),bh))
+                break;
+            currboardent=bid;
+            currboard=(struct boardheader*)bh;
+#ifdef HAVE_BRC_CONTROL
+            brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
+#endif
+            board_setcurrentuser(uinfo.currentboard,-1);
+            uinfo.currentboard=currboardent;
+            UPDATE_UTMP(currentboard,uinfo);
+            board_setcurrentuser(uinfo.currentboard,1);
+            return CHANGEMODE;
+        }
+        while(0);
 #else /* USE_PRIMORDIAL_TOP10 */
         show_help("etc/posts/day");
 #endif /* USE_PRIMORDIAL_TOP10 */
@@ -5211,7 +5227,7 @@ int Read()
     int oldhelpmode;
 #endif
 
-    if (!selboard||!currboard) {
+    if (!currboard) {
         move(2, 0);
         prints("请先选择讨论区\n");
         pressreturn();
@@ -5224,6 +5240,9 @@ int Read()
 
     currboardent=bid;
     currboard=(struct boardheader*)getboard(bid);
+
+    if(!currboard)
+        return -1;
 
     if (currboard->flag&BOARD_GROUP) return -2;
 #ifdef HAVE_BRC_CONTROL
@@ -5846,7 +5865,7 @@ static int select_top(void){
     do{
         if(update){
             ansimore("etc/posts/day",0);
-            move(t_lines-1,6);
+            move(t_lines-1,5);
             prints("%s","\033[1;33m定位\033[1;37m[\033[1;32mUP\033[1;37m,\033[1;32mDOWN\033[1;37m,\033[1;32mNUM\033[1;37m,"
                 "\033[1;32mHOME\033[1;37m,\033[1;32mEND\033[1;37m]/\033[1;33m退出\033[1;37m[\033[1;32mESC\033[1;37m,"
                 "\033[1;32mLEFT\033[1;37m,\033[1;32mQ\033[1;37m]/\033[1;33m选择\033[1;37m[\033[1;32mENTER\033[1;37m,"
@@ -5880,6 +5899,8 @@ static int select_top(void){
                     case KEY_ESC:
                     case 'Q':
                         return 0;
+                    case 'S':
+                        return publicshm->top[index].bid;
                     case KEY_HOME:
                         if(index!=0){
                             old_index=index;

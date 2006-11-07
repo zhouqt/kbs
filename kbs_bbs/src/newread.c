@@ -557,29 +557,32 @@ static int read_prekey(struct _select_def *conf, int *command)
 			return SHOW_CONTINUE;
 		}
 		case 'q':
-		{
-			struct fileheader * currfh;
-			int ent;
-			*command = KEY_LEFT;
-			if(arg->mode == DIR_MODE_DIGEST ||
-			   arg->mode == DIR_MODE_THREAD ||
-			   arg->mode == DIR_MODE_MARK ||
-			   arg->mode == DIR_MODE_ORIGIN ||
-			   arg->mode == DIR_MODE_AUTHOR ||
-			   arg->mode == DIR_MODE_TITLE ||
-			   arg->mode == DIR_MODE_SUPERFITER){
-    			if (conf->pos<=0)
-					return SHOW_CONTINUE;
-		        currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
-				if (currfh->id <= 0)
-					return SHOW_CONTINUE;
-				ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board->filename);
-				if(ent <= 0)
-					return SHOW_CONTINUE;
-                savePos(DIR_MODE_NORMAL,NULL,ent,arg->board);
-			}
-			return SHOW_CONTINUE;
-		}
+            switch(arg->mode){
+                const struct fileheader *currfh;
+                int ent;
+                case DIR_MODE_DIGEST:
+                case DIR_MODE_THREAD:
+                case DIR_MODE_MARK:
+                case DIR_MODE_ORIGIN:
+                case DIR_MODE_AUTHOR:
+                case DIR_MODE_TITLE:
+                case DIR_MODE_SUPERFITER:
+                case DIR_MODE_TOP10:
+                    if(!(conf->pos>0))
+                        break;
+                    currfh=(const struct fileheader*)(arg->data+(conf->pos-conf->page_pos)*arg->ssize);
+                    if(!(currfh->id>0))
+                        break;
+                    ent=get_ent_from_id(DIR_MODE_NORMAL,currfh->id,arg->board->filename);
+                    if(!(ent>0))
+                        break;
+                    savePos(DIR_MODE_NORMAL,NULL,ent,arg->board);
+                    break;
+                default:
+                    break;
+            }
+            *command=KEY_LEFT;
+            return SHOW_CONTINUE;
         case KEY_END:
         case '$':
             conf->new_pos=arg->filecount;

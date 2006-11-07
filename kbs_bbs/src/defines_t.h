@@ -131,6 +131,7 @@ extern int helpmode;
 int zsend_post(int ent, struct fileheader *fileinfo, char *direct);
 int get_a_boardname(char *bname, char *prompt); /* 输入一个版名 */
 int Read();
+int ReadBoard(void);
 void printutitle();             /* 屏幕显示 用户列表 title */
 int check_readonly(char *checked);      /* Leeward 98.03.28 */
 void record_exit_time();        /* 记录离线时间  Luzi 1998/10/23 */
