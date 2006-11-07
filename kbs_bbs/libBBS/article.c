@@ -819,7 +819,7 @@ static int getcross(const char *filepath,const char *quote_file,struct userec *u
         write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
         fprintf(fout,"\033[0;33m[ 用户 %s 在转载时对%s内容进行了编辑 ]\033[m\n\n",user->userid,(!in_mail?"文章":"信件"));
     }
-    if((toboard->flag&BOARD_ATTACH)||HAS_PERM(user,PERM_SYSOP)){
+    if((toboard->flag&BOARD_ATTACH)||(!user||HAS_PERM(user,PERM_SYSOP))){
         while((size=-attach_fgets(buf,256,fin))){
             if(!strncmp(buf,"【 以下文字转载自 ",18)&&strstr(&buf[18]," 讨论区 】"))
                 continue;
