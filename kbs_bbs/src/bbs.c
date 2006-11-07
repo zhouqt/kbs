@@ -5357,13 +5357,17 @@ static void read_top_title(struct _select_def *conf){
     move(1, 0);
     clrtoeol();
     sprintf(genbuf,"%s\033[m",DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?(
-        "\033[1;31m[十大模式] \033[1;37m离开[\033[1;32m←\033[1;37m,\033[1;32me\033[1;37m] "
-        "选择[\033[1;32m↑\033[1;37m,\033[1;32m↓\033[1;37m] 阅读[\033[1;32m→\033[1;37m,\033[1;32mr\033[1;37m] "
-        "帮助[\033[1;32mh\033[1;37m] 同主题[\033[1;32m^X\033[1;37m,\033[1;32mp\033[1;37m] "
+        "\033[1;31m[十大模式]\033[1;37m  "
+        "离开[\033[1;32m←\033[1;37m,\033[1;32me\033[1;37m] "
+        "记录位置并离开[\033[1;32mq\033[1;37m] "
+        "阅读[\033[1;32m→\033[1;37m,\033[1;32mr\033[1;37m] "
+        "同主题[\033[1;32m^X\033[1;37m,\033[1;32mp\033[1;37m] "
         "同作者[\033[1;32m^U\033[1;37m,\033[1;32m^H\033[1;37m]"):(
-        "\033[31m[十大模式] \033[37m离开[\033[1;32m←\033[37m,\033[32me\033[37m] "
-        "选择[\033[32m↑\033[37m,\033[32m↓\033[37m] 阅读[\033[32m→\033[37m,\033[32mr\033[37m] "
-        "帮助[\033[32mh\033[37m] 同主题[\033[32m^X\033[37m,\033[32mp\033[37m] "
+        "\033[31m[十大模式]\033[37m  "
+        "离开[\033[32m←\033[37m,\033[32me\033[37m] "
+        "记录位置并离开[\033[32mq\033[37m] "
+        "阅读[\033[32m→\033[37m,\033[32mr\033[37m] "
+        "同主题[\033[32m^X\033[37m,\033[32mp\033[37m] "
         "同作者[\033[32m^U\033[37m,\033[32m^H\033[37m]"));
     prints("%s",genbuf);
     move(2, 0);
@@ -5840,21 +5844,21 @@ static int read_top(int index,int force){
 }
 
 static int select_top(void){
-#define ST_UPDATE_TOPINFO()                                                             \
-    do{                                                                                 \
-        version=publicshm->top_version;                                                 \
-        for(total=0;total<10;total++){                                                  \
-            if(!(publicshm->top[total].bid)||!(publicshm->top[total].gid)){             \
-                break;                                                                  \
-            }                                                                           \
-        }                                                                               \
-        if(!total||(stat("etc/posts/day",&st)==-1||!S_ISREG(st.st_mode))){              \
-            move(t_lines-1,0);                                                          \
-            clrtoeol();                                                                 \
-            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","目前尚无十大热门话题!");      \
-            WAIT_RETURN;                                                                \
-            return -1;                                                                  \
-        }                                                                               \
+#define ST_UPDATE_TOPINFO()                                                                         \
+    do{                                                                                             \
+        version=publicshm->top_version;                                                             \
+        for(total=0;total<10;total++){                                                              \
+            if(!(publicshm->top[total].bid)||!(publicshm->top[total].gid)){                         \
+                break;                                                                              \
+            }                                                                                       \
+        }                                                                                           \
+        if(!total||(stat("etc/posts/day",&st)==-1||!S_ISREG(st.st_mode))){                          \
+            move(t_lines-1,0);                                                                      \
+            clrtoeol();                                                                             \
+            prints("\033[1;31;47m\t%s\033[K\033[m","目前尚无十大热门话题, 按回车键继续...");        \
+            WAIT_RETURN;                                                                            \
+            return -1;                                                                              \
+        }                                                                                           \
     }while(0)
     struct stat st;
     int total,index,key,valid_key,old_index,update;
@@ -5865,11 +5869,12 @@ static int select_top(void){
     do{
         if(update){
             ansimore("etc/posts/day",0);
-            move(t_lines-1,5);
-            prints("%s","\033[1;33m定位\033[1;37m[\033[1;32mUP\033[1;37m,\033[1;32mDOWN\033[1;37m,\033[1;32mNUM\033[1;37m,"
-                "\033[1;32mHOME\033[1;37m,\033[1;32mEND\033[1;37m]/\033[1;33m退出\033[1;37m[\033[1;32mESC\033[1;37m,"
-                "\033[1;32mLEFT\033[1;37m,\033[1;32mQ\033[1;37m]/\033[1;33m选择\033[1;37m[\033[1;32mENTER\033[1;37m,"
-                "\033[1;32mRIGHT\033[1;37m,\033[1;32mSPACE\033[1;37m]\033[m");
+            move(t_lines-1,0);
+            prints("\033[1;47m%s\033[K\033[m","\033[34m★操作提示★ "
+                "\033[31m数字\033[34m键或\033[31m↑↓\033[34m键定位☆"
+                "\033[31m回车\033[34m键或\033[31m→\033[34m键阅读☆"
+                "\033[31m<Q>\033[34m或\033[31m←\033[34m键退出☆"
+                "\033[31m<S>\033[34m进入版面※");
             update=0;
         }
         move((2+2*index),3);
