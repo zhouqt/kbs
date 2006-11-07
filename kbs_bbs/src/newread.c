@@ -269,11 +269,12 @@ static int read_key(struct _select_def *conf, int command)
                 arg->boardstatus=getbstatus(arg->bid);
                 read_getdata(conf,-1,conf->item_per_page);
                 lastpos=getPos(arg->newmode,arg->direct,currboard);
-                if ((lastpos!=0)&&(lastpos<arg->filecount))
-                    conf->pos = lastpos;
-                else {
-                    conf->pos = arg->filecount;
-                }
+                if(lastpos==0)
+                    conf->pos=((arg->newmode!=DIR_MODE_TOP10)?arg->filecount:1);
+                else if(lastpos>arg->filecount||lastpos<0)
+                    conf->pos=arg->filecount;
+                else
+                    conf->pos=lastpos;
                 arg->mode=arg->newmode;
                 arg->newmode=-1;
             }
@@ -662,7 +663,6 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
 
 
     read_setusermode(cmdmode);
-    lastpos=getPos(cmdmode,direct,currboard);
     /* save argument */
     bzero(&arg,sizeof(struct read_arg));
     arg.mode=cmdmode;
@@ -715,11 +715,16 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         read_getdata(&read_conf,-1,read_conf.item_per_page);
         if (TDEFINE(TDEF_SPLITSCREEN))
             read_conf.on_selchange= read_showcontent;
-        if ((lastpos!=0)&&(lastpos<arg.filecount))
-            read_conf.pos = lastpos;
-        else {
-            read_conf.pos = arg.filecount; 
-        }
+
+        lastpos=getPos(cmdmode,direct,currboard);
+
+        if(lastpos==0)
+            read_conf.pos=((cmdmode!=DIR_MODE_TOP10)?arg.filecount:1);
+        else if(lastpos>arg.filecount||lastpos<0)
+            read_conf.pos=arg.filecount;
+        else
+            read_conf.pos=lastpos;
+
         read_conf.page_pos = ((read_conf.pos-1)/read_conf.item_per_page)*read_conf.item_per_page+1;
 
         list_select_loop(&read_conf);
