@@ -667,7 +667,8 @@ int write_posts(char *id, const char *board, unsigned int groupid)
         return 0;
     now = time(0);
 //    strcpy(postlog.author, id);
-    strcpy(postlog.board, board);
+    strncpy(postlog.board, board, sizeof(postlog.board));
+    postlog.board[sizeof(postlog.board)-1]='\0';
     postlog.groupid = groupid;
     postlog.date = now;
     postlog.number = 1;
