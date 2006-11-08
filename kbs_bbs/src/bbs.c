@@ -5713,7 +5713,7 @@ static int read_top(int index,int force){
     struct stat st_dir,st_top;
     const struct fileheader *ptr;
     char top[PATHLEN],dir[PATHLEN];
-    int bid,ret,fd,count,i,u_mode,save_currboardent,save_uinfo_currentboard,missing;
+    int bid,ret,fd,count,i,u_mode,save_currboardent,save_uinfo_currentboard,missing,status;
 #ifdef NEW_HELP
     int save_helpmode;
 #endif /* NEW_HELP */
@@ -5722,63 +5722,81 @@ static int read_top(int index,int force){
     time_t read_begin,read_end;
     void *vp;
     const void *data;
+    in_mail=false;
     save_currboardent=currboardent;
     save_uinfo_currentboard=uinfo.currentboard;
-    bid=publicshm->top[index].bid;
-    gid=publicshm->top[index].gid;
-    currboardent=bid;
-    if(!(currboard=(struct boardheader*)getboard(bid)))
-        return -1;
-    if(currboard->flag&BOARD_GROUP)
-        return -2;
-    in_mail=false;
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
-#endif /* HAVE_BRC_CONTROL */
-    board_setcurrentuser(uinfo.currentboard,-1);
-    uinfo.currentboard=currboardent;
-    UPDATE_UTMP(currentboard,uinfo);
-    board_setcurrentuser(uinfo.currentboard,1);
 #ifdef NEW_HELP
     save_helpmode=helpmode;
-    helpmode=HELP_ARTICLE;
 #endif /* NEW_HELP */
-    snprintf(dir,PATHLEN,"boards/%s/.DIR",currboard->filename);
-    if(stat(dir,&st_dir)==-1||!S_ISREG(st_dir.st_mode))
-        return -3;
+    bid=publicshm->top[index].bid;
+    gid=publicshm->top[index].gid;
     snprintf(top,PATHLEN,"boards/%s/.TOP.%u",currboard->filename,gid);
-    ret=stat(top,&st_top);
-    if(!((missing=(ret==-1&&errno==ENOENT))||(!ret&&S_ISREG(st_top.st_mode))))
-        return -4;
-#define RT_UPDATE (\
-    ((st_top.st_mtime+RT_INTERVAL)<st_dir.st_mtime)||\
-    ((st_top.st_mtime<st_dir.st_mtime)&&((st_top.st_mtime+RT_INTERVAL_FORCE)<time(NULL)))\
-    )
     do{
+        ret=0;
+        currboardent=bid;
+        if(!(currboard=(struct boardheader*)getboard(bid))||!check_read_perm(getCurrentUser(),currboard)){
+            ret=-1;
+            continue;
+        }
+        if(currboard->flag&BOARD_GROUP){
+            ret=-2;
+            continue;
+        }
+#ifdef HAVE_BRC_CONTROL
+        brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
+#endif /* HAVE_BRC_CONTROL */
+        board_setcurrentuser(uinfo.currentboard,-1);
+        uinfo.currentboard=currboardent;
+        UPDATE_UTMP(currentboard,uinfo);
+        board_setcurrentuser(uinfo.currentboard,1);
+#ifdef NEW_HELP
+        helpmode=HELP_ARTICLE;
+#endif /* NEW_HELP */
+        setbdir(DIR_MODE_NORMAL,dir,currboard->filename);
+        if(stat(dir,&st_dir)==-1||!S_ISREG(st_dir.st_mode)){
+            ret=-3;
+            continue;
+        }
+        status=stat(top,&st_top);
+        if(!((missing=(status==-1&&errno==ENOENT))||(!status&&S_ISREG(st_top.st_mode)))){
+            ret=-4;
+            continue;
+        }
+#define RT_UPDATE (                                                                             \
+        ((st_top.st_mtime+RT_INTERVAL)<st_dir.st_mtime)||                                       \
+        ((st_top.st_mtime<st_dir.st_mtime)&&((st_top.st_mtime+RT_INTERVAL_FORCE)<time(NULL)))   \
+    )
         if(force||missing||RT_UPDATE){
-            if((fd=open(dir,O_RDONLY,0644))==-1)
-                return -5;
+            if((fd=open(dir,O_RDONLY,0644))==-1){
+                ret=-5;
+                continue;
+            }
             vp=mmap(NULL,st_dir.st_size,PROT_READ,MAP_SHARED,fd,0);
             close(fd);
-            if(vp==MAP_FAILED)
-                return -6;
+            if(vp==MAP_FAILED){
+                ret=-6;
+                continue;
+            }
             if((fd=open(top,
                 ((!force&&!missing)?(O_WRONLY|O_CREAT):(O_WRONLY|O_CREAT|O_TRUNC)),
                 0644))==-1){
                 munmap(vp,st_dir.st_size);
-                return -7;
+                ret=-7;
+                continue;
             }
             if(fcntl(fd,F_SETLKW,&lck_set)==-1){
                 close(fd);
                 munmap(vp,st_dir.st_size);
-                return -8;
+                ret=-8;
+                continue;
             }
             if(!force&&!missing){
                 if(fstat(fd,&st_top)==-1){
                     fcntl(fd,F_SETLKW,&lck_clr);
                     close(fd);
                     munmap(vp,st_dir.st_size);
-                    return -9;
+                    ret=-9;
+                    continue;
                 }
                 if(!RT_UPDATE){
                     fcntl(fd,F_SETLKW,&lck_clr);
@@ -5791,53 +5809,68 @@ static int read_top(int index,int force){
                     close(fd);
                     munmap(vp,st_dir.st_size);
                     unlink(top);
-                    return -10;
+                    ret=-10;
+                    continue;
                 }
             }
             for(ptr=((const struct fileheader*)vp),
                 count=(st_dir.st_size/sizeof(struct fileheader)),
-                i=0;i<count;i++){
+                writen=0,i=0;i<count;i++){
                 if(ptr[i].groupid==gid){
                     for(data=&ptr[i],length=sizeof(struct fileheader),writen=0;
                         writen!=-1&&length>0;vpm(data,writen),length-=writen){
                         writen=write(fd,data,length);
                     }
-                    if(writen==-1){
-                        fcntl(fd,F_SETLKW,&lck_clr);
-                        close(fd);
-                        munmap(vp,st_dir.st_size);
-                        unlink(top);
-                        return -11;
-                    }
+                    if(writen==-1)
+                        break;
                 }
+            }
+            if(writen==-1){
+                fcntl(fd,F_SETLKW,&lck_clr);
+                close(fd);
+                munmap(vp,st_dir.st_size);
+                unlink(top);
+                ret=-11;
+                continue;
             }
             fcntl(fd,F_SETLKW,&lck_clr);
             close(fd);
             munmap(vp,st_dir.st_size);
+            status=stat(top,&st_top);
+            if(status==-1||!S_ISREG(st_top.st_mode)){
+                ret=-12;
+                continue;
+            }
+            if(st_top.st_size<sizeof(struct fileheader)){
+                ret=1;
+                continue;
+            }
         }
+#undef RT_UPDATE
     }
     while(0);
-#undef RT_UPDATE
-    u_mode=uinfo.mode;
-    read_begin=time(NULL);
-    ret=new_i_read(DIR_MODE_TOP10,top,read_top_title,(READ_ENT_FUNC)read_top_ent,read_top_comms,sizeof(struct fileheader));
-    read_end=time(NULL);
-    modify_user_mode(u_mode);
-#ifdef NEW_HELP
-    helpmode=save_helpmode;
-#endif /* NEW_HELP */
-    newbbslog(BBSLOG_BOARDUSAGE,"%-20s Stay: %5ld",currboard->filename,(read_end-read_begin));
-    bmlog(getCurrentUser()->userid,currboard->filename,0,(read_end-read_begin));
-    bmlog(getCurrentUser()->userid,currboard->filename,1,1);
-    board_setcurrentuser(uinfo.currentboard,-1);
-    uinfo.currentboard=save_uinfo_currentboard;
-    UPDATE_UTMP(currentboard,uinfo);
-    board_setcurrentuser(uinfo.currentboard,1);
+    if(!ret){
+        u_mode=uinfo.mode;
+        read_begin=time(NULL);
+        new_i_read(DIR_MODE_TOP10,top,read_top_title,(READ_ENT_FUNC)read_top_ent,read_top_comms,sizeof(struct fileheader));
+        read_end=time(NULL);
+        modify_user_mode(u_mode);
+        newbbslog(BBSLOG_BOARDUSAGE,"%-20s Stay: %5ld",currboard->filename,(read_end-read_begin));
+        bmlog(getCurrentUser()->userid,currboard->filename,0,(read_end-read_begin));
+        bmlog(getCurrentUser()->userid,currboard->filename,1,1);
+    }
     currboardent=save_currboardent;
     currboard=((struct boardheader*)getboard(save_currboardent));
 #ifdef HAVE_BRC_CONTROL
     brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
 #endif /* HAVE_BRC_CONTROL */
+    board_setcurrentuser(uinfo.currentboard,-1);
+    uinfo.currentboard=save_uinfo_currentboard;
+    UPDATE_UTMP(currentboard,uinfo);
+    board_setcurrentuser(uinfo.currentboard,1);
+#ifdef NEW_HELP
+    helpmode=save_helpmode;
+#endif /* NEW_HELP */
     return ret;
 #undef RT_INTERVAL
 #undef RT_INTERVAL_FORCE
@@ -5861,7 +5894,7 @@ static int select_top(void){
         }                                                                                           \
     }while(0)
     struct stat st;
-    int total,index,key,valid_key,old_index,update;
+    int total,index,key,valid_key,old_index,update,ret;
     unsigned int version;
     index=0;
     update=1;
@@ -5891,11 +5924,13 @@ static int select_top(void){
             else{
                 switch(toupper(key=igetkey())){
                     case KEY_DOWN:
+                    case 'J':
                         old_index=index++;
                         if(index==total)
                             index=0;
                         break;
                     case KEY_UP:
+                    case 'K':
                         old_index=index--;
                         if(index==-1)
                             index=(total-1);
@@ -5903,6 +5938,7 @@ static int select_top(void){
                     case KEY_LEFT:
                     case KEY_ESC:
                     case 'Q':
+                    case 'E':
                         return 0;
                     case 'S':
                         return publicshm->top[index].bid;
@@ -5951,11 +5987,23 @@ static int select_top(void){
                     case '\r':
                     case '\n':
                     case ' ':
-                        if(read_top(index,0)<0){
-                            move(t_lines-1,6);
-                            clrtoeol();
-                            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","检索十大信息时发生错误!");
-                            WAIT_RETURN;
+                    case 'R':
+                        switch((ret=read_top(index,0))){
+                            case 0:
+                                break;
+                            case 1:
+                                move(t_lines-1,0);
+                                clrtoeol();
+                                prints("\033[1;31;47m\t%s\033[K\033[m","该主题已被删除, 按回车键继续...");
+                                WAIT_RETURN;
+                            default:
+                                if(ret<0){
+                                    move(t_lines-1,0);
+                                    clrtoeol();
+                                    prints("\033[1;31;47m\t%s\033[K\033[m","检索主题信息时发生错误, 按回车键继续...");
+                                    WAIT_RETURN;
+                                }
+                                break;
                         }
                         update=1;
                         break;
