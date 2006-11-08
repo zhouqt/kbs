@@ -5730,7 +5730,6 @@ static int read_top(int index,int force){
 #endif /* NEW_HELP */
     bid=publicshm->top[index].bid;
     gid=publicshm->top[index].gid;
-    snprintf(top,PATHLEN,"boards/%s/.TOP.%u",currboard->filename,gid);
     do{
         ret=0;
         currboardent=bid;
@@ -5757,6 +5756,7 @@ static int read_top(int index,int force){
             ret=-3;
             continue;
         }
+        snprintf(top,PATHLEN,"boards/%s/.TOP.%u",currboard->filename,gid);
         status=stat(top,&st_top);
         if(!((missing=(status==-1&&errno==ENOENT))||(!status&&S_ISREG(st_top.st_mode)))){
             ret=-4;
@@ -5836,15 +5836,6 @@ static int read_top(int index,int force){
             fcntl(fd,F_SETLKW,&lck_clr);
             close(fd);
             munmap(vp,st_dir.st_size);
-            status=stat(top,&st_top);
-            if(status==-1||!S_ISREG(st_top.st_mode)){
-                ret=-12;
-                continue;
-            }
-            if(st_top.st_size<sizeof(struct fileheader)){
-                ret=1;
-                continue;
-            }
         }
 #undef RT_UPDATE
     }
@@ -5912,17 +5903,18 @@ static int select_top(void){
         if(update){
             ansimore("etc/posts/day",0);
             move(t_lines-1,0);
-            prints("\033[1;47m%s\033[K\033[m","\033[34m★操作提示★ "
-                "\033[31m数字\033[34m键或\033[31m↑↓\033[34m键定位☆"
-                "\033[31m回车\033[34m键或\033[31m→\033[34m键阅读☆"
-                "\033[31m<Q>\033[34m或\033[31m←\033[34m键退出☆"
-                "\033[31m<S>\033[34m进入版面※");
+            prints("\033[1;44m%s\033[K\033[m","\033[33m★操作提示★ "
+                "\033[32m数字\033[33m键或\033[32m↑↓\033[33m键定位☆"
+                "\033[32m回车\033[33m键或\033[32m→\033[33m键阅读☆"
+                "\033[32m<Q>\033[33m或\033[32m←\033[33m键退出☆"
+                "\033[32m<S>\033[33m进入版面※");
             update=0;
         }
         move((2+2*index),3);
         prints("\033[1;31m%2d\033[m",(index+1));
         move((3+2*index),2);
         prints("\033[1;33m%s\033[m","◆");
+        move(t_lines-1,t_columns-1);
         do{
             valid_key=1;
             old_index=-1;
