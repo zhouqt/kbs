@@ -57,9 +57,9 @@ const char *surfix_bless[23] = {
 struct fileheader               /* This structure is used to hold data in */
  fh[1];
 
-struct postrec {
+struct postrec_old {
     struct posttop pt;
-    struct postrec *next;       /* next rec */
+    struct postrec_old *next;       /* next rec */
 } *bucket[HASHSIZE], *blessbucket[HASHSIZE];
 
 
@@ -83,7 +83,7 @@ unsigned int key;
 
 void search(struct posttop *t)
 {
-    struct postrec *p, *q, *s;
+    struct postrec_old *p, *q, *s;
     int i, found = 0;
 
     i = hash(t->groupid);
@@ -109,7 +109,7 @@ void search(struct posttop *t)
         if (p->pt.date < t->date)  /* 取较近日期 */
             p->pt.date = t->date;
     } else {
-        s = (struct postrec *) malloc(sizeof(struct postrec));
+        s = (struct postrec_old *) malloc(sizeof(struct postrec_old));
         memcpy(&(s->pt), t, sizeof(struct posttop));
         s->next = NULL;
         if (q == NULL)
@@ -125,7 +125,7 @@ void search(struct posttop *t)
 }
 
 
-int sort(struct postrec *pp, int count)
+int sort(struct postrec_old *pp, int count)
 {
     int i, j;
 
@@ -164,9 +164,9 @@ void load_stat(const char *fname)
  *        3 本年
  *        4 祝福榜
  */
-void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
+void writestat(int mytype, struct postrec_old *dobucket[HASHSIZE])
 {
-    struct postrec *pp;
+    struct postrec_old *pp;
     FILE *fp;
     int i, j;
     char *p, curfile[40];
@@ -320,7 +320,7 @@ static int get_seccode_index(char prefix)
     return -1;
 }
 
-void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], int secid, int j)
+void gen_sec_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE], int secid, int j)
 {
     FILE *fp;
     int i;
@@ -409,10 +409,10 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
     }
 }
 
-void gen_secs_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
+void gen_secs_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE])
 {
 	int i,j;
-    struct postrec *pp;
+    struct postrec_old *pp;
 
     memset(top, 0, sizeof(top));
     for (i = j = 0; i < HASHSIZE; i++) {
@@ -425,9 +425,9 @@ void gen_secs_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
 	}
 }
 
-void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
+void gen_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE])
 {
-    struct postrec *pp;
+    struct postrec_old *pp;
     FILE *fp;
     int i, j;
     char *p, curfile[40];
@@ -522,9 +522,9 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
     }
 }
 
-void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
+void gen_blessing_list_xml(struct postrec_old *dobucket[HASHSIZE])
 {
-    struct postrec *pp;
+    struct postrec_old *pp;
     FILE *fp;
     int i, j;
     char *p, curfile[40];
@@ -623,8 +623,8 @@ void poststat(int mytype, time_t now, struct tm *ptime)
     static char *oldfile = ".newpost.old";
 
     char buf[40], curfile[40] = "etc/posts/day.0";
-    struct postrec *pp;
-    struct postrec *qq;
+    struct postrec_old *pp;
+    struct postrec_old *qq;
     FILE *fp=NULL;
     int i;
 
