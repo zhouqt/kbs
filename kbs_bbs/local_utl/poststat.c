@@ -58,12 +58,7 @@ struct fileheader               /* This structure is used to hold data in */
  fh[1];
 
 struct postrec {
-//    char author[13];            /* author name */
-    char board[IDLEN + 6];      /* board name */
-//    char title[66];             /* title name */
-	unsigned int groupid;
-    time_t date;                /* last post's date */
-    int number;                 /* post number */
+    struct posttop pt;
     struct postrec *next;       /* next rec */
 } *bucket[HASHSIZE], *blessbucket[HASHSIZE];
 
@@ -101,7 +96,7 @@ void search(struct posttop *t)
 #endif
         p = bucket[i];
     while (p && (!found)) {
-        if (p->groupid == t->groupid && !strcmp(p->board, t->board))
+        if (p->pt.groupid == t->groupid && !strcmp(p->pt.board, t->board))
             found = 1;
         else {
             q = p;
@@ -110,12 +105,12 @@ void search(struct posttop *t)
     }
 
     if (found) {
-        p->number += t->number;
-        if (p->date < t->date)  /* 取较近日期 */
-            p->date = t->date;
+        p->pt.number += t->number;
+        if (p->pt.date < t->date)  /* 取较近日期 */
+            p->pt.date = t->date;
     } else {
         s = (struct postrec *) malloc(sizeof(struct postrec));
-        memcpy(s, t, sizeof(struct posttop));
+        memcpy(&(s->pt), t, sizeof(struct posttop));
         s->next = NULL;
         if (q == NULL)
 #ifdef BLESS_BOARD
@@ -135,7 +130,7 @@ int sort(struct postrec *pp, int count)
     int i, j;
 
     for (i = 0; i <= count; i++) {
-        if (pp->number > top[i].number) {
+        if (pp->pt.number > top[i].number) {
             if (count < TOPCOUNT - 1)
                 count++;
             for (j = count - 1; j >= i; j--)
@@ -188,7 +183,7 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[100][13];
+    char BoardName[100][BOARDNAMELEN];
     char buf[40];
 
     struct top_header curr_top[10];
@@ -282,9 +277,9 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
                     (!mytype?real:(i+1)),top[i].board,p,top[i].number,fh.owner,fh.title);
 
                 /* etnlegend, 2006.05.28, 阅读十大 ... */
-                if(!mytype&&i<10){
-                    curr_top[i].bid=getbid(top[i].board,NULL);
-                    curr_top[i].gid=top[i].groupid;
+                if(!mytype&&real<=10){
+                    curr_top[real-1].bid=getbid(top[i].board,NULL);
+                    curr_top[real-1].gid=top[i].groupid;
                 }
 
             }
@@ -343,7 +338,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[100][13];
+    char BoardName[100][BOARDNAMELEN];
     char url_buf[256];
 	char xml_buf[256];
 	const struct boardheader *bp;
@@ -449,7 +444,7 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[100][13];
+    char BoardName[100][BOARDNAMELEN];
 	char xml_buf[256];
 	char url_buf[256];
 
@@ -546,7 +541,7 @@ void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
      * Bigman.2000.8.28: 修改统计方式 
      */
     int m, n;
-    char BoardName[100][13];
+    char BoardName[100][BOARDNAMELEN];
 	char xml_buf[256];
 	char url_buf[256];
 	int mytype = 4;
