@@ -5376,7 +5376,7 @@ static void read_top_title(struct _select_def *conf){
     clrtoeol();
     sprintf(genbuf,"%-80.80s","  编号   刊 登 者     日  期  文章标题");
     prints("%s",genbuf);
-    sprintf(title,"在线: %-4d [十大模式]",bs->currentusers);
+    sprintf(title,"在线: %4d [十大模式]",bs->currentusers);
     move(2,-(strlen(title)+1));
     prints("%s",title);
     resetcolor();
@@ -5849,6 +5849,15 @@ static int read_top(int index,int force){
 #undef RT_UPDATE
     }
     while(0);
+    if(!ret){
+        status=stat(top,&st_top);
+        if((status==-1&&errno==ENOENT)||(!status&&S_ISREG(st_top.st_mode)&&(st_top.st_size<sizeof(struct fileheader))))
+            ret=1;
+        else{
+            if(status==-1||!S_ISREG(st_top.st_mode))
+                ret=-12;
+        }
+    }
     if(!ret){
         u_mode=uinfo.mode;
         read_begin=time(NULL);
