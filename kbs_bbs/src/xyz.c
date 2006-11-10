@@ -719,6 +719,7 @@ int x_date(void){
 
 int x_edits(void){
     int aborted;
+	int gdataret;
     char ans[7], buf[STRLEN];
     int ch, num;
     char *e_file[] = { "plans", "signatures", "notes", "logout", "myurl",
@@ -751,7 +752,8 @@ int x_edits(void){
     move(3, 0);
     clrtobot();
     sprintf(buf, "(E)±à¼­ (D)É¾³ý %s? [E]: ", explain_file[ch]);
-    getdata(3, 0, buf, ans, 2, DOECHO, NULL, true);
+    gdataret = getdata(3, 0, buf, ans, 2, DOECHO, NULL, true);
+	if(gdataret == -1) return 0;
     if (ans[0] == 'D' || ans[0] == 'd') {
         my_unlink(genbuf);
         move(5, 0);
@@ -797,6 +799,7 @@ int x_edits(void){
 
 int a_edits(void){
     int aborted;
+	int gdataret;
     char ans[7], buf[STRLEN];
     int ch, num;
 
@@ -901,7 +904,8 @@ int a_edits(void){
     move(2, 0);
     clrtobot();
     sprintf(buf, "(E)±à¼­ (D)É¾³ý %s? [E]: ", explain_file[ch]);
-    getdata(3, 0, buf, ans, 2, DOECHO, NULL, true);
+    gdataret = getdata(3, 0, buf, ans, 2, DOECHO, NULL, true);
+	if(gdataret == -1) return 0;
     if (ans[0] == 'D' || ans[0] == 'd') {
         {
             char secu[STRLEN];

@@ -2052,17 +2052,19 @@ int change_mode(struct _select_def *conf,struct fileheader *fh,int mode){
     static char title[32];
     struct read_arg *arg=(struct read_arg*)conf->arg;
     char buf[STRLEN],ans[4];
+	int gdataret;
     if(!mode){
         move(t_lines-2,0);
         clrtoeol();
         prints("%s","切换模式到: 0)取消 1)文摘区 2)同主题 3)保留区 4)原作 5)同作者 6)标题关键字");
         move(t_lines-1,0);
         clrtoeol();
-        getdata(t_lines-1,12,"7)超级文章选择"
+        gdataret = getdata(t_lines-1,12,"7)超级文章选择"
 #ifdef NEWSMTH
             " 8)本版精华区搜索"
 #endif /* NEWSMTH */
             " 9)自删文章 [1]: ",ans,2,DOECHO,NULL,true);
+		if(gdataret == -1) return FULLUPDATE;
         switch(ans[0]){
             case '0':
                 return FULLUPDATE;
@@ -2194,6 +2196,7 @@ int read_hot_info()
 {
     char ans[4];
 	char prompt[STRLEN];
+	int gdataret;
     move(t_lines - 1, 0);
     clrtoeol();
     snprintf(prompt,STRLEN,"选择: 1)十大话题 "
@@ -2209,7 +2212,8 @@ int read_hot_info()
         ""
 #endif
         );
-    getdata(t_lines - 1, 0, prompt, ans, 3, DOECHO, NULL, true);
+    gdataret = getdata(t_lines - 1, 0, prompt, ans, 3, DOECHO, NULL, true);
+	if(gdataret == -1) return FULLUPDATE;
     switch (ans[0])
 	{
     case '2':
@@ -2678,6 +2682,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
     int mailback = 0;		/* stiger,回复到信箱 */
 	int ret = DIRCHANGED;
+	int gdataret;
 
     char direct[PATHLEN];
     int cmdmode;
@@ -2833,7 +2838,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             move(t_lines - 1, 0);
             clrtoeol();
             strcpy(buf4, buf);
-            getdata(t_lines - 1, 0, "标题: ", buf4, 79, DOECHO, NULL, false);
+            gdataret = getdata(t_lines - 1, 0, "标题: ", buf4, 79, DOECHO, NULL, false);
+			if(gdataret == -1) return FULLUPDATE;
             if ((buf4[0] == '\0' || buf4[0] == '\n')) {
                 if (buf[0] != '\0') {
                     buf4[0] = ' ';
@@ -2860,7 +2866,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s%s\033[1;32mEnter\033[m继续: ", 
                 (replymode) ? "\033[1;32mS/Y/N/R/A\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
 				(currboard->flag&BOARD_ATTACH)?"\033[1;32mu\033[m传附件, ":"", "\033[1;32mQ\033[m放弃, ");
-        getdata(t_lines - 1, 0, buf2, ans, 4, DOECHO, NULL, true);
+        gdataret = getdata(t_lines - 1, 0, buf2, ans, 4, DOECHO, NULL, true);
+		if(gdataret == -1) return FULLUPDATE;
         ooo = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ooo - '0') >= 0 && ooo - '0' <= 9) {
             int ii = atoi(ans);
@@ -3336,6 +3343,7 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
     int ret=FULLUPDATE;
 	char buf[100];
     struct read_arg* arg=(struct read_arg*)conf->arg;
+	int gdataret;
 
 #ifdef COMMEND_ARTICLE
     int bnum;
@@ -3375,13 +3383,13 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, buf, ans, 3, DOECHO, NULL, true);
+    gdataret = getdata(t_lines - 1, 0, buf, ans, 3, DOECHO, NULL, true);
 
     if (ans[0] == ' ') {
         ans[0] = ans[1];
         ans[1] = 0;
     }
-    if (ans[0]=='0') return FULLUPDATE;
+    if (ans[0]=='0' || gdataret == -1) return FULLUPDATE;
 	else if(ans[0]=='2'){
 		if( !(can & 0x2) )
 			return FULLUPDATE;
@@ -3807,6 +3815,7 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     struct stat st;
     int i,k;
     int fflag;
+	int gdataret;
     struct read_arg* arg=conf->arg;
 #ifdef FILTER
     int is_filter = (HAS_PERM(getCurrentUser(), PERM_SYSOP)&&(!strcmp(currboard->filename,FILTER_BOARD)));
@@ -3819,10 +3828,12 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     
     clear();
     prints("区段标记, 请谨慎使用");
-    getdata(2, 0, "首篇文章编号: ", num1, 10, DOECHO, NULL, true);
+    gdataret = getdata(2, 0, "首篇文章编号: ", num1, 10, DOECHO, NULL, true);
+	if(gdataret == -1) return FULLUPDATE;
     inum1 = atoi(num1);
     if (inum1 <= 0) return FULLUPDATE;
-    getdata(3, 0, "末篇文章编号: ", num2, 10, DOECHO, NULL, true);
+    gdataret = getdata(3, 0, "末篇文章编号: ", num2, 10, DOECHO, NULL, true);
+	if(gdataret == -1) return FULLUPDATE;
     inum2 = atoi(num2);
     if (inum2 <= inum1) {
         prints("错误编号\n");
@@ -3967,6 +3978,7 @@ void notepad()
     FILE *in;
     int i, n;
     time_t thetime = time(0);
+	int gdataret;
 
     clear();
     move(0, 0);
@@ -3978,22 +3990,23 @@ void notepad()
             memset(note[i], 0, STRLEN - 4);
         while (1) {
             for (i = 0; i < 3; i++) {
-                getdata(1 + i, 0, ": ", note[i], STRLEN - 5, DOECHO, NULL, false);
+                gdataret = getdata(1 + i, 0, ": ", note[i], STRLEN - 5, DOECHO, NULL, false);
+				if(gdataret == -1) break;
                 if (note[i][0] == '\0')
                     break;
             }
-            if (i == 0) {
+            if (gdataret == -1 || i == 0) {
                 fclose(in);
                 unlink(tmpname);
                 return;
             }
-            getdata(5, 0, "是否把你的大作放入留言板 (Y)是的 (N)不要 (E)再编辑 [Y]: ", note1, 3, DOECHO, NULL, true);
+            gdataret = getdata(5, 0, "是否把你的大作放入留言板 (Y)是的 (N)不要 (E)再编辑 [Y]: ", note1, 3, DOECHO, NULL, true);
             if (note1[0] == 'e' || note1[0] == 'E')
                 continue;
             else
                 break;
         }
-        if (note1[0] != 'N' && note1[0] != 'n') {
+        if (gdataret != -1 && note1[0] != 'N' && note1[0] != 'n') {
             sprintf(tmp, "\033[32m%s\033[37m（%.24s）", getCurrentUser()->userid, getCurrentUser()->username);
             fprintf(in, "\033[m\033[31m⊙┬——————————————┤\033[37m酸甜苦辣板\033[31m├——————————————┬⊙\033[m\n");
             fprintf(in, "\033[31m□┤%-43s\033[33m在 \033[36m%.19s\033[33m 离开时留下的话\033[31m├□\n", tmp, Ctime(thetime));
@@ -4148,9 +4161,7 @@ int Goodbye(void){                      /*离站 选单 */
 
             sprintf(spbuf, "你的选择是 [\033[32m%1d\033[m]：", num_sysop + 1);
             getdata(num_sysop + 5, 0, spbuf, genbuf, 4, DOECHO, NULL, true);
-            choose = genbuf[0] - '0';
-            if (0 != genbuf[1])
-                choose = genbuf[1] - '0' + 10;
+			choose = atoi(genbuf);
             if (choose >= 1 && choose <= num_sysop) {
                 /*
                  * do_send(sysoplist[choose-1], "使用者寄来的的建议信"); 
@@ -4414,6 +4425,7 @@ static int set_acl_list_prekey(struct _select_def *conf, int *key)
 static int set_acl_list_key(struct _select_def *conf, int key)
 {
     int oldmode;
+	int gdataret;
 
     switch (key) {
     case 'a':
@@ -4425,7 +4437,8 @@ static int set_acl_list_key(struct _select_def *conf, int key)
             struct in6_addr ip, mask;
             int k=0, err=0;
 #endif
-            getdata(0, 0, "请输入IP地址: ", buf, IPLEN+2, 1, 0, 1);
+            gdataret = getdata(0, 0, "请输入IP地址: ", buf, IPLEN+2, 1, 0, 1);
+			if(gdataret == -1) return SHOW_REFRESH;
 #ifndef HAVE_IPV6_SMTH
             for(i=0;i<strlen(buf);i++) if(buf[i]=='.') k++;
             if(k!=3) err=1;
@@ -4452,7 +4465,8 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                 refresh(); sleep(1);
             }
             else {
-                getdata(0, 0, "请输入长度(单位:bit): ", buf, 4, 1, 0, 1);
+                gdataret = getdata(0, 0, "请输入长度(单位:bit): ", buf, 4, 1, 0, 1);
+				if(gdataret == -1) return SHOW_REFRESH;
                 acl[aclt].len = atoi(buf);
 #ifdef HAVE_IPV6_SMTH
                 acl[aclt].len+= k;
@@ -4465,7 +4479,8 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                     refresh(); sleep(1);
                 }
                 else {
-                    getdata(0, 0, "允许/拒绝(0-允许,1-拒绝): ", buf, 4, 1, 0, 1);
+                    gdataret = getdata(0, 0, "允许/拒绝(0-允许,1-拒绝)[1]: ", buf, 4, 1, 0, 1);
+					if(gdataret == -1) return SHOW_REFRESH;
                     if(buf[0]=='0') acl[aclt].deny=0;
                     else acl[aclt].deny=1;
 #ifndef HAVE_IPV6_SMTH
@@ -4582,11 +4597,14 @@ int set_ip_acl(void){
     struct in6_addr rip;
 #endif
     int oldmode;
+	int gdataret;
     FILE* fp;
     char fn[80],buf[80];
 
     clear();
-    getdata(3, 0, "请输入你的密码: ", buf, 39, NOECHO, NULL, true);
+    gdataret = getdata(3, 0, "请输入你的密码: ", buf, 39, NOECHO, NULL, true);
+	if(gdataret == -1) return 0;
+
     if (*buf == '\0' || !checkpasswd2(buf, getCurrentUser())) {
         prints("\n\n很抱歉, 您输入的密码不正确。\n");
         pressanykey();
@@ -4792,6 +4810,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     struct BMFunc_arg func_arg;
     bool fromfirst;
     int ent;
+	int gdataret;
     struct read_arg* arg=(struct read_arg*)conf->arg;
     char linebuffer[LINELEN*3];
     char annpath[MAXPATH];
@@ -4868,7 +4887,12 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     }
     snprintf(buf, 256, "从主题第一篇开始%s%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",
               func_arg.setflag?"":"取消",SR_BMitems[BMch - 1]);
-    getdata(t_lines - 3, 0, buf, ch, 3, DOECHO, NULL, true);
+    gdataret = getdata(t_lines - 3, 0, buf, ch, 3, DOECHO, NULL, true);
+	if(gdataret == -1){
+        saveline(t_lines - 2, 1, NULL);
+        saveline(t_lines - 3, 1, linebuffer);
+        return DONOTHING;
+	}
     switch (ch[0]) {
     case 'c':
     case 'C':
@@ -4889,7 +4913,12 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
         sprintf(annpath,"tmp/bm.%s",getCurrentUser()->userid);
         if(dashf(annpath))unlink(annpath);
         snprintf(buf, 256, "是否保留引文(Y/N/C)? [Y]: ");
-        getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, NULL, true);
+        gdataret = getdata(t_lines - 2, 0, buf, ch, 3, DOECHO, NULL, true);
+		if(gdataret == -1){
+        	saveline(t_lines - 2, 1, NULL);
+        	saveline(t_lines - 3, 1, linebuffer);
+        	return DONOTHING;
+		}
         switch (ch[0]){
         case 'n':
         case 'N':
@@ -5085,7 +5114,7 @@ static int b_modify_title(struct _select_def* conf, struct fileheader* fh, void*
     strcpy(ans, buf);
     move(t_lines - 1, 0);    
     getdata(t_lines - 1, 0, "修改本版中文名：", ans, STRLEN - 1, DOECHO, NULL, false);
-    if(!strcmp(ans,"")) return FULLUPDATE;
+    if(ans[0]='\0') return FULLUPDATE;
     if(!strcmp(ans,buf)) return FULLUPDATE;
     if (!(currboard->flag & BOARD_SUPER_CLUB) && !((currboard->title[0]=='P')&&(currboard->title[1]=='_'))) {
         sprintf(pmt, "修改 %s 版中文名", currboard->filename); 

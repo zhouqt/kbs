@@ -112,6 +112,7 @@ int addtodeny(char *uident)
     char denymsg[STRLEN];
     int denyday;
     int reasonfile;
+	int gdataret;
 
     now = time(0);
     strncpy(date, ctime(&now) + 4, 7);
@@ -162,8 +163,8 @@ int addtodeny(char *uident)
             }
             prints("%s", "0.手动输入封禁理由");
             while (1) {
-                getdata(2, 0, "请从列表选择封禁理由(0为手工输入,*退出):", denymsg, 2, DOECHO, NULL, true);
-                if (denymsg[0] == '*') {
+                gdataret = getdata(2, 0, "请从列表选择封禁理由(0为手工输入,*退出):", denymsg, 2, DOECHO, NULL, true);
+                if (gdataret == -1 || denymsg[0] == '*') {
                     free(file_buf);
                     close(reasonfile);
                     return 0;
@@ -194,10 +195,11 @@ int addtodeny(char *uident)
         close(reasonfile);
     }
 
-    while (0 == strlen(denymsg)) {
-        getdata(2, 0, "输入说明(按*取消): ", denymsg, 30, DOECHO, NULL, true);
+	gdataret = 0;
+    while (gdataret != -1 && 0 == strlen(denymsg)) {
+        gdataret = getdata(2, 0, "输入说明(按*取消): ", denymsg, 30, DOECHO, NULL, true);
     }
-    if (denymsg[0] == '*')
+    if (gdataret == -1 || denymsg[0] == '*')
         return 0;
 #ifdef MANUAL_DENY
     autofree = askyn("该封禁是否自动解封？(选 \033[1;31mY\033[m 表示进行自动解封)", true);
@@ -207,8 +209,8 @@ int addtodeny(char *uident)
     sprintf(filebuf, "输入天数(最长%d天)(按*取消封禁)", maxdeny);
     denyday = 0;
     while (!denyday) {
-        getdata(3, 0, filebuf, buf2, 4, DOECHO, NULL, true);
-	if (buf2[0] == '*')return 0; 
+        gdataret = getdata(3, 0, filebuf, buf2, 4, DOECHO, NULL, true);
+	if (gdataret == -1 || buf2[0] == '*')return 0; 
         if ((buf2[0] < '0') || (buf2[0] > '9'))
             continue;           /*goto MUST1; */
         denyday = atoi(buf2);
@@ -453,6 +455,7 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
                 return 0;
             }
             len = strlen(uident);
+			if(len){
             while (fgets(genbuf, 256 /*STRLEN*/, fp) != NULL) {
                 if (!strncasecmp(genbuf, uident, len)) {
                     if (genbuf[len] == 32) {
@@ -463,6 +466,7 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
                     }
                 }
             }
+			}
             fclose(fp);
             if (!find) {
                 move(3, 0);

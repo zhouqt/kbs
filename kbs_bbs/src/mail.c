@@ -145,6 +145,7 @@ int mailall(void){
     char buf2[STRLEN], include_mode = 'Y';
     char buf3[STRLEN], buf4[STRLEN];
     int i, replymode = 0;       /* Post New UI */
+	int gdataret;
 
     strcpy(title, "没主题");
     buf4[0] = '\0';
@@ -201,7 +202,8 @@ int mailall(void){
                 if (buf4[0] == '\0' || buf4[0] == '\n') {
                     move(t_lines - 1, 0);
                     clrtoeol();
-                    getdata(t_lines - 1, 0, "标题: ", buf4, 50, DOECHO, NULL, true);
+                    gdataret = getdata(t_lines - 1, 0, "标题: ", buf4, 50, DOECHO, NULL, true);
+					if(gdataret == -1) return -2;
                     if ((buf4[0] == '\0' || buf4[0] == '\n')) {
                         buf4[0] = ' ';
                         continue;
@@ -216,7 +218,8 @@ int mailall(void){
                  */
                 sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
                         (replymode) ? "，\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m改引言模式" : "");
-                getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
+                gdataret = getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
+				if(gdataret == -1) return -2;
                 ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
                 if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
                     if (atoi(ans) <= getSession()->currentmemo->ud.signum)
@@ -268,10 +271,15 @@ int mailall(void){
 
 int m_internet(void){
     char receiver[STRLEN], title[STRLEN];
+	int gdataret;
 
     modify_user_mode(SMAIL);
-    getdata(1, 0, "收信人: ", receiver, 70, DOECHO, NULL, true);
-    getdata(2, 0, "主题  : ", title, 70, DOECHO, NULL, true);
+    gdataret = getdata(1, 0, "收信人: ", receiver, 70, DOECHO, NULL, true);
+	if(gdataret == -1) return -2;
+
+    gdataret = getdata(2, 0, "主题  : ", title, 70, DOECHO, NULL, true);
+	if(gdataret == -1) return -2;
+
     if (!invalidaddr(receiver) && strchr(receiver, '@') && strlen(title) > 0) {
         clear();                /* Leeward 98.09.24fix a bug */
         switch (do_send(receiver, title, "")) { /* Leeward 98.05.11 adds "switch" */
@@ -335,6 +343,7 @@ int do_send(char *userid, char *title, char *q_file)
     struct userec *user;
     extern char quote_title[120];
     int ret;
+	int gdataret;
     char* upload = NULL;
     int savesent = HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL);
 
@@ -471,7 +480,8 @@ int do_send(char *userid, char *title, char *q_file)
             move(t_lines - 1, 0);
             clrtoeol();
             strcpy(buf4, titlebuf);
-            getdata(t_lines - 1, 0, "标题: ", buf4, 79, DOECHO, NULL, false);
+            gdataret = getdata(t_lines - 1, 0, "标题: ", buf4, 79, DOECHO, NULL, false);
+			if(gdataret == -1) return -2;
             if ((buf4[0] != '\0' && buf4[0] != '\n')) {
                 strcpy(titlebuf, buf4);
             } else {
@@ -486,7 +496,8 @@ int do_send(char *userid, char *title, char *q_file)
          */
         sprintf(buf2, "按 \033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
                 (replymode) ? "，\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m改引言模式" : "");
-        getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
+        gdataret = getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
+		if(gdataret == -1) return -2;
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
             if (atoi(ans) <= getSession()->currentmemo->ud.signum)
@@ -793,13 +804,14 @@ int read_new_mail(struct fileheader *fptr, int idc, char *direct)
 {
     char done = false, delete_it;
     char fname[256];
+	int gdataret;
 
     if (fptr->accessed[0])
         return 0;
     prints("读取 %s 寄来的 '%s' ?\n", fptr->owner, fptr->title);
     prints("(Yes, or No): ");
-    getdata(1, 0, "(Y)读取 (N)不读 (Q)离开 [Y]: ", genbuf, 3, DOECHO, NULL, true);
-    if (genbuf[0] == 'q' || genbuf[0] == 'Q') {
+    gdataret = getdata(1, 0, "(Y)读取 (N)不读 (Q)离开 [Y]: ", genbuf, 3, DOECHO, NULL, true);
+    if (gdataret == -1 || genbuf[0] == 'q' || genbuf[0] == 'Q') {
         clear();
         return QUIT;
     }
@@ -1298,7 +1310,7 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
 	strcpy(buf,fileinfo->title);
 	getdata(t_lines-1,0,"新信件标题:",buf,50,DOECHO,NULL,false);
 
-	if(strcmp(buf,fileinfo->title))
+	if(buf[0] && strcmp(buf,fileinfo->title))
 	{
 	    process_control_chars(buf,NULL);
         strnzhcpy(fileinfo->title, buf, ARTICLE_TITLE_LEN);
@@ -1662,6 +1674,7 @@ int g_send(void){
     char maillists[STRLEN];
     struct userec *lookupuser;
     struct user_info *u;
+	int gdataret;
 
     /*
      * 封禁Mail Bigman:2000.8.22 
@@ -1678,7 +1691,11 @@ int g_send(void){
             move(2, 0);
             prints("目前限制寄信给 \033[1m%d\033[m 人", maxrecp);
         }
-        getdata(0, 0, "(A)增加 (D)删除 (I)引入好友 (C)清除目前名单 (E)放弃 (S)寄出? [S]： ", tmp, 2, DOECHO, NULL, true);
+        gdataret = getdata(0, 0, "(A)增加 (D)删除 (I)引入好友 (C)清除目前名单 (E)放弃 (S)寄出? [S]： ", tmp, 2, DOECHO, NULL, true);
+		if(gdataret == -1){
+			cnt = 0;
+			break;
+		}
         if (tmp[0] == '\n' || tmp[0] == '\0' || tmp[0] == 's' || tmp[0] == 'S') {
             break;
         }
@@ -2127,6 +2144,7 @@ int doforward(char *direct, struct fileheader *fh)
     int y = 5;
     int noansi, mailout = 0;
     char *ptrX;
+	int gdataret;
 
     clear();
     if (address[0] == '\0') {
@@ -2143,7 +2161,9 @@ int doforward(char *direct, struct fileheader *fh)
     prints("(如要转信到自己的BBS信箱,请直接输入你的ID作为地址即可)\n");
     prints("把 %s 的《%s》转寄给:", fh->owner, fh->title);
     sprintf(genbuf, "[%s]: ", address);
-    getdata(3, 0, genbuf, receiver, 70, DOECHO, NULL, true);
+    gdataret = getdata(3, 0, genbuf, receiver, 70, DOECHO, NULL, true);
+	if(gdataret == -1)
+		return 1;
     if (receiver[0] != '\0') {
         strncpy(address, receiver, STRLEN);
     }
@@ -2151,8 +2171,8 @@ int doforward(char *direct, struct fileheader *fh)
      * 确认地址是否正确 added by dong, 1998.10.1
      */
     sprintf(genbuf, "确定将文章寄给 %s 吗? (Y/N) [Y]: ", address);
-    getdata(3, 0, genbuf, receiver, 3, DOECHO, NULL, true);
-    if (receiver[0] == 'n' || receiver[0] == 'N')
+    gdataret = getdata(3, 0, genbuf, receiver, 3, DOECHO, NULL, true);
+    if (gdataret == -1 || receiver[0] == 'n' || receiver[0] == 'N')
         return 1;
     strncpy(receiver, address, STRLEN);
 

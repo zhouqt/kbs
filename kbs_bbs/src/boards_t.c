@@ -1451,6 +1451,7 @@ static int fav_key(struct _select_def *conf, int command)
             } else {
                     int p, q;
                     char ans[5];
+					int gdataret;
 
 					if( ptr->dir )
 						p=ptr->pos;
@@ -1459,7 +1460,10 @@ static int fav_key(struct _select_def *conf, int command)
 
                     move(0, 0);
                     clrtoeol();
-                    getdata(0, 0, "请输入移动到的位置:", ans, 4, DOECHO, NULL, true);
+                    gdataret = getdata(0, 0, "请输入移动到的位置:", ans, 4, DOECHO, NULL, true);
+					if(gdataret == -1){
+						return SHOW_REFRESH;
+					}
                     q = atoi(ans) - 1;
                     if (q < 0 || q >= conf->item_count) {
                         move(2, 0);

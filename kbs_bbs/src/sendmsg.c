@@ -23,6 +23,7 @@ int get_msg(char * uid, char * msg, int line, int sms)
 {
     char genbuf[3];
     int i;
+	int gdataret;
 
     move(line, 0);
     clrtoeol();
@@ -39,10 +40,11 @@ int get_msg(char * uid, char * msg, int line, int sms)
 		if(sms){
 			char tmp[100];
 			sprintf(tmp,"确定要送出吗(共%d字节,不包括前后缀)(Y)是的 (N)不要 (E)再编辑? [Y]: ", (int)strlen(msg));
-        	getdata(line + i + 1, 0, tmp, genbuf, 2, DOECHO, NULL, 1);
+        	gdataret = getdata(line + i + 1, 0, tmp, genbuf, 2, DOECHO, NULL, 1);
 		}else
-        	getdata(line + i + 1, 0, "确定要送出吗(Y)是的 (N)不要 (E)再编辑? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
+        	gdataret = getdata(line + i + 1, 0, "确定要送出吗(Y)是的 (N)不要 (E)再编辑? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
 
+		if(gdataret == -1) return false;
         if (genbuf[0] == 'e' || genbuf[0] == 'E')
             continue;
         if (genbuf[0] == 'n' || genbuf[0] == 'N')

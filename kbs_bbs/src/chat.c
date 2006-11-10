@@ -374,8 +374,9 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
     move(5, 0);
     clrtoeol();                 /* Clear line 5 for good looking */
     while (1) {
-        getdata(2, 0, "ÇëÊäÈëÁÄÌì´úºÅ£º", inbuf, 9, DOECHO, NULL, true);
-        if ('*' == inbuf[0]) {  /* Leeward 98.04.26 */
+		int gdataret;
+        gdataret = getdata(2, 0, "ÇëÊäÈëÁÄÌì´úºÅ£º", inbuf, 9, DOECHO, NULL, true);
+        if (gdataret = -1 || '*' == inbuf[0]) {  /* Leeward 98.04.26 */
             close(pthis->cfd);
             return 0;
         }
