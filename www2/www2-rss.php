@@ -3,7 +3,12 @@ if (!defined('_BBS_WWW2_RSS_PHP_'))
 {
 define('_BBS_WWW2_RSS_PHP_', 1);
 
-define('RSS_ENCODING', "gb18030");
+define('RSS_ENCODING', "UTF-8");
+// comment the following three lines if you set RSS_ENCODING gb18030
+iconv_set_encoding("internal_encoding", "gb18030");
+iconv_set_encoding("output_encoding", "UTF-8//IGNORE");
+ob_start("ob_iconv_handler");
+
 define('ARTICLE_PER_RSS', 20);
 define('DESC_CHAR_PER_RSS_ITEM', 1000);
 
