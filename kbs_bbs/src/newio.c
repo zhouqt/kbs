@@ -793,6 +793,9 @@ int igetkey()
 
 bool enableESC=false;
 
+/*
+ * ret:  -1: user cancel input
+ */
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y;
@@ -921,6 +924,12 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             init=true;
             continue;
         }
+		if(ch == Ctrl('C')){
+			buf[0]='\0';
+			outc('\n');
+			ingetdata = false;
+			return -1;
+		}
         
         if (ch == KEY_DEL) {
             if(init) {

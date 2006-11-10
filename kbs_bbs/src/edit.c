@@ -720,6 +720,7 @@ int valid_article(pmt, abort)
     struct textline *p = firstline;
     char ch;
     int total, lines, len, sig, y;
+	int gdataret;
     int temp=0;
 
     if (uinfo.mode == POSTING) {
@@ -761,7 +762,11 @@ int valid_article(pmt, abort)
         else //local_article == 1
             strcpy(pmt, "(L)站内, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
     }
-    getdata(0, 0, pmt, abort, 2, DOECHO, NULL, true);
+    gdataret = getdata(0, 0, pmt, abort, 2, DOECHO, NULL, true);
+	if(gdataret == -1){
+		abort[0]='a';
+		abort[1]='\0';
+	}
     return temp;
 }
 
