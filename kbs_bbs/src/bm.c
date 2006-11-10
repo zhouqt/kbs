@@ -1153,6 +1153,7 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
                                             WAIT_RETURN;\
                                             return FULLUPDATE;\
                                         }while(0)
+    sigset_t mask_set,old_mask_set;
     struct stat st_src;
     struct read_arg *rarg;
     struct delete_range_arg arg;
@@ -1243,7 +1244,17 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
     move(++line,4);
     prints("\033[1;33m%s\033[m","区段操作可能需要较长时间, 请耐心等候...");
     refresh();
+    sigemptyset(&mask_set);
+    sigaddset(&mask_set,SIGHUP);
+    sigaddset(&mask_set,SIGBUS);
+    sigaddset(&mask_set,SIGPIPE);
+    sigaddset(&mask_set,SIGTERM);
+    sigprocmask(SIG_SETMASK,NULL,&old_mask_set);
+    sigprocmask(SIG_BLOCK,&mask_set,NULL);
     ret=delete_range_base(ident,src,dst,arg.id_from,arg.id_to,mode,NULL,&st_src);
+    if(!mail)
+        newbbslog(BBSLOG_USER,"delete_range %s %d - %d <%d,%#04x>",ident,arg.id_from,arg.id_to,mode,ret);
+    sigprocmask(SIG_SETMASK,&old_mask_set,NULL);
     if(ret==0x21){
         move(line++,4);
         clrtoeol();
@@ -1256,7 +1267,11 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
             DELETE_RANGE_QUIT(++line,"操作取消...");
         if((time(NULL)-timestamp)<DELETE_RANGE_ALLOWED_INTERVAL){
             mode&=~DELETE_RANGE_BASE_MODE_CHECK;
+            sigprocmask(SIG_BLOCK,&mask_set,NULL);
             ret=delete_range_base(ident,src,dst,arg.id_from,arg.id_to,mode,NULL,NULL);
+            if(!mail)
+                newbbslog(BBSLOG_USER,"delete_range %s %d - %d <%d,%#04x>",ident,arg.id_from,arg.id_to,mode,ret);
+            sigprocmask(SIG_SETMASK,&old_mask_set,NULL);
         }
         else{
             move(++line,4);
@@ -1267,10 +1282,8 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
             return FULLUPDATE;
         }
     }
-    if(!mail){
-        newbbslog(BBSLOG_USER,"delete_range %s %d - %d <%d,%#04x>",ident,arg.id_from,arg.id_to,mode,ret);
+    if(!mail)
         bmlog(getCurrentUser()->userid,ident,5,1);
-    }
     move(line++,4);
     clrtoeol();
     if(!ret){
