@@ -628,7 +628,6 @@ int select_process_bm_list(char *retBM){
     POINT pts[3];
     char BM[BM_LEN],ans[BM_LEN];
     int no_save;
-	int gdataret;
     snprintf(BM,BM_LEN,"%s",retBM);
     sel[0].x=4;sel[0].y=6;sel[0].hotkey='O';sel[0].type=SIT_SELECT;
     sel[0].data="\033[1;37m[\033[1;31mO\033[1;37m] 修改讨论区管理人员列表顺序 "
@@ -674,8 +673,8 @@ int select_process_bm_list(char *retBM){
             select_process_bm_order(BM);
         else if(conf.pos==2){
             move(sel[1].y,0);clrtoeol();
-            gdataret = getdata(sel[1].y,4,"\033[1;33m输入列表: \033[m",ans,BM_LEN,DOECHO,NULL,true);
-			if(gdataret != -1){
+            if(getdata(sel[1].y,4,"\033[1;33m输入列表: \033[m",ans,BM_LEN,DOECHO,NULL,true)==-1)
+                continue;
             switch(ans[0]){
                 case 0:
                     break;
@@ -698,7 +697,6 @@ int select_process_bm_list(char *retBM){
                 default:
                     snprintf(BM,BM_LEN,"%s",ans);
                     break;
-            }
 			}
         }
         else if(conf.pos==3)
@@ -1705,7 +1703,6 @@ int modify_board(int bid){
 int searchtrace(void){
     struct userec *user;
     char buf[256],fn_buf[256],ans[4];
-	int gdataret ;
     if(!check_systempasswd())
         return -1;
     clear();move(0,0);prints("\033[1;32m查询系统记录\033[m");
@@ -1724,8 +1721,7 @@ int searchtrace(void){
     sprintf(fn_buf,"tmp/searchtrace_%ld_%d",time(NULL), (int)getpid());
     sprintf(buf,"查询 %s 发文(P)/发信(M)记录 [P]: ",user->userid);
     move(2,0);clrtobot();
-    gdataret = getdata(2,0,buf,ans,2,DOECHO,NULL,true);
-	if(gdataret == -1){
+    if(getdata(2,0,buf,ans,2,DOECHO,NULL,true)==-1){
 		clear();
 		return -1;
 	}

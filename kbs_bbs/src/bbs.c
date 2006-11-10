@@ -2052,19 +2052,18 @@ int change_mode(struct _select_def *conf,struct fileheader *fh,int mode){
     static char title[32];
     struct read_arg *arg=(struct read_arg*)conf->arg;
     char buf[STRLEN],ans[4];
-	int gdataret;
     if(!mode){
         move(t_lines-2,0);
         clrtoeol();
         prints("%s","切换模式到: 0)取消 1)文摘区 2)同主题 3)保留区 4)原作 5)同作者 6)标题关键字");
         move(t_lines-1,0);
         clrtoeol();
-        gdataret = getdata(t_lines-1,12,"7)超级文章选择"
+        if(getdata(t_lines-1,12,"7)超级文章选择"
 #ifdef NEWSMTH
             " 8)本版精华区搜索"
 #endif /* NEWSMTH */
-            " 9)自删文章 [1]: ",ans,2,DOECHO,NULL,true);
-		if(gdataret == -1) return FULLUPDATE;
+            " 9)自删文章 [1]: ",ans,2,DOECHO,NULL,true)==-1)
+		    return FULLUPDATE;
         switch(ans[0]){
             case '0':
                 return FULLUPDATE;
@@ -3385,11 +3384,14 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
     clrtoeol();
     gdataret = getdata(t_lines - 1, 0, buf, ans, 3, DOECHO, NULL, true);
 
+    if(gdataret==-1)
+        return FULLUPDATE;
+
     if (ans[0] == ' ') {
         ans[0] = ans[1];
         ans[1] = 0;
     }
-    if (ans[0]=='0' || gdataret == -1) return FULLUPDATE;
+    if (ans[0]=='0') return FULLUPDATE;
 	else if(ans[0]=='2'){
 		if( !(can & 0x2) )
 			return FULLUPDATE;
