@@ -569,7 +569,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
     prints("%s",genbuf);
     move(3,0);
     prints("\033[0;33m操作提示: %s\033[m",((bh->flag&BOARD_OUTFLAG)?
-        "当使用非 'S'/'L' 的发表选项时, 输入大写字母将使用转信发表, 否则使用站内发表...":
+        "当使用非 'S'/'L' 选项时, 输入大写字母将转信发表, 否则将站内发表...":
         "目标版面不是转信版面, 输入 'S' 将等同于 'L' 而使用站内发表..."));
     sprintf(genbuf,"%s(L)站内发表 %s(E)修改内容 (A)取消 [A]: ",
         ((bh->flag&BOARD_OUTFLAG)?"(S)转信发表 ":""),((!inmail&&!public_board(currboard))?"(H)隐藏来源 ":""));
