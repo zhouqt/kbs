@@ -1270,11 +1270,6 @@ int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
     if (fileinfo==NULL)
         return DONOTHING;
-    /* czz 2003.3.4 forbid reading cancelled post in board */
-    if ((fileinfo->owner[0] == '-') 
-        && (arg->readmode != DIR_MODE_DELETED) 
-        && (arg->readmode != DIR_MODE_JUNK) )
-	    return ret;
 
     clear();
     strcpy(buf, read_getcurrdirect(conf));
@@ -5447,8 +5442,6 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
     struct read_arg *arg;
     char buf[PATHLEN],*p;
     int key,repeat,ret;
-    if(!fh||(fh->owner[0]=='-'))
-        return DONOTHING;
     snprintf(buf,PATHLEN,"%s",read_getcurrdirect(conf));
     if(!(p=strrchr(buf,'/')))
         return DONOTHING;
