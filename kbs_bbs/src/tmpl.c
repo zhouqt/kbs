@@ -862,7 +862,7 @@ static int choose_tmpl_post(char * title, char *fname){
         clear();
         ansimore2(fname,false,0,19);
         move(21,0);
-        clrtoebot();
+        clrtobot();
         prints("标题: %s",title);
         getdata(t_lines-1,0,"确认发表 (Y)发表 (N)退出 (E)重新编辑 [Y]: ",ans,2,DOECHO,NULL,true);
         switch(toupper(ans[0])){
