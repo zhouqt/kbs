@@ -857,32 +857,30 @@ static int choose_tmpl_post(char * title, char *fname){
 		title[STRLEN-1]='\0';
 	}
 
-
-
-	{
-		char ans[3];
-		clear();
-        ansimore2(fname, false, 0, 19 /*19 */ );
-		move(21,0);
-		prints("标题:%s",title);
-        while(1) {
-            getdata(t_lines - 1, 0, "确实要发表吗?  (Y)发表  (N)不发表  (E)再编辑 : ", ans, sizeof(ans), DOECHO, NULL, true);
-            if (ans[0] == 'Y' || ans[0] == 'y') {
-                loop = false;
-                ret = 1;
-		        break;
-		    }
-            else if (ans[0] == 'N' || ans[0] == 'n') {
-                loop = false;
-                ret = -1;
+    do{
+        char ans[4];
+        clear();
+        ansimore2(fname,false,0,19);
+        move(21,0);
+        clrtoebot();
+        prints("标题: %s",title);
+        getdata(t_lines-1,0,"确认发表 (Y)发表 (N)退出 (E)重新编辑 [Y]: ",ans,2,DOECHO,NULL,true);
+        switch(toupper(ans[0])){
+            case 'N':
+                loop=false;
+                ret=-1;
                 break;
-            }
-            else if (ans[0] == 'E' || ans[0] == 'e') {
-                modifying = true;
+            case 'E':
+                modifying=true;
                 break;
-            }
+            default:
+                loop=false;
+                ret=1;
+                break;
         }
-	}
+    }
+    while(0);
+
     }
 
 	for(i=0; i< ptemplate[t_now-1].tmpl->content_num; i++)
