@@ -199,14 +199,13 @@ int exec_mbem(const char *command){
 #else /* ! SSHBBS */
         'S'
 #endif /* SSHBBS */
-        ))
-        EM_QUIT(
+        )){
 #ifdef SSHBBS
-            "当前功能仅在 Telnet 方式登录下有效..."
+        EM_QUIT("当前功能仅在 Telnet 方式登录下有效...");
 #else /* ! SSHBBS */
-            "当前功能仅在 SSH 方式登录下有效..."
+        EM_QUIT("当前功能仅在 SSH 方式登录下有效...");
 #endif /* SSHBBS */
-            );
+    }
     p+=5;
     if((q=strchr(p,'#')))
         *q++=0;
