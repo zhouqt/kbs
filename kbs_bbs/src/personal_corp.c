@@ -1871,7 +1871,9 @@ static int pc_com_key(struct _select_def *conf, int key)
         return SHOW_REFRESH;
         break;
     case 'd':
-        if (!pc_is_admin(pc_u->username) && strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
+        if (!pc_is_admin(pc_u->username) && 
+            ((strcmp(getCurrentUser()->userid, "guest")==0) ||
+            strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username)))
             return SHOW_CONTINUE;
 
         move(2,0);
@@ -1886,7 +1888,8 @@ static int pc_com_key(struct _select_def *conf, int key)
         return SHOW_REFRESH;
         break;
     case 'e':
-        if (strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
+        if ((strcmp(getCurrentUser()->userid, "guest")==0) ||
+            strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
             return SHOW_CONTINUE;
         if (pc_add_a_com(pc_c[conf->pos - conf->page_pos].cid))
             return SHOW_DIRCHANGE;
