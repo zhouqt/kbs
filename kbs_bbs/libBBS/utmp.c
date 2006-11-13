@@ -538,11 +538,7 @@ int apply_ulist_addr(APPLY_UTMP_FUNC fptr, void *arg)
 
 int apply_utmpuid(APPLY_UTMP_FUNC fptr, int uid, void *arg)
 {
-    int num;
     char userid[IDLEN + 1];
-
-    num = 0;
-
     if (uid <= 0)
         return 0;
     strcpy(userid, getuserid2(uid));
