@@ -228,6 +228,7 @@ int exec_mbem(const char *command){
         EM_QUIT("入口函数装入失败, 操作终止...");
     }
     (*func)();
+    dlclose(dll);
     EM_QUIT(NULL);
 }
 
