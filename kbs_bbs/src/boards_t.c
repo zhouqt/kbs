@@ -963,11 +963,12 @@ static int fav_onselect(struct _select_def *conf)
 static int admin_utils_board(struct newpostdata *data,struct favboard_proc_arg *arg,void *varg){
 #define AU_LIBRARY  "admin/libadmin_utils.so"
 #define AU_FUNCTION "process_key_board"
-    int (*function)(struct newpostdata*,struct favboard_proc_arg*,void*);
+    typedef int (*FUNC_ADMIN)(struct newpostdata*,struct favboard_proc_arg*,void*);
+    FUNC_ADMIN function;
     void *handle;
     if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
         return -1;
-    if(!(function=dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
+    if(!(function=(FUNC_ADMIN)dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
         return -1;
     (*function)(data,arg,varg);
     dlclose(handle);

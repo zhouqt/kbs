@@ -5127,11 +5127,12 @@ static int b_modify_title(struct _select_def* conf, struct fileheader* fh, void*
 static int admin_utils_article(struct _select_def *conf,struct fileheader *info,void *varg){
 #define AU_LIBRARY  "admin/libadmin_utils.so"
 #define AU_FUNCTION "process_key_article"
-    int (*function)(struct _select_def*,struct fileheader*,void*);
+    typedef int (*FUNC_ADMIN)(struct _select_def*,struct fileheader*,void*);
+    FUNC_ADMIN function;
     void *handle;
     if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
         return DONOTHING;
-    if(!(function=dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
+    if(!(function=(FUNC_ADMIN)dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
         return DONOTHING;
     (*function)(conf,info,varg);
     dlclose(handle);

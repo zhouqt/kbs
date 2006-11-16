@@ -1133,7 +1133,7 @@ static int admin_utils_announce(MENU *menu,ITEM *item,void *varg){
     void *handle;
     if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
         return -1;
-    if(!(function=dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
+    if(!(function=(FUNC_ADMIN)dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
         return -1;
     (*function)(menu,item,varg);
     dlclose(handle);
