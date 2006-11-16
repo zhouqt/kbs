@@ -2681,3 +2681,20 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
         unlink(fname);
     }
 }
+
+/* etnlegend, 2006.11.17, 获取动态链接库中的函数指针... */
+void* dl_function(const char *s_library,const char *s_function,void **p_handle){
+    void *handle;
+    void *function;
+    if(!p_handle)
+        return NULL;
+    if(!(handle=dlopen(s_library,RTLD_NOW)))
+        return NULL;
+    if(!(function=dlsym(handle,s_function))){
+        dlclose(handle);
+        return NULL;
+    }
+    *p_handle=handle;
+    return function;
+}
+

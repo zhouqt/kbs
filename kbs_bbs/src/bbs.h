@@ -91,6 +91,10 @@
 #include <termios.h>
 #endif /* HAVE_TERMIOS_H */
 
+#ifdef HAVE_DLFCN_H
+#include <dlfcn.h>
+#endif /* HAVE_DLFCN_H */
+
 #ifndef DEBUG_MEMORY
 #ifndef FREEBSD
 #ifdef HAVE_MALLOC_H

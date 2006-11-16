@@ -3,8 +3,6 @@
 #ifndef KBS_COMM_LISTS_H
 #define KBS_COMM_LISTS_H
 
-#include <dlfcn.h>
-
 #define KBS_COMM_LISTS_FUNC_V(function)     int function(void)
 #define KBS_COMM_LISTS_FUNC_S(function)     int function(const char *_s)
 

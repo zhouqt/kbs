@@ -141,7 +141,7 @@ AC_ARG_ENABLE(customizing,
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h netdb.h netinet/in.h sgtty.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utime.h])
+AC_CHECK_HEADERS([arpa/inet.h dlfcn.h fcntl.h limits.h malloc.h netdb.h netinet/in.h sgtty.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utime.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STAT

@@ -24,8 +24,6 @@
 
 #include "bbs.h"
 #include "read.h"
-#include <time.h>
-#include <dlfcn.h>
 #include "md5.h"
 
 /*#include "../SMTH2000/cache/cache.h"*/
