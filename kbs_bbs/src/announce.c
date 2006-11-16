@@ -1125,6 +1125,23 @@ static int a_control_user(char *fpath)
 }
 #endif
 
+static int admin_utils_announce(MENU *menu,ITEM *item,void *varg){
+#define AU_LIBRARY  "admin/libadmin_utils.so"
+#define AU_FUNCTION "process_key_announce"
+    typedef int (*FUNC_ADMIN)(MENU*,ITEM*,void*);
+    FUNC_ADMIN function;
+    void *handle;
+    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+        return -1;
+    if(!(function=dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
+        return -1;
+    (*function)(menu,item,varg);
+    dlclose(handle);
+    return 0;
+#undef AU_LIBRARY
+#undef AU_FUNCTION
+}
+
 void a_manager(MENU *pm,int ch)
 {
     char uident[STRLEN];
@@ -1444,6 +1461,12 @@ void a_manager(MENU *pm,int ch)
         case 'x':              //added by bad 03-2-10
             a_copypaste(pm, 1);
             break;
+
+        case Ctrl('S'):
+            if(!admin_utils_announce(pm,item,NULL))
+                pm->page=9999;
+            break;
+
 /*  do not support thread read in announce: COMMAN 2002.7
         case '=':  t_search_down();     break;
         case '+':  t_search_up();       break;

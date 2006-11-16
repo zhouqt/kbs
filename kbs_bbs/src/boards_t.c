@@ -960,6 +960,22 @@ static int fav_onselect(struct _select_def *conf)
     }
 }
 
+static int admin_utils_board(struct newpostdata *data,struct favboard_proc_arg *arg,void *varg){
+#define AU_LIBRARY  "admin/libadmin_utils.so"
+#define AU_FUNCTION "process_key_board"
+    int (*function)(struct newpostdata*,struct favboard_proc_arg*,void*);
+    void *handle;
+    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+        return -1;
+    if(!(function=dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
+        return -1;
+    (*function)(data,arg,varg);
+    dlclose(handle);
+    return 0;
+#undef AU_LIBRARY
+#undef AU_FUNCTION
+}
+
 static int fav_key(struct _select_def *conf, int command)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
@@ -1568,6 +1584,10 @@ static int fav_key(struct _select_def *conf, int command)
 		else
         	m_read();
         return SHOW_REFRESH;
+    case Ctrl('S'):
+        if(!admin_utils_board(ptr,arg,NULL))
+            return SHOW_REFRESH;
+        break;
     }
     return SHOW_CONTINUE;
 }

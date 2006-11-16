@@ -5124,6 +5124,22 @@ static int b_modify_title(struct _select_def* conf, struct fileheader* fh, void*
 }
 #endif
 
+static int admin_utils_article(struct _select_def *conf,struct fileheader *info,void *varg){
+#define AU_LIBRARY  "admin/libadmin_utils.so"
+#define AU_FUNCTION "process_key_article"
+    int (*function)(struct _select_def*,struct fileheader*,void*);
+    void *handle;
+    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+        return DONOTHING;
+    if(!(function=dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
+        return DONOTHING;
+    (*function)(conf,info,varg);
+    dlclose(handle);
+    return FULLUPDATE;
+#undef AU_LIBRARY
+#undef AU_FUNCTION
+}
+
 static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'r', (READ_KEY_FUNC)read_post,NULL},
     {'K', (READ_KEY_FUNC)skip_post,NULL},
@@ -5217,7 +5233,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'Z', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 z 给作者发讯息"},
 
     {'p',  (READ_KEY_FUNC)thread_read,(void*)SR_READ},
-    {Ctrl('S'), (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 p 进入同主题阅读"},
+    {Ctrl('S'),(READ_KEY_FUNC)admin_utils_article,NULL},
 #ifdef FB2KPC
     {Ctrl('X'), (READ_KEY_FUNC)into_PAnnounce,NULL},
 #else
