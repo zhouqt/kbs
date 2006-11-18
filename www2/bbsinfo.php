@@ -47,7 +47,7 @@
 <form method="post" action="bbsinfo.php" class="medium">
 <fieldset><legend>个人资料</legend><div class="inputs">
 <label>您的帐号:</label><?php echo $currentuser["userid"];?><br/>
-<label>您的昵称:</label><input type="text" name="username" value="<?php echo htmlspecialchars($currentuser["username"],ENT_QUOTES);?>" size="24" maxlength="39"><br/>
+<label>您的昵称:</label><input type="text" name="username" value="<?php echo htmlspecialchars($currentuser["username"],ENT_QUOTES);?> " size="24" maxlength="39"><br/>
 <label>发表大作:</label><?php echo $currentuser["numposts"];?> 篇<br/>
 <label>上站次数:</label><?php echo $currentuser["numlogins"];?> 次<br/>
 <label>上站时间:</label><?php echo (int)($currentuser["stay"]/60);?> 分钟<br/>
