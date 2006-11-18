@@ -8,7 +8,7 @@
 	if (isset($_GET["submit"]) || isset($_POST["submit"]))
 	{
 		if( isset($_POST["username"]) ){
-			$username = $_POST["username"];
+			$username = trim($_POST["username"]);
 			if( strlen($username) < 2 )
 				html_error_quit("êÇ³ÆÌ«¶Ì");
 		}else
