@@ -65,6 +65,9 @@ switch($act) {
 	case "mailpost":
 		atomic_mailpost();
 		break;
+	case "ann":
+		atomic_ann();
+		break;
 	case "logout":
 		bbs_wwwlogoff();
 		delete_all_cookie();
@@ -85,7 +88,7 @@ function atomic_header() {
 	$atomic_header_shown = true;
 	header("Content-Type: text/html; charset=".(UTF8?"UTF-8":"gb2312"));
 	echo '<html><head><meta http-equiv="content-type" content="text/html; charset=' . (UTF8?"UTF-8":"gb2312") . '">'.
-	     '<title>'.BBS_FULL_NAME.'</title></head><body>';
+		 '<title>'.BBS_FULL_NAME.'</title></head><body>';
 }
 
 function atomic_footer() {
@@ -181,6 +184,125 @@ function atomic_get_board($checkpost = false) {
 	}
 }
 
+function atomic_ann() {
+	global $currentuser;
+	$file = false;
+	$path = @trim($_GET['path']);
+	if (isset($_GET['file'])) {
+		$path = trim($_GET['file']);
+		if($path[0]=='/')
+			$path = "0Announce".$path;
+		else
+			$path = "0Announce/".$path;
+		$file = $path;
+		$modfile = $file;
+	} else {
+		if($path[0]=='/')
+			$path1 = "0Announce".$path;
+		else
+			$path1 = "0Announce/".$path;
+		$modfile = $path1."/.Names";
+	}
+	if (strstr($path, '.Names') || strstr($path, '..') || strstr($path, 'SYSHome')) atomic_error('不存在该目录');
+
+	$boardName = '';
+	$articles = array();
+	$path_tmp = '';
+	if ($file === false) {
+		$ret = bbs_read_ann_dir($path,$boardName,$path_tmp,$articles);
+		switch ($ret) {
+			case -1:
+				atomic_error('精华区目录不存在');
+			case -2:
+				atomic_error('无法加载目录文件');
+			case -3:
+				break;
+			case -9:
+				atomic_error('系统错误');
+			default;
+		}
+		$path = $path_tmp;
+	} else {
+		if( bbs_ann_traverse_check($path, $currentuser["userid"]) < 0 ) {
+			atomic_error("错误的目录");
+		}
+	}
+	$parent = '';
+	$up_dirs = array();
+	$up_cnt = bbs_ann_updirs($path,$boardName,$up_dirs);
+	$cacheit = true;
+	if ($up_cnt >= 2)
+		$parent = $up_dirs[$up_cnt - 2];
+	if ($boardName) {
+		$brdArr = array();
+		$boardID = bbs_getboard($boardName,$brdArr);
+		$boardArr = $brdArr;
+		if ($boardID) {
+			$boardName = $boardArr['NAME'];
+			$usernum = $currentuser['index'];
+			if (bbs_checkreadperm($usernum, $boardID) == 0) {
+				foundErr('不存在该目录');
+			}
+			bbs_set_onboard($boardID,1);
+			if (!bbs_normalboard($boardName)) $cacheit = false;
+		}
+		else {
+			$boardName = '';
+		}
+	}
+	else {
+		$boardID = 0;
+	}
+	
+	if ($cacheit) {
+		if (cache_header('public',@filemtime($modfile),300))
+			return;
+	}
+	atomic_header(); $html = "<p>";
+	if ($boardID) {
+		$html .= "<a href='?act=board&board=".$boardName."'>回 ".$boardName." 版面</a> ";
+	}
+	if ($parent) {
+		$html .= "<a href='?act=ann&path=".$parent."'>回上级目录</a>";
+	}
+	$html .= "</p>";
+	if ($file !== false) {
+		echo $html;
+		echo bbs2_readfile_text($file, MAXCHAR, 2);
+	} else {
+		$html .= "<pre> 编号 [类别] 标    题                               整  理       编辑日期\n";
+		if (count($articles) >= 0) {
+			$i = 1;
+			foreach ($articles as $article) {
+				switch($article['FLAG']) {
+					case 0:
+						continue 2;
+					case 1:
+						$alt = '目录';
+						$url = '?act=ann&path='.urlencode($article['PATH']);
+						break;
+					case 2:
+					case 3:
+					default:
+						$alt = '文件';
+						$url = '?act=ann&file='.urlencode($article['PATH']);
+				}
+				$html .= sprintf("%5d ", $i) . "[" . $alt . "]";
+				$html .= ($article['FLAG']==3)?"@":" ";
+				$title = sprintf("%-38.38s",trim($article['TITLE']));
+				$html .= '<a href="'.$url.'">'.htmlspecialchars($title).'</a>';
+				$bm = explode(' ',trim($article['BM']));
+				$html .= sprintf(" %-12.12s ", $bm[0]);
+				$html .= date('Y-m-d',$article['TIME'])."\n";
+				$i++;
+			}
+		}
+		$html .= "</pre>";
+		echo $html;
+	}
+	atomic_footer();
+}
+
 function atomic_board() {
 	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes, $atomic_ftype;
 	atomic_get_board();
@@ -254,6 +376,12 @@ function atomic_board() {
 	if ($atomic_ftype != $dir_modes["MARK"]) {
 		$html .= "<a href='?act=board&board=".$atomic_board."&ftype=".$dir_modes["MARK"]."'>保留</a> ";
 	} else $html .= "<b>保留</b> ";
+	$ann_path = bbs_getannpath($atomic_board);
+	if ($ann_path != FALSE)	{
+		if (!strncmp($ann_path,"0Announce/",10))
+			$ann_path = substr($ann_path,9);
+	}
+	$html .= "<a href='?act=ann&path=".$ann_path."'>精华</a> ";
 	$html .= "</form>";
 
 	$html .= "<pre> 编号   刊 登 者     日  期  文章标题<br/>";
@@ -317,18 +445,18 @@ function atomic_article() {
 		atomic_error("错误的文章号,原文可能已经被删除");
 	}
 
-    if (!$atomic_ftype) {
-        $articles = array ();
-        $num = bbs_get_records_from_id($atomic_board, $id, $atomic_ftype, $articles);
-        if ($num <= 0) atomic_error("错误的文章号,原文可能已经被删除");
-        $article = $articles[1];
-    } else {
-        $num = @intval($_GET["num"]);
-        if (($num <= 0) || ($num > $total)) atomic_error("错误的文章号,原文可能已经被删除");
-        if (($articles = bbs_getarticles($atomic_board, $num, 1, $atomic_ftype)) === false) atomic_error("错误的文章号,原文可能已经被删除");
-        if ($id != $articles[0]["ID"]) atomic_error("错误的文章号,原文可能已经被删除");
-        $article = $articles[0];
-    }
+	if (!$atomic_ftype) {
+		$articles = array ();
+		$num = bbs_get_records_from_id($atomic_board, $id, $atomic_ftype, $articles);
+		if ($num <= 0) atomic_error("错误的文章号,原文可能已经被删除");
+		$article = $articles[1];
+	} else {
+		$num = @intval($_GET["num"]);
+		if (($num <= 0) || ($num > $total)) atomic_error("错误的文章号,原文可能已经被删除");
+		if (($articles = bbs_getarticles($atomic_board, $num, 1, $atomic_ftype)) === false) atomic_error("错误的文章号,原文可能已经被删除");
+		if ($id != $articles[0]["ID"]) atomic_error("错误的文章号,原文可能已经被删除");
+		$article = $articles[0];
+	}
 	$filename = bbs_get_board_filename($atomic_board, $article["FILENAME"]);
 	$isnormalboard = bbs_normalboard($atomic_board);
 	if ($isnormalboard) {
@@ -349,7 +477,7 @@ function atomic_article() {
 	$html = '<p>';
 	if (!$atomic_ftype) {
 		$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
-	    if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&reid='.$id.'&upload=1">带附件回复</a> ';
+		if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&reid='.$id.'&upload=1">带附件回复</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
@@ -358,7 +486,7 @@ function atomic_article() {
 		$html .= '<a href="' . $url . $article["REID"] . '">溯源</a> ';
 	}
 	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).
-	         ($atomic_ftype?"&ftype=".$atomic_ftype:"").'">回版面</a> ';
+			 ($atomic_ftype?"&ftype=".$atomic_ftype:"").'">回版面</a> ';
 	$ourl = 'bbscon.php?bid=' . $atomic_brdnum . '&id=' . $article["ID"];
 	if ($atomic_ftype) $ourl .= "&ftype=".$atomic_ftype."&num=".$num;
 	$html .= '<a href="' . $ourl . '">原文</a> ';
@@ -463,19 +591,19 @@ function atomic_post() {
 		case -9:
 			atomic_error("系统内部错误, 请迅速通知站务人员, 谢谢!");
 			break;
-        case -21:
-            atomic_error("您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
-            break;
+		case -21:
+			atomic_error("您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
+			break;
 		}
 		atomic_header();
 		$url = "?act=board&board=" . $atomic_board;
 		if (isset($attmsg)) echo $attmsg . "<br/>";
 		if ($ret == -10) {
 			echo "<p>很抱歉，本文可能含有不当内容，需经审核方可发表。<br/><br/>" .
-                  "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
-                  "站务人员的审核，不要多次尝试发表此文章。<br/><br/>" .
-                  "如有疑问，请致信 SYSOP 咨询。</p>";
-            echo "返回<a href='$url'>版面文章列表</a>";
+				  "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
+				  "站务人员的审核，不要多次尝试发表此文章。<br/><br/>" .
+				  "如有疑问，请致信 SYSOP 咨询。</p>";
+			echo "返回<a href='$url'>版面文章列表</a>";
 		} else {
 			echo "发文成功！本页面将在3秒后自动返回<a href='$url'>版面文章列表</a><meta http-equiv='refresh' content='3; url=" . $url . "'/>";
 		}
@@ -809,7 +937,7 @@ END;
 	if (is_null(UTF8SP)) {
 		$url = $_SERVER['REQUEST_URI'];
 		if (strstr($url, 'utf8=')) $url = substr($url, 0, strlen($url)-1);
-	    else if (!strstr($url, '?')) $url.= '?utf8=';
+		else if (!strstr($url, '?')) $url.= '?utf8=';
 		echo "UTF8: <a href='" . $url . (UTF8 ? "0" : "1") . "'>" . (UTF8 ? "ON" : "OFF") . "</a>. ";
 	} else {
 		echo "UTF8: " . (UTF8 ? "ON" : "OFF") . ". ";
