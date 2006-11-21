@@ -53,9 +53,10 @@
 ?>
 <div class="large">
 <div class="article">
-<?php
-				bbs_print_article($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
-?>
+<script type="text/javascript"><!--
+<?php $s = bbs2_readfile($filename); if (is_string($s)) echo 'm=1;'.$s; ?>
+//-->
+</script>
 </div></div>
 <div class="oper">
 [<a onclick='return confirm("你真的要删除这封信吗？")' href="bbsmailact.php?act=del&dir=<?php echo $dirname;?>&file=<?php echo $file;?>&title=<?php echo $title_encode;?>">删除</a>]

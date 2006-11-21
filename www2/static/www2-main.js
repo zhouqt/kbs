@@ -50,7 +50,7 @@ function htmlize(s) {
 }
 
 
-var att = null, strArticle = "", divArtCon = null, cacheable = true;
+var att = null, m = 0, strArticle = "", divArtCon = null, cacheable = true;
 function attWriter(bid, id, ftype, num, cacheable) {
 	this.bid = bid;
 	this.id = id;
@@ -76,6 +76,7 @@ function prints(s) {
 	else document.write(s);
 }
 function attachURL(name, len, pos) {
+	if (m) { return location.href+'&ap='+pos; };
 	var ext = null, o = name.lastIndexOf(".");
 	if (!att) return null;
 	if (o != -1) {
