@@ -516,35 +516,38 @@ void dopipesig(int s)
     signal(SIGPIPE, dopipesig);
 }
 
-void standaloneinit(char *port)
-{
-    int ndescriptors;
-    FILE *pf;
-    char pidfile[30];
+void standaloneinit(const char *port){
+    FILE *fp;
+    char pid_file_name[STRLEN],buf[STRLEN],*addr;
+    int ndes=getdtablesize();
 
-    ndescriptors = getdtablesize();
-/*#ifndef NOFORK*/
-    if (!inetdstart)
-        if (fork())
+    if(!inetdstart){
+        if(fork())
             exit(0);
-/*#endif*/
+    }
 
-    snprintf(pidfile, 30, "/usr/tmp/innbbsd-%s.pid", port);
+    snprintf(buf,STRLEN,"%s",port);
+    if((addr=strstr(buf," [ADDRESS] "))){
+        addr[0]=0;
+        addr+=11;
+        snprintf(pid_file_name,STRLEN,BBSHOME"/var/innbbsd.%s_%s.pid",buf,addr);
+    }
+    else
+        snprintf(pid_file_name,STRLEN,BBSHOME"/var/innbbsd.%s.pid",buf);
+
 #ifdef DEBUG
-    if (!inetdstart)
-        fprintf(stderr, "PID file is in %s\n", pidfile);
+    if(!inetdstart)
+        fprintf(stderr,"PIDFILE %s ... \n",pid_file_name);
 #endif
 
-    {
-        int s;
-
-        for (s = 3; s < ndescriptors; s++)
-            (void) close(s);
+    do{
+        close(ndes);
     }
-    pf = fopen(pidfile, "w");
-    if (pf != NULL) {
-        fprintf(pf, "%d\n", getpid());
-        fclose(pf);
+    while(--ndes>2);
+
+    if((fp=fopen(pid_file_name,"w"))){
+        fprintf(fp,"%d\n",(int)getpid());
+        fclose(fp);
     }
 }
 
@@ -555,15 +558,15 @@ void innbbsusage(name)
 char *name;
 {
     fprintf(stderr, "Usage: %s   [options] \n", name);
-    fprintf(stderr, "   -v   	(verbose log)\n");
-    fprintf(stderr, "   -h|? 	(help)\n");
-    fprintf(stderr, "   -n   	(not to use in core dbz)\n");
-    fprintf(stderr, "   -i   	(start from inetd with wait option)\n");
-    fprintf(stderr, "   -c   	connections  (maximum number of connections accepted)\n");
-    fprintf(stderr, "           default=%d\n", Maxclient);
+    fprintf(stderr, "   -v      (verbose log)\n");
+    fprintf(stderr, "   -h|?    (help)\n");
+    fprintf(stderr, "   -n      (not to use in core dbz)\n");
+    fprintf(stderr, "   -i      (start from inetd with wait option)\n");
+    fprintf(stderr, "   -c      (maximum connections accepted, default: %d)\n", Maxclient);
     fprintf(stderr, "   -j      (keep history of junk article, default=none)\n");
-    fprintf(stderr, "	-p port (assign port number of innbbsd daemon to bind)\n");
-    fprintf(stderr, "	-l path (assign socket path for innbbsd to place)\n");
+    fprintf(stderr, "   -a addr (bind to the specified address, default: all)\n");
+    fprintf(stderr, "   -p port (assign port number of innbbsd daemon to bind)\n");
+    fprintf(stderr, "   -l path (assign socket path for innbbsd to place)\n");
 }
 
 #ifdef DEBUGNGSPLIT
@@ -592,7 +595,7 @@ int main(argc, argv)
 int argc;
 char **argv;
 {
-
+    char addr[STRLEN],service[STRLEN];
     char *port, *path;
     int c, errflag = 0;
     extern int INNBBSDhalt();
@@ -604,13 +607,14 @@ char **argv;
     chdir(BBSHOME);
 	init_sessiondata(getSession());
 
+    addr[0]=0;
     port = DefaultINNBBSPort;
     path = LOCALDAEMON;
     Junkhistory = 0;
 
     time(&INNBBSDstartup);
     openlog("innbbsd", LOG_PID | LOG_ODELAY, LOG_DAEMON);
-    while ((c = getopt(argc, argv, "c:p:l:f:s:vhidn?j")) != -1)
+    while ((c = getopt(argc, argv, "c:a:p:l:f:s:vhidn?j")) != -1)
         switch (c) {
         case 'j':
             Junkhistory = 1;
@@ -649,6 +653,10 @@ char **argv;
             if (Max_Art_Size < 0)
                 Max_Art_Size = 0;
             break;
+        case 'a':
+            if(optarg[0])
+                snprintf(addr,STRLEN,"%s",optarg);
+            break;
         case 'p':              /* yes, assign port number here .. */
             port = optarg;
             printf("p:%s\n", optarg);
@@ -666,6 +674,11 @@ char **argv;
     if (errflag > 0) {
         innbbsusage(argv[0]);
         return (1);
+    }
+
+    if(addr[0]){
+        snprintf(service,STRLEN,"%s [ADDRESS] %s",port,addr);
+        port=service;
     }
 
     if(!getuid()&&!inetdstart){
@@ -703,3 +716,4 @@ char **argv;
     HISclose();
     return 0;
 }
+

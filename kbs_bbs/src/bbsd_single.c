@@ -674,7 +674,7 @@ int main(int argc,char **argv){
     char addr[STRLEN];
     int ret,inetd,port;
     addr[0]=0;inetd=0;port=23;
-    while((ret=getopt(argc,argv,"idhs:p:"))!=-1){
+    while((ret=getopt(argc,argv,"idha:p:"))!=-1){
         switch(ret){
             case 'i':
                 inetd=1;
@@ -683,9 +683,9 @@ int main(int argc,char **argv){
                 no_fork=1;
                 break;
             case 'h':
-                puts("usage: bbsd [-i] [-d] [-h] [-s <addr>] [-p <port>]");
+                puts("usage: bbsd [-i] [-d] [-h] [-a <addr>] [-p <port>]");
                 return 0;
-            case 's':
+            case 'a':
                 if(optarg[0])
                     snprintf(addr,STRLEN,"%s",optarg);
                 break;

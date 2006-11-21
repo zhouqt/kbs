@@ -579,9 +579,9 @@ int main(int argc, char **argv)
     int opt,pop3_port,pop3s_port,port;
 
     opterr=0;addr[0]=0;pop3_port=POP3PORT;pop3s_port=POP3SPORT;
-    while((opt=getopt(argc,argv,"s:p:"))!=-1){
+    while((opt=getopt(argc,argv,"a:p:"))!=-1){
         switch(opt){
-            case 's':
+            case 'a':
                 if(optarg[0])
                     snprintf(addr,STRLEN,"%s",optarg);
                 break;
@@ -593,7 +593,7 @@ int main(int argc, char **argv)
                 }
                 break;
             default:
-                fprintf(stderr,"%s\n","newpop3d [-s <addr>] [-p <pop3_port>[,<pop3s_port>]]");
+                fprintf(stderr,"%s\n","newpop3d [-a <addr>] [-p <pop3_port>[,<pop3s_port>]]");
                 exit(1);
         }
     }

@@ -111,79 +111,74 @@ int initunixserver(const char *path,const char *protocol)
     return s;
 }
 
-int initinetserver(const char *service,const char *protocol)
-{
-    struct servent *se;         /* service information entry */
-    struct protoent *pe;        /* protocol information entry */
-    struct sockaddr_in sin;     /* Internet endpoint address */
-    int port, s;
-    int randomport = 0;
-
-    bzero((char *) &sin, sizeof(sin));
-    sin.sin_family = AF_INET;
-    if (!strcmp("0", service)) {
-        randomport = 1;
-        sin.sin_addr.s_addr = INADDR_ANY;
+int initinetserver(const char *service,const char *protocol){
+    /* service should be "<service name or port> [[ADDRESS] <addr>]" */
+    struct servent *se;
+    struct protoent *pe;
+    struct sockaddr_in sin;
+    char buf[128],*addr;
+    int sock,use_random_port,optval;
+    memset(&sin,0,sizeof(struct sockaddr_in));
+    sin.sin_family=AF_INET;
+    if(!service)
+        service=DEFAULTPORT;
+    if(!protocol)
+        protocol="tcp";
+    snprintf(buf,128,"%s",service);
+    if((addr=strstr(buf," [ADDRESS] "))){
+        addr[0]=0;
+        addr+=11;
     }
-    if (service == NULL)
-        service = DEFAULTPORT;
-    if (protocol == NULL)
-        protocol = "tcp";
-    /*
-     * map service name to port number 
-     */
-    /*
-     * service ---> port 
-     */
-    se = getservbyname(service, protocol);
-    if (se == NULL) {
-        port = htons((u_short) atoi(service));
-        if (port == 0 && !randomport) {
-            fprintf(stderr, "%s/%s: Unknown service.\n", service, protocol);
-            return (-1);
+    if(buf[0]=='0'&&!buf[1])
+        use_random_port=1;
+    else
+        use_random_port=0;
+    if(!(pe=getprotobyname(protocol))){
+        fprintf(stderr,"%s: unknown protocol ... \n",protocol);
+        return -1;
+    }
+    if(!addr||inet_pton(AF_INET,addr,&(sin.sin_addr))<=0)
+        sin.sin_addr.s_addr=htonl(INADDR_ANY);
+    if(!(se=getservbyname(buf,protocol))){
+        if(!(sin.sin_port=htons((u_short)atoi(buf)))&&!use_random_port){
+            fprintf(stderr,"%s/%s: unknown service ... \n",buf,protocol);
+            return -1;
         }
-    } else
-        port = se->s_port;
-    sin.sin_port = port;
-
-    /*
-     * map protocol name to protocol number 
-     */
-    pe = getprotobyname(protocol);
-    if (pe == NULL) {
-        fprintf(stderr, "%s: Unknown protocol.\n", protocol);
-        return (-1);
     }
-    /*
-     * Allocate a socket 
-     */
-    s = socket(PF_INET, strcmp(protocol, "tcp") ? SOCK_DGRAM : SOCK_STREAM, pe->p_proto);
-    if (s < 0) {
+    else
+        sin.sin_port=se->s_port;
+    if((sock=socket(PF_INET,(!strcmp(protocol,"tcp")?SOCK_STREAM:SOCK_DGRAM),pe->p_proto))<0){
         perror("socket");
         return -1;
     }
-    standalonesetup(s);
-    signal(SIGHUP, SIG_IGN);
-    signal(SIGUSR1, SIG_IGN);
-    signal(SIGCHLD, reapchild);
-    signal(SIGINT, dokill);
-    signal(SIGTERM, dokill);
-
+    optval=1;
+    if(setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof(int))<0){
+        perror("setsockopt");
+        return -1;
+    }
+    standalonesetup(sock);
+    signal(SIGHUP,SIG_IGN);
+    signal(SIGUSR1,SIG_IGN);
+    signal(SIGCHLD,reapchild);
+    signal(SIGINT,dokill);
+    signal(SIGTERM,dokill);
     chdir("/");
-    if (bind(s, (struct sockaddr *) &sin, sizeof(struct sockaddr_in)) < 0) {
+    if(bind(sock,(struct sockaddr*)&sin,sizeof(struct sockaddr_in))<0){
         perror("bind");
         return -1;
     }
-    listen(s, 10);
+    if(listen(sock,10)<0){
+        perror("listen");
+        return -1;
+    }
 #ifdef DEBUG
-    {
-        int length = sizeof(sin);
-
-        getsockname(s, &sin, &length);
-        printf("portnum alocalted %d\n", sin.sin_port);
+    do{
+        socklen_t len=sizeof(struct sockaddr_in);
+        getsockname(sock,&sin,&len);
+        printf("PORT: ALLOC %d\n",sin.sin_port);
     }
 #endif
-    return s;
+    return sock;
 }
 
 int open_unix_listen(const char *path,const char *protocol,int (*initfunc)(int))
@@ -243,6 +238,8 @@ int tryaccept(int s)
     } while (ns < 0 && errno == EINTR);
     return ns;
 }
+
+#if 0 //etnlegend, 不用的先注释掉...
 
 int inetsingleserver(const char *service,const char *protocol,int (*serverfunc)(int),int (*initfunc)(int))
 {
@@ -320,6 +317,8 @@ int inetserver(const char *service,const char *protocol,int (*serverfunc)(int))
     }
     return 0;
 }
+
+#endif /* 0 */
 
 int inetclient(const char *server,const char *service,const char *protocol){
     struct servent *se;         /* service information entry */

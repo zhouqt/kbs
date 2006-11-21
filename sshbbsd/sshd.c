@@ -307,7 +307,7 @@ int main(int ac, char **av)
     addr[0]=0;
 
     /* Parse command-line arguments. */
-    while ((opt = getopt(ac, av, "f:s:p:b:k:h:g:diqV:")) != EOF) {
+    while ((opt = getopt(ac, av, "f:a:p:b:k:h:g:diqV:")) != EOF) {
         switch (opt) {
         case 'f':
             config_file_name = optarg;
@@ -324,7 +324,7 @@ int main(int ac, char **av)
         case 'b':
             options.server_key_bits = atoi(optarg);
             break;
-        case 's':
+        case 'a':
             if(optarg[0])
                 snprintf(addr,STRLEN,"%s",optarg);
             break;
@@ -356,7 +356,7 @@ int main(int ac, char **av)
             fprintf(stderr, "  -d         Debugging mode\n");
             fprintf(stderr, "  -i         Started from inetd\n");
             fprintf(stderr, "  -q         Quiet (no logging)\n");
-            fprintf(stderr, "  -s addr    Bind to the specified address (default: all)\n");
+            fprintf(stderr, "  -a addr    Bind to the specified address (default: all)\n");
             fprintf(stderr, "  -p port    Listen on the specified port (default: 22)\n");
             fprintf(stderr, "  -k seconds Regenerate server key every this many seconds (default: 3600)\n");
             fprintf(stderr, "  -g seconds Grace period for authentication (default: 300)\n");
