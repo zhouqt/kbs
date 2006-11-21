@@ -289,8 +289,8 @@ function atomic_ann() {
 				}
 				$html .= sprintf("%5d ", $i) . "[" . $alt . "]";
 				$html .= ($article['FLAG']==3)?"@":" ";
-				$title = sprintf("%-38.38s",trim($article['TITLE']));
-				$html .= '<a href="'.$url.'">'.htmlspecialchars($title).'</a>';
+				$title = sprintf("%-37.37s",trim($article['TITLE']));
+				$html .= '<a href="'.$url.'">'.htmlspecialchars($title).' </a>';
 				$bm = explode(' ',trim($article['BM']));
 				$html .= sprintf(" %-12.12s ", $bm[0]);
 				$html .= date('Y-m-d',$article['TIME'])."\n";
