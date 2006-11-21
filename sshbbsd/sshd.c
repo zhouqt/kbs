@@ -17,494 +17,6 @@ agent connections.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.17  2006/11/06 08:52:29  etnlegend
- * 这地方真是土鳖!
- *
- * Revision 1.16  2006/04/11 13:50:53  etnlegend
- * etn 你怎么就这么土!
- *
- * Revision 1.15  2006/04/11 09:16:10  etnlegend
- * nowarning ... libBBS src sshbbsd
- *
- * Revision 1.14  2006/01/03 02:33:09  atppp
- * 更多 ipv6 patch 来自 FreeWizard
- *
- * Revision 1.13  2005/12/14 07:29:27  atppp
- * ipv6 fix by FreeWizard
- *
- * Revision 1.12  2004/02/01 05:18:04  flyriver
- * 简单粗暴法去除 Warning.
- *
- * Revision 1.11  2003/05/25 14:10:13  bad
- * 改一个define
- *
- * Revision 1.10  2003/05/17 11:33:57  bad
- * 加上#IFDEF
- *
- * Revision 1.9  2003/05/17 10:57:41  bad
- * fork之前
- *
- * Revision 1.8  2003/04/18 14:58:56  bad
- * ssh多行
- *
- * Revision 1.7  2003/04/18 14:47:22  bad
- * ssh多行
- *
- * Revision 1.6  2003/04/18 14:45:45  bad
- * ssh多行
- *
- * Revision 1.5  2003/04/18 14:30:02  bad
- * ssh多行
- *
- * Revision 1.4  2002/08/04 11:39:44  kcn
- * format c
- *
- * Revision 1.3  2002/08/04 11:08:49  kcn
- * format C
- *
- * Revision 1.2  2002/05/25 02:06:27  kcn
- * do sshbbsd autoconf
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.4  2002/04/25 10:47:37  kxn
- * removed libBBS.a
- * fixed logattempt failure
- * added username display in proctitle
- *
- * Revision 1.3  2002/04/25 05:37:26  kxn
- * bugs fixed: disconnect, chinese ime
- * features added : run as normal user
- *
- * Revision 1.2  2001/08/13 13:39:03  bbsdev
- * fix modetype.c to site.c
- *
- * Revision 1.1  2001/07/04 06:07:13  bbsdev
- * bbs sshd
- *
- * Revision 1.61  1999/04/29 11:29:47  tri
- * 	Added a syslog call.
- *
- * Revision 1.60  1999/04/29 07:52:29  tri
- *      Replaced OSF1/C2 security support with more complete SIA
- *         (Security Integration Architecture) support by Tom Woodburn.
- *
- * Revision 1.59  1999/02/25 06:25:37  tri
- *      Added an unnecessary but illustrative patch.
- *
- * Revision 1.58  1999/02/22 14:44:33  kivinen
- *      Added code that will check that environment will always be
- *      allocated (freebsd + use login).
- *
- * Revision 1.57  1999/02/22 08:14:10  tri
- *      Final fixes for 1.2.27.
- *
- * Revision 1.56  1999/02/21 19:52:56  ylo
- *      Intermediate commit of ssh1.2.27 stuff.
- *      Main change is sprintf -> snprintf; however, there are also
- *      many other changes.
- *
- * Revision 1.55  1998/07/08 14:55:22  tri
- *      Fixed version negotiation so, that ssh 2
- *      compatibility is even remotedly possible.
- *
- * Revision 1.54  1998/07/08 00:48:46  kivinen
- *      Added better HPUX TCB auth support. Added SGI proj support.
- *      Changed to use match_host in the allow/deny checking. Changed
- *      to use PASSWD_PATH. Added checking that if allow/deny group is
- *      set then the group must exists.
- *
- * Revision 1.53  1998/06/11 00:11:24  kivinen
- *      Added ENABLE_SO_LINGER ifdef. Added username to /bin/password
- *      commands. Added user@host support.
- *
- * Revision 1.52  1998/05/23  20:28:12  kivinen
- *      Changed () -> (void). Added HAVE_OSF1_C2_SECURITY include
- *      files. Added days_before_{account,password}_expires support.
- *      Added chalnecho TIS authentication server response code
- *      support. Added call to osf1c2_check_account_and_terminal
- *      function. Added SSH_BINDIR to path read from
- *      /etc/default/login. Fixed BSDI login_getclass code for BSDI
- *      2.1.
- *
- * Revision 1.51  1998/05/11  18:51:07  kivinen
- *      Fixed AIX authstate code.
- *
- * Revision 1.50  1998/04/30 01:58:40  kivinen
- *      Fixed osflim handling so that now it allows setting resource
- *      to 0. Added -V option (for ssh version 2 compat mode). Added
- *      LIBWRAP code to also when in debugging mode. Added BSDI
- *      setusercontext code.
- *
- * Revision 1.49  1998/04/17 00:42:36  kivinen
- *      Freebsd login capabilities support. Added REMOTEUSER
- *      environment variable setting. Changed locked account checking
- *      so that it will not care if the account is locked if
- *      kerberos_or_local_password is not set. Added nologin-allow
- *      support. Added setting of AUTHSTATE and KRB5CCNAME enviroment
- *      variables if AIX authenticate() function is used.
- *
- * Revision 1.48  1998/03/27 17:05:01  kivinen
- *      Added SIGDANGER code. Fixed kerberos initialization code so
- *      ssh will check the error codes of initialization function.
- *      added ignore_root_rhosts code. Moved initgroups before closing
- *      all filedescriptors.
- *
- * Revision 1.47  1998/01/03 06:42:43  kivinen
- *      Added allow/deny groups option support.
- *
- * Revision 1.46  1998/01/02 06:39:36  kivinen
- *      Added new mail checking. Added expiration checkind for bsdi,
- *      and warning when password is about to expire. Fixed kerberos
- *      ticket name handling. Added support for XAuthLocation option.
- *      Added support for login capabilities for bsdi, only support
- *      ignorelogin option.
- *      Added osfc2 resource limit setting.
- *
- * Revision 1.45  1997/10/01 19:16:32  ylo
- *      Clarified error message about xauth not being in path.
- *
- * Revision 1.44  1997/05/08 03:06:51  kivinen
- *      Fixed sighup handling (added select before accept, changed
- *      execv to execvp so sshd is searched from path).
- *
- * Revision 1.43  1997/04/27 21:51:11  kivinen
- *      Added F-SECURE stuff. Added {Allow,Deny}Forwarding{To,Port}
- *      feature. Added {Allow,Deny}Users feature from Steve Kann
- *      <stevek@SteveK.COM>.
- *
- * Revision 1.42  1997/04/23 00:05:35  kivinen
- *      Added ifdefs around password expiration and inactivity checks,
- *      because some systems dont have sp_expire and sp_inact fields.
- *
- * Revision 1.41  1997/04/21 01:05:56  kivinen
- *      Added waitpid loop to main_sigchld_handler if we have it.
- *      Added check to pty_cleanup_proc so it will not cleanup pty
- *      twice.
- *      Changed argument to server_loop from ttyname to
- *      cleanup_context.
- *
- * Revision 1.40  1997/04/17 04:04:58  kivinen
- *      Removed extra variable err.
- *
- * Revision 1.39  1997/04/17 04:04:13  kivinen
- *      Added fatal: to all errors that cause sshd to exit.
- *      Added resetting of SIGCHLD before running libwrap code.
- *      Moved pty/pipe closing to server_loop. Added ttyname argument
- *      to server_loop.
- *      Server_loop will also now release the pty if it is allocated.
- *
- * Revision 1.38  1997/04/05 22:03:38  kivinen
- *      Added check that userfile_get_des_1_magic_phrase succeeded,
- *      before using the passphrase. Moved closing of pty after the
- *      pty_release.
- *
- * Revision 1.37  1997/04/05 17:28:31  ylo
- *      Added a workaround for the Windows SSH problem with X11
- *      forwarding.
- *
- * Revision 1.36  1997/03/27 05:59:50  kivinen
- *      Fixed bug in HAVE_USERSEC_H code.
- *
- * Revision 1.35  1997/03/27 03:12:22  kivinen
- *      Added kerberos patches from Glenn Machin.
- *      Added USELOGIN patches from Brian Cully.
- *
- * Revision 1.34  1997/03/26 05:32:42  kivinen
- *      Added idle_timeout variable.
- *      If debug_flag is given set rsa to verbose.
- *      Changed uid 0 to bee UID_ROOT.
- *
- * Revision 1.33  1997/03/25 05:48:29  kivinen
- *      Implemented SilentDeny and umask options. Added HAVE_DAEMON
- *      support.
- *      Moved LIBWRAP code to child.
- *      Moved closing of sockets/pipes out from server_loop.
- *
- * Revision 1.32  1997/03/19 23:04:43  kivinen
- *      Fixed typo.
- *
- * Revision 1.31  1997/03/19 21:17:57  kivinen
- *      Added some errno printing to all fatal calls.
- *      Added SSH_ORIGINAL_COMMAND environment variable setting. It
- *      will have the original command from the network when using
- *      forced command. It can be used to get arguments for forced
- *      command.
- *
- * Revision 1.30  1997/03/19 19:25:57  kivinen
- *      Added input buffer clearing for error conditions, so packet.c
- *      can check that buffer must be empty before new packet is read
- *      in.
- *
- * Revision 1.29  1997/03/19 17:53:17  kivinen
- *      Added more ETC_SHADOW support and SECURE_RPC, SECURE_NFS and
- *      NIS_PLUS support from Andy Polyakov <appro@fy.chalmers.se>.
- *      Added TIS authentication code from Andre April
- *      <Andre.April@cediti.be>.
- *      Moved authentication fail loop to do_authentication_fail_loop
- *      function. Added checks that username isn't longer than 255
- *      characters.
- *      Changed do_authentication to get cipher_type, so it can
- *      disable RhostsRsa authentication if using unsecure cipher
- *      (NONE, or ARCFOUR).
- *      Changed order of environment variables set to child, because
- *      digital unixes telnet dumps core if USER is the first
- *      environment variable set.
- *      Added code that will set all ip-address to xauth so it should
- *      work for multihosted machines too. Dont use xauth add
- *      host/unix:0 on crays, because it complains about it. Patch
- *      from Arne Henrik Juul <arnej@imf.unit.no>
- *
- * Revision 1.28  1996/11/24 08:26:15  kivinen
- *      Added SSHD_NO_{PORT,X11}_FORWARDING support.
- *
- * Revision 1.27  1996/11/04 06:35:01  ylo
- *      Updated processing of check_emulation output.
- *
- * Revision 1.26  1996/10/29 22:46:25  kivinen
- *      log -> log_msg. Added old agent emulation code (disable agent
- *      forwarding if the other end is too old).
- *
- * Revision 1.25  1996/10/23 15:59:13  ttsalo
- *       Changed BINDIR's name to SSH_BINDIR to prevent conflicts
- *
- * Revision 1.24  1996/10/21 16:35:23  ttsalo
- *       Removed some fd auth code
- *
- * Revision 1.23  1996/10/21 16:18:34  ttsalo
- *       Had to remove BINDIR from line 2518
- *
- * Revision 1.22  1996/10/20 16:19:36  ttsalo
- *      Added global variable 'original_real_uid' and it's initialization
- *
- * Revision 1.20  1996/09/27 17:19:16  ylo
- *      Merged ultrix patches from Corey Satten.
- *
- * Revision 1.19  1996/09/22 22:38:49  ylo
- *      Added endgrent() before closing all file descriptors.
- *
- * Revision 1.18  1996/09/08 17:40:31  ttsalo
- *      BSD4.4Lite's _PATH_DEFPATH is checked when defining DEFAULT_PATH.
- *      (Patch from Andrey A. Chernov <ache@lsd.relcom.eu.net>)
- *
- * Revision 1.17  1996/08/29 14:51:23  ttsalo
- *      Agent-socket directory handling implemented
- *
- * Revision 1.16  1996/08/22 22:16:24  ylo
- *      Log remote commands executed by root, and log the fact that a
- *      remote command was executed by an ordinary user, but not the
- *      actual command (for privacy reasons).
- *
- * Revision 1.15  1996/08/16 02:47:18  ylo
- *      Log root logins at LOG_NOTICE.
- *
- * Revision 1.14  1996/08/13 09:04:23  ttsalo
- *      Home directory, .ssh and .ssh/authorized_keys are now
- *      checked for wrong owner and group & world writeability.
- *
- * Revision 1.13  1996/08/13 00:23:31  ylo
- *      When doing X11 forwarding, check the existence of xauth and
- *      deny forwarding if it doesn't exist.  This makes copying
- *      binaries compiled on one system to other systems easier.
- *
- *      Run /etc/sshrc with /bin/sh instead of the user's shell.
- *
- * Revision 1.12  1996/07/29 04:58:54  ylo
- *      Add xauth data also for `hostname`/unix:$display as some X
- *      servers actually seem to use this version.  (Kludge to work
- *      around X11 bug.)
- *
- * Revision 1.11  1996/07/15 23:21:55  ylo
- *      Don't allow more than five password authentication attempts,
- *      and log attempts after the first one.
- *
- * Revision 1.10  1996/07/12 07:28:02  ttsalo
- *      Small ultrix patch
- *
- * Revision 1.9  1996/06/05 17:57:34  ylo
- *      If /etc/nologin exists, print that fact in plain text before
- *      printing the actual contents.  I am getting too many
- *      complaints about it.
- *
- * Revision 1.8  1996/06/03 19:25:49  ylo
- *      Fixed a typo.
- *
- * Revision 1.7  1996/05/29 07:41:46  ylo
- *      Added arguments to userfile_init.
- *
- * Revision 1.6  1996/05/29 07:16:38  ylo
- *      Disallow any user names that start with a '-' or '+' (or '@',
- *      just to be sure).  There is some indication that getpw* might
- *      returns such names on some systems with NIS.  Ouuuch!
- *
- * Revision 1.5  1996/05/28 16:41:14  ylo
- *      Merged Cray patches from Wayne Schroeder.
- *      Use setsid instead of setpgrp on ultrix.
- *
- * Revision 1.4  1996/04/26 00:22:51  ylo
- *      Improved error messages related to reading host key.
- *      Fixed ip addr in "Closing connection" message.
- *
- * Revision 1.3  1996/04/22 23:49:47  huima
- * Changed protocol version to 1.4, added calls to emulate module.
- *
- * Revision 1.2  1996/02/18  21:49:51  ylo
- *      Moved userfile_uninit to proper place.
- *      Use setluid if it exists (at least OSF/1).
- *
- * Revision 1.1.1.1  1996/02/18 21:38:13  ylo
- *      Imported ssh-1.2.13.
- *
- * Revision 1.31  1995/10/02  01:28:59  ylo
- *      Include sys/syslog.h if NEED_SYS_SYSLOG_H.
- *      Print proper ETCDIR in usage().
- *
- * Revision 1.30  1995/09/27  02:54:43  ylo
- *      Fixed a minor error.
- *
- * Revision 1.29  1995/09/27  02:49:06  ylo
- *      Fixed syntax errors.
- *
- * Revision 1.28  1995/09/27  02:18:51  ylo
- *      Added support for SCO unix.
- *      Added support for .hushlogin.
- *      Read $HOME/.environment.
- *      Pass X11 proto and cookie in stdin instead of command line.
- *      Added support for $HOME/.ssh/rc and /etc/sshrc.
- *
- * Revision 1.27  1995/09/25  00:03:53  ylo
- *      Added screen number.
- *      Don't display motd and login time if executing a command.
- *
- * Revision 1.26  1995/09/22  22:22:34  ylo
- *      Fixed a bug in the new environment code.
- *
- * Revision 1.25  1995/09/21  17:16:49  ylo
- *      Fixes to libwrap code.
- *      Fixed problem in wait() in key regeneration.  Now only
- *      ackquires light noise at regeneration.
- *      Support for ignore_rhosts.
- *      Don't use X11 forwarding with spoofing if no xauth.
- *      Rewrote the code to initialize the environment in the child.
- *      Added code to read /etc/environment into child environment.
- *      Fixed setpcred argument type.
- *
- * Revision 1.24  1995/09/11  17:35:53  ylo
- *      Added libwrap support.
- *      Log daemon name without path.
- *
- * Revision 1.23  1995/09/10  23:43:32  ylo
- *      Added a newline in xauth message.
- *
- * Revision 1.22  1995/09/10  23:29:43  ylo
- *      Renamed sigchld_handler main_sigchld_handler to avoid
- *      conflict.
- *
- * Revision 1.21  1995/09/10  23:26:53  ylo
- *      Child xauth line printed with fprintf instead of debug().
- *
- * Revision 1.20  1995/09/10  22:43:17  ylo
- *      Added uid-swapping stuff.
- *      Moved do_session to serverloop.c and renamed it server_loop.
- *      Changed SIGCHLD handling.
- *      Merged OSF/1 C2 security stuff.
- *
- * Revision 1.19  1995/09/09  21:26:47  ylo
- * /m/shadows/u2/users/ylo/ssh/README
- *
- * Revision 1.18  1995/09/06  19:53:19  ylo
- *      Fixed spelling of fascist.
- *
- * Revision 1.17  1995/09/06  16:02:40  ylo
- *      Added /usr/bin/X11 to default DEFAULT_PATH.
- *      Fixed inetd_flag & debug_flag together.
- *      Fixed -i.
- *
- * Revision 1.16  1995/08/31  09:43:14  ylo
- *      Fixed LOGNAME.
- *
- * Revision 1.15  1995/08/31  09:26:22  ylo
- *      Copy struct pw.
- *      Use socketpairs for communicating with the shell/command.
- *      Use same socket for stdin and stdout. (may help rdist)
- *      Put LOGNAME in environment.
- *      Run xauth directly, without the shell in between.
- *      Fixed the HPSUX kludge.
- *
- * Revision 1.14  1995/08/29  22:36:12  ylo
- *      Added SIGHUP handling.  Added SIGTERM and SIGQUIT handling.
- *      Permit root login if forced command.
- *      Added DenyHosts, AllowHosts.  Added PrintMotd.
- *      New file descriptor code.
- *      Use HPSUX and SIGCHLD kludges only on HPUX.
- *
- * Revision 1.13  1995/08/22  14:06:11  ylo
- *      Added /usr/local/bin in default DEFAULT_PATH.
- *
- * Revision 1.12  1995/08/21  23:33:48  ylo
- *      Added "-f conffile" option.
- *      Added support for the server configuration file.
- *      Added allow/deny host code.
- *      Added code to optionally deny root logins.
- *      Added code to configure allowed authentication methods.
- *      Changes to log initialization arguments.
- *      Eliminated NO_RHOSTS_AUTHENTICATION.
- *
- * Revision 1.11  1995/08/18  22:58:06  ylo
- *      Added support for O_NONBLOCK_BROKEN.
- *      Added support for TTY_GROUP.
- *
- * Revision 1.10  1995/07/27  02:19:09  ylo
- *      Tell packet_set_encryption_key that we are the server.
- *
- *      Temporary kludge to make TCP/IP port forwarding work
- *      properly.  This kludge will increase idle CPU usage because
- *      sshd wakes up every 300ms.
- *
- * Revision 1.9  1995/07/27  00:41:34  ylo
- *      If DEFAULT_PATH defined by configure, use that value.
- *
- * Revision 1.8  1995/07/26  23:21:06  ylo
- *      Removed include version.h.  Added include mpaux.h.
- *
- *      Print software version with -d.
- *
- *      Added support for protocol version 1.1.  Fixes minor security
- *      problems, and updates the protocol to match the draft RFC.
- *      Compatibility code makes it possible to use old clients with
- *      this server.
- *
- * Revision 1.7  1995/07/16  01:01:41  ylo
- *      Removed hostname argument from record_logout.
- *      Added call to pty_release.
- *      Set tty mode depending on whether we have tty group.
- *
- * Revision 1.6  1995/07/15  22:27:04  ylo
- *      Added printing of /etc/motd.
- *
- * Revision 1.5  1995/07/15  21:41:04  ylo
- *      Changed the HPSUX kludge (child_has_terminated).  It caused
- *      sshd to busy-loop if the program exited but there were open
- *      connections.
- *
- * Revision 1.4  1995/07/14  23:37:43  ylo
- *      Limit outgoing packet size to 512 bytes for interactive
- *      connections.
- *
- * Revision 1.3  1995/07/13  17:33:17  ylo
- *      Only record the pid in /etc/sshd_pid if running without the
- *      debugging flag.
- *
- * Revision 1.2  1995/07/13  01:40:47  ylo
- *      Removed "Last modified" header.
- *      Added cvs log.
- *
- * $Endlog$
- */
 #include "includes.h"
 #include "bbs.h"
 #include "ssh_funcs.h"
@@ -766,6 +278,7 @@ int main(int ac, char **av)
 #endif
     char buf[100];              /* Must not be larger than remote_version. */
     char remote_version[100];   /* Must be at least as big as buf. */
+    char addr[STRLEN];
     char *comment;
     char *ssh_remote_version_string = NULL;
     FILE *f;
@@ -791,9 +304,10 @@ int main(int ac, char **av)
 
     /* Initialize configuration options to their default values. */
     initialize_server_options(&options);
+    addr[0]=0;
 
     /* Parse command-line arguments. */
-    while ((opt = getopt(ac, av, "f:p:b:k:h:g:diqV:")) != EOF) {
+    while ((opt = getopt(ac, av, "f:s:p:b:k:h:g:diqV:")) != EOF) {
         switch (opt) {
         case 'f':
             config_file_name = optarg;
@@ -810,8 +324,13 @@ int main(int ac, char **av)
         case 'b':
             options.server_key_bits = atoi(optarg);
             break;
+        case 's':
+            if(optarg[0])
+                snprintf(addr,STRLEN,"%s",optarg);
+            break;
         case 'p':
-            options.port = atoi(optarg);
+            if(isdigit(optarg[0]))
+                options.port=atoi(optarg);
             break;
         case 'g':
             options.login_grace_time = atoi(optarg);
@@ -837,6 +356,7 @@ int main(int ac, char **av)
             fprintf(stderr, "  -d         Debugging mode\n");
             fprintf(stderr, "  -i         Started from inetd\n");
             fprintf(stderr, "  -q         Quiet (no logging)\n");
+            fprintf(stderr, "  -s addr    Bind to the specified address (default: all)\n");
             fprintf(stderr, "  -p port    Listen on the specified port (default: 22)\n");
             fprintf(stderr, "  -k seconds Regenerate server key every this many seconds (default: 3600)\n");
             fprintf(stderr, "  -g seconds Grace period for authentication (default: 300)\n");
@@ -1002,11 +522,13 @@ int main(int ac, char **av)
         memset(&sin, 0, sizeof(sin));
 #ifdef HAVE_IPV6_SMTH
         sin.sin6_family = AF_INET6;
-        /* sin.sin6_addr = options.listen_addr; // zero for any :P */
+        if ( inet_pton(AF_INET6, addr, &(sin.sin6_addr)) <= 0 )
+            sin.sin6_addr = in6addr_any;
         sin.sin6_port = htons(options.port);
 #else
         sin.sin_family = AF_INET;
-        sin.sin_addr = options.listen_addr;
+        if ( inet_pton(AF_INET, addr, &(sin.sin_addr)) <= 0 )
+            sin.sin_addr.s_addr = htonl(INADDR_ANY);
         sin.sin_port = htons(options.port);
 #endif
         /* Bind the socket to the desired port. */
@@ -1068,7 +590,10 @@ int main(int ac, char **av)
 
 
         if(!debug_flag){
-            sprintf(buf,"var/sshbbsd.%d.pid",options.port);
+            if(!addr[0])
+                sprintf(buf,"var/sshbbsd.%d.pid",options.port);
+            else
+                sprintf(buf,"var/sshbbsd.%d_%s.pid",options.port,addr);
             if((f=fopen(buf,"w"))){
                 fprintf(f,"%d\n",(int)getpid());
                 fclose(f);
