@@ -14,53 +14,55 @@
 #include <rpcsvc/rstat.h>
 #endif /* LOAD_LIMIT && AIX */
 
-#define SOCKFD                      3           /* listen sock file descriptor, should be set to 3 for consistent ! */
-#define MAX_PENDING_CONNECTIONS     50
-#define MAXLIST                     1000
-#define CON_THRESHOLD               (5.0/18)    /* (1000.0/3600) */
-#define CON_THRESHOLD2              1.0
+#define SOCKFD                          3           /* listen sock file descriptor, should be set to 3 for consistent ! */
+#define MAX_PENDING_CONNECTIONS         50
+#define MAXLIST                         1000
+#define CON_THRESHOLD                   (5.0/18)    /* (1000.0/3600) */
+#define CON_THRESHOLD2                  1.0
 
 #ifdef HAVE_IPV6_SMTH
-#define KBS_SIN_M(sin,member)       sin.sin6_##member
-#define KBS_GET_SIN_FAMILY          (AF_INET6)
-#define KBS_SET_SIN_FAMILY(sin)     do{sin.sin6_family=KBS_GET_SIN_FAMILY;}while(0)
-#define KBS_GET_SIN_ADDR            (in6addr_any)
-#define KBS_SET_SIN_ADDR(sin)       do{sin.sin6_addr=KBS_GET_SIN_ADDR;}while(0)
-#define KBS_SET_SIN_PORT(sin,port)  do{sin.sin6_port=htons(port);}while(0)
+#define KBS_SIN_MEMBER(_sin,_member)    _sin.sin6_##_member
+#define KBS_SIN_FAMILY                  AF_INET6
+#define KBS_SIN_ADDR_DEFAULT            in6addr_any
 struct ip_struct{           /* size on 32-bit / 64-bit machine */
     struct in6_addr ip;     /*           16       16           */
     time_t first;           /*            4        8           */
     time_t last;            /*            4        8           */
     int t;                  /*            4        4           */
 };                          /*           28       36   bytes   */
-typedef struct sockaddr_in6 KBS_SOCKADDR_IN;
+typedef struct sockaddr_in6             KBS_SOCKADDR_IN;
+typedef struct in6_addr                 KBS_IN_ADDR;
 #ifdef LEGACY_IPV4_DISPLAY
-#define KBS_SET_FROMHOST(sin,from)  (!ISV4ADDR(sin.sin6_addr)?\
-    inet_ntop(AF_INET6,&sin.sin6_addr,from,IPLEN):\
-    inet_ntop(AF_INET,&sin.sin6_addr.s6_addr[12],from,IPLEN)\
+#define KBS_SET_FROMHOST(_sin,_from)                                            \
+    (                                                                           \
+        !ISV4ADDR(KBS_SIN_MEMBER(_sin,addr))?                                   \
+        inet_ntop(AF_INET6,&KBS_SIN_MEMBER(_sin,addr),_from,IPLEN):             \
+        inet_ntop(AF_INET,&KBS_SIN_MEMBER(_sin,addr).s6_addr[12],_from,IPLEN)   \
     )
-#else /* ! LEGACY_IPV4_DISPLAY */
-#define KBS_SET_FROMHOST(sin,from)  inet_ntop(AF_INET6,&sin.sin6_addr,from,IPLEN)
 #endif /* LEGACY_IPV4_DISPLAY */
 #else /* ! HAVE_IPV6_SMTH */
-#define KBS_SIN_M(sin,member)       sin.sin_##member
-#define KBS_GET_SIN_FAMILY          (AF_INET)
-#define KBS_SET_SIN_FAMILY(sin)     do{sin.sin_family=KBS_GET_SIN_FAMILY;}while(0)
-#define KBS_GET_SIN_ADDR            (htonl(INADDR_ANY))
-#define KBS_SET_SIN_ADDR(sin)       do{sin.sin_addr.s_addr=KBS_GET_SIN_ADDR;}while(0)
-#define KBS_SET_SIN_PORT(sin,port)  do{sin.sin_port=htons(port);}while(0)
+#define KBS_SIN_MEMBER(_sin,_member)    _sin.sin_##_member
+#define KBS_SIN_FAMILY                  AF_INET
+#define KBS_SIN_ADDR_DEFAULT            inaddr_any
 struct ip_struct{           /* size on 32-bit / 64-bit machine */
     unsigned char ip[4];    /*            4        4           */
     int t;                  /*            4        4           */
     time_t first;           /*            4        8           */
     time_t last;            /*            4        8           */
 };                          /*           16       24   bytes   */
-typedef struct sockaddr_in KBS_SOCKADDR_IN;
-#define KBS_SET_FROMHOST(sin,from)  inet_ntop(AF_INET,&sin.sin_addr,from,IPLEN)
+typedef struct sockaddr_in              KBS_SOCKADDR_IN;
+typedef struct in_addr                  KBS_IN_ADDR;
 #endif /* HAVE_IPV6_SMTH */
 
+#define KBS_SET_SIN_FAMILY(_sin)        do{KBS_SIN_MEMBER(_sin,family)=KBS_SIN_FAMILY;}while(0)
+#define KBS_SET_SIN_PORT(_sin,_port)    do{KBS_SIN_MEMBER(_sin,port)=htons(_port);}while(0)
+#define KBS_SET_SIN_ADDR(_sin,_addr)    do{KBS_SIN_MEMBER(_sin,addr)=_addr;}while(0)
+#ifndef KBS_SET_FROMHOST
+#define KBS_SET_FROMHOST(_sin,_from)    inet_ntop(KBS_SIN_FAMILY,&KBS_SIN_MEMBER(_sin,addr),_from,IPLEN)
+#endif /* KBS_SET_FROMHOST */
+
 #ifndef SSHBBS
-#define KBS_WRITE(fd,ptr,len)       write(fd,ptr,len)
+#define KBS_WRITE(_fd,_ptr,_len)        write(_fd,_ptr,_len)
 static const unsigned char cmd[]={
     IAC,DO,TELOPT_TTYPE,                        /* cmd 0 size = 3  */
     IAC,SB,TELOPT_TTYPE,TELQUAL_SEND,IAC,SE,    /* cmd 1 size = 6  */
@@ -70,6 +72,9 @@ static const unsigned char cmd[]={
     IAC,DO,TELOPT_NAWS,                         /* cmd 5 size = 3  */
     IAC,DO,TELOPT_BINARY                        /* cmd 6 size = 3  */
 };                                              /* total size = 24 */
+#ifndef HAVE_IPV6_SMTH                                                                                                                     
+static struct in_addr inaddr_any;
+#endif /* HAVE_IPV6_SMTH */
 static int mport;
 static int no_fork;
 static int server_pid;
@@ -77,7 +82,7 @@ const select_func x_select=select;
 const read_func x_read=read;
 #else /* SSHBBS */
 #include "ssh_funcs.h"
-#define KBS_WRITE(fd,ptr,len)       ssh_write(fd,ptr,len)
+#define KBS_WRITE(_fd,_ptr,_len)        ssh_write(_fd,_ptr,_len)
 extern char **saved_argv;
 static int ssh_exiting;
 const select_func x_select=ssh_select;
@@ -208,7 +213,7 @@ static void getremotehost(char *host,size_t len){
     if(!setjmp(byebye)){
         signal(SIGALRM,dns_query_timeout);
         alarm(5);
-        hp=gethostbyaddr(&(KBS_SIN_M(sin,addr)),sizeof(KBS_SIN_M(sin,addr)),KBS_SIN_M(sin,family));
+        hp=gethostbyaddr(&(KBS_SIN_MEMBER(sin,addr)),sizeof(KBS_SIN_MEMBER(sin,addr)),KBS_SIN_MEMBER(sin,family));
         alarm(0);
     }
     if(hp
@@ -497,10 +502,11 @@ static int telnet_init(void){
     send(0,&cmd[21],3*sizeof(unsigned char),0);
     return 0;
 }
-static int start_daemon(int inetd,int port){
+static int start_daemon(int inetd,int port,const char *addr){
     static const int optval=1;
     KBS_SOCKADDR_IN sin;
-    char buf[128];
+    KBS_IN_ADDR inaddr;
+    char pid_file_name[PATHLEN],pid_string[16];
     int sockfd,fd,maxfd;
     if(chdir(BBSHOME)==-1)
         exit(3);
@@ -513,7 +519,6 @@ static int start_daemon(int inetd,int port){
             close(fd);
     }
     else{
-        sprintf(buf,"var/bbsd.%d.pid",port);
         if(!no_fork){
             switch(fork()){
                 case -1:
@@ -533,7 +538,17 @@ static int start_daemon(int inetd,int port){
                     exit(0);
             }
         }
-        if((fd=open(buf,O_RDWR|O_CREAT|O_TRUNC,0660))==-1)
+        KBS_SET_SIN_FAMILY(sin);
+        if(!addr||!(inet_pton(KBS_SIN_FAMILY,addr,&inaddr)>0)){
+            KBS_SET_SIN_ADDR(sin,KBS_SIN_ADDR_DEFAULT);
+            snprintf(pid_file_name,PATHLEN,"var/bbsd.%d.pid",port);
+        }
+        else{
+            KBS_SET_SIN_ADDR(sin,inaddr);
+            snprintf(pid_file_name,PATHLEN,"var/bbsd.%d_%s.pid",port,addr);
+        }
+        KBS_SET_SIN_PORT(sin,port);
+        if((fd=open(pid_file_name,O_RDWR|O_CREAT|O_TRUNC,0660))==-1)
             exit(2);
         if(fd!=4){
             if(dup2(fd,4)==-1)  /* file descriptor 4 statically means the opened pid file with exclusive lock ! */
@@ -547,7 +562,7 @@ static int start_daemon(int inetd,int port){
                     fprintf(stderr,"BBS daemon on port <%d> had already been started!\n",port);
                     break;
                 default:
-                    fprintf(stderr,"Could not get exclusive lock on pid file: %s/%s\n",BBSHOME,buf);
+                    fprintf(stderr,"Could not get exclusive lock on pid file: %s/%s\n",BBSHOME,pid_file_name);
                     break;
             }
             exit(0);
@@ -560,28 +575,27 @@ static int start_daemon(int inetd,int port){
         close(0);close(1);close(2);close(3);
         for(fd=5;fd<maxfd;fd++)
             close(fd);
+#define SD_EXIT(_status) do{unlink(pid_file_name);exit(_status);}while(0)
         if((fd=open("/dev/null",O_RDWR,0660))==-1||dup2(fd,0)==-1||dup2(fd,1)==-1||dup2(fd,2)==-1)
-            exit(2);    /* file descriptor 0 and 1 and 2 statically means the opened character file /dev/null ! */
+            SD_EXIT(2);    /* file descriptor 0 and 1 and 2 statically means the opened character file /dev/null ! */
         if(fd>4)
             close(fd);
-        sprintf(buf,"%d\n",(server_pid=getpid()));
-        write(4,buf,strlen(buf));
-        KBS_SET_SIN_FAMILY(sin);
-        KBS_SET_SIN_ADDR(sin);
-        KBS_SET_SIN_PORT(sin,port);
-        if((sockfd=socket(KBS_GET_SIN_FAMILY,SOCK_STREAM,IPPROTO_TCP))==-1)
-            exit(1);
+        snprintf(pid_string,sizeof(pid_string),"%d\n",(server_pid=getpid()));
+        write(4,pid_string,strlen(pid_string));
+        if((sockfd=socket(KBS_SIN_FAMILY,SOCK_STREAM,IPPROTO_TCP))==-1)
+            SD_EXIT(1);
         if(sockfd!=SOCKFD){
             if(dup2(sockfd,SOCKFD)==-1)
-                exit(2);
+                SD_EXIT(2);
             close(sockfd);
         }
         if(setsockopt(SOCKFD,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof(const int))==-1)
-            exit(1);
+            SD_EXIT(1);
         if(bind(SOCKFD,(struct sockaddr*)&sin,sizeof(KBS_SOCKADDR_IN))==-1)
-            exit(1);
+            SD_EXIT(1);
         if(listen(SOCKFD,MAX_PENDING_CONNECTIONS)==-1)
-            exit(1);
+            SD_EXIT(1);
+#undef SD_EXIT
     }
     setuid(BBSUID);
     setgid(BBSGID);
@@ -643,7 +657,7 @@ static int bbs_standalone_main(char* argv){
             }
         }
         KBS_SET_FROMHOST(sin,addr_buf);
-        bbslog("0Connect","connect from %d (%d) in port %d",addr_buf,htons(KBS_SIN_M(sin,port)),mport);
+        bbslog("0Connect","connect from %d (%d) in port %d",addr_buf,htons(KBS_SIN_MEMBER(sin,port)),mport);
         setsid();
         if(dup2(sockfd,0)==-1)      /* dup tcp link to fd 0 and then in the main_bbs func also to fd 1 */
             exit(2);
@@ -657,9 +671,10 @@ static int bbs_standalone_main(char* argv){
     return bbs_main(argv);
 }
 int main(int argc,char **argv){
+    char addr[STRLEN];
     int ret,inetd,port;
-    inetd=0;port=23;
-    while((ret=getopt(argc,argv,"idhp:"))!=-1){
+    addr[0]=0;inetd=0;port=23;
+    while((ret=getopt(argc,argv,"idhs:p:"))!=-1){
         switch(ret){
             case 'i':
                 inetd=1;
@@ -668,8 +683,12 @@ int main(int argc,char **argv){
                 no_fork=1;
                 break;
             case 'h':
-                puts("usage: bbsd [-i] [-d] [-h] [-p <port>]");
+                puts("usage: bbsd [-i] [-d] [-h] [-s <addr>] [-p <port>]");
                 return 0;
+            case 's':
+                if(optarg[0])
+                    snprintf(addr,STRLEN,"%s",optarg);
+                break;
             case 'p':
                 if(!isdigit(optarg[0]))
                     return -1;
@@ -679,7 +698,10 @@ int main(int argc,char **argv){
                 return -1;
         }
     }
-    start_daemon(inetd,port);
+#ifndef HAVE_IPV6_SMTH
+    inaddr_any.s_addr=htonl(INADDR_ANY);
+#endif /* HAVE_IPV6_SMTH */
+    start_daemon(inetd,port,(!addr[0]?NULL:addr));
     main_signals();
     return (!inetd?bbs_standalone_main(argv[0]):bbs_inet_main(argv[0]));
 }
