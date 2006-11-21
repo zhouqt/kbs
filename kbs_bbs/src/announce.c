@@ -1489,13 +1489,13 @@ void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
  	if(dashd(path))
  	{
  	    strcpy(phpname, "bbs0an.php");
- 
+#if 0 // orz pig2532 started on 20061121 
  	    /* 如果bbs0an.php支持数字串方式的精华区路径，则下面一段可删除 */
  	    snprintf(buf, buf_len, "http://%s/bbs0an.php?path=%s",
  	        get_my_webdomain(0), path+10);
  	    return;
  	    /* 以上 */
- 	    
+#endif
  	}
  	else
  	    strcpy(phpname, "bbsanc.php");
