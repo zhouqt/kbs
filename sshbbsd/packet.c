@@ -210,13 +210,6 @@ void packet_decrypt(CipherContext * cc, void *dest, void *src, unsigned int byte
     int i;
 
     assert((bytes % 8) == 0);
-
-    /* $Id$
-     * Cryptographic attack detector for ssh - Modifications for packet.c 
-     * (C)1998 CORE-SDI, Buenos Aires Argentina
-     * Ariel Futoransky(futo@core-sdi.com)
-     */
-
     switch (cc->type) {
 #ifndef WITHOUT_IDEA
     case SSH_CIPHER_IDEA:
