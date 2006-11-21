@@ -11,59 +11,6 @@ Created: Wed Apr 19 16:50:42 1995 ylo
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:41  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:46  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:08  bbsdev
- * bbs sshd
- *
- * Revision 1.9  1998/04/30 01:51:26  kivinen
- * 	Reserved cipher number 7 to Bernard Perrot
- * 	<perrot@lal.in2p3.fr> for some weak 40 bit encryption method.
- *
- * Revision 1.8  1998/03/27 17:24:03  kivinen
- * 	Removed TSS.
- *
- * Revision 1.7  1997/03/26 07:11:22  kivinen
- * 	Fixed prototypes.
- *
- * Revision 1.6  1997/03/19 22:26:24  kivinen
- * 	Removed WITH_3DES ifdefs, as it is mandatory.
- *
- * Revision 1.5  1997/03/19 17:35:09  kivinen
- * 	Made all ciphers optional.
- *
- * Revision 1.4  1996/09/28 12:01:15  ylo
- * 	Removed TSS (put inside #ifdef WITH_TSS).
- *
- * Revision 1.3  1996/09/27 13:55:03  ttsalo
- * 	Added blowfish
- *
- * Revision 1.2  1996/02/18 21:52:35  ylo
- * 	Added comments that len must be multiple of 8.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.3  1995/08/18  22:48:27  ylo
- * 	Made IDEA optional.
- *
- * Revision 1.2  1995/07/13  01:19:52  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #ifndef CIPHER_H
 #define CIPHER_H
 

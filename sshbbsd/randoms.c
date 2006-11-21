@@ -13,61 +13,6 @@ Cryptographically strong random number generation.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.5  2006/11/16 18:19:36  etnlegend
- * warning... PS: 这地方 typedef 真乱...
- *
- * Revision 1.4  2003/12/26 13:20:10  stiger
- * 除了config.h中的部分redefined外没有其他warning了
- *
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:48  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:11  bbsdev
- * bbs sshd
- *
- * Revision 1.4  1998/05/23 20:23:13  kivinen
- * 	Changed uint32 to word32.
- *
- * Revision 1.3  1998/04/17  00:39:38  kivinen
- * 	Removed sys/resource.h including (it is already included in
- * 	the includes.h).
- *
- * Revision 1.2  1997/03/26 05:35:54  kivinen
- * 	Added HAVE_NO_TZ_IN_GETTIMEOFDAY support.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.6  1995/10/02  01:25:24  ylo
- * 	Added a cast to avoid compiler warning; also minor change in
- * 	noise collection.
- *
- * Revision 1.5  1995/09/21  17:12:23  ylo
- * 	Don't use the second argument of gettimeofday.
- *
- * Revision 1.4  1995/09/13  11:59:07  ylo
- * 	Large modifications to make this work on machines without 32
- * 	bit integer type (Cray).
- *
- * Revision 1.3  1995/08/29  22:22:50  ylo
- * 	Removed extra '&'.
- *
- * Revision 1.2  1995/07/13  01:29:20  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include "randoms.h"
 #include "getput.h"

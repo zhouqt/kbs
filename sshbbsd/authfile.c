@@ -14,46 +14,6 @@ for reading the passphrase from the user.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:40  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:44  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:07  bbsdev
- * bbs sshd
- *
- * Revision 1.2  1997/03/19 22:18:27  kivinen
- * 	Removed check that SSH_CIPHER_NONE is in cipher_mask because
- * 	it is always internally supported, even if not in cipher_mask.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.6  1995/10/02  01:19:48  ylo
- * 	Added some casts to avoid compiler warnings.
- *
- * Revision 1.5  1995/09/09  21:26:39  ylo
- * /m/shadows/u2/users/ylo/ssh/README
- *
- * Revision 1.4  1995/08/21  23:21:56  ylo
- * 	Don't complain about bad passphrase if passphrase was empty.
- *
- * Revision 1.3  1995/07/13  01:16:38  ylo
- * 	Removed "Last modified" header.
- *
- * Revision 1.2  1995/07/13  01:11:52  ylo
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include <gmp.h>
 #include "xmalloc.h"

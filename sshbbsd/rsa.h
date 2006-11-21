@@ -13,40 +13,6 @@ RSA key generation, encryption and decryption.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:48  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:11  bbsdev
- * bbs sshd
- *
- * Revision 1.3  1997/03/26 07:11:51  kivinen
- * 	Fixed prototypes.
- *
- * Revision 1.2  1996/02/19 16:09:38  huima
- * 	Comments fixed.
- *
- * Revision 1.1.1.1  1996/02/18  21:38:10  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.3  1995/07/13  01:33:11  ylo
- * 	Fixed comments and label used to protect again multiple inclusion.
- *
- * Revision 1.2  1995/07/13  01:31:43  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #ifndef RSA_H
 #define RSA_H
 

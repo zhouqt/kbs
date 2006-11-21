@@ -24,7 +24,6 @@
 #define EXTERN
 
 #include "bbs.h"
-#include <sys/param.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>

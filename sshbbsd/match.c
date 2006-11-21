@@ -13,49 +13,6 @@ Simple pattern matching, with '*' and '?' as wildcards.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:42  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:47  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:10  bbsdev
- * bbs sshd
- *
- * Revision 1.7  1998/07/08 01:08:02  kivinen
- * 	Added more conts, fixed typo.
- *
- * Revision 1.6  1998/07/08 01:05:11  kivinen
- * 	Added consts.
- *
- * Revision 1.5  1998/07/08 00:44:44  kivinen
- * 	Added match_host. Changed match_user to use it.
- *
- * Revision 1.4  1998/06/11 00:07:36  kivinen
- * 	Added match_user function.
- *
- * Revision 1.3  1997/04/27  22:19:35  kivinen
- * 	Fixed typo.
- *
- * Revision 1.2  1997/04/27 21:52:05  kivinen
- * 	Added F-SECURE stuff. Added match_port function.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:12  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.2  1995/07/13  01:27:07  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include "ssh.h"
 #include "xmalloc.h"

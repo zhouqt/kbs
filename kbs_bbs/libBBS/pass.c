@@ -22,7 +22,6 @@
 */
 
 #include "bbs.h"
-#include <sys/param.h>
 #include <sys/resource.h>
 #include "md5.h"
 /*

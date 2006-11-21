@@ -19,34 +19,6 @@ following patents: PCT/CH91/00117, EP 0 482 154 B1, US Pat. 5,214,703.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:42  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:47  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:10  bbsdev
- * bbs sshd
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.3  1995/09/13  11:55:48  ylo
- * 	Minor changes to make it work on Cray.
- *
- * Revision 1.2  1995/07/13  01:24:44  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include "getput.h"
 #include "idea.h"

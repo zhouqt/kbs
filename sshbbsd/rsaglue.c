@@ -17,52 +17,6 @@ using the --with-rsaref configure option.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:48  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:11  bbsdev
- * bbs sshd
- *
- * Revision 1.5  1997/03/19 21:29:59  kivinen
- * 	Added missing &.
- *
- * Revision 1.4  1997/03/19 21:14:08  kivinen
- * 	Added checks that public key exponent cannot be less than 3.
- *
- * Revision 1.3  1996/07/31 07:02:32  huima
- * *** empty log message ***
- *
- * Revision 1.2  1996/07/07 12:48:14  ylo
- * 	A fixed size buffer was used to store decrypted value without
- * 	checking bounds, which could cause stack to be overwritten
- * 	with very large keys.  Changed to use xmallocated buffer.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:12  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.4  1995/07/26  23:29:34  ylo
- * 	Display a fatal error if key size > 1024 with RSAREF.
- *
- * Revision 1.3  1995/07/26  17:08:59  ylo
- * 	Changed to use new functions in mpaux.c for
- * 	linearizing/unlinearizing mp-ints.
- *
- * Revision 1.2  1995/07/13  01:33:27  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include <gmp.h>
 #include "ssh.h"

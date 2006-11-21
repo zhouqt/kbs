@@ -13,34 +13,6 @@ Cryptographically strong random number generator.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:48  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:11  bbsdev
- * bbs sshd
- *
- * Revision 1.1.1.1  1996/02/18 21:38:10  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.3  1995/09/13  12:00:02  ylo
- * 	Changes to make this work on Cray.
- *
- * Revision 1.2  1995/07/13  01:29:28  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #ifndef RANDOM_H
 #define RANDOM_H
 

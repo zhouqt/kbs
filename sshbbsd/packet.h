@@ -13,57 +13,6 @@ Interface for the packet protocol functions.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:42  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:47  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:11  bbsdev
- * bbs sshd
- *
- * Revision 1.7  1998/08/04 00:04:57  kivinen
- * 	Removed socks.h.
- *
- * Revision 1.6  1998/03/27  16:59:16  kivinen
- * 	Added socks.h include.
- *
- * Revision 1.5  1997/04/05 17:29:14  ylo
- * 	Added packet_get_len (returns the remaining length of incoming
- * 	packet).
- *
- * Revision 1.4  1997/03/26 07:11:41  kivinen
- * 	Fixed prototypes.
- *
- * Revision 1.3  1997/03/19 19:26:16  kivinen
- * 	Added packet_get_all prototype.
- *
- * Revision 1.2  1996/11/24 08:24:14  kivinen
- * 	Fixed the comment of packet_send_debug.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:10  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.4  1995/09/24  23:59:20  ylo
- * 	Added packet_get_protocol_flags.
- *
- * Revision 1.3  1995/07/27  02:17:53  ylo
- * 	Pass as argument to packet_set_encryption_key whether running
- * 	as the client or the server.
- *
- * Revision 1.2  1995/07/13  01:27:54  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #ifndef PACKET_H
 #define PACKET_H
 

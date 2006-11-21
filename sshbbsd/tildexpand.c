@@ -11,39 +11,6 @@ Created: Wed Jul 12 01:07:36 1995 ylo
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:44  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:49  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:13  bbsdev
- * bbs sshd
- *
- * Revision 1.3  1999/02/22 08:14:14  tri
- * 	Final fixes for 1.2.27.
- *
- * Revision 1.2  1999/02/21 19:52:59  ylo
- *      Intermediate commit of ssh1.2.27 stuff.
- *      Main change is sprintf -> snprintf; however, there are also
- *      many other changes.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:12  ylo
- *      Imported ssh-1.2.13.
- *
- * Revision 1.2  1995/07/13  01:41:03  ylo
- *      Removed "Last modified" header.
- *      Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include "xmalloc.h"
 #include "ssh.h"

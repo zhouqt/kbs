@@ -573,25 +573,71 @@ int main(int argc, char **argv)
 #endif
     int on, alen, len, i, n;
     char *str;
-    int portnum = POP3PORT;
     int childpid;
+    FILE *fp;
+    char addr[STRLEN],pid_file_name[PATHLEN],*p;
+    int opt,pop3_port,pop3s_port,port;
 
+    opterr=0;addr[0]=0;pop3_port=POP3PORT;pop3s_port=POP3SPORT;
+    while((opt=getopt(argc,argv,"s:p:"))!=-1){
+        switch(opt){
+            case 's':
+                if(optarg[0])
+                    snprintf(addr,STRLEN,"%s",optarg);
+                break;
+            case 'p':
+                if(isdigit(optarg[0])){
+                    pop3_port=atoi(optarg);
+                    if((p=strchr(optarg,','))&&isdigit(p[1]))
+                        pop3s_port=atoi(&p[1]);
+                }
+                break;
+            default:
+                fprintf(stderr,"%s\n","newpop3d [-s <addr>] [-p <pop3_port>[,<pop3s_port>]]");
+                exit(1);
+        }
+    }
 
-    if (2 == argc)
-        portnum = atoi(argv[1]);
-
-    if (0 == portnum)
-        portnum = POP3PORT;
 #ifndef DEBUG
     if (fork())
         exit(0);
-#endif
+#endif /* DEBUG */
+
+    port=pop3_port;
+    use_ssl=0;
+
+#ifdef USE_SSL
+    switch(fork()){
+        case 0:
+            init_ssl();
+            port=pop3s_port;
+            use_ssl=1;
+            break;
+        case -1:
+            exit(1);
+            break;
+        default:
+            break;
+    }
+#endif /* USE_SSL */
+
 #ifndef CYGWIN
-    for (n = 0; n < 10; n++)
+
+#ifdef NOFILE
+        n=(!(NOFILE+0)?(256):(NOFILE));
+#else /* ! NOFILE */
+        n=256;
+#endif /* NOFILE */
+
+    do{
         close(n);
-    open("/dev/null", O_RDONLY);
-    dup2(0, 1);
-    dup2(0, 2);
+    }
+    while(--n>2);
+
+    freopen("/dev/null","r",stdin);
+    freopen("/dev/null","w",stdout);
+    freopen("/dev/null","w",stderr);
+
 #ifdef TIOCNOTTY
     /* Certain platform (e.g. Interix) does not define TIOCNOTTY */
     if ((n = open("/dev/tty", O_RDWR)) > 0) {
@@ -604,21 +650,7 @@ int main(int argc, char **argv)
 	while (n > 3)
 			close(--n);
 #endif
-#ifdef USE_SSL
-    switch (fork()) {
-    case 0:
-        init_ssl();
-        portnum = POP3SPORT;
-        use_ssl = 1;
-        break;
-    case -1:
-        exit(-1);
-        break;
-    default:
-        use_ssl = 0;
-        break;
-    }
-#endif
+
 #ifdef HAVE_IPV6_SMTH
     if ((msock = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
         exit(1);
@@ -626,8 +658,9 @@ int main(int argc, char **argv)
     setsockopt(msock, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on));
     bzero((char *) &fsin, sizeof(fsin));
     fsin.sin6_family = AF_INET6;
-/*    fsin.sin6_addr.s_addr = htonl(INADDR_ANY); //all zeroz might be ok */
-    fsin.sin6_port = htons(portnum);
+    if(inet_pton(AF_INET6, addr, &(fsin.sin6_addr)) <= 0)
+        fsin.sin6_addr = in6addr_any;
+    fsin.sin6_port = htons(port);
 #else
     if ((msock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         exit(1);
@@ -635,8 +668,9 @@ int main(int argc, char **argv)
     setsockopt(msock, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on));
     bzero((char *) &fsin, sizeof(fsin));
     fsin.sin_family = AF_INET;
-    fsin.sin_addr.s_addr = htonl(INADDR_ANY);
-    fsin.sin_port = htons(portnum);
+    if(inet_pton(AF_INET, addr, &(fsin.sin_addr)) <= 0)
+        fsin.sin_addr.s_addr = htonl(INADDR_ANY);
+    fsin.sin_port = htons(port);
 #endif
 
     if (bind(msock, (struct sockaddr *) &fsin, sizeof(fsin)) < 0) {
@@ -648,7 +682,18 @@ int main(int argc, char **argv)
     signal(SIGINT, dokill);
     signal(SIGTERM, dokill);
 
-    listen(msock, QLEN);
+    if(listen(msock, QLEN)==-1)
+        exit(1);
+
+    if(!addr[0])
+        snprintf(pid_file_name,STRLEN,"var/%s.%d.pid",(!use_ssl?"newpop3d":"newpop3d_ssl"),port);
+    else
+        snprintf(pid_file_name,STRLEN,"var/%s.%d_%s.pid",(!use_ssl?"newpop3d":"newpop3d_ssl"),port,addr);
+
+    if((fp=fopen(pid_file_name,"w"))){
+        fprintf(fp,"%d\n",(int)getpid());
+        fclose(fp);
+    }
 
     setgid(BBSGID);
     setuid(BBSUID);

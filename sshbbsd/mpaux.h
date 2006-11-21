@@ -14,30 +14,6 @@ precision integers.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:42  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:47  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:10  bbsdev
- * bbs sshd
- *
- * Revision 1.1.1.1  1996/02/18 21:38:10  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.1  1995/07/27  03:28:03  ylo
- * 	Auxiliary functions for manipulating mp-ints.
- *
- * $Endlog$
- */
-
 #ifndef MPAUX_H
 #define MPAUX_H
 

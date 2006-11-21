@@ -13,35 +13,6 @@ Replacement for strerror for systems that don't have it.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:44  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:49  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:13  bbsdev
- * bbs sshd
- *
- * Revision 1.2  1998/05/12 22:14:46  ylo
- * 	Fixed strerror to never return NULL.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.2  1995/07/13  01:40:55  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
-
 #include <stdio.h>
 #include <errno.h>
 

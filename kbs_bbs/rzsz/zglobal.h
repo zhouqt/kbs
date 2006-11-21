@@ -38,11 +38,6 @@ extern void raw_ochar(char c);
 #define PATH_MAX (pathconf ("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))
 #endif
 
-/* Don't include sys/param.h if it already has been.  */
-#if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
-#include <sys/param.h>
-#endif
-
 #if !defined(PATH_MAX) && defined(MAXPATHLEN)
 #define PATH_MAX MAXPATHLEN
 #endif

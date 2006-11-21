@@ -13,63 +13,6 @@ Functions for returning the canonical host name of the remote site.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.6  2006/04/11 13:50:53  etnlegend
- * etn 你怎么就这么土!
- *
- * Revision 1.5  2006/04/11 09:16:09  etnlegend
- * nowarning ... libBBS src sshbbsd
- *
- * Revision 1.4  2004/03/23 14:40:35  kxn
- * 去掉域名反向解析,faint
- *
- * Revision 1.3  2002/08/04 11:39:41  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:45  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:08  bbsdev
- * bbs sshd
- *
- * Revision 1.5  1999/02/21 19:51:58  ylo
- * 	Intermediate commit of ssh1.2.27 stuff.
- * 	Main change is sprintf -> snprintf; however, there are also
- * 	many other changes.
- *
- * Revision 1.4  1998/05/23 20:21:01  kivinen
- *      Changed () -> (void).
- *
- * Revision 1.3  1997/03/19  15:59:45  kivinen
- *      Limit hostname to 255 characters.
- *
- * Revision 1.2  1996/10/29 22:35:11  kivinen
- *      log -> log_msg.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:12  ylo
- *      Imported ssh-1.2.13.
- *
- * Revision 1.5  1995/09/21  17:08:24  ylo
- *      Added get_remote_port.
- *
- * Revision 1.4  1995/09/06  15:57:59  ylo
- *      Fixed serious bugs.
- *
- * Revision 1.3  1995/08/29  22:20:12  ylo
- *      Added code to get ip number as string.
- *
- * Revision 1.2  1995/07/13  01:19:18  ylo
- *      Removed "Last modified" header.
- *      Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include "packet.h"
 #include "xmalloc.h"

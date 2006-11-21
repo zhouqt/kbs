@@ -24,9 +24,6 @@
 #include "bbs.h"
 #include "screen.h"
 #include "edit.h"
-#include <sys/param.h>
-/*#include <varargs.h>*/
-#include <stdarg.h>
 
 #define o_clear() {if(tc_color!=7||tc_mode!=0) output("\x1b[m",3);output("\x1b[H\x1b[J",6); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
 #define o_cleol() output("\x1b[K",3)

@@ -36,49 +36,6 @@ Description of the RSA algorithm can be found e.g. from the following sources:
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:48  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:11  bbsdev
- * bbs sshd
- *
- * Revision 1.5  1998/07/08 14:54:26  tri
- * 	Print progress identification in rsa key generation
- * 	to stderr instead of stdout.
- *
- * Revision 1.4  1998/05/23 20:23:56  kivinen
- * 	Changed () -> (void). Added #include "ssh.h".
- *
- * Revision 1.3  1997/08/21  22:26:55  ylo
- * 	Set the two highest bits of the prime to one to ensure that we
- * 	end up with the right number of bits for the generated key.
- * 	(Bug reported by Ian Goldberg.)
- *
- * Revision 1.2  1997/04/27 21:53:46  kivinen
- * 	Added check that mpz_set_str succeed.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:12  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.3  1995/09/06  16:00:12  ylo
- * 	Added missing xfree in rsa_free.
- *
- * Revision 1.2  1995/07/13  01:31:25  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include "ssh.h"
 #include <gmp.h>

@@ -13,31 +13,6 @@ Macros for storing and retrieving data in msb first and lsb first order.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:41  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:47  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:09  bbsdev
- * bbs sshd
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * Revision 1.2  1995/07/13  01:24:09  ylo
- * 	Removed "Last modified" header.
- * 	Added cvs log.
- *
- * $Endlog$
- */
-
 #ifndef GETPUT_H
 #define GETPUT_H
 

@@ -14,61 +14,6 @@ output to the system log.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:42  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:47  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:10  bbsdev
- * bbs sshd
- *
- * Revision 1.7  1999/02/21 19:52:24  ylo
- * 	Intermediate commit of ssh1.2.27 stuff.
- * 	Main change is sprintf -> snprintf; however, there are also
- * 	many other changes.
- *
- * Revision 1.6  1998/05/23 20:21:43  kivinen
- *      Changed () -> (void).
- *
- * Revision 1.5  1998/01/02  06:18:49  kivinen
- *      Fixed kerberos ticket name handling.
- *
- * Revision 1.4  1997/04/17 04:05:51  kivinen
- *      Added return to end of syslog_severity to remove warning about
- *      it.
- *
- * Revision 1.3  1997/03/27 03:09:58  kivinen
- *      Added kerberos patches from Glenn Machin.
- *
- * Revision 1.2  1996/10/29 22:38:23  kivinen
- *      log -> log_msg.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:12  ylo
- *      Imported ssh-1.2.13.
- *
- * Revision 1.5  1995/10/02  01:22:57  ylo
- *      Include sys/syslog.h if needed.
- *
- * Revision 1.4  1995/09/09  21:26:42  ylo
- * /m/shadows/u2/users/ylo/ssh/README
- *
- * Revision 1.3  1995/08/21  23:25:00  ylo
- *      Added support for syslog facility.
- *
- * Revision 1.2  1995/07/13  01:26:21  ylo
- *      Removed "Last modified" header.
- *      Added cvs log.
- *
- * $Endlog$
- */
-
 #include "includes.h"
 #include <syslog.h>
 #ifdef NEED_SYS_SYSLOG_H
