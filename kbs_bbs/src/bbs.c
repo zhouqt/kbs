@@ -1023,36 +1023,53 @@ char *get_my_webdomain(int force)
 
 }
 
+struct board_attach_link_info {
+    struct fileheader *fh;
+    int ftype;
+    int num;
+};
+static int inline bali_get_mode(int mode) {
+    switch (mode) {
+        case DIR_MODE_DELETED:
+        case DIR_MODE_JUNK:
+            return mode;
+        default:
+            return DIR_MODE_NORMAL;
+    }
+}
 static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long attachpos,void* arg)
 {
-    struct fileheader* fh=(struct fileheader*)arg;
+    struct board_attach_link_info *bali = (struct board_attach_link_info*) arg;
+    struct fileheader* fh=bali->fh;
     char ftype[12];
     int zd = (POSTFILE_BASENAME(fh->filename)[0] == 'Z');
     ftype[0] = '\0';
     if (attachpos!=-1) {
         char ktype = 's';
         if (!public_board(currboard)) {
-#ifdef ATPPP_YMSW_YTJH
+#ifndef DISABLE_INTERNAL_BOARD_PPMM_VIEWING
             MD5_CTX md5;
-            char info[9+19], base64_info[9+25];
+            char info[128], base64_info[128];
             char *ptr = info;
             uint32_t ii; uint16_t is;
             char md5ret[17];
             get_telnet_sessionid(info, getSession()->utmpent);
             ptr = info + 9;
-            is = (uint16_t)currboardent; memcpy(ptr, &is, 2), ptr += 2;
-            ii = (fh->id);          memcpy(ptr, &ii, 4); ptr += 4;
-            ii = (attachpos);       memcpy(ptr, &ii, 4); ptr += 4;
-            ii = ((int)time(NULL)); memcpy(ptr, &ii, 4); ptr += 4;
+            ii = ((int)time(NULL));         memcpy(ptr, &ii, 4); ptr += 4;       //timestamp
+            is = (uint16_t)currboardent;    memcpy(ptr, &is, 2), ptr += 2;  //bid
+            ii = (fh->id);                  memcpy(ptr, &ii, 4); ptr += 4;       //id
+            is = (uint16_t)(bali->ftype);   memcpy(ptr, &is, 2); ptr += 2;       //ftype
+            ii = bali->num;                 memcpy(ptr, &ii, 4); ptr += 4;       //num
+            ii = (attachpos);               memcpy(ptr, &ii, 4); ptr += 4;       //ap
  
             MD5Init(&md5);
-            MD5Update(&md5, (unsigned char *) info, 23);
+            MD5Update(&md5, (unsigned char *) info, 29);
             MD5Final((unsigned char*)md5ret, &md5);
 
             memcpy(ptr, md5ret, 4);
             memcpy(base64_info, info, 9);
-            to64frombits((unsigned char*)base64_info+9, (unsigned char*)info+9, 18);
-            snprintf(buf,buf_len,"http://%s/att.php?n.%s%s",
+            to64frombits((unsigned char*)base64_info+9, (unsigned char*)info+9, 24);
+            snprintf(buf,buf_len,"http://%s/att.php?%s%s",
                 get_my_webdomain(0),base64_info,ext);
             return;
 #else
@@ -1124,6 +1141,8 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     char slink[256];
     bool isbm;
     char unread_mark;
+    struct board_attach_link_info bali;
+    struct read_arg* arg=conf->arg;
     if (fileinfo==NULL) return DONOTHING;
 
     clear();
@@ -1139,7 +1158,10 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     }
 
     move(3,0);
-    board_attach_link(slink,255,NULL,-1,-1,fileinfo);
+    bali.fh = fileinfo;
+    bali.num = conf->pos;
+    bali.ftype = bali_get_mode(arg->mode);
+    board_attach_link(slink,255,NULL,-1,-1,&bali);
     prints("全文链接：\n\033[4m%s\033[m\n",slink);
 
     isbm=chk_currBM(currboard->BM, getCurrentUser());
@@ -1263,6 +1285,7 @@ int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     char buf[512];
     int ch;
     int ent=conf->pos;
+    struct board_attach_link_info bali;
     struct read_arg* arg=conf->arg;
     int ret=FULLUPDATE;
 
@@ -1284,7 +1307,10 @@ int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     strncpy(quote_user, fileinfo->owner, OWNER_LEN);
     quote_user[OWNER_LEN - 1] = 0;
 
-    register_attach_link(board_attach_link, fileinfo);
+    bali.fh = fileinfo;
+    bali.num = ent;
+    bali.ftype = bali_get_mode(arg->mode);
+    register_attach_link(board_attach_link, &bali);
 #ifndef NOREPLY
     ch = ansimore_withzmodem(genbuf, false, fileinfo->title);   /* 显示文章内容 */
 #else
@@ -5457,6 +5483,7 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
     struct read_arg *arg;
     char buf[PATHLEN],*p;
     int key,repeat,ret;
+    struct board_attach_link_info bali;
     snprintf(buf,PATHLEN,"%s",read_getcurrdirect(conf));
     if(!(p=strrchr(buf,'/')))
         return DONOTHING;
@@ -5466,7 +5493,10 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
     snprintf(quote_board,BOARDNAMELEN,"%s",currboard->filename);
     snprintf(quote_title,ARTICLE_TITLE_LEN,"%s",fh->title);
     snprintf(quote_user,OWNER_LEN,"%s",fh->owner);
-    register_attach_link(board_attach_link,fh);
+    bali.fh=fh;
+    bali.num=0;
+    bali.ftype=DIR_MODE_NORMAL;
+    register_attach_link(board_attach_link,&bali);
     key=ansimore_withzmodem(buf,false,fh->title);
     register_attach_link(NULL,NULL);
 #ifdef HAVE_BRC_CONTROL

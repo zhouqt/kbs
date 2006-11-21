@@ -662,38 +662,56 @@ PHP_FUNCTION(bbs_originfile)
 
 PHP_FUNCTION(bbs_decode_att_hash)
 {
-#ifdef ATPPP_YMSW_YTJH
+#ifndef DISABLE_INTERNAL_BOARD_PPMM_VIEWING
     char *info;
     int infolen;
-    char decoded[30];
-    char md5ret[17];
-    uint16_t is;
-    int tt, bid, id, pos;
+    char *spec;
+    int speclen;
+    int specbytes[10];
+    int totalspecbytes;
+    char decoded[256];
+    char md5ret[256];
+    uint16_t u16;
+    int i, u32, len;
+    char *ptr;
     MD5_CTX md5;
     
-    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &info, &infolen) != SUCCESS)) {
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &info, &infolen, &spec, &speclen) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
     }
-
-    if (infolen != 33) {
+    
+    if (infolen > 128) {
         RETURN_FALSE;
+    }
+    if (speclen > sizeof(specbytes)/sizeof(int)) {
+        RETURN_FALSE;
+    }
+
+    totalspecbytes = 0;
+    for (i = 0; i < speclen; i++) {
+        u32 = spec[i] - '0';
+        if (u32 != 2 && u32 != 4) {
+            RETURN_FALSE;
+        }
+        specbytes[i] = u32;
+        totalspecbytes += u32;
     }
     memcpy(decoded, info, 9);
-    from64tobits(decoded+9, info+9);
-
-    MD5Init(&md5);
-    MD5Update(&md5, (unsigned char *) decoded, 23);
-    MD5Final((unsigned char*)md5ret, &md5);
-
-    if (memcmp(md5ret, decoded+23, 4) != 0) {
+    len = from64tobits(decoded+9, info+9);
+    if (4+totalspecbytes+4 != len) {
         RETURN_FALSE;
     }
-    memcpy(&is, decoded+9, 2);
-    bid = (is);
-    memcpy(&id, decoded+11, 4);
-    memcpy(&pos, decoded+15, 4);
-    memcpy(&tt, decoded+19, 4);
-    if (time(NULL) < tt || (time(NULL) - tt >= 300)) {
+
+    MD5Init(&md5);
+    MD5Update(&md5, (unsigned char *) decoded, 9+4+totalspecbytes);
+    MD5Final((unsigned char*)md5ret, &md5);
+
+    if (memcmp(md5ret, decoded+9+4+totalspecbytes, 4) != 0) {
+        RETURN_FALSE;
+    }
+    ptr = decoded+9;
+    memcpy(&u32, ptr, 4); ptr+=4;
+    if (time(NULL) < u32 || (time(NULL) - u32 >= 300)) {
         RETURN_FALSE;
     }
 
@@ -701,10 +719,16 @@ PHP_FUNCTION(bbs_decode_att_hash)
         RETURN_FALSE;
     }
 
-    add_assoc_stringl(return_value, "sid", info, 9 , 1);
-    add_assoc_long(return_value, "bid", bid);
-    add_assoc_long(return_value, "id", id);
-    add_assoc_long(return_value, "pos", pos);
+    add_next_index_stringl(return_value, info, 9, 1);
+    for (i = 0; i < speclen; i++) {
+        if (specbytes[i] == 2) {
+            memcpy(&u16, ptr, 2); ptr += 2;
+            u32 = u16;
+        } else {
+            memcpy(&u32, ptr, 4); ptr += 4;
+        }
+        add_next_index_long(return_value, u32);
+    }
 #else
     RETURN_FALSE;
 #endif
