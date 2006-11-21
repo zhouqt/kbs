@@ -2,13 +2,15 @@
 function bbs_ann_display_articles($articles, $isBoard) {
 	global $show_none;
 ?>
-<script type="text/javascript"><!--
-var ta = new tabWriter(1,'main wide',0,[['#','5%','center'],['类型','7%','center'],['标题',0,0],['整理','12%','center'],['编辑日期','12%','center']]);
+<table class="main wide"><col width="5%"><col width="7%"><col><col width="12%"><col width="12%">
+<tbody><tr><th>#</th><th>类型</th><th>标题</th><th>整理</th><th>编辑日期</th></tr></tbody>
+<tbody>
 <?php
+	$num = 0;
 	if($show_none)
 	{
 ?>
-document.write('<tr><td align="center" colspan="5">该精华区目录没有文章。</td></tr>');
+<tr><td align="center" colspan="5">该精华区目录没有文章。</td></tr>
 <?php
 	}
 	else foreach ($articles as $article) {
@@ -30,7 +32,7 @@ document.write('<tr><td align="center" colspan="5">该精华区目录没有文章。</td></
 				$alt = '文件';
 				$url = 'bbsanc.php?path='.rawurlencode($article['PATH']);
 		}
-		$col1 = 'putImageCode(\''.$img.'\',\'alt="'.$alt.'"\')';
+		$col1 = 'putImage(\''.$img.'\',\'alt="'.$alt.'"\')';
 		if ($article['FLAG']==3)
 			$col2 = '<font color="red">@</font>';
 		else
@@ -43,12 +45,12 @@ document.write('<tr><td align="center" colspan="5">该精华区目录没有文章。</td></
 		$bm = $bm[0];
 		$col3 = $bm?'<a href="bbsqry.php?userid='.$bm.'">'.$bm.'</a>':'&nbsp;';
 		$col4 = date('Y-m-d',$article['TIME']);
-		echo "ta.r($col1,'$col2','$col3','$col4');\n";
+		$num++;
+		echo '<tr class="'.($num%2?'odd':'even').'"><td class="center">'.$num.'</td><td class="center"><script>'.$col1
+		    .'</script></td><td>'.$col2.'</td><td class="center">'.$col3.'</td><td class="center">'.$col4.'</td></tr>';
 	}
 ?>
-ta.t();
-//-->
-</script>
+</tbody></table>
 <?php
 	if ($isBoard) echo "</div>"; /* </div>: dirty way ... for closing <div class="doc"> */
 }
