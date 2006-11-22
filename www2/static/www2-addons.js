@@ -289,8 +289,48 @@ treeWriter.prototype.o = function() {
 
 
 
+function replyForm(board,reid,title,att,signum,sig,ann,outgo,lsave) {
+	var html = '<form name="postform" method="post" action="bbssnd.php?board=' + board + '&reid=' + reid + '" class="large">'
+		+ '<div class="article smaller"><a href="bbsnot.php?board=' + board + '" target="_blank">查看讨论区备忘录</a></div>'
+		+ '<fieldset><legend>' + (reid ? "回复文章" : "发表文章") + '</legend>'
+		+ '发信人: ' + getUserid() + ', 信区: ' + board + ' [<a href="bbsdoc.php?board=' + board + '">本讨论区</a>]<br/>';
+	var nt = "";
+	if (reid) nt = (title.substr(0,4).toLowerCase() == "re: ") ? title : ("Re: " + title);
+	html += '标&nbsp;&nbsp;题: <input type="text" tabindex="1" name="title" size="40" maxlength="100" value="'
+		+ htmlize(nt) + '"' + (reid?'':' id="sfocus"') + '/><br/>';
+	if (att) {
+		html += '附&nbsp;&nbsp;件: <input type="text" name="attachname" size="40" value="" disabled="disabled" />'
+			+ ' <a href="bbsupload.php" target="_blank">操作附件</a>(新窗口打开)<br/>';
+	}
+	html += '使用签名档 <select name="signature">';
+	if (signum == 0) html += '<option value="0" selected="selected">不使用签名档</option>';
+	else {
+		html += '<option value="0">不使用签名档</option>';
+		for (var i=1; i<=signum; i++) {
+			html += '<option value="' + i + '"' + (sig==i?' selected="selected"':'') + '>第 ' + i + ' 个</option>';
+		}
+		html += '<option value="-1" ' + (sig<0?'selected="selected"':'') + '>随机签名档</option>';
+	}
+	html += '</select> [<a target="_blank" href="bbssig.php">查看签名档</a>]';
+	if (ann) html += '<input type="checkbox" name="anony" value="1" />匿名';
+	if (outgo) html += '<input type="checkbox" name="outgo" value="1"' + (lsave?'':' checked="checked"') + '/>转信';
+	html += '<input type="checkbox" name="mailback" value="1" />re文抄送信箱<br />';
+	document.write(html);
+}
+replyForm.prototype.t = function() {
+	var html = '<br/>';
+	html += '<div class="oper"><input type="button" onclick="dosubmit();" tabindex="3" name="post" value="发表" />'
+		+ '&nbsp;&nbsp;&nbsp;&nbsp;<input class="sb1" type="reset" value="返回" onclick="history.go(-1)" /></div>';
+	html += '</fieldset></form>';
+	document.write(html);
+}
+
+
+
+
+
 function AnsiState() {
-    this.s = 0;
+	this.s = 0;
 }
 AnsiState.prototype = {
 	ESC_SET: 0x01,
@@ -305,9 +345,9 @@ AnsiState.prototype = {
 };
 
 function StyleState() {
-    this.s = 0;
-    this.ansi = new Array();
-    this.ansi_t = 0;
+	this.s = 0;
+	this.ansi = new Array();
+	this.ansi_t = 0;
 }
 StyleState.prototype = {
 	SET_FG: function(c) { this.s = (this.s & ~0x07) | (c & 0x07) },
@@ -338,240 +378,240 @@ StyleState.prototype = {
 	COLOR_QUOTEHEADER: 0x03|0x08,
 	BG_SET: 0x80,
 	printStyle: function() {
-	    var bg, fg, font_class;
-	    if (this.ISSET(this.BG_SET)) {
-	        bg = 8;
-	    } else {
-	        bg = this.GET_BG();
-	    }
-	    fg = this.GET_FG();
-	    if (fg == 0 && bg == 0) {
-	        font_class = "ff07";
-	    } else {
-	        font_class = "fb" + bg + " ff" + fg;
-	    }
-	    if (this.ISSET(this.STYLE_UL))
-	        font_class += " fund";
-	    if (this.ISSET(this.STYLE_ITALIC)) /* ?? no where set this */
-	        font_class += " fita";
-	    if (this.ISSET(this.STYLE_BLINK))
-	        font_class += " fbli";
-	    return "<font class=\"" + font_class + "\">";
+		var bg, fg, font_class;
+		if (this.ISSET(this.BG_SET)) {
+			bg = 8;
+		} else {
+			bg = this.GET_BG();
+		}
+		fg = this.GET_FG();
+		if (fg == 0 && bg == 0) {
+			font_class = "ff07";
+		} else {
+			font_class = "fb" + bg + " ff" + fg;
+		}
+		if (this.ISSET(this.STYLE_UL))
+			font_class += " fund";
+		if (this.ISSET(this.STYLE_ITALIC)) /* ?? no where set this */
+			font_class += " fita";
+		if (this.ISSET(this.STYLE_BLINK))
+			font_class += " fbli";
+		return "<font class=\"" + font_class + "\">";
 	},
 	addAnsi: function() {
-	    this.ansi_t++;
-	    this.ansi[this.ansi_t] = 0;
+		this.ansi_t++;
+		this.ansi[this.ansi_t] = 0;
 	},
 	clearAnsi: function() {
-	    this.ansi_t = 0;
-	    this.ansi[0] = 0;
+		this.ansi_t = 0;
+		this.ansi[0] = 0;
 	},
 	generateFontStyle: function() {
-	    for (var i = 0; i <= this.ansi_t; i++) {
-	        if (this.ansi[i] == 0) {
-	            this.ZERO();
-	            this.SET(this.COLOR_WHITE);
-	        } else if (this.ansi[i] == 1)
-	            this.SET(this.FG_BOLD);
-	        else if (this.ansi[i] == 4)
-	            this.SET(this.STYLE_UL);
-	        else if (this.ansi[i] == 5)
-	            this.SET(this.STYLE_BLINK);
-	        else if (this.ansi[i] >= 30 && this.ansi[i] <= 37) {
-	            this.SET_FG(this.ansi[i] - 30);
-	        } else if (this.ansi[i] >= 40 && this.ansi[i] <= 47) {
-	            this.SET_BG(this.ansi[i] - 40);
-	        }
-	    }
+		for (var i = 0; i <= this.ansi_t; i++) {
+			if (this.ansi[i] == 0) {
+				this.ZERO();
+				this.SET(this.COLOR_WHITE);
+			} else if (this.ansi[i] == 1)
+				this.SET(this.FG_BOLD);
+			else if (this.ansi[i] == 4)
+				this.SET(this.STYLE_UL);
+			else if (this.ansi[i] == 5)
+				this.SET(this.STYLE_BLINK);
+			else if (this.ansi[i] >= 30 && this.ansi[i] <= 37) {
+				this.SET_FG(this.ansi[i] - 30);
+			} else if (this.ansi[i] >= 40 && this.ansi[i] <= 47) {
+				this.SET_BG(this.ansi[i] - 40);
+			}
+		}
 	}
 };
 
 function htmlOutput(s) {
-    switch(s) {
-        case '&':
-            return "&amp;";
-        case '<':
-            return "&lt;";
-        case '>':
-            return "&gt;";
-        case ' ':
-            return "&nbsp;";
-        default:
-            return s;
-    }
+	switch(s) {
+		case '&':
+			return "&amp;";
+		case '<':
+			return "&lt;";
+		case '>':
+			return "&gt;";
+		case ' ':
+			return "&nbsp;";
+		default:
+			return s;
+	}
 }
 
 function printRawAnsi(s, start, end) {
-    var ret = "";
-    for (var i = start; i < end; i++) {
-        if (s.charAt(i) == '\r')
-            ret += "*";
-        else if (s.charAt(i) == '\n')
-            ret += "<br/>";
-        else
-            ret += htmlOutput(s.charAt(i));
-    }
-    return ret;
+	var ret = "";
+	for (var i = start; i < end; i++) {
+		if (s.charAt(i) == '\r')
+			ret += "*";
+		else if (s.charAt(i) == '\n')
+			ret += "<br/>";
+		else
+			ret += htmlOutput(s.charAt(i));
+	}
+	return ret;
 }
 
 function convertAnsi(s) {
-    var ansiState = new AnsiState();
-    var styleState = new StyleState();
-    var ret = new StringBuffer();
-    var buflen = s.length;
-    var ansi_begin = 0;
-    styleState.clearAnsi();
-    styleState.ZERO();
-    styleState.SET(styleState.COLOR_WHITE);
+	var ansiState = new AnsiState();
+	var styleState = new StyleState();
+	var ret = new StringBuffer();
+	var buflen = s.length;
+	var ansi_begin = 0;
+	styleState.clearAnsi();
+	styleState.ZERO();
+	styleState.SET(styleState.COLOR_WHITE);
 
-    for (var i = 0; i < buflen; i++) {
-        if (ansiState.ISSET(ansiState.NEW_LINE)) {
-            ansiState.CLR(ansiState.NEW_LINE);
-            if (i < (buflen - 1) && (s.charAt(i) == ':' && s.charAt(i + 1) == ' ')) {
-                ansiState.SET(ansiState.QUOTE_LINE);
-                if (ansiState.ISSET(ansiState.FONT_SET))
-                    ret.append("</font>");
-                /*
-                 * set quoted line styles 
-                 */
-                styleState.SET(styleState.STYLE_QUOTE);
-                styleState.CLR_FG();
-                styleState.CLR_BG();
-                styleState.SET(styleState.COLOR_QUOTE);
-                ret.append(styleState.printStyle() + ":");
-                ansiState.SET(ansiState.FONT_SET);
-                ansiState.CLR(ansiState.ESC_SET);
-                /*
-                 * clear ansi_val[] array 
-                 */
-                styleState.clearAnsi();
-                continue;
-            } else
-                ansiState.CLR(ansiState.QUOTE_LINE);
+	for (var i = 0; i < buflen; i++) {
+		if (ansiState.ISSET(ansiState.NEW_LINE)) {
+			ansiState.CLR(ansiState.NEW_LINE);
+			if (i < (buflen - 1) && (s.charAt(i) == ':' && s.charAt(i + 1) == ' ')) {
+				ansiState.SET(ansiState.QUOTE_LINE);
+				if (ansiState.ISSET(ansiState.FONT_SET))
+					ret.append("</font>");
+				/*
+				 * set quoted line styles 
+				 */
+				styleState.SET(styleState.STYLE_QUOTE);
+				styleState.CLR_FG();
+				styleState.CLR_BG();
+				styleState.SET(styleState.COLOR_QUOTE);
+				ret.append(styleState.printStyle() + ":");
+				ansiState.SET(ansiState.FONT_SET);
+				ansiState.CLR(ansiState.ESC_SET);
+				/*
+				 * clear ansi_val[] array 
+				 */
+				styleState.clearAnsi();
+				continue;
+			} else
+				ansiState.CLR(ansiState.QUOTE_LINE);
 
-            if (i < (buflen - 3) && (s.substring(i, i + 3) == "【 在")) {
-                ansiState.SET(ansiState.QUOTEHEADER_LINE);
-                if (ansiState.ISSET(ansiState.FONT_SET))
-                    ret.append("</font>");
-                /*
-                 * set quote header line styles 
-                 */
-                styleState.SET(styleState.STYLE_QUOTEHEADER);
-                styleState.CLR_FG();
-                styleState.CLR_BG();
-                styleState.SET(styleState.COLOR_QUOTEHEADER);
-                ret.append(styleState.printStyle() + "【");
-                ansiState.SET(ansiState.FONT_SET);
-                ansiState.CLR(ansiState.ESC_SET);
-                /*
-                 * clear ansi_val[] array 
-                 */
-                styleState.clearAnsi();
-                continue;
-            } else
-                ansiState.CLR(ansiState.QUOTEHEADER_LINE);
-        }
-        if (i < (buflen - 1) && (s.charAt(i) == '\r' && s.charAt(i + 1) == '[')) {
-            if (ansiState.ISSET(ansiState.ESC_SET)) {
-                /*
-                 *[*[ or *[13;24*[ */
-                ret.append(printRawAnsi(s, ansi_begin, i));
-            }
-            ansiState.SET(ansiState.ESC_SET);
-            ansi_begin = i;
-            i++;                /* skip the next '[' character */
-        } else if (s.charAt(i) == '\n') {
-            if (ansiState.ISSET(ansiState.ESC_SET)) {
-                /*
-                 *[\n or *[13;24\n */
-                ret.append(printRawAnsi(s, ansi_begin, i));
-                ansiState.CLR(ansiState.ESC_SET);
-            }
-            if (ansiState.ISSET(ansiState.QUOTE_LINE)) {
-                /*
-                 * end of a quoted line 
-                 */
-                ret.append("</font>");
-                styleState.CLR(styleState.STYLE_QUOTE);
-                styleState.CLR(styleState.COLOR_QUOTE);
-                ansiState.CLR(ansiState.QUOTE_LINE);
-                ansiState.CLR(ansiState.FONT_SET);
-            }
-            if (ansiState.ISSET(ansiState.QUOTEHEADER_LINE)) {
-                /*
-                 * end of a quote header line 
-                 */
-                ret.append("</font>");
-                styleState.CLR(styleState.STYLE_QUOTEHEADER);
-                styleState.CLR(styleState.COLOR_QUOTEHEADER);
-                ansiState.CLR(ansiState.QUOTEHEADER_LINE);
-                ansiState.CLR(ansiState.FONT_SET);
-            }
-            ret.append("<br/>");
-            ansiState.SET(ansiState.NEW_LINE);
-        } else {
-            var c = s.charAt(i);
-            if (ansiState.ISSET(ansiState.ESC_SET)) {
-                if (c == 'm') {
-                    /*
-                     *[0;1;4;31m */
-                    if (ansiState.ISSET(ansiState.FONT_SET)) {
-                        ret.append("</font>");
-                        ansiState.CLR(ansiState.FONT_SET);
-                    }
-                    if (i < buflen - 1) {
-                        styleState.generateFontStyle();
-                        ret.append(styleState.printStyle());
-                        ansiState.SET(ansiState.FONT_SET);
-                        ansiState.CLR(ansiState.ESC_SET);
-                        /*
-                         * STYLE_ZERO(font_style);
-                         */
-                        /*
-                         * clear ansi_val[] array 
-                         */
-                        styleState.clearAnsi();
-                    }
-                } else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-                    /*
-                     *[23;32H */
-                    /*
-                     * ignore it 
-                     */
-                    ansiState.CLR(ansiState.ESC_SET);
-                    //styleState.ZERO();
-                    /*
-                     * clear ansi_val[] array 
-                     */
-                    styleState.clearAnsi();
-                    continue;
-                } else if (c == ';') {
-                    styleState.addAnsi();
-                } else if (c >= '0' && c <= '9') {
-                    styleState.ansi[styleState.ansi_t] *= 10;
-                    styleState.ansi[styleState.ansi_t] += (c - '0');
-                } else {
-                    /*
-                     *[1;32/XXXX or *[* or *[[ */
-                    /*
-                     * not a valid ANSI string, just output it 
-                     */
-                    ret.append(printRawAnsi(s, ansi_begin, i + 1));
-                    ansiState.CLR(ansiState.ESC_SET);
-                    /*
-                     * clear ansi_val[] array 
-                     */
-                    styleState.clearAnsi();
-                }
-            } else
-                ret.append(printRawAnsi(s, i, i + 1));
-        }
-    }
-    if (ansiState.ISSET(ansiState.FONT_SET)) {
-        ret.append("</font>");
-        ansiState.CLR(ansiState.FONT_SET);
-    }
-    return ret.toString();
+			if (i < (buflen - 3) && (s.substring(i, i + 3) == "【 在")) {
+				ansiState.SET(ansiState.QUOTEHEADER_LINE);
+				if (ansiState.ISSET(ansiState.FONT_SET))
+					ret.append("</font>");
+				/*
+				 * set quote header line styles 
+				 */
+				styleState.SET(styleState.STYLE_QUOTEHEADER);
+				styleState.CLR_FG();
+				styleState.CLR_BG();
+				styleState.SET(styleState.COLOR_QUOTEHEADER);
+				ret.append(styleState.printStyle() + "【");
+				ansiState.SET(ansiState.FONT_SET);
+				ansiState.CLR(ansiState.ESC_SET);
+				/*
+				 * clear ansi_val[] array 
+				 */
+				styleState.clearAnsi();
+				continue;
+			} else
+				ansiState.CLR(ansiState.QUOTEHEADER_LINE);
+		}
+		if (i < (buflen - 1) && (s.charAt(i) == '\r' && s.charAt(i + 1) == '[')) {
+			if (ansiState.ISSET(ansiState.ESC_SET)) {
+				/*
+				 *[*[ or *[13;24*[ */
+				ret.append(printRawAnsi(s, ansi_begin, i));
+			}
+			ansiState.SET(ansiState.ESC_SET);
+			ansi_begin = i;
+			i++;                /* skip the next '[' character */
+		} else if (s.charAt(i) == '\n') {
+			if (ansiState.ISSET(ansiState.ESC_SET)) {
+				/*
+				 *[\n or *[13;24\n */
+				ret.append(printRawAnsi(s, ansi_begin, i));
+				ansiState.CLR(ansiState.ESC_SET);
+			}
+			if (ansiState.ISSET(ansiState.QUOTE_LINE)) {
+				/*
+				 * end of a quoted line 
+				 */
+				ret.append("</font>");
+				styleState.CLR(styleState.STYLE_QUOTE);
+				styleState.CLR(styleState.COLOR_QUOTE);
+				ansiState.CLR(ansiState.QUOTE_LINE);
+				ansiState.CLR(ansiState.FONT_SET);
+			}
+			if (ansiState.ISSET(ansiState.QUOTEHEADER_LINE)) {
+				/*
+				 * end of a quote header line 
+				 */
+				ret.append("</font>");
+				styleState.CLR(styleState.STYLE_QUOTEHEADER);
+				styleState.CLR(styleState.COLOR_QUOTEHEADER);
+				ansiState.CLR(ansiState.QUOTEHEADER_LINE);
+				ansiState.CLR(ansiState.FONT_SET);
+			}
+			ret.append("<br/>");
+			ansiState.SET(ansiState.NEW_LINE);
+		} else {
+			var c = s.charAt(i);
+			if (ansiState.ISSET(ansiState.ESC_SET)) {
+				if (c == 'm') {
+					/*
+					 *[0;1;4;31m */
+					if (ansiState.ISSET(ansiState.FONT_SET)) {
+						ret.append("</font>");
+						ansiState.CLR(ansiState.FONT_SET);
+					}
+					if (i < buflen - 1) {
+						styleState.generateFontStyle();
+						ret.append(styleState.printStyle());
+						ansiState.SET(ansiState.FONT_SET);
+						ansiState.CLR(ansiState.ESC_SET);
+						/*
+						 * STYLE_ZERO(font_style);
+						 */
+						/*
+						 * clear ansi_val[] array 
+						 */
+						styleState.clearAnsi();
+					}
+				} else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+					/*
+					 *[23;32H */
+					/*
+					 * ignore it 
+					 */
+					ansiState.CLR(ansiState.ESC_SET);
+					//styleState.ZERO();
+					/*
+					 * clear ansi_val[] array 
+					 */
+					styleState.clearAnsi();
+					continue;
+				} else if (c == ';') {
+					styleState.addAnsi();
+				} else if (c >= '0' && c <= '9') {
+					styleState.ansi[styleState.ansi_t] *= 10;
+					styleState.ansi[styleState.ansi_t] += (c - '0');
+				} else {
+					/*
+					 *[1;32/XXXX or *[* or *[[ */
+					/*
+					 * not a valid ANSI string, just output it 
+					 */
+					ret.append(printRawAnsi(s, ansi_begin, i + 1));
+					ansiState.CLR(ansiState.ESC_SET);
+					/*
+					 * clear ansi_val[] array 
+					 */
+					styleState.clearAnsi();
+				}
+			} else
+				ret.append(printRawAnsi(s, i, i + 1));
+		}
+	}
+	if (ansiState.ISSET(ansiState.FONT_SET)) {
+		ret.append("</font>");
+		ansiState.CLR(ansiState.FONT_SET);
+	}
+	return ret.toString();
 }
 
 /* WARNING: now I can only deal with only one ansi container in a page */
@@ -598,3 +638,7 @@ function triggerAnsiDiv(obj,objInner) {
 		});
 	});
 }
+
+
+
+

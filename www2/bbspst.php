@@ -49,97 +49,26 @@
 	
 	bbs_board_nav_header($brdarr, $reid ? "回复文章" : "发表文章");
 ?>
-<form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>" class="large">
-<div class="article smaller"><a href="bbsnot.php?board=<?php echo $brd_encode; ?>" target="_blank">查看讨论区备忘录</a></div>
-<fieldset><legend><?php echo $reid ? "回复文章" : "发表文章"; ?></legend>
-发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
+<script type="text/javascript" src="static/www2-addons.js"></script>
+<script type="text/javascript"><!--
+	var o = new replyForm('<?php echo $brd_encode; ?>',<?php echo $reid; ?>,'<?php if ($reid) echo $articles[1]["TITLE"]; ?> ',<?php
+	echo bbs_is_attach_board($brdarr)?"1":"0"; ?>,<?php echo $currentuser["signum"]; ?>,<?php echo $currentuser["signature"]; ?>,<?php
+	echo bbs_is_anony_board($brdarr)?"1":"0"; ?>,<?php echo bbs_is_outgo_board($brdarr)?"1":"0"; ?>,<?php
+		$local_save = 0;
+		if ($reid > 0) $local_save = !strncmp($articles[1]["INNFLAG"], "LL", 2);
+	echo $local_save?"1":"0"; ?>);
+//-->
+</script>
+<textarea name="text" tabindex="2" onkeydown="return textarea_okd(dosubmit, event);" wrap="physical"'<?php if($reid) echo ' id="sfocus"' ;?>>
 <?php
-		if ($reid)
-		{
-	        if(!strncmp($articles[1]["TITLE"],"Re: ",4))$nowtitle = $articles[1]["TITLE"];
-	        else
-	            $nowtitle = "Re: " . $articles[1]["TITLE"];
-	    } else {
-	        $nowtitle = "";
-	    }
+	if($reid > 0){
+		$filename = $articles[1]["FILENAME"];
+		$filename = "boards/" . $board . "/" . $filename;
+		echo bbs_get_quote($filename);
+	}
 ?>
-标&nbsp;&nbsp;题: <input type="text" tabindex="1" name="title" size="40" maxlength="100" value="<?php echo $nowtitle?htmlspecialchars($nowtitle,ENT_QUOTES)." ":""; ?>" <?php if (!$reid) echo 'id="sfocus"'; ?>/><br/>
-<?php
-		if (bbs_is_attach_board($brdarr))
-		{
-?>
-附&nbsp;&nbsp;件: <input type="text" name="attachname" size="40" value="" disabled="disabled" />
-<a href="bbsupload.php" target="_blank">操作附件</a>(新窗口打开)<br/>
-<?php
-		}
-?>
-使用签名档 <select name="signature">
-<?php
-		if ($currentuser["signum"] == 0)
-		{
-?>
-<option value="0" selected="selected">不使用签名档</option>
-<?php
-		}
-		else
-		{
-?>
-<option value="0">不使用签名档</option>
-<?php
-			for ($i = 1; $i <= $currentuser["signum"]; $i++)
-			{
-				if ($currentuser["signature"] == $i)
-				{
-?>
-<option value="<?php echo $i; ?>" selected="selected">第 <?php echo $i; ?> 个</option>
-<?php
-				}
-				else
-				{
-?>
-<option value="<?php echo $i; ?>">第 <?php echo $i; ?> 个</option>
-<?php
-				}
-			}
-?>
-<option value="-1" <?php if ($currentuser["signature"] < 0) echo "selected "; ?>>随机签名档</option>
-<?php
-		}
-?>
-</select>
- [<a target="_blank" href="bbssig.php">查看签名档</a>]
-<?php
-    if (bbs_is_anony_board($brdarr))
-    {
-?>
-<input type="checkbox" name="anony" value="1" />匿名
-<?php
-    }
-    if (bbs_is_outgo_board($brdarr)) {
-        $local_save = 0;
-        if ($reid > 0) $local_save = !strncmp($articles[1]["INNFLAG"], "LL", 2);
-?>
-<input type="checkbox" name="outgo" value="1"<?php if (!$local_save) echo " checked=\"checked\""; ?> />转信
-<?php
-    }
-?>
-<input type="checkbox" name="mailback" value="1" />re文抄送信箱
-<br />
-<textarea name="text" tabindex="2" onkeydown='return textarea_okd(dosubmit, event);' wrap="physical" <?php if ($reid) echo 'id="sfocus"'; ?>>
-<?php
-    if($reid > 0){
-    $filename = $articles[1]["FILENAME"];
-    $filename = "boards/" . $board . "/" . $filename;
-	echo bbs_get_quote($filename);
-}
-?>
-</textarea><br/>
-<div class="oper">
-<input type="button" onclick="dosubmit();" tabindex="3" name="post" value="发表" />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<input class="sb1" type="reset" value="返回" onclick="history.go(-1)" />
-</div>
-</fieldset></form>
+</textarea>
+<script type="text/javascript">o.t();</script>
 <?php
 page_footer();
 ?>

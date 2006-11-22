@@ -538,7 +538,6 @@ function bbs_get_quote($filename)
                 //if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
                     $str .= ": ". htmlspecialchars($buf);
             }
-			$str .= "\n\n";
             fclose($fp);
         }
     }
