@@ -583,19 +583,18 @@ function triggerAnsiDiv(obj,objInner) {
 	oldPrints = prints;
 	divArtCon = objInner;
 	prints = function(s) { strAnsi += s; oldPrints(s); };
-	addBootFn(function() { objInner.innerHTML = strArticle; initAnsiDiv(obj,objInner); });
-}
-
-function initAnsiDiv(obj,objInner) {
-	var o = document.createElement("div");
-	o.className = "AnsiSwitch";
-	o.innerHTML = "ANSI";
-	o.title = "«–ªª Ansi œ‘ æ";
-	obj.insertBefore(o,objInner);
-	obj.isAnsi = false;
-	addEvent(o,"click",function() {
-		obj.isAnsi = !obj.isAnsi;
-		obj.className = obj.isAnsi?"AnsiArticleColor":"AnsiArticleBW";
-		objInner.innerHTML = obj.isAnsi?convertAnsi(strAnsi):strArticle;
+	addBootFn(function() {
+		objInner.innerHTML = strArticle;
+		var o = document.createElement("div");
+		o.className = "AnsiSwitch";
+		o.innerHTML = "ANSI";
+		o.title = "«–ªª Ansi œ‘ æ";
+		obj.insertBefore(o,objInner);
+		obj.isAnsi = false;
+		addEvent(o,"click",function() {
+			obj.isAnsi = !obj.isAnsi;
+			obj.className = obj.isAnsi?"AnsiArticleColor":"AnsiArticleBW";
+			objInner.innerHTML = obj.isAnsi?convertAnsi(strAnsi):strArticle;
+		});
 	});
 }

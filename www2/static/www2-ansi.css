@@ -1,20 +1,22 @@
 .AnsiSwitch {
-	float:right;
+	position: absolute;
 	padding: 0.2em;
-	margin-top: -0.1em;
-	margin-right: -0.1em;
+	top: 0.2em;
+	right: 0.2em; /* orz IE, can't fix it. */
 	border: 1px solid blue;
 	color: blue;
 	background-color: #eeeeee;
 	cursor: pointer;
 }
 .AnsiArticleBW {
+	position: relative;
     padding: 0.2em;
     word-wrap:break-word;
     word-break:break-all;
     text-align:left;
 }
 .AnsiArticleColor {
+	position: relative;
     font-size: 14px;
     padding: 10px;
     background-color: black;
