@@ -49,20 +49,8 @@
 	
 	bbs_board_nav_header($brdarr, $reid ? "回复文章" : "发表文章");
 ?>
-<link rel="stylesheet" type="text/css" href="ansi.css"/>
 <form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>" class="large">
-<?php
-	if (bbs_normalboard($board)) {
-?>
-<div class="article smaller" id="bbsnot">正在载入讨论区备忘录...</div>
-<iframe src="bbsnot.php?board=<?php echo $board; ?>" width="0" height="0" frameborder="0" scrolling="no"></iframe>
-<?php
-	} else {
-?>
 <div class="article smaller"><a href="bbsnot.php?board=<?php echo $brd_encode; ?>" target="_blank">查看讨论区备忘录</a></div>
-<?php
-	}
-?>
 <fieldset><legend><?php echo $reid ? "回复文章" : "发表文章"; ?></legend>
 发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 <?php
