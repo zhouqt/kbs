@@ -224,7 +224,15 @@ function adjustImg() {
 }
 window.onresize = adjustImg;
 
-
+function addEvent(obj,ev,func){
+	if (obj.attachEvent) {
+		obj.attachEvent("on"+ev, func);
+	} else if(obj.addEventListener) {
+		obj.addEventListener(ev,func,true);
+	} else {
+		obj["on"+ev] = func;
+	}
+}
 function cancelEvent(ev) {
 	if (gIE) {
 		ev.cancelBubble = true;

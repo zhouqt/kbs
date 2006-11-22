@@ -13,7 +13,6 @@
 		$usermodestr = bbs_getusermode($userid);
 		page_header($lookupuser["userid"], "<a href='bbsqry.php'>查询网友</a>");
 ?>
-<link rel="stylesheet" type="text/css" href="ansi.css"/>
 <div class="main smaller">
 <pre>
 <?php echo $lookupuser["userid"];?> (<?php echo htmlspecialchars($lookupuser["username"]);?>) 共上站 <?php echo $lookupuser["numlogins"];?> 次，发表过 <?php echo $lookupuser["numposts"];?> 篇文章
@@ -39,8 +38,21 @@ else
 ?>
 个人说明档如下: </span><br/>
 <?php
-			$s = bbs_printansifile($plansfile);
-			if (is_string($s)) echo $s;
+			$s = bbs2_readfile($plansfile);
+			if (is_string($s)) {
+?>
+<link rel="stylesheet" type="text/css" href="static/www2-ansi.css"/>
+<script type="text/javascript" src="static/www2-addons.js"></script>
+<div id="divPlan" class="AnsiArticleBW"><div id="dp1">
+<script type="text/javascript"><!--
+triggerAnsiDiv('divPlan','dp1');
+<?php
+				echo $s;
+?>
+//-->
+</script></div></div>
+<?php
+			}
 		}else{
 ?>
 没有个人说明档</span>

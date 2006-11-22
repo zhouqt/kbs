@@ -1,0 +1,80 @@
+.AnsiSwitch {
+	float:right;
+	padding: 0.2em;
+	margin-top: -0.1em;
+	margin-right: -0.1em;
+	border: 1px solid blue;
+	color: blue;
+	background-color: #eeeeee;
+	cursor: pointer;
+}
+.AnsiArticleBW {
+    padding: 0.2em;
+    word-wrap:break-word;
+    word-break:break-all;
+}
+.AnsiArticleColor {
+    font-size: 14px;
+    padding: 10px;
+    background-color: black;
+    color: #c0c0c0;
+    line-height: 1;
+    word-wrap:break-word;
+    word-break:break-all;
+}
+font.fund {text-decoration: underline;}
+font.fita {font-style: italic;}
+font.fbli {text-decoration: blink;}
+/**
+ * part from old bbs2www code
+font.f000 {color: #e8f0e8 }
+font.f001 {color: #e87874 }
+font.f002 {color: #00b400 }
+font.f003 {color: #aeb400 }
+font.f004 {color: #7478e8 }
+font.f005 {color: #e878e8 }
+font.f006 {color: #00b4ae }
+font.f007 {color: #303230 }
+font.f008 {color: #747874 }
+font.f009 {color: #e80000 }
+font.f010 {color: #009600 }
+font.f011 {color: #919600 }
+font.f012 {color: #0000e8 }
+font.f013 {color: #e800e8 }
+font.f014 {color: #009691 }
+font.f015 {color: #000000 }
+font.f100 {background-color: #e8c8c1 }
+font.f200 {background-color: #c1f0c1 }
+font.f300 {background-color: #e8f0b8 }
+font.f400 {background-color: #c1c8e8 }
+font.f500 {background-color: #e8c8e8 }
+font.f600 {background-color: #b8f0e8 }
+font.f700 {background-color: #c1c8c1 }
+font.f800 {background-color: #F6F6F6 }
+ *
+ */
+font.ff0 {color: black; }
+font.ff1 {color: maroon; }
+font.ff2 {color: green; }
+font.ff3 {color: olive; }
+font.ff4 {color: navy; }
+font.ff5 {color: purple; }
+font.ff6 {color: teal; }
+font.ff7 {color: silver; }
+font.ff8 {color: gray; }
+font.ff9 {color: red; }
+font.ff10 {color: lime; }
+font.ff11 {color: yellow; }
+font.ff12 {color: blue; }
+font.ff13 {color: fuchsia; }
+font.ff14 {color: aqua; }
+font.ff15 {color: white; }
+font.fb0 {background-color: black; }
+font.fb1 {background-color: maroon; }
+font.fb2 {background-color: green; }
+font.fb3 {background-color: olive; }
+font.fb4 {background-color: navy; }
+font.fb5 {background-color: purple; }
+font.fb6 {background-color: teal; }
+font.fb7 {background-color: silver; }
+font.fb8 {background-color: gray; }
