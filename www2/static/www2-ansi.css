@@ -11,21 +11,21 @@
 }
 .AnsiArticleBW {
 	position: relative;
-    padding: 0.2em;
-    word-wrap:break-word;
-    word-break:break-all;
-    text-align:left;
+	padding: 0.2em;
+	word-wrap:break-word;
+	word-break:break-all;
+	text-align:left;
 }
 .AnsiArticleColor {
 	position: relative;
-    font-size: 14px;
-    padding: 10px;
-    background-color: black;
-    color: #c0c0c0;
-    line-height: 1;
-    word-wrap:break-word;
-    word-break:break-all;
-    text-align:left;
+	font-size: 14px;
+	padding: 10px;
+	background-color: black;
+	color: #c0c0c0;
+	line-height: 1;
+	word-wrap:break-word;
+	word-break:break-all;
+	text-align:left;
 }
 font.fund {text-decoration: underline;}
 font.fita {font-style: italic;}
