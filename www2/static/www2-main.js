@@ -50,7 +50,7 @@ function htmlize(s) {
 }
 
 
-var att = null, m = 0, strArticle = "", divArtCon = null, cacheable = true;
+var att = null, strPrint = "", strArticle = "", divArtCon = null;
 function attWriter(bid, id, ftype, num, cacheable) {
 	this.bid = bid;
 	this.id = id;
@@ -59,6 +59,7 @@ function attWriter(bid, id, ftype, num, cacheable) {
 	this.cacheable = cacheable;
 }
 function prints(s) {
+	strPrint += s;
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
 	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "\n&nbsp;");
@@ -72,11 +73,11 @@ function prints(s) {
 		var urlmatch = new RegExp("((?:http|https|ftp|mms|rtsp)://(&(?=amp;)|[A-Za-z0-9\./=\?%_~@#:;\+\-])+)", "ig");
 		s = s.replace(urlmatch, "<a target=\"_blank\" href=\"$1\">$1</a>");
 	}
-	if (divArtCon) strArticle += s;
-	else document.write(s);
+	strArticle += s;
+	if (!divArtCon) document.write(s);
 }
 function attachURL(name, len, pos) {
-	if (m) { return location.href+'&ap='+pos; };
+	if (att.bid < 0) { return location.href+'&ap='+pos; }; //mail
 	var ext = null, o = name.lastIndexOf(".");
 	if (!att) return null;
 	if (o != -1) {
@@ -112,8 +113,8 @@ function attach(name, len, pos) {
 	} else {
 		s += '<br />¸½¼þ: <a href="' + url + '">' + name + '</a> (' + sizes + ')<br />';
 	}
-	if (divArtCon) strArticle += s;
-	else document.write(s);
+	strArticle += s;
+	if (!divArtCon) document.write(s);
 }
 function writeArticle() {
 	divArtCon.innerHTML = strArticle;

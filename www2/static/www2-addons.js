@@ -615,16 +615,11 @@ function convertAnsi(s) {
 }
 
 /* WARNING: now I can only deal with only one ansi container in a page */
-var oldPrints, strAnsi = '';
 function triggerAnsiDiv(obj,objInner) {
 	if (!((gIE && !gIE5) || gFx)) return;
 	if (!(obj = getObj(obj))) return;
 	if (!(objInner = getObj(objInner))) return;
-	oldPrints = prints;
-	divArtCon = objInner;
-	prints = function(s) { strAnsi += s; oldPrints(s); };
 	addBootFn(function() {
-		objInner.innerHTML = strArticle;
 		var o = document.createElement("div");
 		o.className = "AnsiSwitch";
 		o.innerHTML = "ANSI";
@@ -634,7 +629,7 @@ function triggerAnsiDiv(obj,objInner) {
 		addEvent(o,"click",function() {
 			obj.isAnsi = !obj.isAnsi;
 			obj.className = obj.isAnsi?"AnsiArticleColor":"AnsiArticleBW";
-			objInner.innerHTML = obj.isAnsi?convertAnsi(strAnsi):strArticle;
+			objInner.innerHTML = obj.isAnsi?convertAnsi(strPrint):strArticle;
 		});
 	});
 }

@@ -54,7 +54,7 @@
 <div class="large">
 <div class="article">
 <script type="text/javascript"><!--
-<?php $s = bbs2_readfile($filename); if (is_string($s)) echo 'm=1;'.$s; ?>
+<?php $s = bbs2_readfile($filename); if (is_string($s)) echo 'att=new attWriter(-1);'.$s; ?>
 //-->
 </script>
 </div></div>
