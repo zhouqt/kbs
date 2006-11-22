@@ -417,7 +417,7 @@ function printRawAnsi(s, start, end) {
 function convertAnsi(s) {
     var ansiState = new AnsiState();
     var styleState = new StyleState();
-    var ret = "";
+    var ret = new StringBuffer();
     var buflen = s.length;
     var ansi_begin = 0;
     styleState.clearAnsi();
@@ -430,7 +430,7 @@ function convertAnsi(s) {
             if (i < (buflen - 1) && (s.charAt(i) == ':' && s.charAt(i + 1) == ' ')) {
                 ansiState.SET(ansiState.QUOTE_LINE);
                 if (ansiState.ISSET(ansiState.FONT_SET))
-                    ret += "</font>";
+                    ret.append("</font>");
                 /*
                  * set quoted line styles 
                  */
@@ -438,7 +438,7 @@ function convertAnsi(s) {
                 styleState.CLR_FG();
                 styleState.CLR_BG();
                 styleState.SET(styleState.COLOR_QUOTE);
-                ret += styleState.printStyle() + ":";
+                ret.append(styleState.printStyle() + ":");
                 ansiState.SET(ansiState.FONT_SET);
                 ansiState.CLR(ansiState.ESC_SET);
                 /*
@@ -452,7 +452,7 @@ function convertAnsi(s) {
             if (i < (buflen - 3) && (s.substring(i, i + 3) == "¡¾ ÔÚ")) {
                 ansiState.SET(ansiState.QUOTEHEADER_LINE);
                 if (ansiState.ISSET(ansiState.FONT_SET))
-                    ret += "</font>";
+                    ret.append("</font>");
                 /*
                  * set quote header line styles 
                  */
@@ -460,7 +460,7 @@ function convertAnsi(s) {
                 styleState.CLR_FG();
                 styleState.CLR_BG();
                 styleState.SET(styleState.COLOR_QUOTEHEADER);
-                ret += styleState.printStyle() + "¡¾";
+                ret.append(styleState.printStyle() + "¡¾");
                 ansiState.SET(ansiState.FONT_SET);
                 ansiState.CLR(ansiState.ESC_SET);
                 /*
@@ -475,7 +475,7 @@ function convertAnsi(s) {
             if (ansiState.ISSET(ansiState.ESC_SET)) {
                 /*
                  *[*[ or *[13;24*[ */
-                ret += printRawAnsi(s, ansi_begin, i);
+                ret.append(printRawAnsi(s, ansi_begin, i));
             }
             ansiState.SET(ansiState.ESC_SET);
             ansi_begin = i;
@@ -484,14 +484,14 @@ function convertAnsi(s) {
             if (ansiState.ISSET(ansiState.ESC_SET)) {
                 /*
                  *[\n or *[13;24\n */
-                ret += printRawAnsi(s, ansi_begin, i);
+                ret.append(printRawAnsi(s, ansi_begin, i));
                 ansiState.CLR(ansiState.ESC_SET);
             }
             if (ansiState.ISSET(ansiState.QUOTE_LINE)) {
                 /*
                  * end of a quoted line 
                  */
-                ret += "</font>";
+                ret.append("</font>");
                 styleState.CLR(styleState.STYLE_QUOTE);
                 styleState.CLR(styleState.COLOR_QUOTE);
                 ansiState.CLR(ansiState.QUOTE_LINE);
@@ -501,13 +501,13 @@ function convertAnsi(s) {
                 /*
                  * end of a quote header line 
                  */
-                ret += "</font>";
+                ret.append("</font>");
                 styleState.CLR(styleState.STYLE_QUOTEHEADER);
                 styleState.CLR(styleState.COLOR_QUOTEHEADER);
                 ansiState.CLR(ansiState.QUOTEHEADER_LINE);
                 ansiState.CLR(ansiState.FONT_SET);
             }
-            ret += "<br/>";
+            ret.append("<br/>");
             ansiState.SET(ansiState.NEW_LINE);
         } else {
             var c = s.charAt(i);
@@ -516,12 +516,12 @@ function convertAnsi(s) {
                     /*
                      *[0;1;4;31m */
                     if (ansiState.ISSET(ansiState.FONT_SET)) {
-                        ret += "</font>";
+                        ret.append("</font>");
                         ansiState.CLR(ansiState.FONT_SET);
                     }
                     if (i < buflen - 1) {
                         styleState.generateFontStyle();
-                        ret += styleState.printStyle();
+                        ret.append(styleState.printStyle());
                         ansiState.SET(ansiState.FONT_SET);
                         ansiState.CLR(ansiState.ESC_SET);
                         /*
@@ -556,7 +556,7 @@ function convertAnsi(s) {
                     /*
                      * not a valid ANSI string, just output it 
                      */
-                    ret += printRawAnsi(s, ansi_begin, i + 1);
+                    ret.append(printRawAnsi(s, ansi_begin, i + 1));
                     ansiState.CLR(ansiState.ESC_SET);
                     /*
                      * clear ansi_val[] array 
@@ -564,14 +564,14 @@ function convertAnsi(s) {
                     styleState.clearAnsi();
                 }
             } else
-                ret += printRawAnsi(s, i, i + 1);
+                ret.append(printRawAnsi(s, i, i + 1));
         }
     }
     if (ansiState.ISSET(ansiState.FONT_SET)) {
-        ret += "</font>";
+        ret.append("</font>");
         ansiState.CLR(ansiState.FONT_SET);
     }
-    return ret;
+    return ret.toString();
 }
 
 /* WARNING: now I can only deal with only one ansi container in a page */
