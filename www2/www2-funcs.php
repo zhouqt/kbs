@@ -508,6 +508,7 @@ function bbs_get_quote($filename)
 	    $fp = fopen($filename, "r");
         if ($fp) {
 		    $lines = 0;
+		    $quser = "未知";
             $buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
 			$end = strrpos($buf,")");
 			$start = strpos($buf,":");
@@ -530,7 +531,7 @@ function bbs_get_quote($filename)
                     break;
                 if (strncmp($buf, "\n", 1) == 0)
                     continue;
-                if (++$lines > QUOTED_LINES) {
+                if (++$lines > BBS_QUOTED_LINES) {
                     $str .= ": ...................\n";
                     break;
                 }

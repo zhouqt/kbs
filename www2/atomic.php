@@ -621,40 +621,8 @@ function atomic_post() {
 	$html .= '<textarea name="text" rows="20" cols="80" wrap="physical">';
 	if($reid > 0){
 		$filename = bbs_get_board_filename($atomic_board, $articles[1]["FILENAME"]);
-		$fp = @fopen($filename, "r");
-		if ($fp) {
-			$lines = 0;
-			$quser = "未知";
-			$buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
-			$end = strrpos($buf,")");
-			$start = strpos($buf,":");
-			if($start != FALSE && $end != FALSE)
-				$quser=substr($buf,$start+2,$end-$start-1);
-
-			$html .= "\n\n【 在 " . $quser . " 的大作中提到: 】\n";
-			for ($i = 0; $i < 3; $i++) {
-				if (($buf = fgets($fp,500)) == FALSE)
-					break;
-			}
-			while (1) {
-				if (($buf = fgets($fp,500)) == FALSE)
-					break;
-				if (strncmp($buf, "【", 2) == 0)
-					continue;
-				if (strncmp($buf, ": ", 2) == 0)
-					continue;
-				if (strncmp($buf, "--\n", 3) == 0)
-					break;
-				if (strncmp($buf, "\n", 1) == 0)
-					continue;
-				if (++$lines > QUOTED_LINES) {
-					$html .= ": ...................\n";
-					break;
-				}
-				$html .= ": ". htmlspecialchars($buf);
-			}
-			fclose($fp);
-		}
+		$q = @bbs_get_quote($filename);
+		if ($q) $html .= "\n".$q;
 	}
 	$html .= '</textarea><br/>';
 	if (isset($_GET['upload'])) $html .= '<input name="attachfile" type="file"/><br/>';
