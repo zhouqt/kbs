@@ -24,39 +24,26 @@
 	bbs_board_nav_header($brdarr, "备忘录");
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<link rel="stylesheet" type="text/css" href="ansi.css"/>
+<link rel="stylesheet" type="text/css" href="static/www2-ansi.css"/>
+<script type="text/javascript" src="static/www2-addons.js"></script>
+<div id="divNote" class="AnsiArticleBW"><div id="dn1">
 <script type="text/javascript"><!--
-function writeNote()
-{
-	var bbsnote,notecontent,divbbsnot;
 <?php
 	$s = false;
 	if (file_exists($top_file)) {
-		$s = bbs_printansifile($top_file);
+		$s = bbs2_readfile($top_file);
 	}
 	if (!is_string($s))
 	{
-		echo "\tnotecontent='".addslashes("<br/><br/><br/>&nbsp; &nbsp; &nbsp; &nbsp; 此讨论区尚无「备忘录」。")."';\n";
-		echo "\tbbsnote='".addslashes("<div class=\"green\">发文注意事项: <br/>发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。</div>")."';\n";
-	} else {
-		echo "\tbbsnote=notecontent='".addslashes($s)."';\n";
+		$s = 'prints("\n\n\n此讨论区尚无「备忘录」。\n\n\n");';
 	}
 ?>
-	if (parent != self && parent && (divbbsnot = parent.document.getElementById('bbsnot')))
-	{
-		divbbsnot.innerHTML = bbsnote;
-	}
-	else
-	{
-		document.getElementById('bbsnot').innerHTML = notecontent;
-	}
-
-}
-addBootFn(writeNote);
+triggerAnsiDiv('divNote','dn1');
+<?php
+				echo $s;
+?>
 //-->
-</script>
-<div class="article smaller" id="bbsnot">
-</div>
+</script></div></div>
 <div class="oper">
 [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]
 <?php
