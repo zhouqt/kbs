@@ -12,6 +12,7 @@
 define('UTF8SP', NULL);
 define('ARTCNT', 20);
 define('MAXCHAR', 20000);
+define('SUPPORT_UPLOAD', TRUE);
 
 require("www2-funcs.php");
 require("www2-board.php");
@@ -76,6 +77,12 @@ switch($act) {
 	default:
 		atomic_mainpage();
 		break;
+}
+
+function atomic_uploadable() {
+	global $atomic_brdarr;
+	if (!SUPPORT_UPLOAD) return FALSE;
+	return bbs_is_attach_board($atomic_brdarr);
 }
 
 function atomic_header() {
@@ -350,7 +357,7 @@ function atomic_board() {
 	}
 	$html .= '<input type="hidden" name="board" value="'.$atomic_board.'"/>';
 	$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> ';
-	if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&upload=1">带附件发表</a> ';
+	if (atomic_uploadable()) $html .= '<a href="?act=post&board='.$atomic_board.'&upload=1">带附件发表</a> ';
 	$bl = '?act=board&board='.$atomic_board;
 	if ($atomic_ftype) $bl .= '&ftype=' . $atomic_ftype;
 	if ($page > 1) {
@@ -476,7 +483,7 @@ function atomic_article() {
 	$html = '<p>';
 	if (!$atomic_ftype) {
 		$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
-		if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&reid='.$id.'&upload=1">带附件回复</a> ';
+		if (atomic_uploadable()) $html .= '<a href="?act=post&board='.$atomic_board.'&reid='.$id.'&upload=1">带附件回复</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
@@ -522,7 +529,7 @@ function atomic_post() {
 		$outgo = bbs_is_outgo_board($atomic_brdarr) ? 1 : 0;
 		$anony = 0;
 		$attmsg = "";
-		if (bbs_is_attach_board($atomic_brdarr) && isset($_FILES['attachfile'])) {
+		if (atomic_uploadable() && isset($_FILES['attachfile'])) {
 			$attpost = $_FILES['attachfile'];
 			@$errno = $attpost['error'];
 			switch ($errno) {
