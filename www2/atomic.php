@@ -12,7 +12,6 @@
 define('UTF8SP', NULL);
 define('ARTCNT', 20);
 define('MAXCHAR', 20000);
-define('SSSS', $_SERVER["PHP_SELF"]);
 
 require("www2-funcs.php");
 require("www2-board.php");
@@ -97,7 +96,7 @@ function atomic_footer() {
 
 function atomic_error($msg) {
 	atomic_header();
-	echo $msg . " <a href='atomic.php'>回首页</a>";
+	echo $msg . " <a href='?'>回首页</a>";
 	atomic_footer();
 	exit;
 }
@@ -113,7 +112,7 @@ function atomic_show_boardjump() {
 	else $bb = "";
 		echo <<<END
 <form action="" method="get"><input type="hidden" name="act" value="board"/>$bb
-去讨论区: <input type="text" name="board" /> <input type="submit" value="Go"/> <a href='atomic.php'>回首页</a>
+去讨论区: <input type="text" name="board" /> <input type="submit" value="Go"/> <a href='?'>回首页</a>
 </form>
 END;
 }
@@ -263,9 +262,9 @@ function atomic_ann() {
 		$html .= "<a href='?act=board&board=".$boardName."'>回 ".$boardName." 版面</a> ";
 	}
 	if ($parent) {
-		$html .= "<a href='?act=ann&path=".$parent."'>回上级目录</a>";
+		$html .= "<a href='?act=ann&path=".$parent."'>回上级目录</a> ";
 	}
-	$html .= "</p>";
+	$html .= "<a href='?'>回首页</a></p>";
 	if ($file !== false) {
 		echo $html;
 		echo bbs2_readfile_text($file, MAXCHAR, 2);
