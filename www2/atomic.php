@@ -88,7 +88,7 @@ function atomic_header() {
 	$atomic_header_shown = true;
 	header("Content-Type: text/html; charset=".(UTF8?"UTF-8":"gb2312"));
 	echo '<html><head><meta http-equiv="content-type" content="text/html; charset=' . (UTF8?"UTF-8":"gb2312") . '">'.
-		 '<title>'.BBS_FULL_NAME.'</title><link rel="stylesheet" type="text/css" href="atomic.css" /></head><body>';
+		 '<title>'.BBS_FULL_NAME.'</title><style>a{text-decoration:none;}</style></head><body>';
 }
 
 function atomic_footer() {
