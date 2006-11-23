@@ -34,14 +34,12 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 		MYSQLBLOGPORT       = ""    //MySQL数据库端口,默认为3306
 
 	1.4 在 MySQL 数据库中添加表。表结构见 DB.Blog.Structure.sql 文档。
-	1.5 配置 telnet 部分。具体方法为在站点配置文件 site.h 中加入下面的定义：
+	1.5 配置 C 代码部分。具体方法为在站点配置文件 site.h 中加入下面的定义：
 		#define PERSONAL_CORP
-	1.6 配置 web 部分。具体方法为在站点的web配置文件 site.php 中加入下面的定义：
-		define("HAVE_PC", 1);
-	1.7 升级： make ; make install ;
-	1.8 将 $WWWHOME/pc/pcconf.sample.php 复制为 $WWWHOME/pc/pcconf.php,
+	1.6 升级： make ; make install ;
+	1.7 将 $WWWHOME/pc/pcconf.sample.php 复制为 $WWWHOME/pc/pcconf.php,
 	    编辑 pcconf.php 配置WWW下的BLOG参数。
-	1.9 完成快速安装。
+	1.8 完成快速安装。
 
 2. 系统需求
     KBS.Blog 要求您的系统含有以下部分：
@@ -60,8 +58,6 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     请改动相应的配置文件：
     在 $BBSSRC/site/***.h 中加入
     	#define PERSONAL_CORP
-    在站点的web配置文件 site.php 中加入下面的定义：
-    	define("HAVE_PC", 1);
     这里 *** 表示 --enable-site 所指定的配置文件或目录。
     4) 安装成功后,确认您的 $BBSHOME/etc/sysconf.ini 中含有下列字段:
 	MYSQLBLOGHOST       = ""    //MySQL服务器地址
