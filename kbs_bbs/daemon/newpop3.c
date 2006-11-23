@@ -604,9 +604,8 @@ int main(int argc, char **argv)
 #endif /* DEBUG */
 
     port=pop3_port;
-    use_ssl=0;
-
 #ifdef USE_SSL
+    use_ssl=0;
     switch(fork()){
         case 0:
             init_ssl();
