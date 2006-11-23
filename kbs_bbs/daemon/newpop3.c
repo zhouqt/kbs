@@ -55,9 +55,8 @@
 SSL_CTX *ctx;
 SSL *ssl;
 SSL_METHOD *meth;
-int use_ssl = 0;
 #endif
-
+int use_ssl = 0;
 
 #define BUFSIZE         1024
 /*#define POP3PORT 110 remote to sysname.h*/
@@ -604,8 +603,9 @@ int main(int argc, char **argv)
 #endif /* DEBUG */
 
     port=pop3_port;
-#ifdef USE_SSL
     use_ssl=0;
+
+#ifdef USE_SSL
     switch(fork()){
         case 0:
             init_ssl();
