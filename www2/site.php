@@ -1,7 +1,5 @@
 <?php
 //define("www2dev", "DEFINED");
-define("ATTACHMAXSIZE",BBS_MAXATTACHMENTSIZE);        //附件总字节数的上限，单位 bytes
-define("ATTACHMAXCOUNT",BBS_MAXATTACHMENTCOUNT);      //附件数目的上限
 define("MAINPAGE_FILE","mainpage.php");              //首页导读的 URL
 define("RUNNINGTIME", 1);                             //底部显示页面运行时间
 define("AUTO_BMP2PNG_THRESHOLD", 100000); // requires ImageMagick and safe_mode off

@@ -33,7 +33,7 @@ $filename_trans = array(" " => "_",
 				$act_attachname=strtr($act_attachname,$filename_trans);
 				$act_attachname=substr($act_attachname,-60);
 				if ($act_attachname!="") {
-						if ($_FILES['attachfile']['size']>ATTACHMAXSIZE) 
+						if ($_FILES['attachfile']['size']>BBS_MAXATTACHMENTSIZE) 
 							$errno=UPLOAD_ERR_FORM_SIZE;
 				} else
 					$errno=100;
@@ -70,7 +70,7 @@ body { padding: 1em 0 0 1em; }
 						break;
 					case UPLOAD_ERR_INI_SIZE:
 					case UPLOAD_ERR_FORM_SIZE:
-						echo "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
+						echo "文件超过预定的大小" . sizestring(BBS_MAXATTACHMENTSIZE) . "字节";
 						break;
 					case UPLOAD_ERR_PARTIAL:
 						echo "文件传输出错！";
@@ -110,7 +110,7 @@ function clickclose() {
 </script>
 请选择要导入的csv文件:<br>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" align="left" action="">
-			  <input type="hidden" name="MAX_FILE_SIZE" value=<?php echo(ATTACHMAXSIZE);?>>
+			  <input type="hidden" name="MAX_FILE_SIZE" value=<?php echo(BBS_MAXATTACHMENTSIZE);?>>
 			  <input type="file" name="attachfile" size="20" value class="form02">
 			  <input type="button" width="61"
 		  height="21" value="导入" border="0" onclick="addsubmit()" class="form01" >

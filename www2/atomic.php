@@ -556,7 +556,7 @@ function atomic_post() {
 				break;
 			case UPLOAD_ERR_INI_SIZE:
 			case UPLOAD_ERR_FORM_SIZE:
-				$attmsg = "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
+				$attmsg = "文件超过预定的大小" . sizestring(BBS_MAXATTACHMENTSIZE) . "字节";
 				break;
 			case UPLOAD_ERR_PARTIAL:
 				$attmsg = "文件传输出错！";
