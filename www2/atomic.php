@@ -732,7 +732,7 @@ function atomic_mailread() {
 	}
 	$html .= "</p>";
 	echo $html;
-	echo bbs2_readfile_text($filename, 0, 2);
+	echo bbs2_readfile_text($filename, MAXCHAR, 2);
 	bbs_setmailreaded($mail_fullpath,$num-1);
 	atomic_footer();
 }
