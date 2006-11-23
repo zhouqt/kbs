@@ -695,7 +695,7 @@ function atomic_mail() {
 		$html .= sprintf(" %-12.12s ", $article["OWNER"]);
 		$html .= strftime("%b %e ", $article["POSTTIME"]);
 		$html .= ($maildata[$i]["ATTACHPOS"]>0) ? "@" : " ";
-		$html .= "<a href='?act=mailread&num=".($start+$i)."'>".htmlspecialchars($title)." </a><br/>";
+		$html .= "<a href='?act=mailread&num=".($start+$i)."'>".htmlspecialchars($title)." </a> (".sizestring($maildata[$i]['EFFSIZE']).")<br/>";
 	}
 	$html .= "</pre>";
 	echo $html;
@@ -732,7 +732,7 @@ function atomic_mailread() {
 	}
 	$html .= "</p>";
 	echo $html;
-	echo bbs2_readfile_text($filename, MAXCHAR, 2);
+	echo bbs2_readfile_text($filename, 0, 2);
 	bbs_setmailreaded($mail_fullpath,$num-1);
 	atomic_footer();
 }
