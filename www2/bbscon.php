@@ -135,6 +135,7 @@
 	$page_title = "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>";
 	page_header("ÔÄ¶ÁÎÄÕÂ".$dir_name[$ftype], $page_title);
 ?>
+<script type="text/javascript" src="static/www2-addons.js"></script>
 <h1><?php echo $brdarr["NAME"]; ?> °æ <?php echo $dir_name[$ftype]; ?></h1>
 <script type="text/javascript"><!--
 var o = new conWriter(<?php echo $ftype; ?>, '<?php echo addslashes($brdarr["NAME"]); ?>', <?php echo $brdnum; ?>, <?php

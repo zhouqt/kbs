@@ -56,10 +56,9 @@
 	echo bbs_is_anony_board($brdarr)?"1":"0"; ?>,<?php echo bbs_is_outgo_board($brdarr)?"1":"0"; ?>,<?php
 		$local_save = 0;
 		if ($reid > 0) $local_save = !strncmp($articles[1]["INNFLAG"], "LL", 2);
-	echo $local_save?"1":"0"; ?>);
+	echo $local_save?"1":"0"; ?>);w(o.f());
 //-->
 </script>
-<textarea name="text" tabindex="2" onkeydown="return textarea_okd(dosubmit, event);" wrap="physical"'<?php if($reid) echo ' id="sfocus"' ;?>>
 <?php
 	if($reid > 0){
 		$filename = $articles[1]["FILENAME"];
@@ -68,7 +67,7 @@
 	}
 ?>
 </textarea>
-<script type="text/javascript">o.t();</script>
+<script type="text/javascript">w(o.t());</script>
 <?php
 page_footer();
 ?>

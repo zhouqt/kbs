@@ -29,7 +29,7 @@ function annWriter(path, perm_bm, text, title) {
 	str += '<table class="main wide"><col width="5%" /><col width="8%" /><col width="4%" /><col width="38%" />';
 	str += '<col width="10%" /><col width="10%" /><col width="10%" /><tr><th>#</th><th>类型</th><th></th>';
 	str += '<th>标题</th><th>版主</th><th>' + (perm_bm?'文件名':'日期') + '</th><th>操作</th></tr><tbody>';
-	document.write(str);
+	w(str);
 }
 annWriter.prototype.i = function(type, title, bm, filename, date) {
 	var str, itempath;
@@ -63,7 +63,7 @@ annWriter.prototype.i = function(type, title, bm, filename, date) {
 	str += ' <a href="javascript:ann_move(' + this.num + ');">调序</a>';
 	str += '<span id="divam' + this.num + '"></span>';
 	str += '</td></tr>';
-	document.write(str);
+	w(str);
 	this.num++;
 };
 annWriter.prototype.f = function() {
@@ -83,7 +83,7 @@ annWriter.prototype.f = function() {
 	}
 	str += '<input type="hidden" id="annCount" name="annCount" value="' + (this.num-1) + '">';
 	str += '</form>';
-	document.write(str);
+	w(str);
 };
 
 function ann_delete()
@@ -134,7 +134,7 @@ function ipathWriter(inAnn) {
 	str += '<h1 class="bt">丝路</h1><div style="text-align:right">[<a href="bbs0anbm.php?path=' + currAnnPath + '">精华区目录</a>]';
 	str += '<table class="main wide"><col width="5%" /><col width="60%" /><col width="35%" />';
 	str += '<tr><th>#</th><th>标题 / 路径</th><th>操作</th></tr><tbody>';
-	document.write(str);
+	w(str);
 }
 ipathWriter.prototype.i = function(title, path) {
 	var str;
@@ -152,13 +152,13 @@ ipathWriter.prototype.i = function(title, path) {
 		str += '<a href="javascript:ipathSet(' + this.num + ');">设为当前目录</a>';
 	str += '</td></tr>';
 	this.num++;
-	document.write(str);
+	w(str);
 }
 ipathWriter.prototype.f = function() {
 	var str;
 	str = '</tbody></table><div id="ipathSetDiv"></div></form>';
 	str += '<form id="frmPaste" method="post"><input type="hidden" name="annAction" value="paste"><input type="hidden" name="annCount" value="0"></form>';
-	document.write(str);
+	w(str);
 }
 
 function ipathPaste(path)
@@ -267,7 +267,7 @@ treeWriter.prototype.s = function(idx, flag) { /* flag: -1: root, 1: last */
 	ret += '<div class="tnum">' + (idx+1) + '</div>';
 	ret += '</div><div class="article" id="art' + id + '"><div align="center">...载入中...</div></div>';
 	this.ifs += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
-	document.write(ret);
+	w(ret);
 
 	var cur = gTreeArts[idx].first_child;
 	while(cur != -1) {
@@ -275,55 +275,180 @@ treeWriter.prototype.s = function(idx, flag) { /* flag: -1: root, 1: last */
 		cur = gTreeArts[cur].next_sibling;
 	}
 	
-	document.write("</div>");
+	w("</div>");
 };
 treeWriter.prototype.o = function() {
 	var i;
 	this.s(0, -1);
 	for(i=1;i<gTreeArts.length;i++) this.s(i, -1); //没连上根的那些枝条
-	document.write(this.ifs);
+	w(this.ifs);
 };
 
 
 
+/* replymode: S/Y/N/R/A */
+function generateQuotation(c, mailmode, replymode) {
+	replymode = replymode ? replymode.toLowerCase() : 's';
+	var subject = "", quotation = "";
+	var start, i;
+	try {
+		var s = c.split("\n");
 
+		/* 寻找标题 */
+		if (s.length > 1) {
+			start = s[1].indexOf(":");
+			if (start != -1) {
+				subject = s[1].substring(start + 2);
+				if (subject.substring(0, 4) != "Re: ") subject = "Re: " + subject;
+			}
+		}
 
+		if (replymode != 'n') {
+			/* 寻找作者信息 */
+			var author = "";
+			if (s.length > 0) {
+				var end = s[0].lastIndexOf(")");
+				start = s[0].indexOf(":");
+				if (start != -1 && end != -1) {
+					author = s[0].substring(start + 2, end + 1);
+				}
+			}
+		
+			if (mailmode) {
+				quotation += "\n【 在 " + author + " 的来信中提到: 】\n";
+			} else {
+				quotation += "\n【 在 " + author + " 的大作中提到: 】\n";
+			}
+			
+			/* 处理引文 */
+			if (replymode == 'a') {
+				for (i = 1; i < s.length; i++) {
+					quotation += ": " + s[i].replace(/\r[\[\d;]+[a-z]/gi, "") + "\n";
+				}
+			} else {
+				for (i = 2; i < s.length; i++) {
+					if (s[i].length == 0) break;
+				}
+				if (replymode == 'r') {
+					for (i++; i < s.length; i++) {
+						if (s[i].indexOf("※ 来源:·") == -1) {
+							quotation += s[i].replace(/\r[\[\d;]+[a-z]/gi, "") + "\n";
+						}
+					}
+				} else {
+					var qlines = 0;
+					for (i++; i < s.length; i++) {
+						if (s[i].substring(0,1) == "【") continue;
+						if (s[i].substring(0,2) == ": ") continue;
+						if (s[i] == "--") break;
+						if (s[i].length == 0) continue;
+						quotation += ": " + s[i].replace(/\r[\[\d;]+[a-z]/gi, "") + "\n"; /* filter <textarea> ? */
+						if (replymode == 's') {
+							qlines++;
+							if (qlines >= 3) {
+								quotation += ": ...................";
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	} catch(e) {
+	}
+	return { "subject" : subject, "quotation" : quotation };
+}
 
-function replyForm(board,reid,title,att,signum,sig,ann,outgo,lsave) {
-	var html = '<form name="postform" method="post" action="bbssnd.php?board=' + board + '&reid=' + reid + '" class="large">'
-		+ '<div class="article smaller"><a href="bbsnot.php?board=' + board + '" target="_blank">查看讨论区备忘录</a></div>'
-		+ '<fieldset><legend>' + (reid ? "回复文章" : "发表文章") + '</legend>'
-		+ '发信人: ' + getUserid() + ', 信区: ' + board + ' [<a href="bbsdoc.php?board=' + board + '">本讨论区</a>]<br/>';
+function showReplyForm(url) {
+	var o = getObj("divReplyForm");
+	o.style.padding = '0.5em';
+	o.innerHTML = "载入中，请稍候……";
+	o = document.createElement('iframe');
+	o.style.display = 'none';
+	document.body.appendChild(o);
+	o.src = url;
+	return false;
+}
+function changeQM(m) {
+	var f = getObj('rff');
+	if (f) {
+		var rr = generateQuotation(strPrint, 0, m);
+		f.value = rr.quotation;
+		f.focus();
+		setCursorPosition(f, 0, 0);
+	}
+}
+function showReplyFormReal(rf) {
+	rf.pDiv.innerHTML = rf.f() + '</textarea>' + rf.t();
+	changeQM('s');
+}
+function replyForm(board,reid,title,att,signum,sig,ano,outgo,lsave) {
+	this.board = board;
+	this.reid = reid;
+	this.title = title;
+	this.att = att;
+	this.signum = signum;
+	this.sig = sig;
+	this.ano = ano;
+	this.outgo = outgo;
+	this.lsave = lsave;
+	this.pDiv = (parent && parent.document.getElementById("divReplyForm"));
+	if (this.pDiv) {
+		var self = this;
+		addBootFn(function() {
+			parent.showReplyFormReal(self);
+		});
+	}
+}
+replyForm.prototype.f = function() {
+	var i,focusEle = (this.pDiv ? ' id="rff"' : ' id="sfocus"');
+	var html = '<form name="postform" method="post" action="bbssnd.php?board=' + this.board + '&reid=' + this.reid + '" class="large">'
+		+ '<div class="article smaller"><a href="bbsnot.php?board=' + this.board + '" target="_blank">查看讨论区备忘录</a></div>'
+		+ '<fieldset><legend>' + (this.reid ? "回复文章" : "发表文章") + '</legend>'
+		+ '发信人: ' + getUserid() + ', 信区: ' + this.board + ' [<a href="bbsdoc.php?board=' + this.board + '">本讨论区</a>]<br/>';
 	var nt = "";
-	if (reid) nt = (title.substr(0,4).toLowerCase() == "re: ") ? title : ("Re: " + title);
+	if (this.reid) nt = (this.title.substr(0,4).toLowerCase() == "re: ") ? this.title : ("Re: " + this.title);
 	html += '标&nbsp;&nbsp;题: <input type="text" tabindex="1" name="title" size="40" maxlength="100" value="'
-		+ htmlize(nt) + '"' + (reid?'':' id="sfocus"') + '/><br/>';
-	if (att) {
+		+ htmlize(nt) + '"' + (this.reid?'':focusEle) + '/><br/>';
+	if (this.att) {
 		html += '附&nbsp;&nbsp;件: <input type="text" name="attachname" size="40" value="" disabled="disabled" />'
 			+ ' <a href="bbsupload.php" target="_blank">操作附件</a>(新窗口打开)<br/>';
 	}
-	html += '使用签名档 <select name="signature">';
-	if (signum == 0) html += '<option value="0" selected="selected">不使用签名档</option>';
+	html += '签名档 <select name="signature">';
+	if (this.signum == 0) html += '<option value="0" selected="selected">不使用签名档</option>';
 	else {
 		html += '<option value="0">不使用签名档</option>';
-		for (var i=1; i<=signum; i++) {
-			html += '<option value="' + i + '"' + (sig==i?' selected="selected"':'') + '>第 ' + i + ' 个</option>';
+		for (i=1; i<=this.signum; i++) {
+			html += '<option value="' + i + '"' + (this.sig==i?' selected="selected"':'') + '>第 ' + i + ' 个</option>';
 		}
-		html += '<option value="-1" ' + (sig<0?'selected="selected"':'') + '>随机签名档</option>';
+		html += '<option value="-1" ' + (this.sig<0?'selected="selected"':'') + '>随机签名档</option>';
 	}
 	html += '</select> [<a target="_blank" href="bbssig.php">查看签名档</a>]';
-	if (ann) html += '<input type="checkbox" name="anony" value="1" />匿名';
-	if (outgo) html += '<input type="checkbox" name="outgo" value="1"' + (lsave?'':' checked="checked"') + '/>转信';
-	html += '<input type="checkbox" name="mailback" value="1" />re文抄送信箱<br />';
-	document.write(html);
-}
+	if (this.ano) html += '<input type="checkbox" name="anony" value="1" />匿名';
+	if (this.outgo) html += '<input type="checkbox" name="outgo" value="1"' + (this.lsave?'':' checked="checked"') + '/>转信';
+	html += '<input type="checkbox" name="mailback" value="1" />re文抄送信箱';
+	if (this.pDiv) {
+		var rm = [['S','前三行(默认)'],['Y','该作者全文'],['N','不引用'],['R','R模式(不推荐)'],['A','全文']];
+		var v = '['
+		for (i in rm) {
+			var r = rm[i];
+			v += '<span class="clickable" title="回文模式：' + r[1] + '" onclick="changeQM(\'' + r[0] + '\')">' + r[0] + '</span>/';
+		}
+		v = v.substr(0,v.length-1) + ']';
+		html += ' ' + v;
+	}
+	html += '<br />';
+	html += '<textarea name="text" tabindex="2" onkeydown="return textarea_okd(dosubmit, event);" wrap="physical"' 
+		+ (this.reid?focusEle:'') + '>';
+	return(html);
+};
 replyForm.prototype.t = function() {
 	var html = '<br/>';
 	html += '<div class="oper"><input type="button" onclick="dosubmit();" tabindex="3" name="post" value="发表" />'
 		+ '&nbsp;&nbsp;&nbsp;&nbsp;<input class="sb1" type="reset" value="返回" onclick="history.go(-1)" /></div>';
 	html += '</fieldset></form>';
-	document.write(html);
-}
+	return(html);
+};
 
 
 
@@ -616,7 +741,7 @@ function convertAnsi(s) {
 
 /* WARNING: now I can only deal with only one ansi container in a page */
 function triggerAnsiDiv(obj,objInner) {
-	if (!((gIE && !gIE5) || gFx)) return;
+	if (!gIE6Fx) return;
 	if (!(obj = getObj(obj))) return;
 	if (!(objInner = getObj(objInner))) return;
 	addBootFn(function() {
@@ -633,7 +758,4 @@ function triggerAnsiDiv(obj,objInner) {
 		});
 	});
 }
-
-
-
 

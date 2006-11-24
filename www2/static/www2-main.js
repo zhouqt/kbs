@@ -18,6 +18,7 @@ var gIE5 = false;
 if (gIE) {
 	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 6);
 }
+var gIE6Fx = ((gIE && !gIE5) || gFx);
 var kbsrc = null; //namespace in this window
 var www2dev = (typeof gwww2dev != "undefined");
 
@@ -35,6 +36,8 @@ StringBuffer.prototype = {
 	append: function(string) { this.buffer.push(string); },
 	toString: function() { return this.buffer.join(""); }
 };
+
+function w(s) { if (document&&document.write) document.write(s); }
 
 
 var bootFn = Array();
@@ -74,7 +77,7 @@ function prints(s) {
 		s = s.replace(urlmatch, "<a target=\"_blank\" href=\"$1\">$1</a>");
 	}
 	strArticle += s;
-	if (!divArtCon) document.write(s);
+	if (!divArtCon) w(s);
 }
 function attachURL(name, len, pos) {
 	if (att.bid < 0) { return location.href+'&ap='+pos; }; //mail
@@ -114,7 +117,7 @@ function attach(name, len, pos) {
 		s += '<br />附件: <a href="' + url + '">' + name + '</a> (' + sizes + ')<br />';
 	}
 	strArticle += s;
-	if (!divArtCon) document.write(s);
+	if (!divArtCon) w(s);
 }
 function writeArticle() {
 	divArtCon.innerHTML = strArticle;
@@ -147,7 +150,7 @@ function getAds(i,l,n) {
 	return ret;
 }
 function writeAds(i,l,n) {
-	document.write(getAds(i,l,n));
+	w(getAds(i,l,n));
 }
 function recordAds(n) {
 	var cc = getCookie('kbsAd', '');
@@ -457,7 +460,7 @@ function getFindBox(board) { /* TODO: sfocus here might conflict with others */
 }
 
 function showFindBox(board) {
-	return true; /* disable for now */
+	if (!gIE6Fx || !www2dev) return true;
 	var divID = "articleFinder";
 	var div = getObj(divID);
 	if (!div) {
@@ -569,7 +572,7 @@ function hotTopic(board, bid) { /* TODO: no table, use AJAX */
 		str += '<span id="hotTopics" onmouseover="hotMove=false;" onmouseout="hotMove=true;">载入中...</span>';
 	}
 	str += '</td></tr></table>';
-	document.write(str + '<iframe width=0 height=0 src="images/img.gif" frameborder="0" scrolling="no" id="hiddenframe" name="hiddenframe"></iframe>');
+	w(str + '<iframe width=0 height=0 src="images/img.gif" frameborder="0" scrolling="no" id="hiddenframe" name="hiddenframe"></iframe>');
 	hotBoard = escape(board);
 	hotBid = bid;
 	addBootFn(function() {
@@ -598,7 +601,7 @@ function checkFrame() {
 	+ '<span class="clickable" onclick="sizer(1)" title="字体大大大...大点">+</span> '
 	+ '<span class="clickable" onclick="sizer(-1)" title="字体小小小...小点">-</span> '
 	+ '<span class="clickable" onclick="sizer(0)" title="字体变变变...变回去">R</span></div>';
-	document.write(msg);
+	w(msg);
 	if (top == self) { /* TODO: use better way */
 		var url = getURLPath(document.location.toString());
 		var ex = '(<a href="frames.html?mainurl=' + escape(url) + '">展开完整界面</a>)';
@@ -651,9 +654,9 @@ function getCssFile(file) {
 }
 
 function writeCssFile(file) {
-	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
+	w('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
 	if (showUnread()) {
-		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
+		w('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
 		//for now. readystatechange event might trigger IE bug "operation aborted"
 		addBootFn(function() {
 			try {
@@ -695,7 +698,7 @@ function writeCss() {
 	ret += 'body{font-size:' + bfsArr[bfsI] + 'px;}';
 	ret += '.smaller{font-size:' + bfsSma[bfsI] + 'px;}';
 	ret += '--></style>';
-	document.write(ret);
+	w(ret);
 }
 function writeCssLeft() { writeCssFile('bbsleft'); }
 function writeCssMainpage() { writeCssFile('mainpage'); }
@@ -707,7 +710,7 @@ function putImageCode(filename,otherparam) {
 
 function putImage(filename,otherparam)
 {
-	document.write(putImageCode(filename,otherparam));
+	w(putImageCode(filename,otherparam));
 }
 
 
@@ -722,7 +725,7 @@ function writeBM_html(bmstr, firstBM) {
 	return firstBM ? bms[0] : bms.join(" ");
 }
 function writeBMs(bmstr) {
-	document.write(writeBM_html(bmstr, false));
+	w(writeBM_html(bmstr, false));
 }
 
 function isBM(bid) {
@@ -777,17 +780,21 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 			   [ftype != dir_modes["MARK"], "保留区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["MARK"]],
 			   [ftype != dir_modes["ORIGIN"], "同主题", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["ORIGIN"]],
 			   [apath && ftype != dir_modes["ANNOUNCE"], "精华区", "bbs0an.php?path=" + escape(apath)],
-			   [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board]];
+			   [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board, "showFindBox('" + this.board + "')"]];
 	var mls_bm = [[ftype != dir_modes["DELETED"], "回收站", "bbsdoc.php?manage=1&board=" + this.board + "&ftype=" + dir_modes["DELETED"]]];
 	if (isBM(bid)) mls = mls.concat(mls_bm);
 	for (var i = mls.length - 1; i >= 0; i--) {
 		links = mls[i];
 		if (links[0]) {
-			str += '<a href="' + links[2] + '">' + links[1] + '</a>';
+			if (links[3]) {
+				str += '<a onclick="return ' + links[3] + ';" href="' + links[2] + '">' + links[1] + '</a>';
+			} else {
+				str += '<a href="' + links[2] + '">' + links[1] + '</a>';
+			}
 		} else if (ftype != dir_modes["FIND"]) {
 			str += '<b>' + links[1] + '</b>';
 		} else {
-			str += '<b class="clickable" onclick="javascript:location.href=\''+links[2]+'\';">' + links[1] + '</b>';
+			str += '<b class="clickable" onclick="location.href=\''+links[2]+'\';">' + links[1] + '</b>';
 		}
 	}
 	str += '</div>';
@@ -827,7 +834,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 		}
 		str += '<th>作者</th><th>日期</th><th>' + links + '</th></tr>';
 	}
-	document.write(str);
+	w(str);
 }
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size, imported) {
 	var rowclass;	
@@ -888,7 +895,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 			break;
 	}
 	str += '</td></tr>';
-	document.write(str);
+	w(str);
 	this.num++;
 };
 function mansubmit(flag) {
@@ -957,7 +964,7 @@ docWriter.prototype.t = function() {
 	ret += '</form>';
 
 	ret += '</div>'; //class="doc"
-	document.write(ret);
+	w(ret);
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board, this.bid);
 };
@@ -1009,7 +1016,7 @@ docWriter.prototype.f = function(rss,related,isclub) {
 		ret += ' [<a href="bbs0anbm.php?path=' + escape(this.apath) + '">精华区管理</a>]';
 	}
 	ret += '</div>';
-	document.write(ret);
+	w(ret);
 };
 
 function clearArticleDiv(id) {
@@ -1033,7 +1040,7 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num) {
 		addBootFn(writeArticle);
 		return;
 	}
-	document.write("<div id='kbsrcInfo'>con," + bid + "," + id + "</div>");
+	w("<div id='kbsrcInfo'>con," + bid + "," + id + "</div>");
 
 	if (!isLogin() && this.ftype) {
 		this.headers = "";
@@ -1042,7 +1049,11 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num) {
 	var ret = '<div class="conPager smaller right">';
 	if (isLogin()) { /* TODO: 某些模式应该禁止显示这两个链接 */
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
-		ret += '<a href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
+		if (gIE6Fx) {
+			ret += '<a onclick="return showReplyForm(\'' + url + '\');" href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg"') + '</a>';
+		} else {
+			ret += '<a href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
+		}
 		url = 'bbspst.php?board=' + this.board;
 		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
@@ -1060,9 +1071,9 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num) {
 conWriter.prototype.h = function(isTop) {
 	if (divArtCon) return;
 	var ret = this.headers;
-	if (!isTop) ret = '</div>' + ret;
+	if (!isTop) ret = '</div>' + ret + '<div id="divReplyForm"></div>';
 	else ret += '<div class="article">';
-	document.write(ret);
+	w(ret);
 };
 conWriter.prototype.t = function() {
 	if (divArtCon) return;
@@ -1098,13 +1109,13 @@ conWriter.prototype.t = function() {
 		}
 	}
 	ret += '</div>';
-	if (gIE) addBootFn(function() {
+	if (gIE) addBootFn(function() { // fuck you IE
 		var o = getObj("idConOper");
 		o.style.display = "none";
 		o.style.display = "block";
 	});
 	top.hlInfo = this.bid + "," + this.id + "," + this.gid;
-	document.write(ret);
+	w(ret);
 };
 
 
@@ -1141,7 +1152,7 @@ tconWriter.prototype.h = function() {
 	ret += '】';
 	if (this.pno < this.tpage) ret += '<a href="' + u + (this.pno+1) + '">下一页</a> ';
 	ret += '</div>';
-	document.write(ret);
+	w(ret);
 };
 tconWriter.prototype.o = function(arts) {
 	var ifs = "";
@@ -1166,10 +1177,10 @@ tconWriter.prototype.o = function(arts) {
 		ret += '<div class="tnum">' + (this.serial+i+1) + '</div>';
 		ret += '</div><div class="article" id="art' + id + '"><div align="center">...载入中...</div></div>';
 		ifs += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
-		document.write(ret);
+		w(ret);
 	}
-	document.write('<div id="kbsrcInfo">tcon,' + this.bid + ',' + ids.join(',') + '</div>');
-	document.write(ifs);
+	w('<div id="kbsrcInfo">tcon,' + this.bid + ',' + ids.join(',') + '</div>');
+	w(ifs);
 };
 
 
@@ -1195,7 +1206,7 @@ function brdWriter(father, select, fix) {
 			ret += '<td colspan="'+(fix?6:7)+'"><a href="bbsfav.php?select=' + father + fix + '">回到上一级</a></td></tr>';
 		}
 	}
-	document.write(ret);
+	w(ret);
 	this.father = father;
 	this.select = select;
 	this.fix = fix;
@@ -1211,7 +1222,7 @@ brdWriter.prototype.f = function(select, desc, npos, name) {
 	ret += '<td class="center">[目录]</td><td colspan="4">' + desc + ' </td>';
 	if (!this.fix) ret += '<td class="center"><a href="bbsfav.php?select=' + this.select + '&deldir=' + npos + '">删除</a></td>';
 	ret += '</tr>';
-	document.write(ret);
+	w(ret);
 };
 brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, bms, artcnt, npos, online) {
 	this.index++;
@@ -1239,10 +1250,10 @@ brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, 
 	ret += '<td class="right">' + online + '</td>';
 	if (!this.fix) ret += '<td class="center"><a href="bbsfav.php?select=' + this.select + '&delete=' + npos + '">删除</a></td>';
 	ret += '</tr>';
-	document.write(ret);
+	w(ret);
 };
 brdWriter.prototype.t = function() {
-	document.write('<div id="kbsrcInfo">brd,' + this.kbsrc.join(',') + '</div></table>');
+	w('<div id="kbsrcInfo">brd,' + this.kbsrc.join(',') + '</div></table>');
 };
 
 function tabWriter(num, tabC, caption, header) {
@@ -1268,7 +1279,7 @@ function tabWriter(num, tabC, caption, header) {
 		ret += '<th>' + header[i][0] + '</th>';
 	}
 	ret += '</tr><tbody>';
-	document.write(ret);
+	w(ret);
 }
 tabWriter.prototype.pr = function(col, content) {
 	var ret = '<td';
@@ -1290,8 +1301,8 @@ tabWriter.prototype.r = function() {
 		ret += this.pr(j, arguments[i]);
 	}
 	ret += '</tr>';
-	document.write(ret);
+	w(ret);
 };
 tabWriter.prototype.t = function() {
-	document.write("</tbody></table>");
+	w("</tbody></table>");
 };
