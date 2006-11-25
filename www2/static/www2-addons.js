@@ -232,10 +232,10 @@ function treeWriter(board, bid, gid, arts) {
 		gTreeArts[i] = node;
 		tI[node.id] = i + 1;
 		if (i > 0 && tI[node.reid]) {
-			var parent = gTreeArts[tI[node.reid] - 1];
-			if (parent.first_child == -1) parent.first_child = i;
-			if (parent.last_child != -1) gTreeArts[parent.last_child].next_sibling = i;
-			parent.last_child = i;
+			var par = gTreeArts[tI[node.reid] - 1];
+			if (par.first_child == -1) par.first_child = i;
+			if (par.last_child != -1) gTreeArts[par.last_child].next_sibling = i;
+			par.last_child = i;
 		}
 	}
 	this.ifs = "";
@@ -403,9 +403,8 @@ function replyForm(board,reid,title,att,signum,sig,ano,outgo,lsave) {
 replyForm.prototype.f = function() {
 	var i,focusEle = (this.pDiv ? ' id="rff"' : ' id="sfocus"');
 	var html = '<form name="postform" method="post" action="bbssnd.php?board=' + this.board + '&reid=' + this.reid + '" class="large">'
-		+ '<div class="article smaller"><a href="bbsnot.php?board=' + this.board + '" target="_blank">查看讨论区备忘录</a></div>'
 		+ '<fieldset><legend>' + (this.reid ? "回复文章" : "发表文章") + '</legend>'
-		+ '发信人: ' + getUserid() + ', 信区: ' + this.board + ' [<a href="bbsdoc.php?board=' + this.board + '">本讨论区</a>]<br/>';
+		+ '发信人: ' + getUserid() + ', 信区: ' + this.board + ' [<a href="bbsdoc.php?board=' + this.board + '">本讨论区</a>] [<a href="bbsnot.php?board=' + this.board + '" target="_blank">查看讨论区备忘录</a>]<br/>';
 	var nt = "";
 	if (this.reid) nt = (this.title.substr(0,4).toLowerCase() == "re: ") ? this.title : ("Re: " + this.title);
 	html += '标&nbsp;&nbsp;题: <input type="text" tabindex="1" name="title" size="40" maxlength="100" value="'
