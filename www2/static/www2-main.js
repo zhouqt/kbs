@@ -18,9 +18,9 @@ var gIE5 = false;
 if (gIE) {
 	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 6);
 }
-var gIE6Fx = ((gIE && !gIE5) || gFx);
 var kbsrc = null; //namespace in this window
 var www2dev = (typeof gwww2dev != "undefined");
+var gIE6Fx = ((gIE && !gIE5) || gFx || www2dev);
 
 if (!Array.prototype.push) {
 	Array.prototype.push = function() {
@@ -123,6 +123,12 @@ function writeArticle() {
 	divArtCon.innerHTML = strArticle;
 }
 
+function notifyError(parentEle, msg) {
+	if (parent) {
+		var v = parent.document.getElementById(parentEle);
+		if (v) { v.innerHTML = ""; alert(msg); }
+	}
+}
 
 function getCookie(name, def){
 	var cname = name + "="; 

@@ -411,8 +411,10 @@ history.go(-1);
 	exit;
 }
 
+$htmlErrorNotify = false;
 function html_error_quit($err_msg)
 {
+	global $htmlErrorNotify;
 	page_header("发生错误");
 ?>
 <table class="error">
@@ -421,6 +423,11 @@ function html_error_quit($err_msg)
 </table>
 [<a href="javascript:history.go(-1)">快速返回</a>]<br /><br />
 <?php
+	if ($htmlErrorNotify !== false) {
+?>
+<script>notifyError('<?php echo $htmlErrorNotify; ?>','<?php echo addSlashes($err_msg); ?>');</script>
+<?php
+	}
 	page_footer(false);
 	exit;
 }
