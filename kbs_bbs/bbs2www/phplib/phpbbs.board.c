@@ -739,6 +739,44 @@ PHP_FUNCTION(bbs_useronboard)
 }
 
 
+PHP_FUNCTION(bbs_boardonlines_for_rrdtool)
+{
+    int totals[MAXBOARD][3];
+    uint16_t ret[MAXBOARD][4];
+    char b64[sizeof(ret)*2];
+    int i, nBoards;
+    bzero(totals, sizeof(totals));
+    for (i=0;i<USHM_SIZE;i++) {
+        struct user_info *ui;
+        ui=get_utmpent(i+1);
+        if (ui->active) {
+            int b = ui->currentboard;
+            if (b) {
+                totals[b-1][0]++;
+                if (ui->pid==1)
+                    totals[b-1][1]++;
+            }
+        }
+    }
+    for (i=0;i<MAX_WWW_GUEST;i++) {
+        if (wwwguest_shm->use_map[i / 32] & (1 << (i % 32))) {
+            int b=wwwguest_shm->guest_entry[i].currentboard;
+            if (b) totals[b-1][2]++;
+        }
+    }
+    nBoards = 0;
+    for (i=0;i<MAXBOARD;i++) {
+        if (!public_board(getboard(i+1))) continue;
+        ret[nBoards][0]=htons(i+1);
+        ret[nBoards][1]=htons(totals[i][0]);
+        ret[nBoards][2]=htons(totals[i][1]);
+        ret[nBoards][3]=htons(totals[i][2]);
+        nBoards++;
+    }
+    to64frombits((unsigned char*)b64, (unsigned char *)ret, nBoards*8);
+    RETURN_STRING(b64, 1);
+}
+
 
 
 PHP_FUNCTION(bbs_set_onboard)

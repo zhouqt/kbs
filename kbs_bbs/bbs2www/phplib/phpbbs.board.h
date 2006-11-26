@@ -17,6 +17,7 @@ PHP_FUNCTION(bbs_normalboard);
 PHP_FUNCTION(bbs_searchboard);
 
 PHP_FUNCTION(bbs_useronboard);
+PHP_FUNCTION(bbs_boardonlines_for_rrdtool);
 PHP_FUNCTION(bbs_set_onboard);
 
 
@@ -45,6 +46,7 @@ PHP_FUNCTION(bbs_del_favboarddir);
     PHP_FE(bbs_normalboard,NULL) \
     PHP_FE(bbs_searchboard,third_arg_force_ref_001) \
     PHP_FE(bbs_useronboard,two_arg_force_ref_01) \
+    PHP_FE(bbs_boardonlines_for_rrdtool,NULL) \
     PHP_FE(bbs_set_onboard,NULL) \
     PHP_FE(bbs_load_favboard,NULL) \
     PHP_FE(bbs_fav_boards,NULL) \
