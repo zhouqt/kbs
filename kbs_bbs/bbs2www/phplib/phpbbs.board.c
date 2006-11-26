@@ -766,7 +766,9 @@ PHP_FUNCTION(bbs_boardonlines_for_rrdtool)
     }
     nBoards = 0;
     for (i=0;i<MAXBOARD;i++) {
-        if (!public_board(getboard(i+1))) continue;
+        const struct boardheader *b = getboard(i+1);
+        if (!b->filename[0]) continue;
+        if (!public_board(b)) continue;
         ret[nBoards][0]=htons(i+1);
         ret[nBoards][1]=htons(totals[i][0]);
         ret[nBoards][2]=htons(totals[i][1]);
