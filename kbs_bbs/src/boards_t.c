@@ -289,7 +289,7 @@ int show_boardinfo(const char *bname)
 #ifdef NEWSMTH
         prints("\033[1;33m积分限制\033[m: %s <%d>\n",bp->score_level?"发表限制":"无限制",bp->score_level);
 #endif /* NEWSMTH */
-        prints("\033[1;33m版面ＩＤ\033[m: %d\n", bid);
+        prints("\033[1;33m版面序号\033[m: %d\n",bid);
     }
     /* END -- etnlegend, 查询版面限制属性显示 ... */
 
