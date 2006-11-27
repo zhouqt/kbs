@@ -2493,7 +2493,7 @@ char* process_control_chars(char *s,const char *reserved_chars){
     }
     else{
         memcpy(TU,TD,(256*sizeof(unsigned char)));
-        for(p=(const unsigned char*)s;*p;p++){
+        for(p=(const unsigned char*)reserved_chars;*p;p++){
             TU[*p]=0x00;
         }
         T=TU;
