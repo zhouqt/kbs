@@ -540,8 +540,10 @@ int main(int ac, char **av)
         }
         /* COMMAN : setuid to bbs */
 
-        setreuid(BBSUID, BBSUID);
-        setregid(BBSGID, BBSGID);
+        if(setgid(BBSGID)==-1)
+            exit(8);
+        if(setuid(BBSUID)==-1)
+            exit(8);
 
 #if 0 /* etnlegend, 2006.10.31 ... */
         if (!debug_flag) {

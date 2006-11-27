@@ -597,10 +597,10 @@ static int start_daemon(int inetd,int port,const char *addr){
             SD_EXIT(1);
 #undef SD_EXIT
     }
-    setuid(BBSUID);
-    setgid(BBSGID);
-    setreuid(BBSUID,BBSUID);
-    setregid(BBSGID,BBSGID);
+    if(setgid(BBSGID)==-1)
+        exit(8);
+    if(setuid(BBSUID)==-1)
+        exit(8);
     return 0;
 }
 static int bbs_inet_main(char* argv){
