@@ -81,13 +81,20 @@ int NNread_init()
 #ifdef ACBOARD_BNAME
     if (stat("boards/"ACBOARD_BNAME"/.DIGEST", &st) < 0) {
 #else
+#if MAXnettyLN > 5
+    if (stat("etc/movie7", &st) < 0) {
+#else
     if (stat("etc/movie", &st) < 0) {
+#endif
 #endif
         return 0;
     }
     ftime = st.st_mtime;
     if (movieshm == NULL) {
-        movieshm = (void *) attach_shm("ACBOARD_SHMKEY", 4123, sizeof(*movieshm), &iscreate);
+		if(MAXnettyLN > 5)
+        	movieshm = (void *) attach_shm("ACBOARD7_SHMKEY", 4124, sizeof(*movieshm), &iscreate);
+		else
+        	movieshm = (void *) attach_shm("ACBOARD_SHMKEY", 4123, sizeof(*movieshm), &iscreate);
     }
     if (abs(now - movieshm->update) < 12 * 60 * 60 && ftime < movieshm->update) {
         return 1;
@@ -142,7 +149,11 @@ int NNread_init()
 	close(fd);
 #else
     /*---	原有程序顺序有误, !DEFINE --> return后没close	---*/
+#if MAXnettyLN > 5
+    if ((fffd = fopen("etc/movie7", "r")) == NULL)
+#else
     if ((fffd = fopen("etc/movie", "r")) == NULL)
+#endif
         return 0;
     /*---	---*/
     while ((xxxline < ACBOARD_MAXLINE) && (fgets(buf, ACBOARD_BUFSIZE, fffd) != NULL)) {
@@ -355,11 +366,7 @@ void netty_more()
     update_endline();
     move(3, 0);
     while ((nnline < movieshm->movielines) /*&&DEFINE(getCurrentUser(),DEF_ACBOARD) */ ) {
-#ifdef FREE
-        move(1 + ne_row, 0);
-#else
-        move(2 + ne_row, 0);
-#endif
+        move(((MAXnettyLN>5)?1:2) + ne_row, 0);
         clrtoeol();
 
         strcpy(buf, movieshm->line[nnline]);
@@ -381,7 +388,8 @@ void printacbar()
 {
     int x, y;
 
-#ifndef FREE
+	if(MAXnettyLN > 5) return;
+
     getyx(&y, &x);
 
     move(2, 0);
@@ -395,7 +403,6 @@ void printacbar()
     else
         prints("\033[35m└——————————————┤\033[36m" FOOTER_MOVIE "\033[35m├——————————————┘ \033[m\n");
     move(y, x);
-#endif
 
 }
 
