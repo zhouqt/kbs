@@ -555,6 +555,7 @@ static int start_daemon(int inetd,int port,const char *addr){
                 exit(2);
             close(fd);
         }
+        fchown(4,BBSUID,BBSGID);
         if(write_lock(4,0,SEEK_SET,0)==-1){
             switch(errno){
                 case EACCES:
