@@ -120,8 +120,8 @@ domxml_open_file().....等警告。
      mainpage.html。间隔时间可以自行调整。以下命令为一行，不要折行。
      
      #每 10 分钟自动更新一下/var/www/html/mainpage.html
-     */10 * * * * /usr/bin/wget -Y off -t 0 -O /var/www/html/mainpage.html
-     http://127.0.0.1/mainpage.php &>/dev/null
+     */10 * * * * /usr/bin/wget -q -O /var/www/html/mainpage.html
+     http://127.0.0.1/mainpage.php
      
      注意生成 mainpage.html 的时间点应该避开 3.3.2 节提到的 crontab 中的程序
      生成各个 xml 文件的时间点，否则可能造成 mainpage.php 读取到空的正在更新
