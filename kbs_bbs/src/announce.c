@@ -27,7 +27,8 @@
 
 #include "bbs.h"
 
-#define A_PAGESIZE      (t_lines - 5)
+int ann_quick_view = 0;
+#define A_PAGESIZE      ((ann_quick_view)?((t_lines - 5)/2):(t_lines - 5))
 
 #define ADDITEM         0
 #define ADDGROUP        1
@@ -40,7 +41,8 @@ int a_fmode_show = 1;
 void a_menu();
 void a_report();                /*Haohmaru.99.12.06.版主精华区操作记录，作为考查工作的依据 */
 
-extern void a_prompt();         /* added by netty */
+extern int draw_content(char *fn, struct fileheader *fh);
+
 int t_search_down();
 int t_search_up();
 
@@ -1715,8 +1717,27 @@ MENU *father;
 
             a_showmenu(&me);
         }
+        if (ann_quick_view && (me.now < me.num)) {
+            if (M_ITEM(&me,me.now)->host == NULL) {
+                snprintf(fname, sizeof(fname), "%s/%s", path, M_ITEM(&me,me.now)->fname);
+                if (dashf(fname)) {
+                    draw_content(fname, NULL);
+                    outs("\x1b[m");
+                } else {
+                    int i; char buf[128];
+                    move(BBS_PAGESIZE / 2+3, 0);
+                    sprintf(buf, "\x1b[44m%-80.80s\033[m\n", "这是一个目录");
+                    prints(buf);
+                    for(i=BBS_PAGESIZE / 2+4;i<t_lines-1;i++) {
+                        move(i,0);
+                        clrtoeol();
+                    }
+                }
+            }
+        }
         move(3 + me.now - me.page, 0);
         prints("->");
+
         ch = igetkey();
         move(3 + me.now - me.page, 0);
         prints("  ");
@@ -1729,6 +1750,10 @@ MENU *father;
             break;
         case Ctrl('Z'):
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
+            break;
+        case ',':
+            ann_quick_view = !ann_quick_view;
+            if (!ann_quick_view) me.page = 9999;
             break;
         case KEY_UP:
         case 'K':

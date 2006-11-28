@@ -1170,7 +1170,11 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     move(BBS_PAGESIZE / 2+3, 0);
 /*    prints("\033[34m——————————————————预览窗口—————————————————");*/
 /*    move(t_lines/2+1, 0);*/
-    sprintf(buf, "\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s\033[1;32m标  题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[转]" : "");
+    if (fh) {
+        sprintf(buf, "\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s\033[1;32m标  题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[转]" : "");
+    } else {
+        sprintf(buf, "\x1b[44m%-80.80s\033[m", "");
+    }
     outs(buf);
     prints("\n\033[m");
     for(i=BBS_PAGESIZE / 2+4;i<t_lines-1;i++) {
