@@ -1113,30 +1113,24 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 
 int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    static char author[IDLEN + 1];
-    char ans[IDLEN + 1], pmt[STRLEN];
+    char pmt[STRLEN];
     char currauth[STRLEN];
     bool up=(bool)extraarg;
+    int ret = DONOTHING;
     
     if (fh==NULL) return DONOTHING;
-    strncpy(currauth, fh->owner, STRLEN);
-    snprintf(pmt, STRLEN, "%s的文章搜寻作者 [%s]: ", up ? "往先前" : "往后来", currauth);
+    strcpy(currauth, fh->owner);
+    snprintf(pmt, STRLEN, "%s搜寻作者: ", up ?  "↑" : "↓");
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, NULL, true);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
-    if (ans[0] != '\0')
-        strncpy(author, ans, IDLEN);
-
-    else
-        strcpy(author, currauth);
-    switch (read_search_articles(conf, author, up, 1)) {
-        case 1:
-			conf->show_endline(conf);	/* add by pig2532 on 2005.12.4 */
-            return SELCHANGE;
-        default:
-            conf->show_endline(conf);
+    getdata(t_lines - 1, 0, pmt, currauth, IDLEN + 1, DOECHO, NULL, false);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
+    if (currauth[0] != '\0') {
+        if (1 == read_search_articles(conf, currauth, up, 1)) {
+            ret = SELCHANGE;
+        }
     }
-    return DONOTHING;
+	conf->show_endline(conf);	/* add by pig2532 on 2005.12.4 */
+    return ret;
 }
 
 int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
