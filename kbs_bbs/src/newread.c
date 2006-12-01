@@ -557,6 +557,10 @@ static int read_prekey(struct _select_def *conf, int *command)
 			return SHOW_CONTINUE;
 		}
 		case 'q':
+            *command=KEY_LEFT;
+
+			if(in_mail) return SHOW_CONTINUE;
+
             switch(arg->mode){
                 const struct fileheader *currfh;
                 int ent;
@@ -581,7 +585,6 @@ static int read_prekey(struct _select_def *conf, int *command)
                 default:
                     break;
             }
-            *command=KEY_LEFT;
             return SHOW_CONTINUE;
         case KEY_END:
         case '$':
@@ -929,6 +932,7 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     struct super_filter_query_arg q_arg;
 
     static char query[180]="";
+	int inmail = ((int)(extraarg))?1:0;
 
     if (!strcmp(getCurrentUser()->userid, "guest")) {
         return FULLUPDATE;
@@ -959,26 +963,36 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", query, sizeof(query), 20, 0, 0);
     if(!query[0]) 
         return FULLUPDATE;
-    if (arg->mode==DIR_MODE_AUTHOR||arg->mode==DIR_MODE_TITLE) {
+    if (!inmail && (arg->mode==DIR_MODE_AUTHOR||arg->mode==DIR_MODE_TITLE)) {
         unlink(arg->direct);
     }
 #if 0
     newbbslog(BBSLOG_USER, "SUPER_FILTER %s", query);
 #endif
-    setbdir(DIR_MODE_SUPERFITER, newdirect, currboard->filename);
-
+	q_arg.inmail = inmail;
     q_arg.array = NULL;
     q_arg.array_size = 0;
-    q_arg.boardname = currboard->filename;
+
+	if(inmail){
+		q_arg.boardname = getCurrentUser()->userid;
+        setmailfile(newdirect,getCurrentUser()->userid, ".SUPERFILTER");
+    	q_arg.isbm = 1;
+	}else{
+    	q_arg.boardname = currboard->filename;
+    	setbdir(DIR_MODE_SUPERFITER, newdirect, currboard->filename);
+    	q_arg.isbm = chk_currBM(currBM, getCurrentUser());
+	}
+
     if (curfh == NULL) {
         memset(&dummy_curfh, 0, sizeof(dummy_curfh));
         q_arg.curfh = &dummy_curfh;
     } else {
         q_arg.curfh = curfh;
     }
-    q_arg.isbm = chk_currBM(currBM, getCurrentUser());
+
     q_arg.write_file = newdirect;
     q_arg.query = query;
+	q_arg.direct = arg->direct;
 
     count = query_super_filter(-1, &q_arg);
 

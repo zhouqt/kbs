@@ -1210,6 +1210,8 @@ static int mail_del(struct _select_def* conf, struct fileheader *fileinfo,void* 
     struct read_arg* arg=conf->arg;
     if (fileinfo==NULL)
         return DONOTHING;
+	if (arg->mode == DIR_MODE_SUPERFITER)
+		return DONOTHING;
     clear();
     prints("删除此信件 '%s' ", fileinfo->title);
     getdata(1, 0, "(Yes, or No) [N]: ", genbuf, 2, DOECHO, NULL, true);
@@ -1446,6 +1448,8 @@ int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     struct read_arg* arg=conf->arg;
     if (fileinfo==NULL)
         return DONOTHING;
+	if(arg->mode == DIR_MODE_SUPERFITER)
+		return DONOTHING;
     if (fileinfo->accessed[0] & FILE_MARKED)
         fileinfo->accessed[0] &= ~FILE_MARKED;
     else
@@ -1596,6 +1600,91 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
 #undef MAIL_ADD_IGNORE_RETURN
 }
 
+int change_mail_mode(struct _select_def *conf,struct fileheader *fh,int mode){
+    static char title[32];
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    char buf[STRLEN],ans[4];
+
+    if(!mode){
+        move(t_lines-2,0);
+        clrtoeol();
+        //prints("%s","切换模式到: 0)取消 1)文摘区 2)同主题 3)保留区 4)原作 5)同作者 6)标题关键字");
+        prints("%s","切换模式到: 0)取消 ");
+        move(t_lines-1,0);
+        clrtoeol();
+        if(getdata(t_lines-1,12,"7)超级文章选择 [7]: ",ans,2,DOECHO,NULL,true)==-1)
+		    return FULLUPDATE;
+        switch(ans[0]){
+            case '0':
+                return FULLUPDATE;
+				/*
+            case '1':
+                mode=DIR_MODE_DIGEST;
+                break;
+            case '2':
+                mode=DIR_MODE_THREAD;
+                break;
+            case '3':
+                mode=DIR_MODE_MARK;
+                break;
+            case '4':
+                mode=DIR_MODE_ORIGIN;
+                buf[0]=0;
+                break;
+            case '5':
+                mode=DIR_MODE_AUTHOR;
+                move(t_lines-2,0);
+                clrtoeol();
+                move(t_lines-1,0);
+                clrtoeol();
+                strcpy(buf,fh->owner);
+                getdata(t_lines-1,0,"您希望查找哪位用户的文章: ",buf,IDLEN+2,DOECHO,NULL,false);
+                if(!buf[0])
+                    return FULLUPDATE;
+                break;
+            case '6':
+                mode=DIR_MODE_TITLE;
+                move(t_lines-2,0);
+                clrtoeol();
+                move(t_lines-1,0);
+                clrtoeol();
+                strcpy(buf,title);
+                getdata(t_lines-1,0,"您希望查找的标题关键字: ",buf,32,DOECHO,NULL,false);
+                if(!buf[0])
+                    return FULLUPDATE;
+                strcpy(title,buf);
+                break;
+				*/
+            case '7':
+                mode=DIR_MODE_SUPERFITER;
+                break;
+            default:
+                mode=DIR_MODE_NORMAL;
+                break;
+        }
+    }
+    switch(mode){
+        case DIR_MODE_NORMAL:
+			/*
+        case DIR_MODE_DIGEST:
+            return digest_mode(conf,fh,NULL);
+        case DIR_MODE_THREAD:
+            return title_mode(conf,fh,NULL);
+        case DIR_MODE_MARK:
+            return marked_mode(conf,fh,NULL);
+        case DIR_MODE_ORIGIN:
+        case DIR_MODE_AUTHOR:
+        case DIR_MODE_TITLE:
+            return search_mode(conf,fh,mode,buf);
+			*/
+        case DIR_MODE_SUPERFITER:
+            return super_filter(conf,fh,(int *)1);
+        default:
+            break;
+    }
+    return DIRCHANGED;
+}
+
 struct key_command mail_comms[] = {
     {'s', (READ_KEY_FUNC)mail_showsize,NULL},
     {'d', (READ_KEY_FUNC)mail_del,NULL},
@@ -1634,6 +1723,7 @@ struct key_command mail_comms[] = {
 
     {Ctrl('Y'), (READ_KEY_FUNC)read_zsend,NULL},
     {Ctrl('C'), (READ_KEY_FUNC)do_cross,NULL}, 
+    {Ctrl('G'), (READ_KEY_FUNC)change_mail_mode,(void*)0},   /* bad : 2002.8.8 add marked mode */
 
 #ifdef PERSONAL_CORP
 	{'y', (READ_KEY_FUNC)read_importpc,NULL},
@@ -1651,6 +1741,7 @@ struct key_command mail_comms[] = {
 
 int m_read(void){
     char curmaildir[STRLEN];
+	int returnmode=CHANGEMODE;
 #ifdef NEW_HELP
 	int oldhelpmode = helpmode;
 #endif
@@ -1660,7 +1751,10 @@ int m_read(void){
 #ifdef NEW_HELP
 	helpmode = HELP_MAIL;
 #endif
-    new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    while (returnmode==CHANGEMODE) {
+    returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    setmailfile(curmaildir, getCurrentUser()->userid, DOT_DIR);
+    }
 #ifdef NEW_HELP
 	helpmode = oldhelpmode;
 #endif
@@ -2472,6 +2566,7 @@ static int maillist_onselect(struct _select_def *conf)
     struct mail_proc_arg *arg = (struct mail_proc_arg *) conf->arg;
     char buf[20];
     char curmaildir[STRLEN];
+	int returnmode=CHANGEMODE;
 #ifdef NEW_HELP
 	int oldhelpmode = helpmode;
 #endif
@@ -2490,7 +2585,10 @@ static int maillist_onselect(struct _select_def *conf)
 #ifdef NEW_HELP
 		helpmode = HELP_MAIL;
 #endif
-        new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    while (returnmode==CHANGEMODE) {
+        returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    	setmailfile(curmaildir, getCurrentUser()->userid, mail_sysbox[sel]);
+    }
 #ifdef NEW_HELP
 		helpmode = oldhelpmode;
 #endif
@@ -2511,7 +2609,10 @@ static int maillist_onselect(struct _select_def *conf)
 #ifdef NEW_HELP
 		helpmode = HELP_MAIL;
 #endif
-        new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    while (returnmode==CHANGEMODE) {
+        returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+    	setmailfile(curmaildir, getCurrentUser()->userid, buf);
+    }
 #ifdef NEW_HELP
 		helpmode = oldhelpmode;
 #endif

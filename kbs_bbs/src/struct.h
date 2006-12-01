@@ -533,6 +533,7 @@ struct fileheader_num {
 };
 
 struct super_filter_query_arg {
+	int inmail; /*if search in mail, 1, and boardname is username */
     char *query;
     struct fileheader* curfh; /* 当前帖子 WARNING: curfh MUST NOT BE NULL */
     char * boardname;
@@ -541,6 +542,7 @@ struct super_filter_query_arg {
     size_t array_size;        /* array 的大小 */
     int detectmore;
     char *write_file;          /* 符合条件的 fh 写入的文件，可以为 NULL */
+	char *direct;
 };
 
 /* 修改附件接口 etnlegend */
