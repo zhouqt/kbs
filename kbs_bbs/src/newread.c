@@ -932,7 +932,7 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     struct super_filter_query_arg q_arg;
 
     static char query[180]="";
-	int inmail = ((int)(extraarg))?1:0;
+	int inmail = (extraarg)?1:0;
 
     if (!strcmp(getCurrentUser()->userid, "guest")) {
         return FULLUPDATE;

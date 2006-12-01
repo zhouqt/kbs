@@ -1601,9 +1601,7 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
 }
 
 int change_mail_mode(struct _select_def *conf,struct fileheader *fh,int mode){
-    static char title[32];
-    struct read_arg *arg=(struct read_arg*)conf->arg;
-    char buf[STRLEN],ans[4];
+    char ans[4];
 
     if(!mode){
         move(t_lines-2,0);
