@@ -15,7 +15,7 @@ struct userec {                 /* Structure used to hold information in */
     unsigned int numposts;
 #ifdef CONV_PASS
     char passwd[OLDPASSLEN];
-	char unused_padding[2];
+    char unused_padding[2];
 #endif
     char username[NAMELEN];
     unsigned int club_read_rights[MAXCLUB>>5];
@@ -35,7 +35,7 @@ struct userec {                 /* Structure used to hold information in */
     int noteline;
     int unused_atppp;
     time_t exittime;
-	/* 生日数据转移到 userdata 结构中 */
+    /* 生日数据转移到 userdata 结构中 */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */
 
     int unused[7];
@@ -45,17 +45,17 @@ struct userec {                 /* Structure used to hold information in */
 struct userdata
 {
     char userid[IDLEN + 2];
-	char __reserved[2];
+    char __reserved[2];
     /*char username[NAMELEN];*/
     char realemail[STRLEN - 16];
     char realname[NAMELEN];
     char address[STRLEN];
     char email[STRLEN];
 #ifdef HAVE_BIRTHDAY
-	char            gender;
-	unsigned char   birthyear;
-	unsigned char   birthmonth;
-	unsigned char   birthday;
+    char            gender;
+    unsigned char   birthyear;
+    unsigned char   birthmonth;
+    unsigned char   birthday;
 #endif
     char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
 /*#ifdef SMS_SUPPORT*/
@@ -85,12 +85,12 @@ struct userdata
     unsigned char character;
     char photo_url[STRLEN];
     char telephone[STRLEN];
-	char smsprefix[41];
-	char smsend[41];
-	unsigned int smsdef;
-	int signum;
-	int this_field_is_reserved_by_atppp;
-	time_t lastinvite;
+    char smsprefix[41];
+    char smsend[41];
+    unsigned int smsdef;
+    int signum;
+    int this_field_is_reserved_by_atppp;
+    time_t lastinvite;
 };
 
 struct user_info {              /* Structure used in UTMP file */
@@ -122,11 +122,11 @@ struct user_info {              /* Structure used in UTMP file */
     unsigned int friends_p[MAXFRIENDS];
 #endif
     int currentboard;
-	unsigned int mailcheck;				/* if have new mail or new msg, stiger */
+    unsigned int mailcheck;             /* if have new mail or new msg, stiger */
 };
 
 struct usermemo {
-	struct userdata ud;
+    struct userdata ud;
 };
 
 struct friends {
@@ -166,8 +166,8 @@ struct boardheader {            /* This structure is used to hold data in */
     char title_level; /* 设定用户需要什么title可见这个版面*/
     char des[195]; /*版面描述,用于www的版面说明和search */
 #ifdef FLOWBANNER
-	int bannercount;
-	char banners[MAXBANNER][BANNERSIZE];
+    int bannercount;
+    char banners[MAXBANNER][BANNERSIZE];
 #endif
 };
 
@@ -195,19 +195,19 @@ struct BoardStatus {            /* use this to speed up board list */
     int toptitle;
     struct fileheader topfh[MAX_DING];
 #ifdef HAVE_WFORUM
-	int todaynum;
+    int todaynum;
 #endif
 };
 struct favbrd_struct {
-	int bnum;
-	int bid[MAXBOARDPERDIR];
-	/* bid >= 0: 版面
-	   bid < 0: 目录， 表示子目录是 favbrd_list[-bid]
-	   */
+    int bnum;
+    int bid[MAXBOARDPERDIR];
+    /* bid >= 0: 版面
+       bid < 0: 目录， 表示子目录是 favbrd_list[-bid]
+       */
     char title[61];
-	char ename[20];
+    char ename[20];
     int father;
-	int level;
+    int level;
 };
 
 struct BCACHE {
@@ -216,18 +216,18 @@ struct BCACHE {
 };
 
 struct BDIRCACHE {
-	struct favbrd_struct allbrd_list[FAVBOARDNUM];
-	int allbrd_list_t;
-	struct favbrd_struct wwwbrd_list[FAVBOARDNUM];
-	int wwwbrd_list_t;
+    struct favbrd_struct allbrd_list[FAVBOARDNUM];
+    int allbrd_list_t;
+    struct favbrd_struct wwwbrd_list[FAVBOARDNUM];
+    int wwwbrd_list_t;
 };
 
 struct posttop {
-/*    char author[IDLEN + 1];      author name */
+/*  char author[IDLEN + 1];      author name */
     char board[IDLEN + 6];  /*     board name */
-/*    int bnum; */
-/*    char title[66];              title name */
-    unsigned int groupid;	/* article group id */
+/*  int bnum; */
+/*  char title[66];              title name */
+    unsigned int groupid;   /* article group id */
     time_t date;                /* last post's date */
     int number;                 /* post number */
 };
@@ -239,18 +239,18 @@ struct public_data {
     unsigned int max_user;
     unsigned int max_wwwguest;
 
-	/* etnlegend, 2006.03.06, userscore twice sampling for high score users ... */
+    /* etnlegend, 2006.03.06, userscore twice sampling for high score users ... */
     unsigned int us_sample_high[8];
 
-	unsigned int logincount;
-	unsigned int logoutcount;
-	u_int64_t staytime;
-	unsigned int wwwlogincount;
-	unsigned int wwwlogoutcount;
-	unsigned int wwwguestlogincount;
-	unsigned int wwwguestlogoutcount;
-	u_int64_t wwwstaytime;
-	u_int64_t wwwgueststaytime;
+    unsigned int logincount;
+    unsigned int logoutcount;
+    u_int64_t staytime;
+    unsigned int wwwlogincount;
+    unsigned int wwwlogoutcount;
+    unsigned int wwwguestlogincount;
+    unsigned int wwwguestlogoutcount;
+    u_int64_t wwwstaytime;
+    u_int64_t wwwgueststaytime;
 
     /* etnlegend, 2006.03.06, userscore sampling ... */
     unsigned int us_sample[32];
@@ -265,13 +265,13 @@ struct public_data {
     char unused[712];
 
 #ifdef FLOWBANNER
-	int bannercount;
-	char banners[MAXBANNER][BANNERSIZE];
+    int bannercount;
+    char banners[MAXBANNER][BANNERSIZE];
 #endif
-	
+    
 #ifdef FB2KENDLINE
-	time_t nextfreshdatetime;
-	char date[60];
+    time_t nextfreshdatetime;
+    char date[60];
 #endif
 
 };
@@ -284,32 +284,32 @@ struct smenuitem {
     /*
      * 内存中应该是func名字,因为还要考虑到修改func列表
      * 导致执行的程序不一样的情况 
-     */
+    */
 };
 
 struct bbs_msgbuf {
-	long int mtype;
-	time_t msgtime;
-	pid_t pid;
-	char userid[IDLEN];
-	char mtext[1];
+    long int mtype;
+    time_t msgtime;
+    pid_t pid;
+    char userid[IDLEN];
+    char mtext[1];
 };
 
 #ifdef NEWBMLOG
 struct _new_bmlog
 {
-	char boardname[BOARDNAMELEN];
-	int type;
-	int value;
+    char boardname[BOARDNAMELEN];
+    int type;
+    int value;
 };
 #endif
 
 #ifdef NEWPOSTLOG
 struct _new_postlog
 {
-	char boardname[BOARDNAMELEN];
-	char title[81];
-	int threadid;
+    char boardname[BOARDNAMELEN];
+    char title[81];
+    int threadid;
 };
 #endif
 
@@ -320,16 +320,16 @@ struct _mail_list{
 
 typedef struct
 {
-	char group_name[8]; /** "groupXX\0", XX stands for 00 to 99 */
-	unsigned int users_num;
-	char group_desc[40];
-	char __reserved[12];
+    char group_name[8]; /** "groupXX\0", XX stands for 00 to 99 */
+    unsigned int users_num;
+    char group_desc[40];
+    char __reserved[12];
 }mailgroup_list_item;
 
 typedef struct
 {
-	unsigned int groups_num;
-	mailgroup_list_item groups[MAX_MAILGROUP_NUM];
+    unsigned int groups_num;
+    mailgroup_list_item groups[MAX_MAILGROUP_NUM];
 }mailgroup_list_t;
 
 typedef struct friends mailgroup_t;
@@ -344,35 +344,35 @@ struct msghead {
 };
 
 struct smsmsg {
-	int id;
-	char userid[13];
-	char dest[13];
-	char time[15];
-	int type;
-	int level;
-	char *context;
-	int readed;
+    int id;
+    char userid[13];
+    char dest[13];
+    char time[15];
+    int type;
+    int level;
+    char *context;
+    int readed;
 };
 
 struct addresslist{
-	int id;
-	char userid[13];
-	char name[15];
-	char bbsid[15];
-	char school[100];
-	char zipcode[7];
-	char homeaddr[100];
-	char companyaddr[100];
-	char tel_o[20];
-	char tel_h[20];
-	char mobile[15];
-	char email[30];
-	char qq[10];
-	int birth_year;
-	int birth_month;
-	int birth_day;
-	char *memo;
-	char group[10];
+    int id;
+    char userid[13];
+    char name[15];
+    char bbsid[15];
+    char school[100];
+    char zipcode[7];
+    char homeaddr[100];
+    char companyaddr[100];
+    char tel_o[20];
+    char tel_h[20];
+    char mobile[15];
+    char email[30];
+    char qq[10];
+    int birth_year;
+    int birth_month;
+    int birth_day;
+    char *memo;
+    char group[10];
 };
 
 #define AL_ORDER_NAME 1
@@ -389,11 +389,11 @@ struct key_struct { // 自定义键 by bad
 #ifdef NEW_HELP
 struct helps
 {
-	unsigned int id;
-	int modeid;
-	char index[11];
-	char desc[41];
-	char *content;
+    unsigned int id;
+    int modeid;
+    char index[11];
+    char desc[41];
+    char *content;
 };
 #endif
 
@@ -402,85 +402,85 @@ struct helps
 
 struct _pc_selusr
 {
-	char userid[IDLEN+2];
-	char corpusname[41];
-	time_t createtime;
+    char userid[IDLEN+2];
+    char corpusname[41];
+    time_t createtime;
 };
 
 struct pc_users {
-	int uid;	//not uid in PASSWD, 是个人文集的uid
-	char username[IDLEN+2];
-	char corpusname[41];
-	char description[201];
-	char theme[11];
-	int nodelimit;
-	int dirlimit;
-	time_t createtime;
+    int uid;    //not uid in PASSWD, 是个人文集的uid
+    char username[IDLEN+2];
+    char corpusname[41];
+    char description[201];
+    char theme[11];
+    int nodelimit;
+    int dirlimit;
+    time_t createtime;
 };
 
 struct pc_nodes {
-	unsigned long nid;		//node id, auto increment
+    unsigned long nid;      //node id, auto increment
 
-	//pid不为零:
-	//   type: 0: 收藏夹文章, pid表示收藏夹目录nodes nid
-	//   type: 1: 收藏夹目录, pid表示父收藏夹目录nodes nid
-	//pid == 0:
-	//   type: 0: 普通文章
-	//   type: 1: 收藏夹跟目录
-	unsigned long pid;
+    //pid不为零:
+    //   type: 0: 收藏夹文章, pid表示收藏夹目录nodes nid
+    //   type: 1: 收藏夹目录, pid表示父收藏夹目录nodes nid
+    //pid == 0:
+    //   type: 0: 普通文章
+    //   type: 1: 收藏夹跟目录
+    unsigned long pid;
 
-	//type: 0: 文章
-	//      1: 收藏夹目录
-	int type;
+    //type: 0: 文章
+    //      1: 收藏夹目录
+    int type;
 
-	char source[11];
-	char hostname[21];
-	time_t created;
-	time_t changed;
-	int uid;
+    char source[11];
+    char hostname[21];
+    time_t created;
+    time_t changed;
+    int uid;
 
-	//是否允许评论
-	// 0: 不允许
-	// 1: 允许登录用户
-	// 2: 允许guest
-	int comment;
-	long commentcount;
-	char subject[201];
-	char *body;
+    //是否允许评论
+    // 0: 不允许
+    // 1: 允许登录用户
+    // 2: 允许guest
+    int comment;
+    long commentcount;
+    char subject[201];
+    char *body;
 
-	//权限
-	// 0: 公开
-	// 1: 好友
-	// 2: 私人
-	// 3: 收藏
-	// 4: 垃圾
-	int access;
-	int visitcount;
+    //权限
+    // 0: 公开
+    // 1: 好友
+    // 2: 私人
+    // 3: 收藏
+    // 4: 垃圾
+    int access;
+    int visitcount;
         int htmltag;
 };
 
 struct pc_comments {
-	unsigned long cid;
-	unsigned long nid;
-	int uid;
-	char hostname[21];
-	char username[21];
-	char subject[201];
-	time_t created;
-	time_t changed;
-	char *body;
+    unsigned long cid;
+    unsigned long nid;
+    int uid;
+    char hostname[21];
+    char username[21];
+    char subject[201];
+    time_t created;
+    time_t changed;
+    char *body;
 };
 
 //add by windinsn, add blog logs into table LOGS
 struct pc_logs {
-	unsigned long lid; //blog的log ID auto_increment
-	char username[IDLEN+2]; 
-	char hostname[21]; 
-	char action[100]; //操作
-	char pri_id[IDLEN+2]; //第一操作对象
-	char sec_id[IDLEN+2]; //第二操作对象
-	char comment[200]; //附注
-	time_t logtime;
+    unsigned long lid; //blog的log ID auto_increment
+    char username[IDLEN+2]; 
+    char hostname[21]; 
+    char action[100]; //操作
+    char pri_id[IDLEN+2]; //第一操作对象
+    char sec_id[IDLEN+2]; //第二操作对象
+    char comment[200]; //附注
+    time_t logtime;
 };
 
 #define PC_DEFAULT_NODELIMIT 300
@@ -496,11 +496,11 @@ struct WWW_GUEST_S {
     time_t freshtime;
     time_t logintime;
     int currentboard;
-	struct in_addr fromip;
+    struct in_addr fromip;
 };
 
 struct WWW_GUEST_TABLE {
-	int hashtab[16][256][256];
+    int hashtab[16][256][256];
     int use_map[MAX_WWW_MAP_ITEM + 1];
     time_t uptime;
     struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
@@ -509,22 +509,22 @@ struct WWW_GUEST_TABLE {
 
 #ifdef HAVE_PERSONAL_DNS
 struct dns_msgbuf {
-	long int mtype;
-	char userid[IDLEN+1];
-	char ip[IPLEN+1];
+    long int mtype;
+    char userid[IDLEN+1];
+    char ip[IPLEN+1];
 };
 #endif
 #endif
 
 /* protect id . added by binxun */
 struct protect_id_passwd {
-	char name[NAMELEN];    //真实姓名
-	unsigned short   birthyear;
-	unsigned char    birthmonth;
-	unsigned char    birthday;
-	char email[STRLEN];     
-	char question[STRLEN];   //密码提示问题
-	char answer[STRLEN];    //问题答案
+    char name[NAMELEN];    //真实姓名
+    unsigned short   birthyear;
+    unsigned char    birthmonth;
+    unsigned char    birthday;
+    char email[STRLEN];     
+    char question[STRLEN];   //密码提示问题
+    char answer[STRLEN];    //问题答案
 };
 
 struct fileheader_num {
@@ -533,7 +533,7 @@ struct fileheader_num {
 };
 
 struct super_filter_query_arg {
-	int inmail; /*if search in mail, 1, and boardname is username */
+    int inmail; /*if search in mail, 1, and boardname is username */
     char *query;
     struct fileheader* curfh; /* 当前帖子 WARNING: curfh MUST NOT BE NULL */
     char * boardname;
@@ -542,7 +542,7 @@ struct super_filter_query_arg {
     size_t array_size;        /* array 的大小 */
     int detectmore;
     char *write_file;          /* 符合条件的 fh 写入的文件，可以为 NULL */
-	char *direct;
+    char *direct;
 };
 
 /* 修改附件接口 etnlegend */

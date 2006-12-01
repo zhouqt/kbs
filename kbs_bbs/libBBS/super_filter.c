@@ -40,7 +40,7 @@ struct super_filter_args {
     struct fileheader *curfh;    /* 比较的 fileheader，telnet 下是进入超级搜索前光标所在的帖子 */
     struct fileheader *ptr;     /* .DIR 索引中遍历的 fileheader */
     char *boardname;
-	int inmail;
+    int inmail;
 };
 
 
@@ -108,7 +108,7 @@ static int sffn_sign(struct super_filter_args *arg) {
     return (arg->ptr->accessed[0]&FILE_SIGN);
 }
 static int sffn_percent(struct super_filter_args *arg) {
-	return (arg->ptr->accessed[0]&FILE_PERCENT);
+    return (arg->ptr->accessed[0]&FILE_PERCENT);
 }
 #ifdef FILTER
 static int sffn_censor(struct super_filter_args *arg) {
@@ -151,10 +151,10 @@ static int sffn_effsize(struct super_filter_args *arg) {
 static int sffn_asize(struct super_filter_args *arg) {
     char ffn[PATHLEN];
     struct stat st;
-	if(arg->inmail)
-       	setmailfile(ffn, arg->boardname, arg->ptr->filename);
-	else
-    	setbfile(ffn, arg->boardname, arg->ptr->filename);
+    if(arg->inmail)
+        setmailfile(ffn, arg->boardname, arg->ptr->filename);
+    else
+        setbfile(ffn, arg->boardname, arg->ptr->filename);
     return (stat(ffn, &st)!=-1) ? st.st_size : 0;
 }
 
@@ -437,10 +437,10 @@ static void sff_content(struct super_filter_expression *exp) {
     if (!sess->content.mmap) {
         char ffn[PATHLEN];
         struct fileheader * fh = sess->arg.ptr;
-		if(sess->arg.inmail)
-       		setmailfile(ffn, sess->arg.boardname, fh->filename);
-		else
-        	setbfile(ffn, sess->arg.boardname, fh->filename);
+        if(sess->arg.inmail)
+            setmailfile(ffn, sess->arg.boardname, fh->filename);
+        else
+            setbfile(ffn, sess->arg.boardname, fh->filename);
         sess->content.mmap = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, &sess->content.ptr, &sess->content.fsize, NULL);
         if(sess->content.mmap) {
             if (fh->attachment) sess->content.searchsize = -1;
@@ -753,7 +753,7 @@ int query_super_filter_mmap(struct fileheader *allfh, int start, int total, int 
     sess.arg.boardname = q_arg->boardname;
     sess.arg.curfh = q_arg->curfh;
     sess.arg.ptr = allfh + start;
-	sess.arg.inmail = q_arg->inmail;
+    sess.arg.inmail = q_arg->inmail;
 
     sess.loop.s = start + 1;
     while(1) {
@@ -817,12 +817,12 @@ int query_super_filter(int fd, struct super_filter_query_arg *q_arg) {
     char *ptr;
     struct stat buf;
     if (fd == -1) {
-		if(q_arg->direct)
-			strcpy(direct, q_arg->direct);
-		else if(q_arg->inmail)
-        	setmailfile(direct, q_arg->boardname, ".DIR");
-		else
-        	setbdir(DIR_MODE_NORMAL, direct, q_arg->boardname);
+        if(q_arg->direct)
+            strcpy(direct, q_arg->direct);
+        else if(q_arg->inmail)
+            setmailfile(direct, q_arg->boardname, ".DIR");
+        else
+            setbdir(DIR_MODE_NORMAL, direct, q_arg->boardname);
         if ((fd2 = open(direct, O_RDONLY, 0664)) == -1) {
             bbslog("user", "%s", "recopen err");
             return -SUPER_FILTER_ERROR_GENERAL;
