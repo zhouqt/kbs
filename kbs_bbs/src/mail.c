@@ -1306,6 +1306,8 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
 
     if (fileinfo==NULL)
         return DONOTHING;
+    if (arg->mode == DIR_MODE_SUPERFITER)
+        return DONOTHING;
     setmailfile(genbuf,getCurrentUser()->userid,fileinfo->filename);
     if(lstat(genbuf,&st)==-1||S_ISLNK(st.st_mode))
         return DONOTHING;
@@ -1462,6 +1464,8 @@ int mail_token(struct _select_def *conf,struct fileheader *file,void *varg){
     struct read_arg *arg=(struct read_arg*)conf->arg;
     if(!file)
         return DONOTHING;
+    if (arg->mode == DIR_MODE_SUPERFITER)
+        return DONOTHING;
     file->accessed[1]^=FILE_DEL;
     substitute_record(arg->direct,file,sizeof(struct fileheader),conf->pos);
     return PARTUPDATE;
@@ -1477,6 +1481,8 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     struct read_arg* arg=conf->arg;
 
     if (fileinfo==NULL)
+        return DONOTHING;
+    if (arg->mode == DIR_MODE_SUPERFITER)
         return DONOTHING;
     clear();
     move(4,4);
