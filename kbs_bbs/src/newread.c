@@ -265,7 +265,7 @@ static int read_key(struct _select_def *conf, int command)
 */
                 savePos(arg->mode,arg->direct,conf->pos,arg->board);
                 arg->board=currboard;
-                arg->bid=getbid(currboard->filename, NULL);
+                arg->bid=currboardent;
                 arg->boardstatus=getbstatus(arg->bid);
                 read_getdata(conf,-1,conf->item_per_page);
                 lastpos=getPos(arg->newmode,arg->direct,currboard);
@@ -683,7 +683,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
     arg.returnvalue=QUIT;
     arg.writearg=NULL;
     arg.board=currboard;
-    arg.bid=getbid(currboard->filename, NULL);
+    arg.bid=currboardent;
     arg.boardstatus=getbstatus(arg.bid);
     if ((arg.mode==DIR_MODE_NORMAL)||
         ((arg.mode>=DIR_MODE_THREAD)&&(arg.mode<=DIR_MODE_WEB_THREAD))) {

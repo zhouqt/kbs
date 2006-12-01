@@ -127,27 +127,6 @@ int dokillalldir()
 static char tmpbuf[255];
 static char genbuf1[255];
 
-#if 0
-char *setmailpath(buf, userid)  /* 取 某用户 的mail */
-    char *buf, *userid;
-{
-    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
-        sprintf(buf, "mail/%c/%s", toupper(userid[0]), userid);
-    else
-        sprintf(buf, "mail/wrong/%s", userid);
-    return buf;
-}
-
-char *sethomepath(buf, userid)  /* 取 某用户 的home */
-    char *buf, *userid;
-{
-    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
-        sprintf(buf, "home/%c/%s", toupper(userid[0]), userid);
-    else
-        sprintf(buf, "home/wrong/%s", userid);
-    return buf;
-}
-#endif
 #ifndef SAVELIVE
 
 int killauser(struct userec *theuser, void *data)
@@ -183,7 +162,6 @@ int killauser(struct userec *theuser, void *data)
 int dokilluser()
 {
 #ifndef SAVELIVE
-    resolve_utmp();
     newbbslog(BBSLOG_USIES, "Started kill users\n");
     apply_users(killauser, NULL);
     newbbslog(BBSLOG_USIES, "kill users done\n");
@@ -588,7 +566,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     }
 
     resolve_boards();
-
+    resolve_utmp();
     resolve_guest_table();
 
     if (argv1 != NULL) {
@@ -628,6 +606,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     if (((daemon == NULL) || (!strcmp(daemon, "timed"))) && ((argv1 == NULL) || fork())) {
         strcpy(commandline, "timed");
         timed();
+        exit(0);
     }
 
     if (((daemon == NULL) || (!strcmp(daemon, "killd"))) && ((argv1 == NULL) || fork())) {
@@ -668,14 +647,17 @@ static int miscd_dodaemon(char *argv1, char *daemon)
                 sleep(ft - time(0));
             } while (ft > time(0));
         };
+        exit(0);
     }
     if (((daemon == NULL) || (!strcmp(daemon, "userd"))) && ((argv1 == NULL) || fork())) {
         strcpy(commandline, "userd");
         userd();
+        exit(0);
     }
     if ((daemon == NULL) || (!strcmp(daemon, "flushd"))) {
         strcpy(commandline, "flushd");
         flushd();
+        exit(0);
     }
     return 0;
 }
