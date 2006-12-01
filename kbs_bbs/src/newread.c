@@ -1060,6 +1060,7 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
         arg->filecount = size/sizeof(struct fileheader);
         now = conf->pos;
 
+        bzero(&q_arg, sizeof(q_arg));
         q_arg.array = &fhn;
         q_arg.array_size = 1;
         q_arg.boardname = currboard->filename;
