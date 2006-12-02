@@ -15,52 +15,6 @@ This works by forking a separate process to do the reading.
 
 */
 
-/*
- * $Log$
- * Revision 1.3  2002/08/04 11:39:44  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:49  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:13  bbsdev
- * bbs sshd
- *
- * Revision 1.9  1997/03/26 05:36:21  kivinen
- * 	Fixed prototypes.
- *
- * Revision 1.8  1997/03/19 17:53:56  kivinen
- * 	Added USERFILE_GET_DES_1_MAGIC_PHRASE.
- *
- * Revision 1.7  1996/10/29 22:48:43  kivinen
- * 	Removed userfile_local_socket_connect and userfile_send
- * 	prototypes.
- *
- * Revision 1.6  1996/09/08 17:21:07  ttsalo
- * 	A lot of changes in agent-socket handling
- *
- * Revision 1.5  1996/09/04 12:40:00  ttsalo
- * 	Added connecting to unix-domain socket
- *
- * Revision 1.4  1996/08/13 09:04:20  ttsalo
- * 	Home directory, .ssh and .ssh/authorized_keys are now
- * 	checked for wrong owner and group & world writeability.
- *
- * Revision 1.3  1996/05/29 07:42:02  ylo
- * 	Updated prototype of userfile_init.
- *
- * Revision 1.2  1996/02/18 21:49:10  ylo
- * 	Added userfile_close_pipes.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:10  ylo
- * 	Imported ssh-1.2.13.
- *
- * $EndLog$
- */
-
 #ifndef USERFILE_H
 #define USERFILE_H
 

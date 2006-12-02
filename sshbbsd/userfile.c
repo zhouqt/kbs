@@ -11,94 +11,6 @@ Created: Wed Jan 24 20:19:53 1996 ylo
 
 */
 
-/*
- * $Log$
- * Revision 1.4  2006/04/11 09:16:10  etnlegend
- * nowarning ... libBBS src sshbbsd
- *
- * Revision 1.3  2002/08/04 11:39:44  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:49  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:13  bbsdev
- * bbs sshd
- *
- * Revision 1.19  1999/02/21 19:53:01  ylo
- * 	Intermediate commit of ssh1.2.27 stuff.
- * 	Main change is sprintf -> snprintf; however, there are also
- * 	many other changes.
- *
- * Revision 1.18  1998/05/23 20:28:26  kivinen
- *      Changed () -> (void).
- *
- * Revision 1.17  1998/04/17  00:43:08  kivinen
- *      Freebsd login capabilities support.
- *
- * Revision 1.16  1997/05/13 22:30:05  kivinen
- *      Added some casts.
- *
- * Revision 1.15  1997/03/26 07:10:04  kivinen
- *      Changed uid 0 to UID_ROOT.
- *
- * Revision 1.14  1997/03/25 05:47:00  kivinen
- *      Changed USERFILE_GET_DES_1_MAGIC_PHRASE to call
- *      userfile_get_des_1_magic_phrase.
- *
- * Revision 1.13  1997/03/19 17:53:46  kivinen
- *      Added USERFILE_GET_DES_1_MAGIC_PHRASE.
- *
- * Revision 1.12  1996/11/27 14:30:07  ttsalo
- *     Added group-writeability #ifdef
- *
- * Revision 1.11  1996/10/29 22:48:23  kivinen
- *      Removed USERFILE_LOCAL_SOCK and USERFILE_SEND.
- *
- * Revision 1.10  1996/10/07 11:40:20  ttsalo
- *      Configuring for hurd and a small fix to do_popen()
- *      from "Charles M. Hannum" <mycroft@gnu.ai.mit.edu> added.
- *
- * Revision 1.9  1996/10/04 01:01:49  kivinen
- *      Added printing of path to fatal calls in userfile_open and and
- *      userfile_local_socket_connect. Fixed userfile_open to
- *      userfile_local_socket_connect in calls to fatal in
- *      userfile_local_socket_connect.
- *
- * Revision 1.8  1996/09/27 17:18:06  ylo
- *      Fixed a typo.
- *
- * Revision 1.7  1996/09/08 17:21:08  ttsalo
- *      A lot of changes in agent-socket handling
- *
- * Revision 1.6  1996/09/04 12:39:59  ttsalo
- *      Added connecting to unix-domain socket
- *
- * Revision 1.5  1996/08/13 09:04:19  ttsalo
- *      Home directory, .ssh and .ssh/authorized_keys are now
- *      checked for wrong owner and group & world writeability.
- *
- * Revision 1.4  1996/05/29 07:37:31  ylo
- *      Do setgid and initgroups when initializing to read as user.
- *
- * Revision 1.3  1996/04/26 18:10:45  ylo
- *      Wrong file descriptors were closed in the forked child in
- *      do_popen.  This caused dup2 to fail on some machines, which in
- *      turn resulted in X11 authentication failing on some machines.
- *
- * Revision 1.2  1996/02/18 21:48:46  ylo
- *      Close pipes after popen fork.
- *      New function userfile_close_pipes.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- *      Imported ssh-1.2.13.
- *
- * $EndLog$
- */
-
 /* Protocol for communication between the child and the parent: 
 
       Each message starts with a 32-bit length (msb first; includes
@@ -189,9 +101,6 @@ Created: Wed Jan 24 20:19:53 1996 ylo
 #include "bufaux.h"
 #include "xmalloc.h"
 #include "ssh.h"
-
-
-
 
 /* Protocol message types. */
 #define USERFILE_OPEN           1

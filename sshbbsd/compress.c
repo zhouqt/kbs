@@ -13,33 +13,6 @@ Interface to packet compression for ssh.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:41  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:46  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:08  bbsdev
- * bbs sshd
- *
- * Revision 1.3  1998/05/23 20:21:29  kivinen
- * 	Changed () -> (void).
- *
- * Revision 1.2  1996/10/13  14:32:45  ttsalo
- *         Some casts from char to unsigned char
- *
- * Revision 1.1.1.1  1996/02/18 21:38:12  ylo
- * 	Imported ssh-1.2.13.
- *
- * $EndLog$
- */
-
 #include "includes.h"
 #include "ssh.h"
 #include "buffer.h"

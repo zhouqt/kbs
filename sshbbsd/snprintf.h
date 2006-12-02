@@ -9,35 +9,6 @@
 
   */
 
-/*
- * $Id:
- * $Log$
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:49  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:12  bbsdev
- * bbs sshd
- *
- * Revision 1.1  1999/02/21 19:52:38  ylo
- * 	Intermediate commit of ssh1.2.27 stuff.
- * 	Main change is sprintf -> snprintf; however, there are also
- * 	many other changes.
- *
- * Revision 1.7  1998/10/04 02:54:00  ylo
- *      Removed #include "sshincludes.h"
- *
- * Revision 1.6  1998/06/24 13:46:46  kivinen
- *      Fixed Log entry.
- *
- * $EndLog$
- */
-
 #ifndef SNPRINTF_H
 #define SNPRINTF_H
 

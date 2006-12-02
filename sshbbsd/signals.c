@@ -14,54 +14,6 @@ maximum core dump size.
 
 */
 
-/*
- * $Log$
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:48  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:12  bbsdev
- * bbs sshd
- *
- * Revision 1.9  1998/05/23 20:24:15  kivinen
- * 	Changed () -> (void).
- *
- * Revision 1.8  1998/05/04  13:37:05  kivinen
- * 	Fixed SIGPWR code so that will check if SIGPWR is same than
- * 	SIGINFO and only include it to switch clause if it is
- * 	different.
- *
- * Revision 1.7  1998/04/30 01:56:32  kivinen
- * 	Added SIGPWR handling.
- *
- * Revision 1.6  1997/04/21 01:07:28  kivinen
- * 	Added HAVE_INCOMPATIBLE_SIGINFO support.
- *
- * Revision 1.5  1997/03/26 07:16:44  kivinen
- * 	Change sig <= NSIG to sig < NSIG.
- *
- * Revision 1.4  1996/08/30 08:44:22  ylo
- * 	Added Sunos/Solaris SIGFREEZE and SIGTHAW to signals with
- * 	default processing.
- *
- * Revision 1.3  1996/07/12 07:27:18  ttsalo
- * 	ifdef:d SIGIO
- *
- * Revision 1.2  1996/04/26 00:25:48  ylo
- * 	Test for SIGURG == SIGIO (which appears to be the case on some
- * 	Linux versions).
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * $EndLog$
- */
-
 #include "includes.h"
 #ifdef HAVE_SETRLIMIT
 #include <sys/resource.h>

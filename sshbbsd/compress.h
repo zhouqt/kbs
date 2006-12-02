@@ -13,30 +13,6 @@ Interface to packet compression for ssh.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:41  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:46  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:25  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:08  bbsdev
- * bbs sshd
- *
- * Revision 1.2  1997/03/26 07:11:32  kivinen
- * 	Fixed prototypes.
- *
- * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
- * 	Imported ssh-1.2.13.
- *
- * $EndLog$
- */
-
 #ifndef COMPRESS_H
 #define COMPRESS_H
 

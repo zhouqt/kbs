@@ -13,66 +13,6 @@ Definitions for server configuration data and for the functions reading it.
 
 */
 
-/*
- * $Id$
- * $Log$
- * Revision 1.3  2002/08/04 11:39:43  kcn
- * format c
- *
- * Revision 1.2  2002/08/04 11:08:48  kcn
- * format C
- *
- * Revision 1.1.1.1  2002/04/27 05:47:26  kxn
- * no message
- *
- * Revision 1.1  2001/07/04 06:07:11  bbsdev
- * bbs sshd
- *
- * Revision 1.11  1998/05/23 20:37:02  kivinen
- * 	Added forced_empty_passwd_change, num_deny_shosts,
- * 	num_allow_shosts, password_expire_warning_days,
- * 	account_expire_warning_days. Fixed typo in
- * 	forcedpasswordchange.
- *
- * Revision 1.10  1998/03/27  17:00:09  kivinen
- * 	Added IgnoreRootRhosts option.
- *
- * Revision 1.9  1998/01/03 06:42:11  kivinen
- * 	Added allow/deny groups option.
- *
- * Revision 1.8  1998/01/02 06:20:45  kivinen
- * 	Added xauthlocation and checkmail options.
- *
- * Revision 1.7  1997/04/27 21:51:44  kivinen
- * 	Added F-SECURE stuff. Added {Allow,Deny}Forwarding{To,Port}
- * 	feature. Added {Allow,Deny}Users feature from Steve Kann
- * 	<stevek@SteveK.COM>.
- *
- * Revision 1.6  1997/03/27 03:14:31  kivinen
- * 	Added kerberos patches from Glenn Machin.
- * 	Added USELOGIN patches from Brian Cully.
- *
- * Revision 1.5  1997/03/26 05:33:54  kivinen
- * 	Added idle_timeout option.
- *
- * Revision 1.4  1997/03/25 05:44:48  kivinen
- * 	Added silent_deny and umask.
- *
- * Revision 1.3  1997/03/19 17:55:14  kivinen
- * 	Added TIS authentication code from Andre April
- * 	<Andre.April@cediti.be>.
- * 	Added SECURE_RPC, SECURE_NFS and NIS_PLUS support from Andy
- * 	Polyakov <appro@fy.chalmers.se>.
- *
- * Revision 1.2  1996/11/27 15:38:28  ttsalo
- *     Added X11DisplayOffset-option
- *
- * Revision 1.1.1.1  1996/02/18 21:38:10  ylo
- * 	Imported ssh-1.2.13.
- *
- * $EndLog$
- */
-
 #ifndef SERVCONF_H
 #define SERVCONF_H
 
