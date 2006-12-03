@@ -1738,6 +1738,9 @@ struct key_command mail_comms[] = {
     {Ctrl('D'),(READ_KEY_FUNC)mail_add_ignore,NULL},//etnlegend,2005.09.21,信件列表状态添加用户到黑名单
 
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
+
+    {'\'',(READ_KEY_FUNC)post_search,(void*)2},
+    {'\"',(READ_KEY_FUNC)post_search,(void*)3},
     
     {'\0', NULL},
 };

@@ -1039,7 +1039,7 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     return NEWDIRECT;
 }
 
-static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo, bool down, char* query)
+static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo, int down, int inmail, char* query)
 {
     int now; // 1-based
     off_t size;
@@ -1063,12 +1063,13 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
         memset(&q_arg,0,sizeof(struct super_filter_query_arg));
         q_arg.array = &fhn;
         q_arg.array_size = 1;
-        q_arg.boardname = currboard->filename;
+        q_arg.boardname = inmail ? getCurrentUser()->userid : currboard->filename;
         q_arg.curfh = &pFh[now - 1];
         q_arg.detectmore = false;
-        q_arg.isbm = chk_currBM(currBM, getCurrentUser());
+        q_arg.isbm = inmail ? 1 : chk_currBM(currBM, getCurrentUser());
         q_arg.query = query;
         q_arg.write_file = NULL;
+        q_arg.inmail = inmail;
         count = query_super_filter_mmap(pFh, now + (down ? 0 : -2), arg->filecount, down, &q_arg);
         if (count == 1) {
             now = fhn.num;
@@ -1101,7 +1102,9 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
     static char query[STRLEN];
     char ans[STRLEN], pmt[STRLEN];
-    bool up=(bool)extraarg;
+    int flag=(int)extraarg;
+    int up = flag&0x1;
+    int inmail = flag&0x2;
 
     strncpy(ans, query, STRLEN);
     snprintf(pmt, STRLEN, "%sËÑÑ°ÄÚÈÝ: ", up ? "¡ü" : "¡ý");
@@ -1111,10 +1114,10 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     if (ans[0] != '\0') {
         strncpy(query, ans, STRLEN);
         if (query[0] == '$') {
-            int ret = jumpSuperFilter(conf, fh, !up, query + 1);
+            int ret = jumpSuperFilter(conf, fh, !up, inmail, query + 1);
             if (ret != DONOTHING)
                 return ret;
-        } else {
+        } else if (!inmail){
             if (read_search_articles(conf, query, up, -1) == 1)
             {
                 conf->show_endline(conf);   /* add by pig2532 on 2005.12.4 */
