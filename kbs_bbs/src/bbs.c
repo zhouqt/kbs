@@ -5240,8 +5240,8 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'y', (READ_KEY_FUNC)read_importpc,NULL},
 #endif
 
-    {'\'',(READ_KEY_FUNC)post_search,(void*)false},
-    {'\"', (READ_KEY_FUNC)post_search,(void*)true},
+    {'\'',(READ_KEY_FUNC)post_search,(void*)0},
+    {'\"', (READ_KEY_FUNC)post_search,(void*)1},
 
     {'R',  (READ_KEY_FUNC)b_results,NULL},
     {'V',  (READ_KEY_FUNC)b_vote,NULL},
@@ -5741,8 +5741,8 @@ static struct key_command read_top_comms[]={
     {'A',(READ_KEY_FUNC)auth_search,(void*)true},
     {'/',(READ_KEY_FUNC)title_search,(void*)false},
     {'?',(READ_KEY_FUNC)title_search,(void*)true},
-    {'\'',(READ_KEY_FUNC)post_search,(void*)false},
-    {'\"',(READ_KEY_FUNC)post_search,(void*)true},
+    {'\'',(READ_KEY_FUNC)post_search,(void*)0},
+    {'\"',(READ_KEY_FUNC)post_search,(void*)1},
     {'h',(READ_KEY_FUNC)mainreadhelp,NULL},
     {Ctrl('X'),(READ_KEY_FUNC)thread_read,(void*)SR_READX},
     {Ctrl('U'),(READ_KEY_FUNC)author_read,(void*)SR_READ},
