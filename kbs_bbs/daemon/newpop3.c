@@ -532,10 +532,7 @@ void Login_init()
     close(fd);
 
     for (i = 0; i < totalnum; i++) {
-        sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, fcache[i].filename);
-        if (stat(genbuf, &st) == -1)
-            st.st_size = 0;
-        postlen[i] = st.st_size + strlen(fcache[i].owner) + 10 + strlen(fcache[i].title)
+        postlen[i] = fcache[i].eff_size + strlen(fcache[i].owner) + 10 + strlen(fcache[i].title)
             + 10 + 40;
         totalbyte += postlen[i];
         if (fcache[i].accessed[0] & FILE_MARKED)        /* Leeward 99.01.28 */
