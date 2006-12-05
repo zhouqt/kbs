@@ -1102,9 +1102,9 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
     static char query[STRLEN];
     char ans[STRLEN], pmt[STRLEN];
-    int flag=(int)extraarg;
-    int up = flag&0x1;
-    int inmail = flag&0x2;
+    unsigned long flag=(unsigned long)extraarg;
+    int up = (int)(flag&0x1);
+    int inmail = (int)(flag&0x2);
 
     strncpy(ans, query, STRLEN);
     snprintf(pmt, STRLEN, "%sËÑÑ°ÄÚÈÝ: ", up ? "¡ü" : "¡ý");

@@ -1739,8 +1739,8 @@ struct key_command mail_comms[] = {
 
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
 
-    {'\'',(READ_KEY_FUNC)post_search,(void*)2},
-    {'\"',(READ_KEY_FUNC)post_search,(void*)3},
+    {'\'',(READ_KEY_FUNC)post_search,(void*)2UL},
+    {'\"',(READ_KEY_FUNC)post_search,(void*)3UL},
     
     {'\0', NULL},
 };
