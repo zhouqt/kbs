@@ -445,6 +445,17 @@ int allnum, pagenum;
     case Ctrl('T'):
         showcolor = !showcolor;
         break;
+    case 'l':
+        do{
+            struct stat st;
+            sethomefile(buf,user_record[allnum]->userid,"plans");
+            if(!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size){
+                ansimore(buf,true);
+                move(0,0);
+            }
+        }                                                                                                                          
+        while(0);
+        break;
     case 'k':
     case 'K':
         if (user_record[allnum]->logintime > update_time)
