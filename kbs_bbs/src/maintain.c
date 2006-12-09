@@ -350,9 +350,9 @@ int select_user_title(const char *name){
     struct _select_item sel[257];
     struct _select_def conf;
     struct _simple_select_arg arg;
-    POINT pts[EB_BUF_LEN];
-    char menustr[EB_BUF_LEN][32],*user_title;
-    unsigned char title_buf[EB_BUF_LEN];
+    POINT pts[256];
+    char menustr[256][USER_TITLE_LEN+10],*user_title;
+    unsigned char title_buf[256];
     int i,pos;
     /*构造菜单显示*/
     pos=0;
