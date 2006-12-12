@@ -563,7 +563,7 @@ int allnum, pagenum;
 #endif
     case 'o':
     case 'O':
-		if (friendmode)
+        if (friendmode)
             return 0;
         if (!strcmp("guest", getCurrentUser()->userid))
             return 0;
