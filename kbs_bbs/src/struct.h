@@ -244,13 +244,13 @@ struct public_data {
 
     unsigned int logincount;
     unsigned int logoutcount;
-    u_int64_t staytime;
+    uint64_t staytime;
     unsigned int wwwlogincount;
     unsigned int wwwlogoutcount;
     unsigned int wwwguestlogincount;
     unsigned int wwwguestlogoutcount;
-    u_int64_t wwwstaytime;
-    u_int64_t wwwgueststaytime;
+    uint64_t wwwstaytime;
+    uint64_t wwwgueststaytime;
 
     /* etnlegend, 2006.03.06, userscore sampling ... */
     unsigned int us_sample[32];

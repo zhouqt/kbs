@@ -161,10 +161,6 @@ typedef int64 POINTDIFF;
 typedef int32 POINTDIFF;
 #endif
 
-#ifdef SOLARIS
-typedef u_longlong_t u_int64_t;
-#endif /* SOLARIS */
-
 #define IDLEN           12  /* Length of userids */
 #define OLDPASSLEN      14  /* Length of encrypted passwd field */
 #define STRLEN          80  /* Length of most string data */
