@@ -2141,7 +2141,7 @@ char *logfile, *regfile;
     char ans[5], *ptr, *uid;
     int n, unum, fd;
     int count, sum, total_num;  /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
-    char result[256], ip[17];   /* Added for IP query by Bigman: 2002.8.20 */
+    char result[STRLEN];
     long pid;                   /* Added by Bigman: 2002.5.31 */
 
     uid = getCurrentUser()->userid;
@@ -2246,13 +2246,10 @@ strncpy(regform.ip, uinfo.lasthost, 20);
 ret=checkreg(regform, errorstr, useproxy);
 if (ret==-2) {
 #endif
-
-/* 添加查询IP, Bigman: 2002.8.20 */
-            /*move(8, 20);*/
-	     move(8,30); /* 再往后挪挪地  binxun . 2003.5.30 */
-            strncpy(ip, uinfo.lasthost, 17);
-            find_ip(ip, 2, result);
-            prints("\033[33m%s\033[m", result);
+            if(qqwry_search(result,uinfo.lasthost)==1){
+                move(8,20);
+                prints("\033[1;33m[%s]\033[m",result);
+            }
 
             move(15, 0);
             printdash(NULL);

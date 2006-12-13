@@ -1069,134 +1069,138 @@ int my_inet_aton(const char * ip, struct in_addr* queryip)
 	return 0;
 }
 
-int find_ip( const char *ip, int flag, char *result)
-/* 查找IP的主程序，flag：1	普通调用，打印所有信息 */
-/*			 0	在审批时调用，只返回结果到result */
-/* 返回：	0 正常 */
-/* 		1 数据文件无法打开 */
-/*		2 错误IP */
-/*		3 数据库无该项内容 */
-/* commented by Bigman: 2002.8.20 */
-{
-    FILE *fn; 
-    int num=0;
-
-    unsigned long temp_num;
-    struct in_addr queryip;
-    char linebuf[256];
-
-    fn = fopen("etc/ip_arrange.txt", "rt");
-
-    if (fn == NULL) {
-        strncpy(result,"没找到ip_arrange.txt",255);
-        return 1;
-    }
-
-	temp_num=0;
-
-        if (my_inet_aton(ip, &queryip) == 0) {
-            strncpy(result,"错误的ip",254);
-	    fclose(fn);
-            return 2;
-	}
-
-	queryip.s_addr=ntohl(queryip.s_addr);
-	fseek(fn,0,SEEK_SET);
-
-	linebuf[255] = 0;
-
-        while (fgets(linebuf, 254, fn)) {
-            char *p1, *p2;
-            struct in_addr from, to;
-	    char* tostr;
-
-            p2 = p1 = linebuf;
-            while ((*p2) && (*p2 != ' ') && *p2 != '\t')
-                p2++;
-            if (!(*p2))
-                continue;
-            *p2 = 0;
-            if (my_inet_aton(p1, &from) == 0)
-                continue;
-	    from.s_addr=ntohl(from.s_addr);
-            p1 = p2 + 1;
-            while ((*p1) && (*p1 == ' ') && *p1 == '\t')
-                p1++;
-            if (!(*p1))
-                continue;
-            p2 = p1;
-
-            while ((*p2) && (*p2 != ' ') && *p2 != '\t')
-                p2++;
-            if (!(*p2))
-                continue;
-            *p2 = 0;
-            if (my_inet_aton(p1, &to) == 0)
-                continue;
-	    to.s_addr=ntohl(to.s_addr);
-	    tostr=p1;
-
-            p1 = p2 + 1;
-            while ((*p1) && (*p1 == ' ') && *p1 == '\t')
-                p1++;
-            if (!(*p1))
-                continue;
-
-	    if (from.s_addr==0) continue;
-            if (((queryip.s_addr >= from.s_addr) && (queryip.s_addr <= to.s_addr) && (from.s_addr<=to.s_addr)) || 
-                ((queryip.s_addr >= to.s_addr) && (queryip.s_addr <= from.s_addr) && (from.s_addr>=to.s_addr)))
-               	{
-			num++;
-			if (flag==1) prints("%s %s %s", linebuf,tostr,p1);
-			if ((temp_num == 0) || (temp_num >= (abs(to.s_addr-from.s_addr))))
-			{
-				temp_num=abs(to.s_addr-from.s_addr);
-				strncpy(result,p1,254);
-			}
-		}
-        }
-
-	if (num==0) {
-		strncpy(result,"数据库暂无",254);
-		fclose(fn);
-		return(3);
-	}
-
-    fclose(fn);
+/* etnlegend, 2006.12.13, 查询 IP 地址的地理位置更新, 直接使用 QQWry.Dat 信息库... */
+static inline int qqwry_read_int(int fd,uint32_t *data,size_t count,off_t offset){
+    uint8_t buf[4]={0,0,0,0};
+    if(pread(fd,buf,count,offset)!=count)
+        return -1;
+    *data=(buf[0]|(buf[1]<<8)|(buf[2]<<16)|(buf[3]<<24));
     return 0;
 }
 
-int search_ip(void){
-/* 从管理菜单调用查询IP程序 */
-/* Bigman: 2002.8.20 */
-/* 返回：0 正常 */
-/*       1 数据文件无法打开 */
-	char ip[17];
-	char result[256];
-	int back_flag;
-
-	clear();
-	while (1) {
-            
-		getdata(0, 0, "输入查询的IP(直接回车退出):", ip, 16, DOECHO, NULL, true);
-
-		if (ip[0] == 0) {
-			return 0;
-		}
-		prints("%s 查询结果:\n",ip);
-		clrtobot();
-
-		back_flag=find_ip(ip,1,result);
-
-		prints("\033[33m%s\033[m\n",result);
-
-		if (back_flag == 1) {
-		pressreturn();
-		return(1);
-		}
-
-	}
+static inline int qqwry_read_str(int fd,char *data,size_t count,off_t offset){
+    if(!(pread(fd,data,count,offset)>0))
+        return -1;
+    data[count-1]=0;
+    return 0;
 }
+
+int qqwry_search(char *description,const char *ip_address){
+#define QQWRY_DAT           "etc/QQWry.Dat"
+#define QQWRY_QUIT(r)       do{close(fd);return (r);}while(0)
+#define QQWRY_READ_INT(s,o) do{if(qqwry_read_int(fd,&data,(s),(o))==-1)QQWRY_QUIT(-1);}while(0)
+#define QQWRY_READ_STR(s,o) do{if(qqwry_read_str(fd,buf,(s),(o))==-1)QQWRY_QUIT(-1);size=(strlen(buf)+1);}while(0)
+    struct in_addr sin;
+    char buf[STRLEN],*separator;
+    int fd,match,bound_b,bound_e,current;
+    uint32_t data,ip,ip_b,ip_e;
+    off_t index_b,index_e,index_offset,record_offset,country_offset,location_offset;
+    size_t size;
+    if((fd=open(QQWRY_DAT,O_RDONLY,0644))==-1)
+        QQWRY_QUIT(-1);
+    if(!inet_aton(ip_address,&sin))
+        QQWRY_QUIT(-1);
+    ip=ntohl(sin.s_addr);
+    QQWRY_READ_INT(4,0);
+    index_b=(off_t)data;
+    QQWRY_READ_INT(4,4);
+    index_e=(off_t)data;
+    match=0;
+    bound_b=0;
+    bound_e=(index_e-index_b)/7;
+    while(bound_b<bound_e){
+        current=(bound_b+bound_e)/2;
+        index_offset=(index_b+current*7);
+        QQWRY_READ_INT(4,index_offset);
+        ip_b=(uint32_t)data;
+        QQWRY_READ_INT(3,index_offset+4);
+        record_offset=(off_t)data;
+        QQWRY_READ_INT(4,record_offset);
+        ip_e=(uint32_t)data;
+        if(ip<ip_b)
+            bound_e=current;
+        else if(ip>ip_e)
+            bound_b=current+1;
+        else{
+            match=1;
+            break;
+        }
+    }
+    if(!match)
+        QQWRY_QUIT(0);
+    QQWRY_READ_INT(1,record_offset+4);
+    if(data==0x01){
+        QQWRY_READ_INT(3,record_offset+5);
+        country_offset=(off_t)data;
+        QQWRY_READ_INT(1,country_offset);
+        if(data==0x02){
+            location_offset=country_offset+4;
+            QQWRY_READ_INT(3,country_offset+1);
+            country_offset=(off_t)data;
+            QQWRY_READ_STR(STRLEN,country_offset);
+        }
+        else{
+            QQWRY_READ_STR(STRLEN,country_offset);
+            location_offset=country_offset+size;
+        }
+    }
+    else if(data==0x02){
+        location_offset=record_offset+8;
+        QQWRY_READ_INT(3,record_offset+5);
+        country_offset=(off_t)data;
+        QQWRY_READ_STR(STRLEN,country_offset);
+    }
+    else{
+        QQWRY_READ_STR(STRLEN,record_offset+4);
+        location_offset=(record_offset+4)+size;
+    }
+    strcpy(description,buf);
+    if(size>(STRLEN-4))
+        QQWRY_QUIT(1);
+    separator=&description[size];
+    separator[-1]=' ';
+    QQWRY_READ_INT(1,location_offset);
+    if(data==0x01||data==0x02){
+        QQWRY_READ_INT(3,location_offset+1);
+        location_offset=(off_t)data;
+        QQWRY_READ_STR(STRLEN-size,location_offset);
+    }
+    else
+        QQWRY_READ_STR(STRLEN-size,location_offset);
+    strcpy(separator,buf);
+    QQWRY_QUIT(1);
+#undef QQWRY_DAT
+#undef QQWRY_QUIT
+#undef QQWRY_READ_INT
+#undef QQWRY_READ_STR
+}
+
+int search_ip(void){
+	char ip_address[16],description[STRLEN];
+    int ret;
+	clear();
+    move(0,0);
+    prints("\033[1;32m%s\033[m","[查询 IP 地址位置]");
+    do{
+        move(1,0);
+        clrtobot();
+        getdata(2,0,"请输入需要查询的 IP 地址: ",ip_address,16,DOECHO,NULL,true);
+        if(!ip_address[0])
+            break;
+        ret=qqwry_search(description,ip_address);
+        move(4,0);
+        if(ret==-1)
+            prints("\033[1;31m%s\033[0;33m<Enter>\033[m","查询过程中发生错误...");
+        else if(!ret)
+            prints("\033[1;36m%s\033[0;33m<Enter>\033[m","当前数据库中没有与该 IP 地址相关的位置信息...");
+        else
+            prints("\033[1;33m<%s> [%s]\033[m\n\n\033[1;32m查询成功!\033[0;33m<Enter>\033[m",ip_address,description);
+        WAIT_RETURN;
+    }
+    while(1);
+    return 0;
+}
+/* END - etnlegend, 2006.12.13, 查询 IP 地址的地理位置更新, 直接使用 QQWry.Dat 信息库... */
 
 int kick_all_user(void){
     struct user_info *uin;
