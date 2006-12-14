@@ -1163,7 +1163,10 @@ int qqwry_search(char *description,const char *ip_address){
     if(data==0x01||data==0x02){
         QQWRY_READ_INT(3,location_offset+1);
         location_offset=(off_t)data;
-        QQWRY_READ_STR(STRLEN-size,location_offset);
+        if(!location_offset)
+            buf[0]=0;
+        else
+            QQWRY_READ_STR(STRLEN-size,location_offset);
     }
     else
         QQWRY_READ_STR(STRLEN-size,location_offset);
