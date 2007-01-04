@@ -89,7 +89,7 @@ int sync_mailsize(struct userec *user, void *arg)
         sprintf(buf, ".%s", mail.mail_list[i] + 30);
         totalsize += calc_mailsize(user->userid, buf);
     }
-    printf("%s ok.\n", user->userid);
+    printf("%s ok %d.\n", user->userid, totalsize);
     if (totalsize != user->usedspace) {
         fprintf(stderr, "%s new:%d old:%d\n", user->userid, totalsize, user->usedspace);
 #ifdef FORCE_SYNC
