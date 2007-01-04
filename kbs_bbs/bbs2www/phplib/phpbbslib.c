@@ -89,6 +89,7 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 static char old_pwd[1024];
 
 
+PHP_FUNCTION(bbs_get_webdomain);
 PHP_FUNCTION(bbs_ext_initialized);
 PHP_FUNCTION(bbs_init_ext);
 
@@ -121,6 +122,7 @@ static function_entry kbs_bbs_functions[] = {
     PHP_BBS_WFORUM_EXPORT_FUNCTIONS
 #endif
 
+    PHP_FE(bbs_get_webdomain, NULL)
     PHP_FE(bbs_ext_initialized, NULL)
     PHP_FE(bbs_init_ext, NULL)
 
@@ -231,6 +233,17 @@ PHP_FUNCTION(bbs_init_ext)
 	}
 }
 
+PHP_FUNCTION(bbs_get_webdomain)
+{
+    const char *c;
+    c=sysconf_str("BBS_WEBDOMAIN");
+    if(c==NULL){
+        c=sysconf_str("BBSDOMAIN");
+        if (c==NULL) c = ""; //ft, should I say TODO here?
+	}
+    RETURN_STRING((char *)c,1);
+}
+
 PHP_MINIT_FUNCTION(kbs_bbs)
 {
 // #define REGISTER_STRING_CONSTANT(name, str, flags)  zend_register_string_constant((name), sizeof(name), (str), (flags), module_number TSRMLS_CC)
@@ -238,18 +251,11 @@ PHP_MINIT_FUNCTION(kbs_bbs)
 
     int i;
 	char old_cwd[256], buf[256];
-    const char *c;
 	getcwd(old_cwd, sizeof(old_cwd));
 	chdir(BBSHOME);
     MY_REGISTER_STRING_CONSTANT("BBS_HOME",BBSHOME,CONST_CS | CONST_PERSISTENT);
     MY_REGISTER_STRING_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,CONST_CS | CONST_PERSISTENT);
 
-    c=sysconf_str("BBS_WEBDOMAIN");
-    if(c==NULL){
-        c=sysconf_str("BBSDOMAIN");
-        if (c==NULL) c = ""; //ft, should I say TODO here?
-	}
-    MY_REGISTER_STRING_CONSTANT("BBS_WEBDOMAIN",c,CONST_CS | CONST_PERSISTENT);
     MY_REGISTER_STRING_CONSTANT("BBS_XPERMSTR", XPERMSTR, CONST_CS | CONST_PERSISTENT);
 
 #ifdef BUILD_PHP_EXTENSION
