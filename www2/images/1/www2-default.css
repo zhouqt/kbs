@@ -36,7 +36,7 @@ a:active {
 	text-decoration: underline;
 }
 a:visited {
-	color: #999999;
+	color: #800080;
 	text-decoration: none;
 }
 a:hover {
@@ -284,6 +284,7 @@ div.docTab {
 	right: 0;
 }
 div.docTab a, div.docTab b {
+	color: #006699;
 	border: 0.1em solid #A8D0FD;
 	padding: 0.3em;
 	margin: 0 0 0 0.2em;
@@ -474,6 +475,7 @@ div.mail {
 div.mailH {
 }
 div.mailH a, div.mailH b {
+	color: #006699;
 	border: 0.1em solid #A8D0FD;
 	padding: 0.5em 0.5em 0.3em 0.5em;
 	margin: 0 0.2em -0.1em 0;
