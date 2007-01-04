@@ -12,12 +12,9 @@ function cv($c) {
 	return iconv("GB18030", "UTF-8//IGNORE", $c);
 }
 
-/* TODO: consider path */
-/*
-$domain_name = explode(":",trim($_SERVER["HTTP_HOST"]));
-$thispath = dirname($_SERVER['PHP_SELF']);
-if (substr($thispath, -1) != "/") $thispath .= "/";
-*/
+if (!defined("BBS_WEBDOMAIN")) { // 这个可以在 site.php 里面定义以提高效率
+	define("BBS_WEBDOMAIN", bbs_get_webdomain());
+}
 define('SiteURL', "http://" . BBS_WEBDOMAIN . "/");
 
 
