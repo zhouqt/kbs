@@ -614,6 +614,11 @@ static int miscd_dodaemon(char *argv1, char *daemon)
         while (1) {
             time_t ft;
 
+            ft = getnextday4am();
+            do {
+                sleep(ft - time(0));
+            } while (ft > time(0));
+
             if (argv1 == NULL) {
                 dokilluser();
                 //doupdategiveupuser();
@@ -642,10 +647,6 @@ static int miscd_dodaemon(char *argv1, char *daemon)
                 default:
                     break;
             }
-            ft = getnextday4am();
-            do {
-                sleep(ft - time(0));
-            } while (ft > time(0));
         };
         exit(0);
     }
