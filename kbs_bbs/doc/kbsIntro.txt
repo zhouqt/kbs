@@ -1,0 +1,777 @@
+$Id$
+
+发信人: atppp
+标  题: [kbsIntro] kbs 系统入门
+发信站: http://dev.kcn.cn/
+
+0. 序
+
+0.0 声明
+
+尽管 kbs 系统基础数据结构一般很少变化，但是本文档只针对 kbs CVS 主分支目前的代码，不保证对其它时间或其它分支代码的正确性，也不对可能造成的任何后果负责。本文可以在网络上自由转载，但请保留全文的完整性。
+
+0.1 本文说明
+
+文中有一些对数据结构的说明。大多数结构定义在 src/struct.h 中，char[] 的字段若非特别说明都是以 '\0' 结束的字符串。对本文或相关问题的疑问，欢迎到水木社区 (newsmth.net) BBSMan_Dev 版讨论。
+
+
+
+1. 版面及文章
+
+1.1 文章的存储
+
+每个版面都是一个目录。比如 SYSOP 版的目录是 $BBSHOME/boards/SYSOP/。在这个目录下面有这个版面的文章及索引，每一篇文章都是一个文件，文件名大致是这样子：
+
+M.1085385291.w0
+             ^^ 用于区分同一个时间点的多个帖子
+  ^^^^^^^^^^ 10 位数的 timestamp，帖子发表时间
+^ M 是文件名前缀，不同性质的文件，前缀就不一样
+
+下面是各版面索引文件和相应文件名的前缀：（通常情况下）
+版面文章   .DIR        M
+置顶文章   .DINGDIR    Z （硬连接到相应 M 前缀文件）
+文摘区     .DIGEST     G （硬连接到相应 M 前缀文件）
+回收站     .DELETED    D
+废纸篓     .JUNK       J
+
+同主题模式依赖于版面目录下面的一个 .ORIGIN 文件。这个文件就是 .DIR 文件里面所有原作（id==groupid，参考 1.3 节）的 fileheaders。
+
+另外，在 $BBSHOME/vote/ 下面每个版面也会有一个目录，主要用于储存投票等数据，按照 KCN 的精神，今后最好不要再在 vote 目录下储存版面信息。
+
+
+1.2 版面文章索引，fileheader 结构
+
+每个索引文件就是多个 fileheader 结构。这个 fileheader 定义在 src/default.h 或者 src/site.h 里面，具体解释如下：
+
+typedef struct fileheader {
+    char filename[FILENAME_LEN];
+        帖子的文件名，比方 1.1 节那个例子，这个字段就是 M.1085385291.w0。
+        kbs 也可以采用版面目录下 52 个子目录分散储存帖子的方法（参考
+        feeling.h 内 GET_POSTFILENAME 宏定义），这种情况下，本字段的形式
+        就是 A/M.1085385291.w0。
+    unsigned int id, groupid, reid;
+        这三个 id 字段非常重要，下面一节具体说明。
+    int o_bid;
+    unsigned int o_id;
+    unsigned int o_groupid;
+    unsigned int o_reid;
+        以上四个字段用于需审核的文章和推荐文章，o_bid 是原文的版面 bid。
+        后面三个是原文在原版面 .DIR 中相应的三个 id 字段值。
+    char innflag[2];
+        帖子是否转信。"LL" 表示本地发表，"SS" 表示转信，"\0M" 表示外面
+        转进来的文章。
+    char owner[OWNER_LEN];
+        发文作者。
+    unsigned int eff_size;
+        帖子的有效字节数。
+    time_t posttime;
+        帖子发表时间的 timestamp。在使用 52 个子目录分散储存帖子的情况下该
+        字段尤其重要。
+    long attachment;
+        附件位置偏移量，参考下面的附件格式。
+    char title[ARTICLE_TITLE_LEN];
+        帖子的标题。注意超长标题需要截短。
+    unsigned char accessed[4];
+        一些帖子的属性，前两个元素是 bitwise-OR 的属性，包括：
+        accessed[0]: FILE_SIGN     (0x01) 版主设置的 # 标记
+                     FILE_MARKED   (0x08) 被 m 的帖子
+                     FILE_DIGEST   (0x10) 文摘区贴子（被 g 的帖子）
+                     FILE_IMPORTED (0x80) 已被收录精华
+        accessed[1]: FILE_READ     (0x01) 不可 re
+                     FILE_DEL      (0x02) 版主标记删除 X
+                     FILE_MAILBACK (0x04) 回帖抄送信箱
+                     FILE_COMMEND  (0x08) 已被推荐文章
+                     FILE_CENSOR   (0x20) FILTER 版面需审核文章
+                     FILE_TEX      (0x80) tex 方式发表帖子，仅用于 wForum
+        accessed[3]: 回收站的 .DIR 中这个字段为：
+                     删除时间 timestamp / (3600 * 24) % 100
+                     主要用于定时删除老的删帖。
+} fileheader;
+
+
+1.3 id, groupid, reid 三个字段
+
+这三个字段是帖子的索引 ID 和同主题信息。.DIR 里面 fileheader 结构的 id 字段依次递增。注意一定是递增，否则 web 下浏览会不正常！另外两个字段的作用举例如下：
+
+有人新发表了帖子 A，这个帖子系统自动给了 id = 10
+然后有人回复帖子 A，我们叫它帖子 B；
+再有人回复了帖子 B，我们叫它帖子 C；
+最后有人回复帖子 A，称为帖子 D。这四个帖子的三个字段会是这样：
+
+帖子    id      groupid     reid
+================================
+ A      10      10          10
+ B      11      10          10
+ C      12      10          11
+ D      13      10          10
+
+其中，groupid 就是用来判断帖子同主题的，注意，帖子同主题和帖子标题无关。reid 用来产生回复树结构，目前只在 wForum 里面用到。
+
+
+1.4 附件结构
+
+附件的内容就添加在它所属帖子的那个文件的末尾。有附件的帖子文件其组成是：帖子正文（最后是一个回车符），附件一，附件二，...其中每个附件段是由四个部分组成的：
+*) 第一部分：八个 '\0' 字节。
+*) 第二部分：附件的原始文件名字符串，可以含有中文字符，长度不应该超过 40 个字
+   符。文件名的后缀将决定附件类型。本部分长度不定，所以千万不要忘记最后的 '\0'
+   字符串结束符。
+*) 第三部分：四个字节，unsigned int 二进制格式整数，表示本附件的长度；
+   注意这个整数是网络字节序（big-endian）存储，也即 MSB 在先。
+*) 第四部分：二进制格式储存的这个附件，本部分长度由第三部分决定。
+另外，这个帖子在 .DIR 里面相应的那个 fileheader 结构的 attachment 字段应该设置为第一个附件段的起始偏移量（ftell）。参考：
+bbs2www/lib/bbslib.c post_article() 函数
+bbs2www/html/bbscon.php get_mimetype() 函数
+
+
+1.5 .BOARDS 文件，boardheader 结构
+
+$BBSHOME/.BOARDS 文件是所有版面的信息，实际上是 MAXBOARD 个 boardheader 结构。在 kbs 系统内部每个版面都有一个版面号 bid，这个 bid 就是该版面在 .BOARDS 里面的位置，注意版面号是 1-based 的。
+
+struct boardheader {
+    char filename[STRLEN];
+            版面的英文名称，STRLEN 是 80
+    char BM[BM_LEN];
+            版主列表，BM_LEN 是 60。多个版主用空格隔开
+    char title[STRLEN];
+            版面的说明，格式是 a[bbbb]ccccccdddd...
+                a: 讨论区分区
+                bbbb: 讨论区分类
+                cccccc: 转信标签，一般设置为六个空格
+                dddd....: 讨论区说明，也即通常所说的版面中文名称
+            比方：
+                0[站务]      测试用版
+    unsigned level;
+            版面存取权限。
+    unsigned int idseq;
+            当前已经使用到的 id 值，参考 boardstatus 结构 nowid 字段。
+    unsigned int clubnum;
+            俱乐部序号。0 表示这个版面不是俱乐部。
+    unsigned int flag;
+            版面的一些属性比方是否参与转信。
+    union {
+    unsigned int adv_club;
+    unsigned int group_total;
+    } board_data;
+    time_t createtime;
+            版面创建时间，“新开启的讨论区”会用到。
+    int unused;
+    char ann_path[128];
+            精华区路径。实际精华区绝对路径是：
+            $BBSHOME/0Announce/groups/`ann_path`
+    int group;
+            所属目录。
+    char title_level;
+            设定用户需要什么身份可见这个版面。0 表示没有限制。
+    char des[195];
+            版面描述,用于 www 的版面说明和版面超级搜索。
+#ifdef FLOWBANNER
+    int bannercount;
+    char banners[MAXBANNER][BANNERSIZE];
+#endif
+};
+
+
+
+2. 用户
+
+2.1 什么样的 ID 在 kbs 系统中是合法的
+
+kbs 系统合法 ID 的规则是：至少 2 个字符，至多 12 个字符。第一个字符必须是字母，后面的字符必须是字母或者数字。
+
+
+2.2 用户相关的文件系统结构
+
+$BBSHOME/.PASSWDS 是用户帐号基本信息，实质上是 MAXUSERS 个 userec 结构，结构说明后面详细写。另外，每个用户还有一个 home 目录和一个信件目录，比方 atppp 用户这两个目录分别是 $BBSHOME/home/A/atppp/ 和 $BBSHOME/mail/A/atppp/。用户 home 目录下有一些杂七杂八的文件，其中有一个文件叫做 .userdata，这个是用户帐号的补充信息，实际上就是一个 userdata 结构，结构说明后面详细写。信件目录到后面一大章节再说。
+
+
+2.3 userec 结构
+
+struct userec {
+    char userid[IDLEN + 2];
+        用户名。IDLEN 是 12，不要轻易修改。
+    char flags;
+        一些标志，戒网，版面排序之类的。转换用户建议设置成 0x81，也就是
+            PAGER_FLAG | CURSOR_FLAG
+        参考源代码 contrib/fb2k2smth/README 相关说明。
+            #define PAGER_FLAG   0x1        /* true if pager was OFF last session */
+            #define CLOAK_FLAG   0x2        /* true if cloak was ON last session */
+            #define BRDSORT_FLAG 0x20       /* true if the boards sorted alphabetical */
+            #define CURSOR_FLAG  0x80       /* true if the cursor mode open */
+            #define GIVEUP_FLAG  0x4        /* true if the user is giving up  by bad 2002.7.6 */
+            #define PCORP_FLAG   0x40       /* true if have personalcorp */
+    unsigned char title;
+        用户身份
+    time_t firstlogin;
+        注册时间或者第一次登录的时间戳。
+    char lasthost[16];
+        最后登录的 IP。
+    unsigned int numlogins;
+        登录次数。
+    unsigned int numposts;
+        发帖数。
+#ifdef CONV_PASS
+    char passwd[OLDPASSLEN];
+    char unused_padding[2];
+#endif
+    char username[NAMELEN];
+        用户昵称。
+    unsigned int club_read_rights[MAXCLUB>>5];
+    unsigned int club_write_rights[MAXCLUB>>5];
+        这两个是俱乐部读写权限。如果该用户的
+            club_read_rights[(clubnum-1)>>5]&(1<<((clubnum-1)&0x1f))
+        为真，则这个用户可以读取俱乐部号为 clubnum 的版面。参考函数
+            check_read_perm() haspostperm()
+        注：这里的数据结构决定了 MAXCLUB 必须定义为 32 的倍数。
+    unsigned char md5passwd[MD5PASSLEN];
+        md5 消化过的密码。密码问题后面会一并详细说明。
+        此字符串定长 16，最后不以 '\0' 结束！
+    unsigned userlevel;
+        用户权限。
+    time_t lastlogin;
+        上次登录的时间戳。
+    time_t stay;
+        总上线时间。单位是秒。
+    int signature;
+        当前使用的签名档号码。
+    unsigned int userdefine[2];
+        用户自定义参数。新注册用户是 0xffffffff，但是 wForum 的标准应该是默认
+        关闭公布详细信息，userdefine[0] 的实际初始值是
+            0xFFFFFFFF & (~DEF_SHOWREALUSERDATA)
+        也就是 0xBFFFFFFF。
+    time_t notedate;
+    int noteline;
+        上面两个都和查看留言板相关。
+    int unused_atppp;
+    time_t exittime;
+        上次退出登录的时间戳。
+    unsigned int usedspace;
+        用户信件使用的磁盘空间。
+    int unused[7];
+};
+
+2.4 userdata 结构
+
+userdata 是用户 home 目录下 .userdata 文件的结构。另外用户 home 目录下还有一个文件是 usermemo（用来 mmap 的），这个文件的内容要和 .userdata 严格一致，如果 usermemo 文件不存在系统会自动从 .userdata 建立，所以如果 usermemo 存在且和 .userdata 不一致的话系统就会出错。
+
+userdata 结构：
+
+struct userdata
+{
+    char userid[IDLEN + 2];
+        用户名。
+    char __reserved[2];
+    char realemail[STRLEN - 16];
+        真实 email。
+    char realname[NAMELEN];
+        真实姓名。
+    char address[STRLEN];
+        通讯地址。
+    char email[STRLEN];
+        email。
+#ifdef HAVE_BIRTHDAY
+    char            gender;
+        性别，写 'M' 或者 'F'。如果不是这两个字符可能出错。
+    unsigned char   birthyear;
+        出生年的后两位。
+    unsigned char   birthmonth;
+        出生月。
+    unsigned char   birthday;
+        出生日。上面三个字段注意类型是 unsigned char。
+#endif
+    char reg_email[STRLEN];
+        注册使用的 email。
+/*#ifdef SMS_SUPPORT*/
+    bool mobileregistered;
+    char mobilenumber[MOBILE_NUMBER_LEN];
+/*#endif*/
+/* add by roy 2003.07.23 for wForum */
+    char OICQ[STRLEN];
+    char ICQ[STRLEN];
+    char MSN[STRLEN];
+    char homepage[STRLEN];
+    int userface_img;
+        设置成 0。如果有自定义头像，设置成 -1。
+    char userface_url[STRLEN];
+        这个是自定义头像的完整 URL 地址。
+    unsigned char userface_width;
+    unsigned char userface_height;
+        上面两个字段是自定义头像的长和宽。必须是 0~120 之间的整数。
+    unsigned int group;
+    char country[STRLEN];
+    char province[STRLEN];
+    char city[STRLEN];
+    unsigned char shengxiao;
+    unsigned char bloodtype;
+    unsigned char religion;
+    unsigned char profession;
+    unsigned char married;
+    unsigned char education;
+    char graduateschool[STRLEN];
+    unsigned char character;
+    char photo_url[STRLEN];
+        个人相片的完整 URL 地址。
+    char telephone[STRLEN];
+    char smsprefix[41];
+    char smsend[41];
+    unsigned int smsdef;
+        上面这堆 "add by roy" 的东西目前只在 wForum 里面用到。
+    int signum;
+        签名档个数。
+    int this_field_is_reserved_by_atppp;
+    time_t lastinvite;
+};
+
+2.5 密码
+
+kbs 的用户密码使用 md5 加密储存于 userec 结构的 md5passwd 字段内，但是 kbs 系统并不是对用户密码直接 md5 加密处理，md5passwd 字段是下面这四个字符串顺序连接起来的字符串的 md5：
+    passmagic 密码 passmagic 用户名
+其中 passmagic 是（不包括前后两个引号）：
+    "wwj&kcn4SMTHBBS MD5 p9w2d gen2rat8, //grin~~, 2001/5/7"
+相关代码请看 libBBS/pass.c igenpass() 函数。注意 md5passwd 字段的类型是 unsigned char md5passwd[16]，也就是所谓的 raw-binary format，而不是有些 md5 程序返回的 32 个字符的字符串。注：由于这个 md5passwd 消化了用户名，所以用户名更改大小写之后必须重新给该用户设置密码。
+
+
+2.6 用户 home 目录下面其它一些文件的说明
+
+2.6.1 .boardrc.gz 已读记录
+
+用户 home 目录下面的 .boardrc.gz 存储用户的已读记录，它是一个使用 gzip 压缩的文件，解压后的长度是
+    BRC_FILESIZE = MAXBOARD * BRC_MAXNUM * sizeof(unsigned int)。
+BRC_MAXNUM 默认是 50，这个文件分为 MAXBOARD 段，第 i 段就是 bid = i 的那个版面的已读记录；每个版面的已读记录就是 BRC_MAXNUM 个非负整数：
+    n1 n2 n3 ... np 0 ... 0
+其中 n1 > n2 > n3 > ... > np > 0。这组已读记录的意义是，该版面 id > n1 的文章都是未读的，id < np 的文章都是已读的；而 np <= id <= n1 的文章中，只有
+    id = n1,n2,n3,...,np
+的文章才是已读的，其余全部未读。已读记录用这个方法来存储是有利有弊的，最大的好处就是比较有效的记录了用户最需要的那部分已读记录，
+
+2.6.2 favboard 收藏版面
+
+用户自定义了收藏版面之后会在用户 home 目录下创建文件 favboard。该文件的格式可以参考 libBBS/boards.c load_myboard1() save_favboard1() 函数。favboard 文件有多种允许的格式，而且 kbs 支持复杂的多目录层次收藏夹结构。下面只说明其中一种格式。favboard 文件可以是这样一个数据结构：
+
+struct {
+    int magic_version_number;
+        写 0x8081
+    int favbrd_list_t;
+        收藏目录个数，写 1
+    struct favbrd_struct fav_boards;
+        具体的收藏版面
+};
+
+favbrd_struct 具体的数据结构如下：
+
+struct favbrd_struct {
+    int bnum;
+        本目录中收藏版面的个数，决定下一个数组字段中多少个元素是有效的
+    int bid[MAXBOARDPERDIR];
+    /* bid >= 0: 版面
+       bid < 0: 目录， 表示子目录是 favbrd_list[-bid]
+       */
+       在不涉及多层目录结构的情况下，bid[i] 表示本目录下第 i 个收藏版面，
+       这里千万注意，bid[i] 是相应版面的 bid - 1，而不是 bid！也就是说，
+       这里 bid[i] 是有可能为 0 的。
+    char title[61];
+    char ename[20];
+    int father;
+        根目录这个字段写 -1。
+    int level;
+};
+
+另外，$BBSHOME/etc/initial_favboard 是新注册用户默认的收藏版面，格式是每行一个版名。如果该文件不存在，默认的收藏版面是 .BOARDS 文件里面的第一个版面。
+
+2.6.3 friends 好友列表
+
+这是 n 个 friends 结构的文件，每个结构都是一个好友：
+
+struct friends {
+    char id[13];
+        好友 id
+    char exp[LEN_FRIEND_EXP];
+        好友说明，可以留空。
+};
+
+2.6.4 plans 个人说明档
+
+这个没什么好说的，就是个人说明档。查询用户的时候会显示出来。
+
+2.6.5 signatures 签名档
+
+这个文件是用户签名档，每六行是一个单位，支持 ansi 控制符，wForum 额外支持少量 ubb。userdata 结构的 signum 字段存储用户签名档个数，如果出现错误可以用recalc_signum 程序来纠正。
+
+
+
+3. 用户站内信件
+
+用户信件，包括信件索引和具体信件内容，全部位于用户信件目录下（参考 2.2 节）。
+
+3.1 信件目录及数据结构
+
+用户信件的总体构架基本类似于讨论区文章。每封信件都是一个文件，文件名的规则和讨论区普通文章的文件名相同。索引文件除了 .DIR 还有两个，如下：
+
+    .DIR        收件箱
+    .SENT       发件箱
+    .DELETED    垃圾箱
+
+这三个索引文件的结构和讨论区文章索引 .DIR 的结构很类似，也是 n 个 fileheader 结构，少数几个字段的意义略有不同，具体解释如下：
+
+typedef struct fileheader {
+    char filename[FILENAME_LEN];
+        帖子的文件名，注意第 3 个字节到第 12 个字节是帖子的发表时间戳。
+    unsigned int id, groupid, reid;
+    int o_bid;
+    unsigned int o_id;
+    unsigned int o_groupid;
+    unsigned int o_reid;
+    char innflag[2];
+        以上八个字段没用。
+    char owner[OWNER_LEN];
+        对方 ID。.DIR 中表示发件人 ID，.SENT 中表示收件人 ID，.DELETED 里面
+        既有可能是发件人也可能是收件人 :(
+    unsigned int eff_size;
+        信件大小。
+    time_t posttime;
+        信件发送时间的 timestamp，好像没用，除非信件也用 52 个子目录存储...
+    long attachment;
+        附件偏移量。
+    char title[ARTICLE_TITLE_LEN];
+        帖子的标题。注意超长标题需要截短。
+    unsigned char accessed[4];
+        一些属性，bitwise-ORs flags:
+        accessed[0]: FILE_READ      (0x01) 已读
+                     FILE_REPLIED   (0x20) 已回复
+                     FILE_MARKED    (0x08) 被 m 的信件
+                     FILE_FORWARDED (0x40) 已转发
+} fileheader;
+
+信件在索引文件中的排序没有特定的规则（并不按照时间排序）。
+
+3.2 自定义信箱
+
+kbs 系统除了上面提到的三个预定义信箱外，还支持用户自定义信箱。载入自定义信箱的代码可以参考 libBBS/record.c load_mail_list() 函数。具体来说，在用户 home 目录下有一个 maildir 文件是自定义信箱的记录，文件结构是：
+struct {
+    int mail_list_t;
+        自定义信箱的个数
+    char mail_list[MAILBOARDNUM][40];
+        每个自定义信箱的具体配置，每个配置是一个 40 个字节的字符串。
+        0~29 字节是信箱名称。30~39 字节是该信箱索引文件的后半段名称。
+        比如，这个字符串前半段是“KCN 情书”，30~39 字节是“MAILBOX1”，
+        那么这个自定义信箱的显示名称就是“KCN 情书”，而索引文件的名称
+        就是 .MAILBOX1，注意文件名第一个字符是附加上去的点。
+};
+
+3.3 信箱属性
+
+在用户 home 目录下有一个文件 .mailbox.prop 是用户信箱的选项配置。该文件就是一个 int 变量，bitwise-ORs 以下属性：
+
+#define MBP_SAVESENTMAIL      0x00000001 //发信时保存信件到发件箱
+#define MBP_FORCEDELETEMAIL   0x00000002 //删除信件时不保存到垃圾箱
+#define MBP_MAILBOXSHORTCUT   0x00000004
+        //版面按 'v' 时进入: 收件箱(OFF) / 信箱主界面(ON)
+
+如果用户 home 目录下 .mailbox.prop 文件不存在，系统自动使用 MBP_DEFAULT 作为信箱选项配置。
+
+
+
+
+4. 共享内存结构
+
+共享内存在 kbs 系统中主要用于进程间通信。比方，在 web 注册了之后，马上就能在 telnet 下登录了，这是因为 web 注册的那个代码修改了相应的共享内存数据，当在 telnet 试图登录的时候，代码就能在共享内存中找到这个信息。当然，这些工作完全可以用文件系统来做，但是用共享内存来做进程间通信效率就会高很多。BBS 的很多重要数据都在共享内存里面，比如两个重要的系统文件：
+
+$BBSHOME/.PASSWDS 这个是用户的帐号信息，包括密码。
+$BBSHOME/.BOARDS  所有版面的信息。
+
+当系统正常启动之后，这两个文件的信息在共享内存里面，系统会定时写磁盘同步数据。当系统正常运行的时候，直接打开这两个文件修改是不对的！BBS 程序如有基础结构变动的更新，一般必须要停掉 BBS 服务，清除掉共享内存数据。kbs 系统使用的主要共享内存列举如下，其中标识是可以在 sysconf.ini 定义的共享内存 key，如无定义则使用默认。
+
+程序变量          说明         要处理代码文件   标识及默认
+======================================================================
+bcache        .BOARDS 的 mmap     bcache.c      只是一个 mmap 
+brdshm        版面状态            bcache.c      BCACHE_SHMKEY   0xe6d
+uidshm        用户信息            ucache.c      UCACHE_SHMKEY   0xe70
+utmpshm       登录用户状态信息    utmp.c        UTMP_SHMKEY     0xe73
+utmphead      登录表              utmp.c        UTMPHEAD_SHMKEY 0xe72
+wwwguest_shm  wwwguest 登录信息   bbslib.c      WWWGUEST_SHMKEY 0x1194
+publicshm     全局信息            stuff.c       0xe74 (*)
+
+(*) 援引 bbs.h 注释：
+#define PUBLIC_SHMKEY   3700
+/*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要
+public shm,而attach shm又需要sysconf_eval,ft*/
+
+
+4.1 publicshm 共享内存结构 public_data
+
+struct public_data {
+    time_t nowtime;
+        当前时间。BBS 系统有大量取当前时间的调用，全部从这里取可以提高效率。
+        这个时间由 miscd 中的 timed 进程负责和系统时钟同步。从这里可以知道
+        如果 timed 进程不正常的话，bbs 的时间就会停止，比方 web 登录就可能
+        会提示登录过于频繁。
+    int sysconfimg_version;
+        当前最新 sysconf 版本号，新登录用户会读入 sysconf.img.版本号 
+        映像文件作为菜单。站务在主菜单按 shift+~ 会将这个字段加 1，并从
+        sysconf.ini 和 menu.ini 生成新的 sysconf.img.版本号 映像文件。
+        注意 web 不会自动读取新的 sysconf，如果有涉及 web 的参数修改（比方
+        BLOG MYSQL 密码），必须重新启动 web。
+    int www_guest_count;
+        当前登录的 wwwguest 数目
+    unsigned int max_user;
+        系统曾经到过的最高登录人数（包括 wwwguest）
+    unsigned int max_wwwguest;
+        系统到最高登录人数时，wwwguest 登录的数量。
+        注意这不是系统曾经到过的最高 wwwguest 登录人数。
+
+    /* etnlegend, 2006.03.06, userscore twice sampling for high score users ... */
+    unsigned int us_sample_high[8];
+
+    unsigned int logincount;
+    unsigned int logoutcount;
+    uint64_t staytime;
+    unsigned int wwwlogincount;
+    unsigned int wwwlogoutcount;
+    unsigned int wwwguestlogincount;
+    unsigned int wwwguestlogoutcount;
+    uint64_t wwwstaytime;
+    uint64_t wwwgueststaytime;
+
+    /* etnlegend, 2006.03.06, userscore sampling ... */
+    unsigned int us_sample[32];
+
+    /* etnlegend, 2006.05.28, 阅读十大 ... */
+    unsigned int top_version;
+    struct top_header{
+        int bid;
+        unsigned int gid;
+    } top[10];
+
+    char unused[712];
+    
+#ifdef FLOWBANNER
+    int bannercount;
+    char banners[MAXBANNER][BANNERSIZE];
+#endif
+    
+#ifdef FB2KENDLINE
+    time_t nextfreshdatetime;
+    char date[60];
+#endif
+};
+
+4.2 uidshm 用户信息共享内存结构 UCACHE
+
+uidshm 的结构 UCACHE 定义在 ucache.c 内，相关 hash 表常量在 uhashgen.h。
+
+struct UCACHE {
+    ucache_hashtable hashtable;
+    ucache_hashtable hashusage;
+    int hashhead[UCACHE_HASHSIZE + 1];
+    int next[MAXUSERS];
+        前面四个字段和用户 hash 表相关，后面一节具体说明
+    time_t uptime;
+        这个好像没用
+    int number;
+        有效用户容量，一般应该等于 MAXUSERS
+    char user_title[255][USER_TITLE_LEN]; //定义用户的身份字符串。
+        用户身份，user_title[0] 是 title 为 1 的用户的身份
+        信息和 $BBSHOME/etc/title 文件同步
+    struct userec passwd[MAXUSERS];
+        这是 .PASSWDS 文件的内容，定时和磁盘文件同步。
+        一个特定用户的用户号（uid）就是该用户在 .PASSWDS 文件中的位置，
+        注意 uid 是 1-based。
+};
+
+4.2.1 UCACHE 内 hash 表结构
+
+参考 doc/userid 文档。每个用户的用户名都有一个 hash 值（1 ~ UCACHE_HASHSIZE 之间），后面简称用户 hash 值。hashhead 数组是 hash 表头，存放的是该 hash 值的第一个用户的 uid。如果多个用户的 hash 值相同则用 next 字段的数据构成一条链，链中下一个用户的用户号是 next[uid - 1]，如果该值为 0 表示已经到链尾。例如，系统中 hash 值都是 h 的用户一共有三个，uid 分别为 uid_1 uid_2 uid_3，那么 hash 表里可能会有这样的结构：
+uidshm->hashhead[h] = uid_1
+uidshm->next[uid_1 - 1] = uid_2
+uidshm->next[uid_2 - 1] = uid_3
+uidshm->next[uid_3 - 1] = 0
+
+另外，hashhead[0] 存储第一个空用户的 uid，便于下次分配新用户，所有的空用户 hash 值都是 0，所以也类似的通过 next 字段组成一条链。
+
+hashtable 和 hashusage 字段和 hash 函数相关，系统初始化时从 uhashgen.dat 读入。
+
+
+4.3 utmpshm 登录状态信息 UTMPFILE
+
+utmpshm 的类型是 UTMPFILE 结构，用来存储登录的状态信息。注意 wwwguest 和这个结构完全没有关系。
+
+#define USHM_SIZE       (MAXACTIVE + 10)
+struct UTMPFILE {
+    struct user_info uinfo[USHM_SIZE];
+        登录状态信息。每个登录都有一个登录号（utmpnum），他就是该登录在
+        uinfo 数组中的位置，注意 utmpnum 是 1-based。
+};
+
+uinfo 数组的每一个元素都可以用来存储一个登录的状态信息，其结构 user_info 定义：
+
+struct user_info {              /* Structure used in UTMP file */
+    int active;                 /* When allocated this field is true */
+        本结构当前是否代表一个登录用户。
+    int uid;                    /* Used to find user name in passwd file */
+        登录用户的 uid。
+    int pid;                    /* kill() to notify user of talk request */
+        telnet 登录表示其进程号。www 登录设置为 1。
+    int invisible;              /* Used by cloaking function in Xyz menu */
+        是否隐身。
+    int sockactive;             /* Used to coordinate talk requests */
+    int sockaddr;               /* ... */
+    int destuid;                /* talk uses this to identify who called */
+    int mode;                   /* UL/DL, Talk Mode, Chat Mode, ... */
+        状态，应该赋值为 modes.h 里面的常数。
+    int pager;                  /* pager toggle, true, or false */
+        呼叫器状态，bitwise-OR 以下属性
+            ALL_PAGER       0x1
+            FRIEND_PAGER    0x2
+            ALLMSG_PAGER    0x4
+            FRIENDMSG_PAGER 0x8
+    int in_chat;                /* for in_chat commands   */
+    char chatid[16];            /* chat id, if in chat mode */
+    char from[IPLEN + 4];       /* machine name the user called in from */
+        登录 IP。
+    time_t logintime;
+        登录时间戳。
+    int lastpost;
+        上次发文的时间戳。
+    char unused[32];
+    time_t freshtime;
+        上次活动的时间戳，用来计算发呆时间。
+    int utmpkey;
+        登录 key，用于 www cookie 验证保持用户身份。
+    unsigned int mailbox_prop;  /* properties of getCurrentUser()'s mailbox */
+        用户信箱选项，登录时从用户 .mailbox.prop 文件读取，参考 3.3 节
+    char userid[20];
+        用户名
+    char realname[20];
+        真实姓名，登录时从用户 userdata 结构读取
+    char username[40];
+        用户昵称，登录时从 uidshm 共享内存去读取，修改临时昵称就是修改这个字段
+    int friendsnum;
+        好友数量
+    int friends_uid[MAXFRIENDS];
+        每个好友的 uid，前 friendsnum 个有效。
+#ifdef FRIEND_MULTI_GROUP
+    unsigned int friends_p[MAXFRIENDS];
+#endif
+    int currentboard;
+        当前所在版面的 bid 号
+    unsigned int mailcheck;     /* if have new mail or new msg, stiger */
+        当前登录是否有新信或新消息
+};
+
+
+4.4 utmphead 登录表共享内存结构 UTMPHEAD
+
+utmphead 的结构是 UTMPHEAD，该结构定义在 var.h 中。注意 wwwguest 和这个结构完全没有关系。
+
+#define UTMP_HASHSIZE  (USHM_SIZE*4)
+struct UTMPHEAD {
+    int next[USHM_SIZE];
+    int hashhead[UTMP_HASHSIZE + 1];
+    int number;
+        当前登录数，注意这个数字不包括 wwwguest 数量。
+    int listhead;
+    int list_prev[USHM_SIZE];   /* sorted list prev ptr */
+    int list_next[USHM_SIZE];   /* sorted list next ptr */
+    time_t uptime;
+        一个标记时间，登录 telnet 新用户时如果当前时间和这个标记时间相差
+        120 秒以上，就遍历所有登录踢掉发呆时间过长的登录，同时将 uptime 
+        设置成当前时间。
+};
+
+utmphead 里面也有一个 hash 表，结构类似于 uidshm 里面的 hash 表。这里 hash 值是从该登录用户的 hash 值计算（参见 utmp_hash() 函数），我们把它称为 utmphash 值（1 ~ UTMP_HASHSIZE 之间）。hashhead[h] 存储的就是第一个 utmphash 值为 h 的那个登录的 utmpnum。如果多个登录有相同的 utmphash 值则用 next 字段组成一条链（utmphash 链），具体来说，如果 utmpnum 是一个 active 登录，next[utmpnum - 1] 存储该登录在这条 utmphash 链中下一个登录的 utmpnum，链尾的 next[utmpnum - 1] == 0。
+
+所有没有登录（即 utmpshm->uinfo[utmpnum - 1].active = 0）的 utmphash 值都是 0，其中第一个 utmpnum 储存在 hashhead[0] 中，其余的通过 next 字段类似的组成一条链便于分配新登录。系统启动时没有用户登录，所以初始化为：
+hashhead[0] = 1
+next[0] = 2
+next[1] = 3
+... ...
+next[USHM_SIZE - 1] = 0
+
+utmphead 内除了 hash 表外还有一个头尾相接的环状双向链表，链表是所有 active 的登录按照登录用户名从小到大排列（case-insensitive）。listhead 是用户名最小的那个登录 utmpnum，list_prev[utmpnum - 1] 和 list_next[utmpnum - 1] 分别存储该链表中登录号为 utmpnum 的元素的前一个和后一个登录的 utmpnum。
+
+4.5 wwwguest_shm：wwwguest 在线用户表结构 WWW_GUEST_TABLE
+
+kbs 系统中的 wwwguest 登录处理是几乎完全独立的一部分，数据存储在 wwwguest_shm 共享内存区，结构为 WWW_GUEST_TABLE
+
+#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)
+
+struct WWW_GUEST_TABLE {
+    int hashtab[16][256][256];
+    int use_map[MAX_WWW_MAP_ITEM + 1];
+        use_map[i] 的从低到高第 j 个 bit 表示当前 guest_entry[i * 32 + j] 是否被使用
+    time_t uptime;
+        一个标记时间，wwwguest 新登录时如果当前时间和这个标记时间相差
+        240 秒以上，就遍历所有 wwwguest 登录踢掉发呆时间过长的登录，同时将
+        uptime 设置成当前时间。
+    struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
+        每个 wwwguest 登录的具体信息，结构定义如下
+};
+
+struct WWW_GUEST_S {
+    int key;
+    time_t freshtime;
+        上次活动的时间戳，用来计算发呆时间。
+    time_t logintime;
+    int currentboard;
+        当前所在版面的 bid
+    struct in_addr fromip;
+        来源 IP
+};
+
+
+4.6 bcache，brdshm：版面状态共享内存结构 BCACHE
+
+全局变量 bcache 指向 .BOARDS 文件的 mmap 数据。bcache[bid - 1] 是版面号为 bid 的那个版面的 boardheader
+
+如此之外，每个版面还有一些状态信息，即全局变量 brdshm 指向的共享内存（标识 BCACHE_SHMKEY），其结构 BCACHE 为：
+
+struct BCACHE {
+    int numboards;
+        所有版面版面号中最大的那个 bid。主要是遍历等工作可以只循环到 numboards
+        为止而无须到 MAXBOARD，以提高效率。
+    struct BoardStatus bstatus[MAXBOARD];
+        具体版面状态数据
+};
+
+其中 BoardStatus 的定义是：
+
+struct BoardStatus {            /* use this to speed up board list */
+    int total;
+        总文章数。如果版面文章数显示和实际不符就是因为这个字段没同步。
+    int lastpost;
+        本版最后一篇文章的 id 号，用户看到版面是否有新文章就是从这个字段计算。
+    bool updatemark;
+        是否被 m 的文章有变动，决定下次用户看被 m 文章列表是否需要重新产生索引
+    bool updatetitle;
+        是否置底文章有变动，决定下次使用 .DINGDIR 时是否需要重新产生
+    bool updateorigin;
+        是否原作文章有变动，决定下次使用 .ORIGIN 时是否需要重新产生
+    int currentusers;
+        当前该版面在线用户数，包括 wwwguest。
+    int nowid;
+        该版面文章当前已经使用到的 id 号，注意这个字段不一定等于 lastpost，比如
+        有人发表了两片文章 id=79,80，然后删掉 id=80 的文章，这时候 lastpost=79，
+        但是 nowid=80。在刷新 .BOARDS 时，该字段写回 .BOARDS 文件相应版面的
+        idseq 字段以便下次启动时读入。发表帖子的时候系统会自动根据 nowid 分配下
+        一个 id 值。如果这个字段出错，web 下浏览会不正常。
+    int toptitle;
+        本版面置顶文章个数
+    struct fileheader topfh[MAX_DING];
+        .DINGDIR 的内容，注意 MAX_DING 默认是 10，所以 .DINGDIR 内超过 10 条的
+        置顶只会被读入 10 条，更多的显示不出来。
+#ifdef HAVE_WFORUM
+    int todaynum;
+        这个字段没用，呵呵
+#endif
+};
+
+
+5. 代码结构
+
+kbs 系统的核心代码按照目录解释如下：
+libsystem/  系统最底层的函数库，以下所有程序都基于它
+src/        telnet 服务器程序
+libBBS/     部分 telnet 服务器程序组成的库 libBBS.so
+daemon/     系统守护进程，应该启动服务时最先启动
+bbs2www/ 下的模块：
+    lib/    供 web 使用的基础函数库 libbbslib.so，基于 libBBS.so
+    phplib/ 输出供 PHP 页面使用的函数，基于 libbbslib.so 和 libBBS.so
+
