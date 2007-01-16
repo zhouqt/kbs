@@ -415,7 +415,7 @@ int deal_key(ch, allnum, pagenum)
 char ch;
 int allnum, pagenum;
 {
-    char buf[STRLEN], genbuf[5], tmpid[20];
+    char buf[STRLEN], tmpid[20];
     int i, buflen;
 
     switch (ch) {
