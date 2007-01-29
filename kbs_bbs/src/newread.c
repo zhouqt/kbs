@@ -1226,7 +1226,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
                 
                 /* 判断是不是同一主题,不是直接continue*/
                 if ((read_arg->mode==DIR_MODE_NORMAL)||
-                     ((read_arg->mode>=DIR_MODE_THREAD)&&(read_arg->mode>=DIR_MODE_WEB_THREAD)))
+                     ((read_arg->mode>=DIR_MODE_THREAD)&&(read_arg->mode<=DIR_MODE_WEB_THREAD)))
                 { /*使用groupid*/
                     if (fh->groupid!=nowFh->groupid)
                     continue;
