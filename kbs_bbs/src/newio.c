@@ -1014,8 +1014,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             continue;
         }
         if (x + clen >= scr_cols || clen >= len - 1) {
-            init=false;
-            continue;
+            if (!init) continue;
         }
 
         if(init) {
