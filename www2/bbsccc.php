@@ -73,6 +73,9 @@ if (isset($_GET['do'])) {
 		case -9:
 			html_error_quit($target." 讨论区不能上传附件");
 			break;
+		case -21:
+			html_error_quit("您的积分不符合 ".$target." 讨论区的设定, 暂时无法发表文章...");
+			break;
 		default:
 	}
 	html_error_quit("系统错误，请联系管理员");

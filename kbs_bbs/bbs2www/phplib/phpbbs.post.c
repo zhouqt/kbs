@@ -971,6 +971,12 @@ PHP_FUNCTION(bbs_docross)
 	        	RETURN_LONG(-5);
 	}
 
+#ifdef NEWSMTH
+    if(!check_score_level(getCurrentUser(),dst_bp)){
+        RETURN_LONG(-21);
+    }
+#endif /* NEWSMTH */
+
     if (check_last_post_time(getSession()->currentuinfo)) {
         RETURN_LONG(-10);
     }
