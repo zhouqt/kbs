@@ -1336,6 +1336,8 @@ int read_sendmsgtoauthor(struct _select_def* conf, struct fileheader* fh, void* 
 
 int read_showauthor(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
+    if(!fh)
+        return DONOTHING;
     t_query(fh->owner);
     return FULLUPDATE;
 }
