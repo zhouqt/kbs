@@ -1392,6 +1392,7 @@ int read_zsend(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 int read_importpc(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
     struct read_arg *read_arg = (struct read_arg *) conf->arg;
+    if (!fh) return DONOTHING;
     return import_to_pc(conf->pos, fh, read_arg->direct);
 }
 #endif
