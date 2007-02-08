@@ -455,7 +455,7 @@ function html_success_quit($msg, $operations = FALSE)
 function assert_login() {
 	global $currentuser;
 	if(!strcmp($currentuser["userid"],"guest")) {
-		$str .= "您还没有登录，或者长时间没有动作，请您重新登录。<br /><br />";
+		$str = "您还没有登录，或者长时间没有动作，请您重新登录。<br /><br />";
 		$str .= "<form action=\"bbslogin.php?mainurl={$_SERVER["REQUEST_URI"]}\" method=\"post\" target=\"_parent\">";
 		$str .= "用户名：<input type=\"text\" name=\"id\" size=\"15\" /><br />";
 		$str .= "密　码：<input type=\"password\" name=\"passwd\" maxlength=\"39\" size=\"15\" /><br /><br />";
