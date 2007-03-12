@@ -27,7 +27,7 @@
 ?>
 </td>
 <td><a href="bbsqry.php?userid=<?php echo $friends[$i]["userid"];?>"><?php echo $friends[$i]["userid"];?></a></td>
-<td><a href="bbsqry.php?userid=<?php echo $friends[$i]["userid"];?>"><?php echo htmlspecialchars($friends[$i]["username"]);?></a></td>
+<td><a href="bbsqry.php?userid=<?php echo $friends[$i]["userid"];?>"><?php echo "<script type=\"text/javascript\"><!--\nprints('" . str_replace("\033", "\\r", $friends[$i]["username"]) . "');\n--></script>";?></a></td>
 <td><?php echo $friends[$i]["userfrom"];?></td>
 <?php
 		if($friends[$i]["invisible"]) echo "<td>вўЩэжа...</td>";
