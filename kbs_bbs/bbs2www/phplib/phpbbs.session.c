@@ -266,6 +266,31 @@ PHP_FUNCTION(bbs_setonlineuser)
     RETURN_LONG(ret);
 }
 
+/* long bbs_check_ban_ip(string userid, string fromhost)
+ *   return:  0 - ok,  1 - ban by global,  2 - ban by user defined
+ */
+PHP_FUNCTION(bbs_check_ban_ip)
+{
+    int ac, userid_len, fromhost_len;
+    char *userid, *fromhost, buf[255];
+    
+    ac = ZEND_NUM_ARGS();
+    if((ac == 2) && (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &fromhost, &fromhost_len) != SUCCESS)) { 
+        WRONG_PARAM_COUNT;
+    }
+    
+    if(check_ban_IP(fromhost, buf) > 0) {
+        RETURN_LONG(1);
+    }
+    if(strcasecmp(userid, "guest") != 0) {
+        if(check_ip_acl(userid, fromhost)) {
+            RETURN_LONG(2);
+        }
+    }
+    
+    RETURN_LONG(0);
+}
+
 
 PHP_FUNCTION(bbs_wwwlogin)
 {
@@ -291,11 +316,6 @@ PHP_FUNCTION(bbs_wwwlogin)
         fromhost = fullfrom = getSession()->fromhost;
     } else {
         WRONG_PARAM_COUNT;
-    }
-    
-    if (getCurrentUser() != NULL && strcasecmp(getCurrentUser()->userid, "guest") != 0) {
-        if (check_ip_acl(getCurrentUser()->userid, getSession()->fromhost)) 
-            RETURN_LONG(7);
     }
     
     ret = www_user_login(getCurrentUser(), getSession()->currentuid, kick_multi, fromhost, fullfrom, &pu, &utmpent);

@@ -11,6 +11,16 @@ cache_header("nocache");
 if ($mainurl!="") $mainurl=urlencode($mainurl);
 if ($id=="") error_alert("用户名不能为空");
 
+$ret = bbs_check_ban_ip($id, $fromhost);
+switch($ret) {
+case 1:
+    error_alert("对不起，当前位置不允许登录该ID。");
+    break;
+case 2:
+    error_alert("该 ID 不欢迎来自该 IP 的用户。");
+    break;
+}
+
 if (($id!="guest")&&bbs_checkpasswd($id,$passwd)!=0) error_alert("用户密码错误，请重新登录！");
 $error=bbs_wwwlogin(($kick_multi!="") ? 1 : 0, $fromhost, $fullfromhost);
 switch($error) {
@@ -21,12 +31,8 @@ switch($error) {
 	case -1:
 		prompt_multilogin();
 		exit;
-	case 7:
-		error_alert("对不起,当前位置不允许登录该 ID");
 	case 3:
 		error_alert("本帐号已停机或正在戒网");
-	case 4:
-		error_alert("该 ID 不欢迎来自该 IP 的用户");
 	case 5:
 		error_alert("登录过于频繁");
 	case 1:
