@@ -52,7 +52,7 @@
 ?>
 <script type="text/javascript" src="static/www2-addons.js"></script>
 <script type="text/javascript"><!--
-	var o = new replyForm('<?php echo $brd_encode; ?>',<?php echo $reid; ?>,'<?php if ($reid) echo $articles[1]["TITLE"]; ?> ',<?php
+	var o = new replyForm('<?php echo $brd_encode; ?>',<?php echo $reid; ?>,'<?php if ($reid) echo addslashes($articles[1]["TITLE"]); ?> ',<?php
 	echo bbs_is_attach_board($brdarr)?"1":"0"; ?>,<?php echo $currentuser["signum"]; ?>,<?php echo $currentuser["signature"]; ?>,<?php
 	echo bbs_is_anony_board($brdarr)?"1":"0"; ?>,<?php echo bbs_is_outgo_board($brdarr)?"1":"0"; ?>,<?php
 		$local_save = 0;
