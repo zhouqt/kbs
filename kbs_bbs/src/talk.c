@@ -1885,16 +1885,18 @@ struct friends *a, *b;
 
 int wait_friend(void){
     FILE *fp;
-    int tuid;
+    int tuid, oldmode;
     char buf[STRLEN];
     char uid[13];
 
+    oldmode = uinfo.mode;
     modify_user_mode(WFRIEND);
     clear();
     move(1, 0);
     usercomplete("请输入使用者代号以加入系统的寻人名册: ", uid);
     if (uid[0] == '\0') {
         clear();
+        modify_user_mode(oldmode);
         return 0;
     }
     if (!(tuid = getuser(uid, NULL))) {
@@ -1902,17 +1904,20 @@ int wait_friend(void){
         prints("\033[1m不正确的使用者代号\033[m\n");
         pressanykey();
         clear();
+        modify_user_mode(oldmode);
         return -1;
     }
     sprintf(buf, "你确定要把 %s 加入系统寻人名单中", uid);
     move(2, 0);
     if (askyn(buf, true) == false) {
         clear();
+        modify_user_mode(oldmode);
         return -1;
     }
     if ((fp = fopen("friendbook", "a")) == NULL) {
         prints("系统的寻人名册无法开启，请通知站长...\n");
         pressanykey();
+        modify_user_mode(oldmode);
         return -1;
     }
     sprintf(buf, "%d@%s", tuid, getCurrentUser()->userid);
@@ -1923,6 +1928,7 @@ int wait_friend(void){
     prints("已经帮你加入寻人名册中，%s 上站系统一定会通知你...\n", uid);
     pressanykey();
     clear();
+    modify_user_mode(oldmode);
     return 0;
 }
 

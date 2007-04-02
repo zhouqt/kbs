@@ -1956,6 +1956,7 @@ MENU *father;
             break;              /*Haohmaru 98.09.22 */
         case 'v':
             i_read_mail();
+            modify_user_mode(CSIE_ANNOUNCE);
             me.page = 9999;
             break;
         case 'u':

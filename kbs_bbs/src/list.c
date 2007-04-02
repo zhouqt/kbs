@@ -891,10 +891,12 @@ int Users(void){
 
 int t_friends(void){
     char genbuf[STRLEN];
+    int oldmode;
 #ifdef NEW_HELP
 	int oldhelpmode=helpmode;
 #endif
 
+    oldmode = uinfo.mode;
     modify_user_mode(FRIEND);
     friendmode = true;
     if (get_utmpent(getSession()->utmpent)->friendsnum==0) {
@@ -902,6 +904,7 @@ int t_friends(void){
         clrtobot();
         prints("你尚未利用 Talk -> Override 设定好友名单，所以...\n");
         pressanykey();
+        modify_user_mode(oldmode);
         return 0;
     }
     num_alcounter();
@@ -926,6 +929,7 @@ int t_friends(void){
 	helpmode=oldhelpmode;
 #endif
             clear();
+            modify_user_mode(oldmode);
             return 0;
         }
     } else {
@@ -940,6 +944,7 @@ int t_friends(void){
     }
     clear();
     friendmode = false;
+    modify_user_mode(oldmode);
     return 0;
 }
 
