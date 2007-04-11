@@ -1270,6 +1270,7 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
     else
         return DONOTHING;
 
+    modify_user_mode(EDIT);
     clear();
     attachpos = fileinfo->attachment;
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
