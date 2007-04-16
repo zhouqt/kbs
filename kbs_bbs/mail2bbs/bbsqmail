@@ -13,7 +13,7 @@ $(=$bbsgid;
 $<=$bbsuid;
 $>=$bbsuid;
 $ENV{'PATH'}='/bin:/usr/etc:/usr/local/bin:/usr/ucb';
-$normaluser = $ENV{'EXT'};
+$normaluser = $ARGV[0];
 $logdir="$BBS_HOME/log";
 mkdir($logdir,0700) unless -d $logdir;
 open(LOG,">> $logdir/mail-log") || warn "can't open warn file $!\n";
