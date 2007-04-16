@@ -33,6 +33,8 @@
 		for( $i=0; $i<32; $i++){
 			$oldvote[$i] = 0;
 		}
+		
+		$retnum = bbs_get_vote_from_num($board,$votearr,$num,$uservotearr);
 
 		if( isset($_POST["submit"] )){
 
@@ -66,12 +68,16 @@
 				$votevalueint = ( 1 << $itemvalue );
 
 			}else if( $votetype == "复选" ){
-
+				$vcount = 0;
 				for($i = 0; $i < 32; $i++){
 					$itemstr = "ITEM".($i+1);
 					if(isset($_POST[$itemstr]) && $_POST[$itemstr]=="on"){
 						$votevalueint += ( 1 << $i );
+						$vcount++;
 					}
+				}
+				if($vcount > $votearr[0]["MAXTKT"]) {
+					html_error_quit("您选择的票大于允许的投票数，请重新投票");
 				}
 
 			}else if( $votetype == "数字" ){
@@ -94,8 +100,6 @@
 				html_success_quit("投票成功");
 			}
 		}
-
-	$retnum = bbs_get_vote_from_num($board,$votearr,$num,$uservotearr);
 
 	if($retnum <= 0)
 		html_error_quit("该投票不存在");
