@@ -28,14 +28,14 @@ int print_title()
 
 int utmp_title()
 {
-    docmdtitle("[活动进程列表]", "  该功能在测试中，有任何问题请与\033[1;32mpig2532\033[m联系，谢谢。");
+    docmdtitle("[活动进程列表]", "  后退[\033[1;32m←\033[m,\033[1;32me\033[m] 查询详细信息[\033[1;32m→\033[m] 选择[\033[1;32m↑\033[m,\033[1;32m↓\033[m]");
     update_endline();
     return 0;
 }
 
 int wwwguest_title()
 {
-    docmdtitle("[www guest 列表]", "  该功能在测试中，有任何问题请与\033[1;32mpig2532\033[m联系，谢谢。");
+    docmdtitle("[www guest 列表]", "  后退[\033[1;32m←\033[m,\033[1;32me\033[m] 查询详细信息[\033[1;32m→\033[m] 选择[\033[1;32m↑\033[m,\033[1;32m↓\033[m]");
     update_endline();
     return 0;
 }
