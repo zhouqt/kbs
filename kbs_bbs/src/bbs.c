@@ -3459,7 +3459,7 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 					ret = 0;
 				}else{
 					fprintf(fp,"%s :\n\n",tmpfh.owner);
-					fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\033[1;31m%s\033[m,%s决定追加取消您的全站post权限1天\n",currboard->filename,fileinfo->title,getCurrentUser()->userid);
+					fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\033[1;31m%s\033[m,\n%s决定追加取消您的全站post权限1天\n",currboard->filename,fileinfo->title,getCurrentUser()->userid);
 					fprintf(fp,"\n匿名封禁对于您看来您将是被强制戒发文权限1天，请您放心，没有人知道被封禁的人具体是你，站长和斑竹也都不知道\n");
 					fclose(fp);
 

@@ -886,7 +886,7 @@ int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
 /* stiger,增加封禁某人的发文权限1天 */
 int giveup_addpost(char *userid){
     struct userec *user;
-    int i,s[GIVEUPINFO_PERM_COUNT];
+    int s[GIVEUPINFO_PERM_COUNT];
     if(!(getuser(userid,&user)))
         return 0;
     get_giveupinfo(user,s);
