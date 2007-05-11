@@ -599,6 +599,7 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     unsigned int attachment;
     char title[ARTICLE_TITLE_LEN];
     // unsigned short replycount;  /* will be used, pig2532 */
+    // char unused[2];
     unsigned char accessed[4];
 } fileheader;
 
