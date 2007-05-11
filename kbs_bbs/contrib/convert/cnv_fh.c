@@ -39,7 +39,7 @@ struct fileheader_new {
     unsigned char accessed[4];
 };
 
-int cnv_board_index(char* fname) {
+int cnv_index(char* fname) {
 	FILE *fpi, *fpo;
 	struct fileheader_old fhi;
 	struct fileheader_new fho;
@@ -87,7 +87,7 @@ int cnv_board_index(char* fname) {
 	return 0;
 }
 
-int undo_board_index(char* fname) {
+int undo_index(char* fname) {
 	char cmd[1024];
 	
 	sprintf(cmd, "cp %s.old %s", fname, fname);
@@ -99,51 +99,103 @@ int undo_board_index(char* fname) {
 static int cnv_board(struct boardheader* bh, void* arg) {
 	char fname[256];
 	setbdir(DIR_MODE_NORMAL, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_DIGEST, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_THREAD, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_MARK, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_DELETED, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_JUNK, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_ORIGIN, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_WEB_THREAD, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	setbdir(DIR_MODE_ZHIDING, fname, bh->filename);
-	cnv_board_index(fname);
+	cnv_index(fname);
 	board_update_toptitle(getbid(bh->filename, NULL), false);
 	printf("board %s is done.\n", bh->filename);
 	return 0;
 }
 
+static int cnv_mail(struct userec* user, void* arg) {
+	char fname[256], buf[64];
+	struct _mail_list ml;
+	int i;
+	if((user == NULL) || (user->userid[0] == '\0'))
+		return 0;
+	if(strcmp(user->userid, "SYSOP") != 0) {
+		setmailfile(fname, user->userid, ".DIR");
+		cnv_index(fname);
+		setmailfile(fname, user->userid, ".DELETED");
+		cnv_index(fname);
+	}
+	setmailfile(fname, user->userid, ".SENT");
+	cnv_index(fname);
+	bzero(&ml, sizeof(ml));
+	load_mail_list(user, &ml);
+	for(i=0; i<ml.mail_list_t; i++)
+	{
+		sprintf(buf, ".%s", ml.mail_list[i] + 30);
+		setmailfile(fname, user->userid, buf);
+		cnv_index(fname);
+	}
+	printf("mail %s is done.\n", user->userid);
+	return 0;	
+}
+
 static int undo_board(struct boardheader* bh, void* arg) {
 	char fname[256];
 	setbdir(DIR_MODE_NORMAL, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_DIGEST, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_THREAD, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_MARK, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_DELETED, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_JUNK, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_ORIGIN, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_WEB_THREAD, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	setbdir(DIR_MODE_ZHIDING, fname, bh->filename);
-	undo_board_index(fname);
+	undo_index(fname);
 	board_update_toptitle(getbid(bh->filename, NULL), false);
 	printf("board %s is undone.\n", bh->filename);
 	return 0;
+}
+
+static int undo_mail(struct userec* user, void* arg) {
+	char fname[256], buf[64];
+	struct _mail_list ml;
+	int i;
+	if((user == NULL) || (user->userid[0] == '\0'))
+		return 0;
+	if(strcmp(user->userid, "SYSOP") != 0) {
+		setmailfile(fname, user->userid, ".DIR");
+		undo_index(fname);
+		setmailfile(fname, user->userid, ".DELETED");
+		undo_index(fname);
+	}
+	setmailfile(fname, user->userid, ".SENT");
+	undo_index(fname);
+	bzero(&ml, sizeof(ml));
+	load_mail_list(user, &ml);
+	for(i=0; i<ml.mail_list_t; i++)
+	{
+		sprintf(buf, ".%s", ml.mail_list[i] + 30);
+		setmailfile(fname, user->userid, buf);
+		undo_index(fname);
+	}
+	printf("mail %s is undone.\n", user->userid);
+	return 0;	
 }
 
 int main(int argc, char* argv[]) {
@@ -160,10 +212,14 @@ int main(int argc, char* argv[]) {
 			mode = 1;
 	}
 	
-	if(mode == 0)
+	if(mode == 0) {
 		apply_boards(cnv_board, NULL);
-	else
+		apply_users(cnv_mail, NULL);
+	}
+	else {
 		apply_boards(undo_board, NULL);
+		apply_users(undo_mail, NULL);
+	}
 
 	return 0;
 }
