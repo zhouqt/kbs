@@ -39,25 +39,19 @@ struct fileheader_new {
     unsigned char accessed[4];
 };
 
-int main(int argc, char* argv[]) {
-	char fname[256];
+int cnv_board_index(char* fname) {
 	FILE *fpi, *fpo;
 	struct fileheader_old fhi;
 	struct fileheader_new fho;
+	char fnamenew[256], cmd[1024];
 	
-	if(argc != 2) {
-		printf("usage:  %s filename\n", argv[0]);
-		return 0;
-	}
-	
-	strcpy(fname, argv[1]);
 	fpi = fopen(fname, "r");
 	if(!fpi) {
-		printf("cannot open %s\n", fname);
+		//printf("cannot open %s\n", fname);
 		return 0;
 	}
-	strcat(fname, ".new");
-	fpo = fopen(fname, "w");
+	sprintf(fnamenew, "%s.new", fname);
+	fpo = fopen(fnamenew, "w");
 	while(fread(&fhi, sizeof(struct fileheader_old), 1, fpi) > 0) {
 		strcpy(fho.filename, fhi.filename);
 		fho.id = fhi.id;
@@ -83,7 +77,93 @@ int main(int argc, char* argv[]) {
 	}
 	fclose(fpi);
 	fclose(fpo);
-	printf("index file %s done\n", fname);
+	
+	sprintf(cmd, "cp %s %s.old", fname, fname);
+	system(cmd);
+	sprintf(cmd, "cp %s %s", fnamenew, fname);
+	system(cmd);
+	
+	//printf("index file %s done\n", fname);
+	return 0;
+}
+
+int undo_board_index(char* fname) {
+	char cmd[1024];
+	
+	sprintf(cmd, "cp %s.old %s", fname, fname);
+	system(cmd);
+	
+	return 0;
+}
+
+static int cnv_board(struct boardheader* bh, void* arg) {
+	char fname[256];
+	setbdir(DIR_MODE_NORMAL, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_DIGEST, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_THREAD, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_MARK, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_DELETED, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_JUNK, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_ORIGIN, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_WEB_THREAD, fname, bh->filename);
+	cnv_board_index(fname);
+	setbdir(DIR_MODE_ZHIDING, fname, bh->filename);
+	cnv_board_index(fname);
+	board_update_toptitle(getbid(bh->filename, NULL), false);
+	printf("board %s is done.\n", bh->filename);
+	return 0;
+}
+
+static int undo_board(struct boardheader* bh, void* arg) {
+	char fname[256];
+	setbdir(DIR_MODE_NORMAL, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_DIGEST, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_THREAD, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_MARK, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_DELETED, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_JUNK, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_ORIGIN, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_WEB_THREAD, fname, bh->filename);
+	undo_board_index(fname);
+	setbdir(DIR_MODE_ZHIDING, fname, bh->filename);
+	undo_board_index(fname);
+	board_update_toptitle(getbid(bh->filename, NULL), false);
+	printf("board %s is undone.\n", bh->filename);
+	return 0;
+}
+
+int main(int argc, char* argv[]) {
+	
+	int mode;
+	
+	chdir(BBSHOME);
+	resolve_boards();
+	load_ucache();
+	
+	mode = 0;
+	if(argc > 1) {
+		if(strcmp(argv[1], "-u") == 0)
+			mode = 1;
+	}
+	
+	if(mode == 0)
+		apply_boards(cnv_board, NULL);
+	else
+		apply_boards(undo_board, NULL);
 
 	return 0;
 }
