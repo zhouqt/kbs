@@ -35,7 +35,7 @@ struct fileheader_new {
     unsigned int attachment;
     char title[ARTICLE_TITLE_LEN];
     unsigned short replycount;
-    char unused[2];
+    char unused[114];
     unsigned char accessed[4];
 };
 
