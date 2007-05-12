@@ -354,6 +354,11 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     }
     setboardtitle(board, 1);
 
+	/* reduce reply count, pig2532 */
+#ifdef HAVE_REPLY_COUNT
+	if(fh.id != fh.groupid)
+		modify_reply_count(board, fh.groupid, -1, 0);
+#endif /* HAVE_REPLY_COUNT */
 
     owned=(!(flag&ARG_BMFUNC_FLAG)&&isowner(user,&fh));
     cancelpost(board, user->userid, &fh, owned, 1, session);
@@ -1087,12 +1092,7 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
         return -1;
     }
     updatelastpost(boardname);
-    
-    /* add to reply count in .ORIGIN, pig2532 */
-#ifdef HAVE_REPLY_COUNT
-    modify_reply_count(boardname, fh->groupid, 1, 0);
-#endif /* HAVE_REPLY_COUNT */
-    
+        
 #ifdef FILTER
     if (filtered)
         sprintf(buf, "posted '%s' on '%s' filtered", fh->title, getboard(fh->o_bid)->filename);
@@ -1175,6 +1175,14 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
             }
         }
     }
+    
+    /* add to reply count in .ORIGIN, pig2532 */
+#ifdef HAVE_REPLY_COUNT
+	if(fh->groupid == fh->id) 
+		modify_reply_count(boardname, fh->id, 1, 1);
+	else
+	    modify_reply_count(boardname, fh->groupid, 1, 0);
+#endif /* HAVE_REPLY_COUNT */
 
     setboardtitle(boardname, 1);
     if (fh->accessed[0] & FILE_MARKED)
