@@ -943,6 +943,14 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 		threadsufix[0]='\0';
 	}
 
+#ifdef HAVE_REPLY_COUNT
+    if(arg->mode == DIR_MODE_ORIGIN) {
+        char str_re[20];
+        sprintf(str_re, "\033[1;32m<%d>\033[m", ent->replycount);
+        strcat(TITLE, str_re);
+    }
+#endif /* HAVE_REPLY_COUNT */
+
 #if defined(COLOR_ONLINE)
                         sprintf(buf, " %s%4d%s %s%c%s \033[1;3%dm%-12.12s\033[m %s%s%s%s%s%s ", threadprefix, num, threadsufix, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, threadprefix1, attachch, isreply?"":FIRSTARTICLE_SIGN" ", TITLE, threadsufix);
 #elif defined(LOWCOLOR_ONLINE)
