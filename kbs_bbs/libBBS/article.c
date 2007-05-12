@@ -547,6 +547,11 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
     sprintf(buf, "undeleted %s's ¡°%s¡± on %s", UFile.owner, UFile.title, boardname);
     bbslog("user", "%s", buf);
 
+#ifdef HAVE_REPLY_COUNT
+    if(fileinfo->id != fileinfo->groupid)
+        modify_reply_count(boardname, fileinfo->groupid, 1, 0);
+#endif /* HAVE_REPLY_COUNT */
+
 	if(title != NULL)
 	{
 		sprintf(title, "%s", UFile.title);
@@ -3296,6 +3301,15 @@ int modify_reply_count(const char* bname, int gid, int value, int mode) {
     arg.mode = mode;
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
+    
+    setbdir(DIR_MODE_ORIGIN, dirpath, bname);
+    fd = open(dirpath, O_RDWR, 0644);
+    if(fd < 0)
+        return 0;
+	
+    mmap_dir_search(fd, &fh, update_reply_count, &arg);
+    close(fd);
+    
 	
     return 0;
 }

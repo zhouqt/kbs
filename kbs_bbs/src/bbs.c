@@ -944,7 +944,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 	}
 
 #ifdef HAVE_REPLY_COUNT
-    if(arg->mode == DIR_MODE_ORIGIN) {
+    if((arg->mode == DIR_MODE_ORIGIN) || (ent->id == ent->groupid)) {
         char str_re[20];
         sprintf(str_re, "\033[1;32m<%d>\033[m", ent->replycount);
         strcat(TITLE, str_re);
