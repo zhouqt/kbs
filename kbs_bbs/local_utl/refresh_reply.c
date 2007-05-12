@@ -3,6 +3,15 @@
 
 #include "bbs.h"
 
+static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bool match, void* arg) {
+    if(match) {
+        struct fileheader *fh;
+        fh = &base[ent - 1];
+        fh->replycount = *(int *)arg;
+    }
+    return 0;
+}
+
 int refresh_board(char* bname) {
 	int fd, fd2, origincount, acount, i, j, replycount;
 	char dirpath[256], originpath[256];
@@ -49,7 +58,7 @@ int refresh_board(char* bname) {
 				}
 				aptr++;
 			}
-			ptr->replycount = replycount;
+			mmap_dir_search(fd2, ptr, update_reply_count, &replycount);
 			ptr++;
 		}
 	}

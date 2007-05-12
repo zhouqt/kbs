@@ -3281,13 +3281,13 @@ static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bo
 }
 
 int modify_reply_count(const char* bname, int gid, int value, int mode) {
-    char originpath[PATHLEN];
+    char dirpath[PATHLEN];
     int fd;
     struct fileheader fh;
     struct modify_reply_arg arg;
 	
-    setbdir(DIR_MODE_ORIGIN, originpath, bname);
-    fd = open(originpath, O_RDWR, 0644);
+    setbdir(DIR_MODE_NORMAL, dirpath, bname);
+    fd = open(dirpath, O_RDWR, 0644);
     if(fd < 0)
         return 0;
 	
