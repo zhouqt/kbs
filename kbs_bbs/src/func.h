@@ -536,6 +536,8 @@ void unlock_sem_check(int lockid);
     int upload_del_file(const char *original_file, session_t *session);
     int upload_add_file(const char *filename, char *original_filename, session_t *session);
 
+    /* pig2532 - 统计主题回复数 */
+    int modify_reply_count(const char* bname, int gid, int value, int mode);
     
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);

@@ -1087,6 +1087,12 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
         return -1;
     }
     updatelastpost(boardname);
+    
+    /* add to reply count in .ORIGIN, pig2532 */
+#ifdef HAVE_REPLY_COUNT
+    modify_reply_count(boardname, fh->groupid, 1, 0);
+#endif /* HAVE_REPLY_COUNT */
+    
 #ifdef FILTER
     if (filtered)
         sprintf(buf, "posted '%s' on '%s' filtered", fh->title, getboard(fh->o_bid)->filename);
@@ -3243,4 +3249,46 @@ int delete_range_base(
 #undef DRBP_LEN
 
 /* --END--, etnlegend, 2006.04.19, 区段删除核心 */
+
+
+/* 主题回复数统计，pig2532 */
+
+struct modify_reply_arg {
+	int value;
+	int mode;
+};
+
+static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bool match, void* arg) {
+	if(match) {
+		struct modify_reply_arg *marg;
+		struct fileheader *fh;
+		marg = (struct modify_reply_arg *)arg;
+		fh = &base[ent - 1];
+		if(marg->mode == 0)
+			fh->replycount += marg->value;
+		else
+			fh->replycount = marg->value;
+	}
+	return 0;
+}
+
+int modify_reply_count(const char* bname, int gid, int value, int mode) {
+	char originpath[PATHLEN];
+	int fd;
+	struct fileheader fh;
+	struct modify_reply_arg arg;
+	
+	setbdir(DIR_MODE_ORIGIN, originpath, bname);
+	fd = open(originpath, O_RDWR, 0644);
+	if(fd < 0)
+		return 0;
+	
+	fh.id = gid;
+	arg.value = value;
+	arg.mode = mode;
+	mmap_dir_search(fd, &fh, update_reply_count, &arg);
+	close(fd);
+	
+	return 0;
+}
 
