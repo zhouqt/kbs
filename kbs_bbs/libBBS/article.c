@@ -354,10 +354,10 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     }
     setboardtitle(board, 1);
 
-	/* reduce reply count, pig2532 */
+    /* reduce reply count, pig2532 */
 #ifdef HAVE_REPLY_COUNT
-	if(fh.id != fh.groupid)
-		modify_reply_count(board, fh.groupid, -1, 0);
+    if(fh.id != fh.groupid)
+        modify_reply_count(board, fh.groupid, -1, 0);
 #endif /* HAVE_REPLY_COUNT */
 
     owned=(!(flag&ARG_BMFUNC_FLAG)&&isowner(user,&fh));
@@ -1178,10 +1178,10 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
     
     /* add to reply count in .ORIGIN, pig2532 */
 #ifdef HAVE_REPLY_COUNT
-	if(fh->groupid == fh->id) 
-		modify_reply_count(boardname, fh->id, 1, 1);
-	else
-	    modify_reply_count(boardname, fh->groupid, 1, 0);
+    if(fh->groupid == fh->id) 
+        modify_reply_count(boardname, fh->id, 1, 1);
+    else
+        modify_reply_count(boardname, fh->groupid, 1, 0);
 #endif /* HAVE_REPLY_COUNT */
 
     setboardtitle(boardname, 1);
@@ -3262,41 +3262,41 @@ int delete_range_base(
 /* 主题回复数统计，pig2532 */
 
 struct modify_reply_arg {
-	int value;
-	int mode;
+    int value;
+    int mode;
 };
 
 static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bool match, void* arg) {
-	if(match) {
-		struct modify_reply_arg *marg;
-		struct fileheader *fh;
-		marg = (struct modify_reply_arg *)arg;
-		fh = &base[ent - 1];
-		if(marg->mode == 0)
-			fh->replycount += marg->value;
-		else
-			fh->replycount = marg->value;
-	}
-	return 0;
+    if(match) {
+        struct modify_reply_arg *marg;
+        struct fileheader *fh;
+        marg = (struct modify_reply_arg *)arg;
+        fh = &base[ent - 1];
+        if(marg->mode == 0)
+            fh->replycount += marg->value;
+        else
+            fh->replycount = marg->value;
+    }
+    return 0;
 }
 
 int modify_reply_count(const char* bname, int gid, int value, int mode) {
-	char originpath[PATHLEN];
-	int fd;
-	struct fileheader fh;
-	struct modify_reply_arg arg;
+    char originpath[PATHLEN];
+    int fd;
+    struct fileheader fh;
+    struct modify_reply_arg arg;
 	
-	setbdir(DIR_MODE_ORIGIN, originpath, bname);
-	fd = open(originpath, O_RDWR, 0644);
-	if(fd < 0)
-		return 0;
+    setbdir(DIR_MODE_ORIGIN, originpath, bname);
+    fd = open(originpath, O_RDWR, 0644);
+    if(fd < 0)
+        return 0;
 	
-	fh.id = gid;
-	arg.value = value;
-	arg.mode = mode;
-	mmap_dir_search(fd, &fh, update_reply_count, &arg);
-	close(fd);
+    fh.id = gid;
+    arg.value = value;
+    arg.mode = mode;
+    mmap_dir_search(fd, &fh, update_reply_count, &arg);
+    close(fd);
 	
-	return 0;
+    return 0;
 }
 
