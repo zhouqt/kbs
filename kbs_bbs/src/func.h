@@ -538,6 +538,7 @@ void unlock_sem_check(int lockid);
 
     /* pig2532 - 统计主题回复数 */
     int modify_reply_count(const char* bname, int gid, int value, int mode);
+    int refresh_reply_count(const char* bname, int gid);
     
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);

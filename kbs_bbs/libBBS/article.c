@@ -548,7 +548,9 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
     bbslog("user", "%s", buf);
 
 #ifdef HAVE_REPLY_COUNT
-    if(fileinfo->id != fileinfo->groupid)
+    if(fileinfo->id == fileinfo->groupid)
+        refresh_reply_count(boardname, fileinfo->groupid);
+    else
         modify_reply_count(boardname, fileinfo->groupid, 1, 0);
 #endif /* HAVE_REPLY_COUNT */
 
@@ -3309,8 +3311,46 @@ int modify_reply_count(const char* bname, int gid, int value, int mode) {
 	
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
+    	
+    return 0;
+}
+
+int refresh_reply_count(const char* bname, int gid) {
+    int fd, count, i, replycount;
+    struct stat buf;
+    struct fileheader *ptr;
+    char *head, dirpath[PATHLEN];
     
-	
+    setbdir(DIR_MODE_NORMAL, dirpath, bname);
+    fd = open(dirpath, O_RDWR, 0644);
+    if(fd < 0)
+        return 0;
+    
+    replycount = -1;
+    BBS_TRY {
+        if(!safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &head, &buf.st_size)) {
+            close(fd);
+            return 0;
+        }
+        count = buf.st_size / sizeof(struct fileheader);
+        ptr = (struct fileheader *)head;
+        replycount = 0;
+        for(i=0; i<count; i++) {
+            if(ptr->groupid == gid)
+                replycount++;
+            ptr++;
+        }
+	}
+    BBS_CATCH {
+    }
+    BBS_END;
+    
+    end_mmapfile((void *)head, buf.st_size, -1);
+    close(fd);
+    
+    if(replycount >= 0)
+        modify_reply_count(bname, gid, replycount, 1);
+    
     return 0;
 }
 
