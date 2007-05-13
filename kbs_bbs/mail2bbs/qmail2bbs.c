@@ -87,6 +87,7 @@ int my_after_post(struct fileheader *fh, char *boardname)
 		fh->id = nowid;
 		fh->groupid = fh->id;
 		fh->reid = fh->id;
+		fh->replycount = 1;
 		set_posttime(fh);
 		lseek(fd, 0, SEEK_END);
 		if (safewrite(fd, fh, sizeof(fileheader)) == -1) {
