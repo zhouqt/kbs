@@ -45,7 +45,8 @@ int cnv_index(char* fname) {
 	struct fileheader_new fho;
 	char fnamenew[256], cmd[1024];
 	
-	fpi = fopen(fname, "r");
+	memset(&fho, 0, sizeof(struct fileheader_new));
+    fpi = fopen(fname, "r");
 	if(!fpi) {
 		//printf("cannot open %s\n", fname);
 		return 0;
@@ -210,6 +211,11 @@ int main(int argc, char* argv[]) {
 	if(argc > 1) {
 		if(strcmp(argv[1], "-u") == 0)
 			mode = 1;
+        else {
+            cnv_index(argv[1]);
+            printf("%s is done.\n", argv[1]);
+            return 0;
+        }
 	}
 	
 	if(mode == 0) {
