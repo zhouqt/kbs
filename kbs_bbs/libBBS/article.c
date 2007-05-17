@@ -3268,6 +3268,8 @@ int delete_range_base(
 
 /* 主题回复数统计，pig2532 */
 
+#ifdef HAVE_REPLY_COUNT
+
 struct modify_reply_arg {
     int value;
     int mode;
@@ -3353,4 +3355,6 @@ int refresh_reply_count(const char* bname, int gid) {
     
     return 0;
 }
+
+#endif /* HAVE_REPLY_COUNT */
 
