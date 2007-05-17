@@ -3,6 +3,8 @@
 
 #include "bbs.h"
 
+#ifdef HAVE_REPLY_COUNT
+
 static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bool match, void* arg) {
     if(match) {
         struct fileheader *fh;
@@ -113,3 +115,12 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+
+#else /* HAVE_REPLY_COUNT */
+
+int main() {
+    return 0;
+}
+
+#endif /* HAVE_REPLY_COUNT */
+
