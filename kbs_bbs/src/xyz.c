@@ -271,7 +271,7 @@ int x_level(void){
     }
     clear();
     move(0, 0);
-    prints("更改" NAME_USER_SHORT "的权限(\x1b[m注意：如果是封禁解封，请使用封禁选单！\x1b[m\n");
+    prints("更改" NAME_USER_SHORT "的权限(\x1b[m注意：如果是封禁解封，请使用封禁选单！\x1b[m)\n");
     clrtoeol();
     move(1, 0);
     usercomplete("请输入" NAME_USER_SHORT " ID: ", genbuf);
