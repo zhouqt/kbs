@@ -5,15 +5,6 @@
 
 #ifdef HAVE_REPLY_COUNT
 
-static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bool match, void* arg) {
-    if(match) {
-        struct fileheader *fh;
-        fh = &base[ent - 1];
-        fh->replycount = *(int *)arg;
-    }
-    return 0;
-}
-
 int refresh_board(char* bname) {
     int fd, fd2, origincount, acount, i, j, replycount;
     char dirpath[256], originpath[256];
