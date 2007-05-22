@@ -71,6 +71,11 @@ typedef struct fileheader {
         附件位置偏移量，参考下面的附件格式。
     char title[ARTICLE_TITLE_LEN];
         帖子的标题。注意超长标题需要截短。
+    unsigned short replycount;
+        主题帖的回复数，在 .DIR 和 .ORIGIN 中同步更新，对于其他模式和非主题
+        贴，该字段无用。
+    char unused[114];
+        没有用到，为了将来需要升级该结构体时省却转换索引的麻烦，所以留点地方。
     unsigned char accessed[4];
         一些帖子的属性，前两个元素是 bitwise-OR 的属性，包括：
         accessed[0]: FILE_SIGN     (0x01) 版主设置的 # 标记
