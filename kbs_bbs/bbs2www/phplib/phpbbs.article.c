@@ -27,6 +27,8 @@ void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, si
     add_assoc_long(array, "IS_TEX", fh->accessed[1] & FILE_TEX);
 #ifdef HAVE_REPLY_COUNT
     add_assoc_long(array, "REPLYCOUNT", fh->replycount);
+    add_assoc_string(array, "LAST_OWNER", fh->last_owner, 1);
+    add_assoc_long(array, "LAST_POSTTIME", fh->last_posttime);
 #endif /* HAVE_REPLY_COUNT */
 }
 

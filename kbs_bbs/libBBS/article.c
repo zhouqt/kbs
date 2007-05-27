@@ -357,7 +357,7 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     /* reduce reply count, pig2532 */
 #ifdef HAVE_REPLY_COUNT
     if(fh.id != fh.groupid)
-        modify_reply_count(board, fh.groupid, -1, 0);
+        modify_reply_count(board, fh.groupid, -1, 0, NULL);
 #endif /* HAVE_REPLY_COUNT */
 
     owned=(!(flag&ARG_BMFUNC_FLAG)&&isowner(user,&fh));
@@ -551,7 +551,7 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
     if(fileinfo->id == fileinfo->groupid)
         refresh_reply_count(boardname, fileinfo->groupid);
     else
-        modify_reply_count(boardname, fileinfo->groupid, 1, 0);
+        modify_reply_count(boardname, fileinfo->groupid, 1, 0, NULL);
 #endif /* HAVE_REPLY_COUNT */
 
 	if(title != NULL)
@@ -1186,9 +1186,9 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
     /* add to reply count in .ORIGIN, pig2532 */
 #ifdef HAVE_REPLY_COUNT
     if(fh->groupid == fh->id) 
-        modify_reply_count(boardname, fh->id, 1, 1);
+        modify_reply_count(boardname, fh->id, 1, 1, fh);
     else
-        modify_reply_count(boardname, fh->groupid, 1, 0);
+        modify_reply_count(boardname, fh->groupid, 1, 0, fh);
 #endif /* HAVE_REPLY_COUNT */
 
     setboardtitle(boardname, 1);
@@ -3273,6 +3273,7 @@ int delete_range_base(
 struct modify_reply_arg {
     int value;
     int mode;
+    struct fileheader *lastpost;
 };
 
 static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bool match, void* arg) {
@@ -3285,11 +3286,15 @@ static int update_reply_count(int fd, fileheader_t* base, int ent, int total, bo
             fh->replycount += marg->value;
         else
             fh->replycount = marg->value;
+        if(marg->lastpost) {
+            strcpy(fh->last_owner, marg->lastpost->owner);
+            fh->last_posttime = get_posttime(marg->lastpost);
+        }
     }
     return 0;
 }
 
-int modify_reply_count(const char* bname, int gid, int value, int mode) {
+int modify_reply_count(const char* bname, int gid, int value, int mode, struct fileheader* lastpost) {
     char dirpath[PATHLEN];
     int fd;
     struct fileheader fh;
@@ -3303,6 +3308,7 @@ int modify_reply_count(const char* bname, int gid, int value, int mode) {
     fh.id = gid;
     arg.value = value;
     arg.mode = mode;
+    arg.lastpost = lastpost;
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
     
@@ -3351,7 +3357,7 @@ int refresh_reply_count(const char* bname, int gid) {
     close(fd);
     
     if(replycount >= 0)
-        modify_reply_count(bname, gid, replycount, 1);
+        modify_reply_count(bname, gid, replycount, 1, NULL);
     
     return 0;
 }

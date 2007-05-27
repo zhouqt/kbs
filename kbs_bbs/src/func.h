@@ -538,7 +538,7 @@ void unlock_sem_check(int lockid);
 
     /* pig2532 - 统计主题回复数 */
 #ifdef HAVE_REPLY_COUNT
-    int modify_reply_count(const char* bname, int gid, int value, int mode);
+    int modify_reply_count(const char* bname, int gid, int value, int mode, struct fileheader* lastpost);
     int refresh_reply_count(const char* bname, int gid);
 #endif /* HAVE_REPLY_COUNT */
     
