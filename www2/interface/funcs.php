@@ -5,12 +5,11 @@
  *  pig2532@newsmth, 2007
  */
 
-define("WEB_HOST", "192.168.1.100");
 define("WWW2_ROOT", "/home/www/htdocs/");
 
-/*$clientip = $_SERVER["REMOTE_ADDR"];
-if($clientip != WEB_HOST)
-    exit;*/
+$clientip = $_SERVER["REMOTE_ADDR"];
+if(($clientip != "127.0.0.1") && ($clientip != "192.168.1.100"))
+    exit;
 
 include(WWW2_ROOT . "www2-funcs.php");
 login_init();
