@@ -598,8 +598,10 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     int posttime;
     unsigned int attachment;
     char title[ARTICLE_TITLE_LEN];
-    // unsigned short replycount;  /* will be used, pig2532 */
-    // char unused[114];
+    //unsigned short replycount;  /* will be used, pig2532 */
+    //char last_id[OWNER_LEN];
+    //int last_posttime;
+    //char unused[96];
     unsigned char accessed[4];
 } fileheader;
 
