@@ -3326,7 +3326,7 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
 int refresh_reply_count(const char* bname, int gid) {
     int fd, count, i, replycount;
     struct stat buf;
-    struct fileheader *ptr;
+    struct fileheader *ptr, *lastpost;
     char *head, dirpath[PATHLEN];
     
     setbdir(DIR_MODE_NORMAL, dirpath, bname);
@@ -3335,6 +3335,7 @@ int refresh_reply_count(const char* bname, int gid) {
         return 0;
     
     replycount = -1;
+    lastpost = NULL;
     BBS_TRY {
         if(!safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &head, &buf.st_size)) {
             close(fd);
@@ -3344,8 +3345,10 @@ int refresh_reply_count(const char* bname, int gid) {
         ptr = (struct fileheader *)head;
         replycount = 0;
         for(i=0; i<count; i++) {
-            if(ptr->groupid == gid)
+            if(ptr->groupid == gid) {
                 replycount++;
+                lastpost = ptr;
+            }
             ptr++;
         }
 	}
@@ -3357,7 +3360,7 @@ int refresh_reply_count(const char* bname, int gid) {
     close(fd);
     
     if(replycount >= 0)
-        modify_reply_count(bname, gid, replycount, 1, NULL);
+        modify_reply_count(bname, gid, replycount, 1, lastpost);
     
     return 0;
 }

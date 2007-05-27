@@ -9,7 +9,7 @@ int refresh_board(char* bname) {
     int fd, fd2, origincount, acount, i, j, replycount;
     char dirpath[256], originpath[256];
     char *head, *ahead;
-    struct fileheader *ptr, *aptr, *topic;
+    struct fileheader *ptr, *aptr, *topic, *lastpost;
     struct stat buf, abuf;
 
     setbdir(DIR_MODE_NORMAL, dirpath, bname);
@@ -45,18 +45,28 @@ int refresh_board(char* bname) {
         for(i=0; i<origincount; i++) {
             replycount = 0;
             topic = NULL;
+            lastpost = NULL;
             aptr = (struct fileheader *)ahead;
             for(j=0; j<acount; j++) {
                 if(aptr->groupid == ptr->id) {
                     replycount++;
                     if(aptr->groupid == aptr->id)
                         topic = aptr;
+                    lastpost = aptr;
                 }
                 aptr++;
             }
             ptr->replycount = replycount;
             if(topic)
                 topic->replycount = replycount;
+            if(lastpost) {
+                strcpy(ptr->last_owner, lastpost->owner);
+                ptr->last_posttime = get_posttime(lastpost);
+                if(topic) {
+                    strcpy(topic->last_owner, ptr->owner);
+                    topic->last_posttime = ptr->last_posttime;
+                }
+            }
             ptr++;
         }
     }
