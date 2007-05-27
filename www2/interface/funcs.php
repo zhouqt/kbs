@@ -10,7 +10,7 @@ define("WWW2_ROOT", "/home/www/htdocs/");
 
 /*$clientip = $_SERVER["REMOTE_ADDR"];
 if($clientip != WEB_HOST)
-        eiit;*/
+    exit;*/
 
 include(WWW2_ROOT . "www2-funcs.php");
 login_init();
