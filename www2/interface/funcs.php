@@ -42,7 +42,7 @@ function int_article($article, $fname) {
     print("<author>");
     xi("name", $arr["userid"]);
     xi("nick_name", htmlspecialchars($arr["username"]));
-    xi("reg_dare", "");
+    xi("reg_date", "");
     xi("a_post", "");
     xi("a_reply", "");
     print("</author>");
