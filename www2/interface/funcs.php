@@ -37,7 +37,6 @@ function xe($text) {
 function int_article($article, $fname) {
     $arr = array();
     $ret = bbs_parse_article($fname, $arr);
-    print($fname);
     if($ret < 0)
         xe("cannot parse article.");
     print("<author>");
