@@ -733,3 +733,75 @@ PHP_FUNCTION(bbs_decode_att_hash)
     RETURN_FALSE;
 #endif
 }
+
+// long bbs_parse_articles(string fname, array arr);
+PHP_FUNCTION(bbs_parse_article) {
+    int ac, fname_len;
+    char *fname, line[1024], *ptr, *ptr1;
+    FILE *fp;
+    zval *arr;
+    
+    ac = ZEND_NUM_ARGS();
+    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &fname, &fname_len, &arr) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    
+    fp = fopen(fname, "r");
+    if(!fp) {
+        RETURN_LONG(-1);
+    }
+    if(array_init(arr) != SUCCESS) {
+        fclose(fp);
+        RETURN_LONG(-2);
+    }
+    
+    while(skip_attach_fgets(line, 1024, fp)) {
+        if(strncmp(line, "发信人: ", 8) == 0) {
+            ptr = strchr(line, '(');
+            if(!ptr)
+                continue;
+            *(ptr - 1) = '\0';
+            ptr1 = line + 8;
+            add_assoc_string(arr, "userid", ptr1, 1);
+            *(ptr - 1) = ' ';
+            ptr1 = strrchr(line, ')');
+            if(!ptr1)
+                continue;
+            *ptr1 = '\0';
+            add_assoc_string(arr, "username", ptr + 1, 1);
+            continue;
+        }
+        else if(strncmp(line, "标  题: ", 8) == 0) {
+            ptr = strrchr(line, '\n');
+            if(!ptr)
+                continue;
+            *ptr = '\0';
+            add_assoc_string(arr, "title", line + 8, 1);
+            continue;
+        }
+        else if(strncmp(line, "发信站: ", 8) == 0) {
+            ptr = strchr(line, '(');
+            if(!ptr)
+                continue;
+            *(ptr - 1) = '\0';
+            add_assoc_string(arr, "postsite", line + 8, 1);
+            continue;
+        }
+        else if(strncmp(line, "转信站: ", 8) == 0) {
+            ptr = strrchr(line, '\n');
+            if(!ptr)
+                continue;
+            *ptr = '\0';
+            add_assoc_string(arr, "innlist", line + 8, 1);
+            continue;
+        }
+        else if(strncmp(line, "\n", 1) == 0) {
+            break;
+        }
+    }
+    
+    fclose(fp);
+    RETURN_LONG(0);
+}
+
+
