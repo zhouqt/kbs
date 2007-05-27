@@ -6,10 +6,11 @@
  */
 
 define("WWW2_ROOT", "/home/www/htdocs/");
+$domain = bbs_get_webdomain();
 
-$clientip = $_SERVER["REMOTE_ADDR"];
+/*$clientip = $_SERVER["REMOTE_ADDR"];
 if(($clientip != "127.0.0.1") && ($clientip != "192.168.1.100"))
-    exit;
+    exit;*/
 
 include(WWW2_ROOT . "www2-funcs.php");
 login_init();
@@ -33,9 +34,10 @@ function xe($text) {
     exit;
 }
 
-function int_article($article, $fname) {
+function int_article($article, $fname, $bid) {
+    global $domain;
     $arr = array();
-    $ret = bbs_parse_article($fname, $arr);
+    $ret = bbs_parse_article($fname, $arr, 0);
     if($ret < 0)
         xe("cannot parse article.");
     print("<author>");
@@ -46,7 +48,7 @@ function int_article($article, $fname) {
     xi("a_reply", "");
     print("</author>");
     xi("title", htmlspecialchars($article["TITLE"]));
-    xi("text", "<![CDATA[" . bbs_printansifile($fname) . "]]>");
+    xi("text", "<![CDATA[" . bbs_printansifile($fname, 1, "http://{$domain}/bbscon.php?bid={$bid}&amp;id={$article["ID"]}", 0, 0) . " ]]>");
     xi("publish_time", $article["POSTTIME"]);
     xi("publish_author", $article["OWNER"]);
     xi("modify_time", "");

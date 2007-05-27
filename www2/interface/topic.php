@@ -21,7 +21,7 @@
     if($articles[0]["ID"] == $articles[0]["GROUPID"]) {
         print("<original>");
         $filename = bbs_get_board_filename($bname, $articles[0]["FILENAME"]);
-        int_article($articles[0], $filename);
+        int_article($articles[0], $filename, $bid);
         print("</original>");
         $start = 1;
     }
@@ -30,7 +30,7 @@
     for($i=$start; $i<$ret; $i++) {
         print("<reply>");
         $filename = bbs_get_board_filename($bname, $articles[$i]["FILENAME"]);
-        int_article($articles[$i], $filename);
+        int_article($articles[$i], $filename, $bid);
         print("</reply>");
     }
     print("</replys>");

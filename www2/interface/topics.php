@@ -19,6 +19,7 @@
     if($articles == FALSE)
         xe("cannot read index.");
     print("<topics>");
+    $arr = array();
     foreach($articles as $article) {
         print("<topic>");
         xi("type", "");
@@ -28,8 +29,13 @@
         xi("author", $article["OWNER"]);
         xi("reply", $article["REPLYCOUNT"]);
         xi("view", "");
-        xi("last_reply_time", "");
-        xi("last_reply_author", "");
+        xi("last_reply_time", $article["LAST_POSTTIME"]);
+        xi("last_reply_author", $article["LAST_OWNER"]);
+        $filename = bbs_get_board_filename($bname, $article["FILENAME"]);
+        $ret = bbs_parse_article($filename, $arr, 1);
+        if($ret == 0) {
+            xi("brief", "<![CDATA[" . htmlspecialchars($arr["brief"]) . " ]]>");
+        }
         print("</topic>");
     }
     print("</topics>");
