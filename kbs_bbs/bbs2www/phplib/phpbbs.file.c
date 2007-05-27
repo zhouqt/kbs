@@ -735,14 +735,16 @@ PHP_FUNCTION(bbs_decode_att_hash)
 }
 
 // long bbs_parse_articles(string fname, array arr);
+// mode:  0 - parse, 1 - get brief
 PHP_FUNCTION(bbs_parse_article) {
-    int ac, fname_len;
+    int ac, fname_len, i;
+    long mode;
     char *fname, line[1024], *ptr, *ptr1;
     FILE *fp;
     zval *arr;
     
     ac = ZEND_NUM_ARGS();
-    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &fname, &fname_len, &arr) == FAILURE) {
+    if(ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sal", &fname, &fname_len, &arr, &mode) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
     
@@ -755,48 +757,61 @@ PHP_FUNCTION(bbs_parse_article) {
         RETURN_LONG(-2);
     }
     
-    while(skip_attach_fgets(line, 1024, fp)) {
-        if(strncmp(line, "发信人: ", 8) == 0) {
-            ptr = strchr(line, '(');
-            if(!ptr)
+    if(mode == 0) {
+        while(skip_attach_fgets(line, 1024, fp)) {
+            if(strncmp(line, "发信人: ", 8) == 0) {
+                ptr = strchr(line, '(');
+                if(!ptr)
+                    continue;
+                *(ptr - 1) = '\0';
+                ptr1 = line + 8;
+                add_assoc_string(arr, "userid", ptr1, 1);
+                *(ptr - 1) = ' ';
+                ptr1 = strrchr(line, ')');
+                if(!ptr1)
+                    continue;
+                *ptr1 = '\0';
+                add_assoc_string(arr, "username", ptr + 1, 1);
                 continue;
-            *(ptr - 1) = '\0';
-            ptr1 = line + 8;
-            add_assoc_string(arr, "userid", ptr1, 1);
-            *(ptr - 1) = ' ';
-            ptr1 = strrchr(line, ')');
-            if(!ptr1)
+            }
+            else if(strncmp(line, "标  题: ", 8) == 0) {
+                ptr = strrchr(line, '\n');
+                if(!ptr)
+                    continue;
+                *ptr = '\0';
+                add_assoc_string(arr, "title", line + 8, 1);
                 continue;
-            *ptr1 = '\0';
-            add_assoc_string(arr, "username", ptr + 1, 1);
-            continue;
+            }
+            else if(strncmp(line, "发信站: ", 8) == 0) {
+                ptr = strchr(line, '(');
+                if(!ptr)
+                    continue;
+                *(ptr - 1) = '\0';
+                add_assoc_string(arr, "postsite", line + 8, 1);
+                continue;
+            }
+            else if(strncmp(line, "转信站: ", 8) == 0) {
+                ptr = strrchr(line, '\n');
+                if(!ptr)
+                    continue;
+                *ptr = '\0';
+                add_assoc_string(arr, "innlist", line + 8, 1);
+                continue;
+            }
+            else if(strncmp(line, "\n", 1) == 0) {
+                break;
+            }
         }
-        else if(strncmp(line, "标  题: ", 8) == 0) {
-            ptr = strrchr(line, '\n');
-            if(!ptr)
-                continue;
-            *ptr = '\0';
-            add_assoc_string(arr, "title", line + 8, 1);
-            continue;
-        }
-        else if(strncmp(line, "发信站: ", 8) == 0) {
-            ptr = strchr(line, '(');
-            if(!ptr)
-                continue;
-            *(ptr - 1) = '\0';
-            add_assoc_string(arr, "postsite", line + 8, 1);
-            continue;
-        }
-        else if(strncmp(line, "转信站: ", 8) == 0) {
-            ptr = strrchr(line, '\n');
-            if(!ptr)
-                continue;
-            *ptr = '\0';
-            add_assoc_string(arr, "innlist", line + 8, 1);
-            continue;
-        }
-        else if(strncmp(line, "\n", 1) == 0) {
-            break;
+    }
+    else if(mode == 1) {
+        while(skip_attach_fgets(line, 1024, fp)) {
+            if(strncmp(line, "\n", 1) == 0) {
+                bzero(line, 100);
+                fread(line, 50, 1, fp);
+                process_control_chars(line, NULL);
+                add_assoc_string(arr, "brief", line, 1);
+                break;
+            }
         }
     }
     
