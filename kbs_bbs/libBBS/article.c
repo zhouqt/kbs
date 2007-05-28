@@ -356,8 +356,9 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
 
     /* reduce reply count, pig2532 */
 #ifdef HAVE_REPLY_COUNT
-    if(fh.id != fh.groupid)
-        modify_reply_count(board, fh.groupid, -1, 0, NULL);
+    if(!(flag & ARG_BMFUNC_FLAG))
+        if(fh.id != fh.groupid)
+            modify_reply_count(board, fh.groupid, -1, 0, NULL);
 #endif /* HAVE_REPLY_COUNT */
 
     owned=(!(flag&ARG_BMFUNC_FLAG)&&isowner(user,&fh));
@@ -3318,11 +3319,6 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
     arg.value = value;
     arg.mode = mode;
     arg.lastpost = lastpost;
-    if(flock(fd, LOCK_EX | LOCK_NB) == -1) {
-        close(fd);
-        return 0;
-    }
-    flock(fd, LOCK_UN);
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
     
@@ -3330,11 +3326,6 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
     fd = open(dirpath, O_RDWR, 0644);
     if(fd < 0)
         return 0;
-    if(flock(fd, LOCK_EX | LOCK_NB) == -1) {
-        close(fd);
-        return 0;
-    }
-    flock(fd, LOCK_UN);
 	
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
