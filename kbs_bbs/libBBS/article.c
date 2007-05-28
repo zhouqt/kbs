@@ -3318,6 +3318,11 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
     arg.value = value;
     arg.mode = mode;
     arg.lastpost = lastpost;
+    if(flock(fd, LOCK_EX | LOCK_NB) == -1) {
+        close(fd);
+        return 0;
+    }
+    flock(fd, LOCK_UN);
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
     
@@ -3325,6 +3330,11 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
     fd = open(dirpath, O_RDWR, 0644);
     if(fd < 0)
         return 0;
+    if(flock(fd, LOCK_EX | LOCK_NB) == -1) {
+        close(fd);
+        return 0;
+    }
+    flock(fd, LOCK_UN);
 	
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
