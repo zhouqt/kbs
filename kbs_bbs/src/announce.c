@@ -1863,7 +1863,7 @@ MENU *father;
                         WAIT_RETURN;
                         break;
                     }
-                    post_cross(getCurrentUser(),bh,"",M_ITEM(&me, me.now)->title,fname,0,false,ans[0],2,getSession());
+                    post_cross(getCurrentUser(),bh,"",M_ITEM(&me, me.now)->title,fname,0,false,ans[0],5,getSession());
                     prints("\033[1;32m%s\033[0;33m<Enter>\033[m","в╙тьмЙЁи!");
                     WAIT_RETURN;
                 }

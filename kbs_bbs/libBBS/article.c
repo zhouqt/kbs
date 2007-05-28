@@ -813,7 +813,8 @@ static int getcross(const char *filepath,const char *quote_file,struct userec *u
         fprintf(fout,"发信站: %s自动发信系统 (%24.24s)\n\n",BBS_FULL_NAME,ctime(&current));
         fprintf(fout,"【此篇文章是由自动发信系统所张贴】\n\n");
     }
-    else if(mode==2){
+    /* fancyrabbit May 28 2007 mode == 5 说明是精华转出或者做合集，含有某些特殊字样的就别不可 re 了 ...*/
+    else if(mode==2 || mode == 5){
         write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
     }
     else if(mode==3){

@@ -5010,7 +5010,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
         if(strlen(buf) >= STRLEN )buf[STRLEN-1] = 0;
         strcpy(title,buf);
         //post file to the board
-        if(post_file(getCurrentUser(),"",annpath,currboard->filename,title,0,2,getSession()) < 0) {//fail
+        if(post_file(getCurrentUser(),"",annpath,currboard->filename,title,0,5,getSession()) < 0) {//fail
             sprintf(buf,"发表文章到版面出错!请按 ENTER 键退出 << ");
             a_prompt(-1,buf,title);
             saveline(t_lines - 2, 1, NULL);
