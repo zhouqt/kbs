@@ -4834,7 +4834,7 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
 
 static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    int i;
+    int i, o_gid;
     char buf[256], ch[4], BMch;
     struct BMFunc_arg func_arg;
     bool fromfirst;
@@ -4977,6 +4977,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     dirarg.needlock=false;
     arg->writearg=&dirarg;
 
+    o_gid = fh->groupid;
     flock(arg->fd,LOCK_EX);
     if (fromfirst) {
         /*走到第一篇*/
@@ -4989,6 +4990,12 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     flock(arg->fd,LOCK_UN);
     free_write_dir_arg(&dirarg);
     arg->writearg=NULL;
+    
+#ifdef HAVE_REPLY_COUNT
+    if(BMch == BM_DELETE)
+        refresh_reply_count(currboard->filename, o_gid);
+#endif /* HAVE_REPLY_COUNT */
+    
     conf->pos=ent; /*恢复原来的ent*/
 	if(BMch == BM_DELETE){
 		/* set .ORIGIN */
