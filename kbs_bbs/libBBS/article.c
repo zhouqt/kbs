@@ -981,6 +981,15 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
     if (strstr(title, "发文权限") && mode == 2) {
         postfile.accessed[1] |= FILE_READ;
     }
+    /* fancyrabbit May 28 2007 这个破玩意 U 上置底吧 ...*/
+#ifdef SMTH
+    if (!strcmp(title, "请版面尽快产生一名或多名版主") && mode == 2)
+    {
+	    postfile.accessed[0] |= FILE_MARKED;
+	    postfile.accessed[1] |= FILE_READ;
+	    add_top(&postfile, toboard -> filename, 0);
+    }
+#endif /* SMTH */
     after_post(user, &postfile, toboard->filename, NULL, !(Anony), session);
     return 1;
 }
