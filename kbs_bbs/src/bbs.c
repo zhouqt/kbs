@@ -102,6 +102,10 @@ int UndeleteArticle(struct _select_def *conf,struct fileheader *fh, void *varg){
 #endif /* DENY_SELF_UNDELETE */
         ))
         return DONOTHING;
+    /* fancyrabbit May 30 2007，助理和仲裁不要掏东西 ... 结果还是检测了版主权限 ft */
+    if (!chk_currBM(currboard -> BM, getCurrentUser()) && arg -> mode == DIR_MODE_DELETED)
+	return DONOTHING;
+    /* 反正 DIR_MODE 的地方处理过了，助理和仲裁一共也没几个 ... */
     switch(do_undel_post(currboard->filename,arg->direct,conf->pos,fh,NULL,getSession())){
         case -1:
             move(t_lines-1,0);
