@@ -21,8 +21,8 @@ function int_string($str) {
 }
 
 function int_xml_header() {
-    header("Content-Type: text/xml; charset=gbk");
-    print("<?xml version=\"1.0\" encoding=\"gbk\" ?>");
+    header("Content-Type: text/xml; charset=utf-8");
+    print("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 }
 
 function xi($key, $value) {
@@ -42,13 +42,13 @@ function int_article($article, $fname, $bid) {
         xe("cannot parse article.");
     print("<author>");
     xi("name", $arr["userid"]);
-    xi("nick_name", htmlspecialchars($arr["username"]));
+    xi("nick_name", int_string(htmlspecialchars($arr["username"])));
     xi("reg_date", "");
     xi("a_post", "");
     xi("a_reply", "");
     print("</author>");
-    xi("title", htmlspecialchars($article["TITLE"]));
-    xi("text", "<![CDATA[" . bbs_printansifile($fname, 1, "http://{$domain}/bbscon.php?bid={$bid}&amp;id={$article["ID"]}", 0, 0) . " ]]>");
+    xi("title", int_string(htmlspecialchars($article["TITLE"])));
+    xi("text", "<![CDATA[" . int_string(bbs_printansifile($fname, 1, "http://{$domain}/bbscon.php?bid={$bid}&amp;id={$article["ID"]}", 0, 0)) . " ]]>");
     xi("publish_time", $article["POSTTIME"]);
     xi("publish_author", $article["OWNER"]);
     xi("modify_time", "");

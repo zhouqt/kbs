@@ -22,8 +22,9 @@
     $arr = array();
     foreach($articles as $article) {
         print("<topic>");
+        xi("id", $article["ID"]);
         xi("type", "");
-        xi("title", htmlspecialchars($article["TITLE"]));
+        xi("title", int_string(htmlspecialchars($article["TITLE"])));
         xi("link", "");
         xi("if_new", "");
         xi("author", $article["OWNER"]);
@@ -34,7 +35,7 @@
         $filename = bbs_get_board_filename($bname, $article["FILENAME"]);
         $ret = bbs_parse_article($filename, $arr, 1);
         if($ret == 0) {
-            xi("brief", "<![CDATA[" . htmlspecialchars($arr["brief"]) . " ]]>");
+            xi("brief", "<![CDATA[" . int_string(htmlspecialchars($arr["brief"])) . " ]]>");
         }
         print("</topic>");
     }
