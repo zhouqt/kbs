@@ -1378,7 +1378,7 @@ int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extr
 }
 
 
-int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct)
+int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct, int inmail)
 {
     char buf[STRLEN];
     char *p;
@@ -1417,8 +1417,10 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct)
     switch (doforward(buf, fileinfo)) {
     case 0:
         prints("文章转寄完成!\n");
-        fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.9.7 */
-//        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+	if (inmail){
+            fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.9.7 */
+	    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+	}
         break;
     case -1:
         prints("Forward failed: system error.\n");
@@ -1441,7 +1443,8 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct)
 
 int mail_forward(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
-    return mail_forward_internal(conf->pos, fileinfo, ((struct read_arg*)conf->arg)->direct);
+    int inmail=(((struct read_arg*)conf -> arg) -> mode == DIR_MODE_MAIL);
+    return mail_forward_internal(conf->pos, fileinfo, ((struct read_arg*)conf->arg)->direct, inmail);
 }
 
 
