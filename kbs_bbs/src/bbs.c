@@ -1417,12 +1417,14 @@ reget:
     case Ctrl('R'):
         post_reply(conf, fileinfo, extraarg);      /* ╩ьндуб */
         break;
+#if 0
     case 'g':
         ret=set_article_flag(conf , fileinfo, FILE_DIGEST_FLAG);       /* Leeward 99.03.02 */
         break;
     case 'M':
         ret=set_article_flag(conf , fileinfo, FILE_MARK_FLAG);       /* Leeward 99.03.02 */
         break;
+#endif
     case Ctrl('U'):
         if (arg->readmode==READ_NORMAL) {
             move(t_lines - 1, 0);
