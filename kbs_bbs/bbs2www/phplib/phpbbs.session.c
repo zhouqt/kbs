@@ -494,3 +494,10 @@ PHP_FUNCTION(bbs_isonline)
     RETURN_FALSE;
 }
 
+PHP_FUNCTION(bbs_getsessionid)
+{
+    char sid[256];
+    get_telnet_sessionid(sid, getSession()->utmpent);
+    RETURN_STRING(sid, 1);
+}
+

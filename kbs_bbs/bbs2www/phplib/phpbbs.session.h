@@ -24,6 +24,8 @@ PHP_FUNCTION(bbs_session_modify_user_mode);
 PHP_FUNCTION(bbs_getusermode);
 PHP_FUNCTION(bbs_isonline);
 
+PHP_FUNCTION(bbs_getsessionid);
+
 
 #define PHP_BBS_SESSION_EXPORT_FUNCTIONS \
     PHP_FE(bbs_setfromhost, NULL) \
@@ -44,6 +46,8 @@ PHP_FUNCTION(bbs_isonline);
     PHP_FE(bbs_getusermode, NULL) \
     PHP_FE(bbs_isonline, NULL) \
     PHP_FE(bbs_session_modify_user_mode, NULL) \
+    PHP_FE(bbs_getsessionid, NULL) \
+
 
 #endif //PHP_BBS_SESSION_H
 
