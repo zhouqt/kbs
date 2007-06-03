@@ -3039,7 +3039,7 @@ int edit_board_delete_read_perm(void){
                 }
             }
             munmap(p,st.st_size);
-            if(!off&&count&&!ans[1])
+            if(!off&&(count-1)&&!ans[1])
                 continue;
             move(t_lines-2,0);
             clrtoeol();
