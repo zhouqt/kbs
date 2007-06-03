@@ -3407,6 +3407,11 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 
 #ifdef COMMEND_ARTICLE
 	if ( (mode & 0x1) || (mode & 0x2) || (mode & 0x4) ) can |= 0x4;
+
+    /* cannot recommend in recommend, pig2532 */
+    if(strcmp(currboard->filename, COMMEND_ARTICLE) == 0)
+        can &= ~0x4;
+    
 #endif
 
 	if(can==0) return DONOTHING;
