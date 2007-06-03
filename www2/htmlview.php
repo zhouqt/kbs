@@ -82,7 +82,7 @@
     $fp = fopen($filename, "r");
     if(!$fp)
         exit;
-    for($i=0; $i<5; $i++)
+    for($i=0; $i<4; $i++)
         $line = fgets($fp, 1024);
     while(!feof($fp))
         print(fread($fp, 1024));
