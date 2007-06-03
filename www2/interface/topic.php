@@ -28,7 +28,7 @@
         $start = 1;
     }
     
-    $retstr .= <replys>";
+    $retstr .= "<replys>";
     for($i=$start; $i<$ret; $i++) {
         $retstr .= "<reply>";
         $filename = bbs_get_board_filename($bname, $articles[$i]["FILENAME"]);
