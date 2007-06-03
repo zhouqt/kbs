@@ -966,33 +966,6 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     return buf;
 }
 
-#define SESSIONLEN 9
-void get_telnet_sessionid(char* buf,int unum)
-{
-    static const char encode[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    struct user_info* pui=get_utmpent(unum);
-    int utmpkey=pui->utmpkey;
-    buf[0]=encode[unum%36];
-    unum/=36;
-    buf[1]=encode[unum%36];
-    unum/=36;
-    buf[2]=encode[unum%36];
-
-    buf[3]=encode[utmpkey%36];
-    utmpkey/=36;
-    buf[4]=encode[utmpkey%36];
-    utmpkey/=36;
-    buf[5]=encode[utmpkey%36];
-    utmpkey/=36;
-    buf[6]=encode[utmpkey%36];
-    utmpkey/=36;
-    buf[7]=encode[utmpkey%36];
-    utmpkey/=36;
-    buf[8]=encode[utmpkey%36];
-    utmpkey/=36;
-
-    buf[9]=0;
-}
 
 char *get_my_webdomain(int force)
 {

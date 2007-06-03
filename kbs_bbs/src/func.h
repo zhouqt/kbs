@@ -122,6 +122,7 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     int myfriend(int uid, char *fexp,session_t* session);
     bool hisfriend(int uid, struct user_info *him);
     int update_username(const char *userid,const char *o_name,const char *n_name);
+    void get_telnet_sessionid(char* buf,int unum);
 
 /* defined in stuff.c */
 	int calc_numofsig();
