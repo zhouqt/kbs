@@ -16,6 +16,15 @@ include(WWW2_ROOT . "www2-funcs.php");
 login_init();
 cache_header("nocache");
 
+if(isset($_GET["uid"]))
+    $uid = intval($_GET["uid"]);
+else {
+    $user = array();
+    $uid = bbs_getuser("guest", $user);
+}
+
+$retstr = "";
+
 function int_string($str) {
     return(iconv("gb2312", "UTF-8", $str));
 }

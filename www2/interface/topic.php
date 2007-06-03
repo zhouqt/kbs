@@ -10,6 +10,8 @@
     $bname = bbs_getbname($bid);
     if($bname == "")
         xe("board not found.");
+    if(!bbs_checkreadperm($uid, $bid))
+        xe("permission denied.");
     $haveprev = 0;
     $articles = array();
     $ret = bbs_get_threads_from_gid($bid, $id, 1, $articles, $haveprev);

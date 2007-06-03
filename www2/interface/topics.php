@@ -11,6 +11,8 @@
     $bname = bbs_getbname($bid);
     if($bname == "")
         xe("board not found.");
+    if(!bbs_checkreadperm($uid, $bid))
+        xe("permission denied.");
     bbs_checkorigin($bname);
     $total = bbs_countarticles($bid, $dir_modes["ORIGIN"]);
     if($start > $total)
