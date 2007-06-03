@@ -20,10 +20,10 @@
     $articles = bbs_getarticles($bname, $start, $count, $dir_modes["ORIGIN"]);
     if($articles == FALSE)
         xe("cannot read index.");
-    print("<topics>");
+    $retstr .= "<topics>";
     $arr = array();
     foreach($articles as $article) {
-        print("<topic>");
+        $retstr .= "<topic>";
         xi("id", $article["ID"]);
         xi("type", "");
         xi("title", int_string(htmlspecialchars($article["TITLE"])));
@@ -39,8 +39,10 @@
         if($ret == 0) {
             xi("brief", "<![CDATA[" . int_string(htmlspecialchars($arr["brief"])) . " ]]>");
         }
-        print("</topic>");
+        $retstr .= "</topic>";
     }
-    print("</topics>");
+    $retstr .= "</topics>";
+    
+    int_xml_finish();
 
 ?>

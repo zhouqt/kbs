@@ -34,12 +34,18 @@ function int_xml_header() {
     print("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 }
 
+function int_xml_finish() {
+    global $retstr;
+    print($retstr);
+}
+
 function xi($key, $value) {
-    print("<{$key}>{$value}</{$key}>");
+    global $retstr;
+    $retstr .= "<{$key}>{$value}</{$key}>";
 }
 
 function xe($text) {
-    print("error: {$text}");
+    print("<error>{$text}</error>");
     exit;
 }
 
@@ -49,13 +55,13 @@ function int_article($article, $fname, $bid) {
     $ret = bbs_parse_article($fname, $arr, 0);
     if($ret < 0)
         xe("cannot parse article.");
-    print("<author>");
+    $retstr .= "<author>";
     xi("name", $arr["userid"]);
     xi("nick_name", int_string(htmlspecialchars($arr["username"])));
     xi("reg_date", "");
     xi("a_post", "");
     xi("a_reply", "");
-    print("</author>");
+    $retstr .= "</author>";
     xi("title", int_string(htmlspecialchars($article["TITLE"])));
     xi("text", "<![CDATA[" . int_string(bbs_printansifile($fname, 1, "http://{$domain}/bbscon.php?bid={$bid}&amp;id={$article["ID"]}", 0, 0)) . " ]]>");
     xi("publish_time", $article["POSTTIME"]);
