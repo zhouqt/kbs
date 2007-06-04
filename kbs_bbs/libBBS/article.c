@@ -892,6 +892,10 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
     //strncpy(postfile.o_board, fromboard, STRLEN- BM_LEN);
     //postfile.o_board[STRLEN-BM_LEN-1]=0;
 
+#ifdef HAVE_REPLY_COUNT
+    postfile.replycount = 1;
+#endif /* HAVE_REPLY_COUNT */
+
     setbfile(buf, COMMEND_ARTICLE, DOT_DIR);
 
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
