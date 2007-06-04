@@ -5,6 +5,8 @@
  *  pig2532@newsmth, 2007
  */
 
+define("PAGE_SIZE", 20);
+define("THREAD_PAGE_SIZE", 20);
 $domain = bbs_get_webdomain();
 
 /*$clientip = $_SERVER["REMOTE_ADDR"];
@@ -14,8 +16,8 @@ if(($clientip != "127.0.0.1") && ($clientip != "192.168.1.100"))
 include("../www2-funcs.php");
 login_init(TRUE);
 $sid = bbs_getsessionid();
-cache_header("nocache");
 $uid = $currentuser["index"];
+$xml_header = false;
 
 $retstr = "";
 
@@ -24,11 +26,14 @@ function int_string($str) {
 }
 
 function int_xml_header() {
-    global $sid, $currentuser;
-    header("Content-Type: text/xml; charset=utf-8");
-    print("<?xml version=\"1.0\" encoding=\"utf-8\" ?><wwint>");
-    print("<sid>{$sid}</sid>");
-    print("<userid>{$currentuser["userid"]}</userid>");
+    global $sid, $currentuser, $xml_header;
+    if(!$xml_header) {
+        header("Content-Type: text/xml; charset=utf-8");
+        print("<?xml version=\"1.0\" encoding=\"utf-8\" ?><wwint>");
+        print("<sid>{$sid}</sid>");
+        print("<userid>{$currentuser["userid"]}</userid>");
+        $xml_header = true;
+    }
 }
 
 function int_xml_finish() {
@@ -44,6 +49,7 @@ function xi($key, $value) {
 
 function xe($text) {
     global $retstr;
+    int_xml_header();
     $retstr = "";
     xi("error", $text);
     int_xml_finish();

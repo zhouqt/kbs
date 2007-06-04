@@ -2,11 +2,11 @@
 
     include("funcs.php");
 
-    int_xml_header();
-    
     $bid = $_GET["bid"];
-    $start = $_GET["start"];
-    $count = $_GET["count"];
+    if(isset($_GET["page"]))
+        $page = $_GET["page"];
+    else
+        $page = 0;
     
     $bname = bbs_getbname($bid);
     if($bname == "")
@@ -15,12 +15,23 @@
         xe("permission denied.");
     bbs_checkorigin($bname);
     $total = bbs_countarticles($bid, $dir_modes["ORIGIN"]);
-    if($start > $total)
-        $start = $total;
+    $pagecount = ceil($total / PAGE_SIZE);
+    if($page < 0)
+        $page = 0;
+    if($page > $pagecount)
+        $page = $pagecount;
+    if($page == 0)
+        $page = $pagecount;
+    $start = ($page - 1) * PAGE_SIZE + 1;
+    $count = PAGE_SIZE;
+
+    int_xml_header();
+    
     $articles = bbs_getarticles($bname, $start, $count, $dir_modes["ORIGIN"]);
     if($articles == FALSE)
         xe("cannot read index.");
     $retstr .= "<topics>";
+    xi("page_count", $pagecount);
     $arr = array();
     foreach($articles as $article) {
         $retstr .= "<topic>";
