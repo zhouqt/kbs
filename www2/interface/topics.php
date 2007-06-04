@@ -25,6 +25,14 @@
     $start = ($page - 1) * PAGE_SIZE + 1;
     $count = PAGE_SIZE;
 
+    if($page == $pagecount)
+        cache_header("nocache");
+    else {
+        $origin_if = bbs_get_board_index($bname, $dir_modes["ORIGIN"]);
+        if(cache_header("public", @filemtime($origin_if), 10))
+            exit;
+    }
+
     int_xml_header();
     
     $articles = bbs_getarticles($bname, $start, $count, $dir_modes["ORIGIN"]);

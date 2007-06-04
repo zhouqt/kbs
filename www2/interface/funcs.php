@@ -7,7 +7,6 @@
 
 define("PAGE_SIZE", 20);
 define("THREAD_PAGE_SIZE", 20);
-$domain = bbs_get_webdomain();
 
 /*$clientip = $_SERVER["REMOTE_ADDR"];
 if(($clientip != "127.0.0.1") && ($clientip != "192.168.1.100"))
@@ -18,6 +17,7 @@ login_init(TRUE);
 $sid = bbs_getsessionid();
 $uid = $currentuser["index"];
 $xml_header = false;
+$domain = bbs_get_webdomain();
 
 $retstr = "";
 

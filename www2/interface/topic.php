@@ -24,6 +24,14 @@
         $page = 1;
     if($page > $pagecount)
         $page = $pagecount;
+    
+    if($page == $pagecount)
+        cache_header("nocache");
+    else {
+        $all_if = bbs_get_board_index($bname, $dir_modes["NORMAL"]);
+        if(cache_header("public", @filemtime($all_if), 300))
+            exit;
+    }
    
     int_xml_header();
    
