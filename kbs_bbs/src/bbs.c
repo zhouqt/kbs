@@ -878,7 +878,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 #endif
 
     if (uinfo.mode != RMAIL && arg->mode != DIR_MODE_DIGEST && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK
-        && strcmp(currboard->filename, "sysmail")) { /* 新方法比较*/
+        && strcmp(currboard->filename, SYSMAIL_BOARD)) { /* 新方法比较*/
         if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(ent->title,"Re:",3)||!strncmp(ent->title,"回复:",5))) {
 			isreply=1;
 		}
