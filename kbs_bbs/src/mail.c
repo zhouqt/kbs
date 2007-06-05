@@ -2325,11 +2325,21 @@ int doforward(char *direct, struct fileheader *fh)
         int oldmode = uinfo.mode;
         long attachpos = fh->attachment;
         modify_user_mode(SMAIL);
-        if (vedit(fname, false, NULL, &attachpos,0) != -1) {
-            fh->attachment = attachpos;
-            if (ADD_EDITMARK)
-                add_edit_mark(fname, 1, fh->title,getSession());
-        }
+	/* fancyrabbit Jun 5 2007 取消修改增加提示 */
+	if (vedit(fname, false, NULL, &attachpos, 0) == -1)
+	{
+	    if (!askyn("取消修改, 是否仍然转寄?", 0)) {
+		unlink(fname);
+		modify_user_mode(oldmode);
+		return 1;
+	    }
+	}
+	else
+	{
+	    fh->attachment = attachpos;
+	    if (ADD_EDITMARK)
+		add_edit_mark(fname, 1, fh->title,getSession());
+	}
         modify_user_mode(oldmode);
         y = 2;
         newbbslog(BBSLOG_USER, "修改被转贴的文章或信件: %s", title);    /*Haohmaru.00.05.01 */
@@ -2376,10 +2386,13 @@ int doforward(char *direct, struct fileheader *fh)
             if (false == canIsend2(getCurrentUser(), receiver)) {    /* Leeward 98.04.10 */
                 prints("\033[1m\033[33m很抱歉∶系统无法转寄此信．因为 %s 拒绝接收您的信件．\033[m\033[m\n\n", receiver);
                 sprintf(title, "退信∶ %s 拒绝接收您的信件．", receiver);
-                mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid, title, 0, NULL);
+                mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid, title, BBSPOST_COPY, NULL);
                 return -4;
             }
-            return_no = mail_file(getCurrentUser()->userid, fname, lookupuser->userid, title, 0, fh);
+            return_no = mail_file(getCurrentUser()->userid, fname, lookupuser->userid, title, BBSPOST_COPY, fh);
+	    /* fancyrabbit Jun 5 2007 转寄信件保存到发件箱，F 判断太多就不判断了，按设置来吧 ...*/
+	    if (HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL))
+		mail_file_sent(lookupuser -> userid, fname, getCurrentUser()->userid, title, BBSPOST_COPY, getSession());
 #ifdef AUTOREMAIL
         sethomefile(genbuf, lookupuser->userid, "autoremail");
         if(dashf(genbuf)){
