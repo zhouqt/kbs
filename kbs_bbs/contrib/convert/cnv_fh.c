@@ -71,7 +71,9 @@ int cnv_index(char* fname) {
 		fho.posttime = fhi.posttime;
 		fho.attachment = fhi.attachment;
 		strcpy(fho.title, fhi.title);
-		fho.replycount = -1;
+		fho.replycount = 0;
+		fho.last_owner[0] = '\0';
+		fho.last_posttime = 0;
 		fho.accessed[0] = fhi.accessed[0];
 		fho.accessed[1] = fhi.accessed[1];
 		fho.accessed[2] = fhi.accessed[2];
