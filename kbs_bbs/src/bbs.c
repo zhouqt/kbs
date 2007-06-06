@@ -1163,6 +1163,21 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         (isbm && (fileinfo->accessed[0] & FILE_IMPORTED)) ? "\x1b[42m \x1b[0m" : " ",
         (isbm && (fileinfo->accessed[1] & FILE_CENSOR)) ? '@' : ' '
         );
+    
+    if(HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
+        move(9,0);
+        prints("\033[1;33mfileheaderÐÅÏ¢\033[m\n");
+        prints("  filename=%s\n", fileinfo->filename);
+        prints("  id=%d, groupid=%d, reid=%d\n", fileinfo->id, fileinfo->groupid, fileinfo->reid);
+        prints("  origin: bid=%d, id=%d, groupid=%d, reid=%d\n", fileinfo->o_bid, fileinfo->o_id, fileinfo->o_groupid, fileinfo->o_reid);
+        prints("  innflag=%c%c,  owner=%s\n", fileinfo->innflag[0], fileinfo->innflag[1], fileinfo->owner);
+        prints("  eff_size=%d,  attachment=%d,  posttime=%s", fileinfo->eff_size, fileinfo->attachment, ctime((time_t *)&fileinfo->posttime));
+        prints("  title=%s\n", fileinfo->title);
+#ifdef HAVE_REPLY_COUNT
+        prints("  replycount=%d,  last_owner=%s\n  last_posttime=%s", fileinfo->replycount, fileinfo->last_owner, ctime((time_t *)&fileinfo->last_posttime));
+#endif /* HAVE_REPLY_COUNT */
+    }
+                    
     pressanykey();
     return FULLUPDATE;
 }
