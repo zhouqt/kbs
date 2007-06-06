@@ -115,8 +115,6 @@ static int cnv_board(struct boardheader* bh, void* arg) {
 	cnv_index(fname);
 	setbdir(DIR_MODE_ORIGIN, fname, bh->filename);
 	cnv_index(fname);
-	setbdir(DIR_MODE_WEB_THREAD, fname, bh->filename);
-	cnv_index(fname);
 	setbdir(DIR_MODE_ZHIDING, fname, bh->filename);
 	cnv_index(fname);
 	board_update_toptitle(getbid(bh->filename, NULL), false);
@@ -165,8 +163,6 @@ static int undo_board(struct boardheader* bh, void* arg) {
 	setbdir(DIR_MODE_JUNK, fname, bh->filename);
 	undo_index(fname);
 	setbdir(DIR_MODE_ORIGIN, fname, bh->filename);
-	undo_index(fname);
-	setbdir(DIR_MODE_WEB_THREAD, fname, bh->filename);
 	undo_index(fname);
 	setbdir(DIR_MODE_ZHIDING, fname, bh->filename);
 	undo_index(fname);
