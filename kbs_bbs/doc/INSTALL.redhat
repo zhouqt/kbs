@@ -1,11 +1,12 @@
 $Id$
 
-              kbsbbs 在 Fedora Core 4/5/6 上的安装指南
+              kbsbbs 在 Fedora 7 上的安装指南
 
-    本文介绍如何在 Fedora Core 4/5/6 系统上安装 kbsbbs 系统。与以往
-安装方法不同的是，本文的方法尽可能使用 Fedora Core 自带的软件，例如
+    本文介绍如何在 Fedora 7 系统上安装 kbsbbs 系统。与以往
+安装方法不同的是，本文的方法尽可能使用 Fedora 自带的软件，例如
 apache 和 php 等。此外，本文的方法可使 kbsbbs 的 www 模块同时适合 
-apache 和 apache2。
+apache 和 apache2。此文档也可针对 Fedora Core 4/5/6 使用，但可能细节上
+略有出入。
 
 1. 需要的软件
 httpd                  必须
@@ -30,7 +31,7 @@ automake               可选
 libtool                可选
      (以上 3 个只有使用 CVS 时才需要)
 
-以上软件都可以直接用 Fedora Core 光盘里的 rpm 安装。
+以上软件都可以直接用 yum 安装，或者使用 Fedora 光盘里的 rpm 安装。
 
 2. 编译安装 kbsbbs
     下载 kbsbbs 的源代码有两种方法，一种是通过 cvs 方式获取，另一种是下载每
@@ -128,7 +129,7 @@ extension 没有起作用。
 libphpbbslib.so 文件符号连接到 /var/www/libexec/bbs/libphpbbslib.so。
     另外 apache 的 error log 也可能有有用的信息：/var/log/httpd/error_log。
 
-    Fedore Core 默认将 httpd 服务加入 SELinux 保护，如果开启 SELinux 会导致
+    Fedore 默认将 httpd 服务加入 SELinux 保护，如果开启 SELinux 会导致
 libphpbbslib.so 加载失败（因为有依赖库在非标准路径）。
 
     最后要把 info.php 文件删除。
