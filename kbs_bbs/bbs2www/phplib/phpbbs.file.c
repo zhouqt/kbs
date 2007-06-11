@@ -737,7 +737,7 @@ PHP_FUNCTION(bbs_decode_att_hash)
 // long bbs_parse_articles(string fname, array arr);
 // mode:  0 - parse, 1 - get brief
 PHP_FUNCTION(bbs_parse_article) {
-    int ac, fname_len, i;
+    int ac, fname_len;
     long mode;
     char *fname, line[1024], *ptr, *ptr1;
     FILE *fp;
