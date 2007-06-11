@@ -274,6 +274,54 @@ int top_move(struct _select_def* conf,struct fileheader *fileinfo)
 	return ret;
 }
 
+/* fancyrabbit Jun 9 2007 置底设置不可 re*/
+int top_noreply(struct _select_def* conf, struct fileheader *fileinfo)
+{
+    struct read_arg* arg = (struct read_arg*) conf -> arg;
+    int i = 0, ent, fd;
+    struct fileheader tmp;
+    ent = get_num_records(arg -> dingdirect, sizeof(struct fileheader));
+    if (!(fd = open(arg -> dingdirect, O_RDONLY, 0)))
+    {
+        move(t_lines - 1, 0);
+        clrtoeol();
+        prints("%s", "操作失败，按任意键继续 ...");
+        pressanykey();
+        return FULLUPDATE;
+    }
+    for (i = ent; i > 0; i--)
+    {
+        if (!get_record_handle(fd, &tmp, sizeof(tmp), i))
+        {
+            if (!strcmp(tmp.filename, fileinfo -> filename))
+            {
+                ent = i;
+                break;
+            }
+        }
+        else
+        {
+            i = 0;
+            break;
+        }
+    }
+    close(fd);
+    if (i > 0)
+    {
+        fileinfo -> accessed[1] ^= FILE_READ;
+        substitute_record(arg -> dingdirect, fileinfo, sizeof(*fileinfo), ent);
+        board_update_toptitle(arg -> bid, true);
+        return FULLUPDATE;
+   }
+   else {
+       move(t_lines - 1, 0);
+       clrtoeol();
+       prints("%s", "操作失败, 按任意键继续 ...");
+       pressanykey();
+       return FULLUPDATE;
+    }
+}
+
 int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long flag)
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
@@ -324,8 +372,12 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 #endif
 					)
         return DONOTHING;
-    if (conf->pos > arg->filecount && flag == FILE_MARK_FLAG)
+    if (conf->pos > arg->filecount) {
+    if (flag == FILE_MARK_FLAG)
         return top_move(conf, fileinfo);
+    else if (flag == FILE_NOREPLY_FLAG)
+        return top_noreply(conf, fileinfo);
+    }
     data=*fileinfo;
     init_write_dir_arg(&dirarg);
     dirarg.fd=arg->fd;
@@ -916,6 +968,10 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 //    TITLE = ent->title;         /*文章标题TITLE */
 //	sprintf(TITLE,"%s(%d)",ent->title,ent->eff_size);
     if ((type=='d')||(type=='D')) { //置顶文章
+    /* fancyrabbit Jun 9 2007 不同颜色区分置底是否可 re */
+    if (manager && (ent -> accessed[1] & FILE_READ))
+        sprintf(buf, " \x1b[1;31m[提示]\x1b[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %s ", ent->owner, date, attachch, TITLE);
+    else
         sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %s ", ent->owner, date, attachch, TITLE);
         return buf;
     }
