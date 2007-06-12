@@ -968,10 +968,6 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 //    TITLE = ent->title;         /*文章标题TITLE */
 //	sprintf(TITLE,"%s(%d)",ent->title,ent->eff_size);
     if ((type=='d')||(type=='D')) { //置顶文章
-    /* fancyrabbit Jun 9 2007 不同颜色区分置底是否可 re */
-    if (manager && (ent -> accessed[1] & FILE_READ))
-        sprintf(buf, " \x1b[1;31m[提示]\x1b[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %s ", ent->owner, date, attachch, TITLE);
-    else
         sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %s ", ent->owner, date, attachch, TITLE);
         return buf;
     }
@@ -2244,21 +2240,31 @@ int set_board_rule(struct boardheader *bh, int flag)
 	if(!pos) return -1;
 
     memcpy(&newbh,bh,sizeof(struct boardheader));
-	if(flag) newbh.flag|=BOARD_RULES;
+	if(flag == 1) newbh.flag|=BOARD_RULES;
 	else newbh.flag&=~BOARD_RULES;
 
     set_board(pos,&newbh,bh);
 
-	if(flag){
+	if(flag == 1){
 		char buf[256];
 		char buf2[256];
 
 		setvfile(buf, bh->filename, "rules");
 		sprintf(buf2,"%s通过%s治版方针", getCurrentUser()->userid, bh->filename);
 		post_file(getCurrentUser(), "", buf, "BoardRules", buf2, 0, 2, getSession());
-		post_file(getCurrentUser(), "", buf, "BoardManager", buf2, 0, 2, getSession());
+		if (normal_board(currboard -> filename))
+		    post_file(getCurrentUser(), "", buf, "BoardManager", buf2, 0, 2, getSession());
 		sprintf(buf2,"审核通过%s版治版方针", bh->filename);
 		post_file(getCurrentUser(), "", buf, bh->filename, buf2, 0, 2, getSession());
+	}
+	else if (flag == 2)
+	{
+	    char buf[256];
+	    char buf2[256];
+	    setvfile(buf, bh -> filename, "rules");
+	    sprintf(buf2, "%s删除%s治版方针草案", getCurrentUser() -> userid, bh -> filename);
+	    post_file(getCurrentUser(), "", buf, "BoardRules", buf2, 0, 2, getSession());
+	    unlink(buf);
 	}
 	return 0;
 }
@@ -2340,13 +2346,21 @@ int read_hot_info()
 			clear();
 			move(3,0);
 			prints("%s版治版方针尚未通过审核,批号:%d\n", currboard->filename, st.st_mtime);
-        	getdata(t_lines - 1, 0, "您要通过该版的治版方针吗 (Y/N)? [N] ", ans, 3, DOECHO, NULL, true);
+        	getdata(t_lines - 1, 0, "您要通过该版的治版方针吗 (Yes/No/Del)? [N] ", ans, 3, DOECHO, NULL, true);
 			if(ans[0]=='y' || ans[0]=='Y'){
 				int ret;
 				ret = set_board_rule(currboard, 1);
 				move(6,0);
 				prints("通过%s:%d\n",(ret==0)?"成功":"失败",ret);
 				pressreturn();
+			}
+			else if (ans[0] == 'd' || ans[0] == 'D')
+			{
+			    int ret;
+			    ret = set_board_rule(currboard, 2);
+			    move(6, 0);
+			    prints("删除%s!\n", (!ret) ? "成功" : "失败");
+			    pressreturn();
 			}
 		}
 		break;
