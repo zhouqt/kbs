@@ -12,6 +12,9 @@ int refresh_board(char* bname) {
     struct fileheader *ptr, *aptr, *topic, *lastpost;
     struct stat buf, abuf;
 
+    if(setboardorigin(bname, -1))
+        board_regenspecial(bname, DIR_MODE_ORIGIN, NULL);
+	
     setbdir(DIR_MODE_NORMAL, dirpath, bname);
     setbdir(DIR_MODE_ORIGIN, originpath, bname);
     
