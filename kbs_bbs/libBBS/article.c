@@ -542,6 +542,28 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
         close(fd);
     }
 
+    /* restore origin, pig2532, 2007.6 */
+    if(UFile.id == UFile.groupid) {
+        if(setboardorigin(boardname, -1))
+            board_regenspecial(boardname, DIR_MODE_ORIGIN, NULL);
+        else {
+            sprintf(buf, "boards/%s/.ORIGIN", boardname);
+            if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
+                if ((UFile.id == 0) || mmap_search_apply(fd, &UFile, insert_func) == 0) {
+                    flock(fd, LOCK_EX);
+                    UFile.id = get_nextid(boardname);
+                    UFile.groupid = UFile.id;
+                    UFile.reid = UFile.id;
+                    lseek(fd, 0, SEEK_END);
+                    if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
+                        bbslog("user", "%s", "apprec origin write err!");
+                    flock(fd, LOCK_UN);
+                }
+                close(fd);
+            }
+        }
+    }
+    
     updatelastpost(boardname);
     fileinfo->filename[0] = '\0';
     substitute_record(dirfname, fileinfo, sizeof(*fileinfo), num);
@@ -3341,7 +3363,7 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
 int refresh_reply_count(const char* bname, int gid) {
     int fd, count, i, replycount;
     struct stat buf;
-    struct fileheader *ptr, *lastpost;
+    struct fileheader *ptr, *lastpost, lastfh;
     char *head, dirpath[PATHLEN];
     
     setbdir(DIR_MODE_NORMAL, dirpath, bname);
@@ -3371,11 +3393,13 @@ int refresh_reply_count(const char* bname, int gid) {
     }
     BBS_END;
     
+    memcpy(&lastfh, lastpost, sizeof(struct fileheader));
+    
     end_mmapfile((void *)head, buf.st_size, -1);
     close(fd);
     
     if(replycount >= 0)
-        modify_reply_count(bname, gid, replycount, 1, lastpost);
+        modify_reply_count(bname, gid, replycount, 1, &lastfh);
     
     return 0;
 }
