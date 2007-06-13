@@ -1,1 +1,6 @@
-ORZ.
+
+   orz
+
+  1. 修改kbsint.php文件，里面的$kbssite数组从1开始依次是相关的各个kbs站的接口url路径。
+
+
