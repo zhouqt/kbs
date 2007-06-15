@@ -1063,9 +1063,6 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num) {
 		url = 'bbspst.php?board=' + this.board;
 		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
-	if(www2dev) {
-        // ret += '[<a href="' + this.baseurl + '&html">HTML查看</a>] ';
-    }
 	if (this.ftype == 0) {
 		ret += '[<a href="' + this.baseurl + '&p=p">上一篇</a>] ';
 		ret += '[<a href="' + this.baseurl + '&p=n">下一篇</a>] ';
