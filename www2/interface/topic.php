@@ -11,14 +11,14 @@
     
     $bname = bbs_getbname($bid);
     if($bname == "")
-        xe("board not found.");
+        ie("board not found.");
     if(!bbs_checkreadperm($uid, $bid))
-        xe("permission denied.");
+        ie("permission denied.");
     $haveprev = 0;
     $articles = array();
     $ret = bbs_get_threads_from_gid($bid, $id, 1, $articles, $haveprev);
     if($ret == 0)
-        xe("cannot read threads.");
+        ie("cannot read threads.");
     $pagecount = ceil($ret / THREAD_PAGE_SIZE);
     if($page < 1)
         $page = 1;
@@ -33,10 +33,7 @@
             exit;
     }
    
-    int_xml_header();
-   
-    $retstr .= "<topic>";
-    xi("page_count", $pagecount);
+    $response->pagecount = $pagecount;
     
     $start = ($page - 1) * THREAD_PAGE_SIZE;
     if($start > ($ret - 1))
@@ -44,25 +41,14 @@
     $end = $start + THREAD_PAGE_SIZE - 1;
     if($end > ($ret - 1))
         $end = $ret - 1;
-    if($articles[$start]["ID"] == $articles[$start]["GROUPID"]) {
-        $retstr .= "<original>";
-        $filename = bbs_get_board_filename($bname, $articles[$start]["FILENAME"]);
-        int_article($articles[$start], $filename, $bid);
-        $retstr .= "</original>";
-        $start++;
-    }
     
-    $retstr .= "<replys>";
+    $ii = 0;
     for($i=$start; $i<=$end; $i++) {
-        $retstr .= "<reply>";
         $filename = bbs_get_board_filename($bname, $articles[$i]["FILENAME"]);
-        int_article($articles[$i], $filename, $bid);
-        $retstr .= "</reply>";
+        $response->article[$ii] = int_article($articles[$i], $filename, $bid);
+        $ii++;
     }
-    $retstr .= "</replys>";
     
-    $retstr .= "</topic>";
-    
-    int_xml_finish();
+    int_finish($response);
 
 ?>
