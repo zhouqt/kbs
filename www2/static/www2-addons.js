@@ -31,7 +31,7 @@ function annWriter(path, perm_bm, text, title) {
 	str += '<th>标题</th><th>版主</th><th>' + (perm_bm?'文件名':'日期') + '</th><th>操作</th></tr><tbody>';
 	w(str);
 }
-annWriter.prototype.i = function(type, title, bm, filename, date) {
+annWriter.prototype.i = function(type, title, title_enc, bm, filename, date) {
 	var str, itempath;
 	str = '<tr><td class="center">' + this.num + '</td><td class="center">';
 	switch(type) {
@@ -57,9 +57,9 @@ annWriter.prototype.i = function(type, title, bm, filename, date) {
 	str += this.perm_bm ? (filename + ((type == 1) ? '/' : '')) : date;
 	str += '</td><td>';
 	if (type == 1)
-		str += '<a href="bbs0anbm_editdir.php?path=' + itempath + '&title=' + title + '&bm=' + bm + '">修改</a>';
+		str += '<a href="bbs0anbm_editdir.php?path=' + itempath + '&title=' + title_enc + '&bm=' + bm + '">修改</a>';
 	else if (type >= 2)
-		str += '<a href="bbs0anbm_editfile.php?path=' + itempath + '&title=' + title + '">编辑</a>';
+		str += '<a href="bbs0anbm_editfile.php?path=' + itempath + '&title=' + title_enc + '">编辑</a>';
 	str += ' <a href="javascript:ann_move(' + this.num + ');">调序</a>';
 	str += '<span id="divam' + this.num + '"></span>';
 	str += '</td></tr>';

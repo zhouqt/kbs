@@ -91,8 +91,9 @@ document.write('<tr><td align="center" colspan="7">该精华区目录没有文章。</td></
 <?php
 	}
 	else foreach ($articles as $article) {
-		$title = htmlspecialchars(rtrim($article['TITLE']), ENT_QUOTES);
-		echo 'an.i(' . $article['FLAG'] . ',\'' . $title . '\',\'' . trim($article['BM']) . '\',\'' . rawurlencode($article['FNAME']) . '\',\'' . date('Y-m-d',$article['TIME']) . '\');';
+		$title = htmljsformat($article['TITLE']);
+        $title_enc = urlencode($article['TITLE']);
+		echo 'an.i(' . $article['FLAG'] . ',\'' . $title . '\',\'' . $title_enc . '\',\'' . trim($article['BM']) . '\',\'' . rawurlencode($article['FNAME']) . '\',\'' . date('Y-m-d',$article['TIME']) . '\');';
 	}
 ?>
 //-->
