@@ -2391,7 +2391,7 @@ int doforward(char *direct, struct fileheader *fh)
             }
             return_no = mail_file(getCurrentUser()->userid, fname, lookupuser->userid, title, BBSPOST_COPY, fh);
 	    /* fancyrabbit Jun 5 2007 转寄信件保存到发件箱，F 判断太多就不判断了，按设置来吧 ...*/
-	    if (HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL))
+	    if (HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL) && strcmp(lookupuser -> userid, getCurrentUser() -> userid))
 		mail_file_sent(lookupuser -> userid, fname, getCurrentUser()->userid, title, BBSPOST_COPY, getSession());
 #ifdef AUTOREMAIL
         sethomefile(genbuf, lookupuser->userid, "autoremail");
