@@ -3393,7 +3393,8 @@ int refresh_reply_count(const char* bname, int gid) {
     }
     BBS_END;
     
-    memcpy(&lastfh, lastpost, sizeof(struct fileheader));
+    if(lastpost)
+        memcpy(&lastfh, lastpost, sizeof(struct fileheader));
     
     end_mmapfile((void *)head, buf.st_size, -1);
     close(fd);
