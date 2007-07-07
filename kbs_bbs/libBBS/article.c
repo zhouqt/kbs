@@ -1015,6 +1015,7 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
     {
 	    postfile.accessed[0] |= FILE_MARKED;
 	    postfile.accessed[1] |= FILE_READ;
+        set_posttime(&postfile);
 	    add_top(&postfile, toboard -> filename, 0);
     }
 #endif /* SMTH */
