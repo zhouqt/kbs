@@ -72,6 +72,9 @@ if (isset($_GET['act'])) {
 				case -6:
 					html_error_quit("请输入封禁理由");
 					break;
+				case -7:
+					html_error_quit($userid."没有在本版的发表权限, 不能封禁");
+					break;
 				default:
 			}
 			break;
