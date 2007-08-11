@@ -11,6 +11,8 @@
 #define MAXUSRBM 16
 #define MAXCHECK MAXBOARD*3
 
+bool onlynormal = false;
+
 typedef int cmpfunc(const void *, const void *);
 
 typedef struct {
@@ -125,19 +127,36 @@ void checkBMs(void)
     char *nulstr = "";
     int i, j, uid, brd, dftime, warningBM = 0;
     int fgc = 37, bgc = 44;
+    int fc1, fc2, bc1, bc2;
     time_t now;
     BMInfo *pBM;
 
+    if(onlynormal) {
+        fc1 = 30;
+        bc1 = 42;
+        fc2 = 34;
+        bc2 = 43;
+    }
+    else {
+        fc1 = 37;
+        bc1 = 44;
+        fc2 = 31;
+        bc2 = 46;
+    }
+    fgc = fc1;
+    bgc = bc1;
+
     now = time(NULL);           /*  current time stamp  */
+    fprintf(stdout, "%s\n", onlynormal ? "公开版面" : "所有版面");
     sprintf(lbuf, fmt, fgc, bgc, "用户代号", "任职版面", "最近上站时间", "距今天数");
     fprintf(stdout, "\033[m\n%s\n", lbuf);
     for (i = 0; i < nBMCount; i++) {
         if (i % 2) {
-            fgc = 37;
-            bgc = 44;
+            fgc = fc1;
+            bgc = bc1;
         } else {
-            fgc = 31;
-            bgc = 46;
+            fgc = fc2;
+            bgc = bc2;
         }
 
         pBM = &(pBMInfo[i]);
@@ -190,7 +209,12 @@ int main(int argc, char **argv)
             fprintf(stderr, "BBSHOME too long...\n");
             exit(-1);
         }
-        sprintf(bhome, "%s/", argv[1]);
+        if(strcmp(argv[1], "-n") == 0) {
+            onlynormal = true;
+            *bhome = 0;
+        }
+        else
+            sprintf(bhome, "%s/", argv[1]);
     } else
         *bhome = 0;
     sprintf(passfile, "%s%s", bhome, PASSFILE);
@@ -200,6 +224,8 @@ int main(int argc, char **argv)
             continue;           /* invalid board    */
         if (bcache[i].BM[0] <= ' ')
             continue;           /* no board manager */
+        if(onlynormal && !normal_board(bcache[i].filename))
+            continue;
         strcpy(tbuf, bcache[i].BM);
         ptr = strtok(tbuf, " ");
         while (ptr) {
