@@ -2583,7 +2583,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
                 fprintf(se, "电子邮件信箱 : %s\n", ud.email);
                 if (strstr(str, "自动处理程序"))
                 	fprintf(se, "真实 E-mail  : %s$%s@SYSOP\n", fdata[3], fdata[5]);
-		else	
+                else
                 	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], session->currentuser->userid);
                 fprintf(se, "服务单位     : %s\n", fdata[3]);
                 fprintf(se, "目前住址     : %s\n", fdata[4]);
@@ -2595,14 +2595,14 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
                 fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);
                 fprintf(se, "生    日     : %s\n", fdata[6]);
                 if (strstr(str,"拒绝"))
-                	fprintf(se, "\033[1;32m自动拒绝理由 : %s\033[m\n", fdata[7]);
+                	fprintf(se, (strstr(str, "自动处理程序") ? "\033[1;32m自动拒绝理由 : %s\033[m\n" : "\033[1;32m拒绝理由 : %s\033[m\n"), fdata[7]);
                 /*
                  * fprintf(se, "\n\033[33m以下是认证者个人资料\033[35m");
                  * getuinfo(se, session->currentuser);rem by Haohmaru.99.4.16 
                  */
                 fclose(se);
                 if (strstr(str,"拒绝"))
-                	post_file(session->currentuser, "", fname, "reject_registry", str, 0, 1, session);     
+                	post_file(session->currentuser, "", fname, "reject_registry", str, 0, (strstr(str, "自动处理程序") ? 1 : 2), session);     
                 else
                 {
 	                if (strstr(str, "自动处理程序"))
