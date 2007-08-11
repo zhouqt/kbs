@@ -294,10 +294,15 @@ int show_boardinfo(const char *bname)
     /* END -- etnlegend, 查询版面限制属性显示 ... */
 
     move(t_lines - 1, 0);
-    prints("\033[m\033[44m        添加到个人定制区[\033[1;32ma\033[m\033[44m]");
+    if (check_read_perm(getCurrentUser(), bp))
+        prints("\033[m\033[44m        添加到个人定制区[\033[1;32ma\033[m\033[44m]");
+    else
+        prints("\033[m\033[44m ");
     clrtoeol();
     resetcolor();
     ch = igetkey();
+    if (!check_read_perm(getCurrentUser(), bp))
+        return 1;
     switch(toupper(ch)) {
     case 'A':
 	{
@@ -995,7 +1000,7 @@ static int fav_key(struct _select_def *conf, int command)
             char buf[STRLEN]; /* etnlegend: 这个要放在前面... */
             if(!HAS_PERM(getCurrentUser(),PERM_SYSOP|PERM_OBOARDS)||ptr->dir)
                 break;
-            if(!strcmp(ptr->name,"syssecurity")||!strcmp(ptr->name,"Filter"))
+            if(!strcmp(ptr->name,"syssecurity")||!strcmp(ptr->name,FILTER_BOARD))
                 break;          /* Leeward 98.04.01 */
             move(t_lines-1,0);clrtoeol();
             if(checkreadonly(ptr->name)){   /* 判断版面如果是只读就取消, 否则就只读 */
@@ -1034,7 +1039,7 @@ static int fav_key(struct _select_def *conf, int command)
             break;
         do{
             int bid;
-            if(!(bid=getbnum_safe(ptr->name,getSession()))){
+            if(!(bid=getbnum_safe(ptr->name,getSession(), 1))){
                 move(t_lines-1,0);
                 clrtoeol();
                 prints("\033[1;33m%s\033[0;33m<Enter>\033[m","您不具有修改该版面的权限!");
@@ -1237,7 +1242,7 @@ static int fav_key(struct _select_def *conf, int command)
             prints("输入讨论区英文名 (大小写皆可，按空白键或Tab键自动搜寻): ");
             clrtoeol();
 
-            make_blist(0);
+            make_blist(0, 1);
             in_do_sendmsg=1;
             if(namecomplete(NULL,bname)=='#')
                 super_select_board(bname);
@@ -1245,7 +1250,7 @@ static int fav_key(struct _select_def *conf, int command)
 
             CreateNameList();   /*  free list memory. */
             if (*bname)
-                i = getbnum_safe(bname,getSession());
+                i = getbnum_safe(bname,getSession(), 1);
             if (i==0)
                 return SHOW_REFRESH;
         	ret = fav_add_board(i, arg->favmode, getSession()->favnow);
@@ -1283,7 +1288,7 @@ static int fav_key(struct _select_def *conf, int command)
             	prints("输入讨论区英文名 (大小写皆可，按空白键或Tab键自动搜寻): ");
             	clrtoeol();
 
-            	make_blist(0);
+            	make_blist(0, 1);
             	in_do_sendmsg=1;
             	if(namecomplete(NULL,bname)=='#')
                 	super_select_board(bname);
@@ -1291,7 +1296,7 @@ static int fav_key(struct _select_def *conf, int command)
 
             	CreateNameList();   /*  free list memory. */
             	if (*bname)
-                	i = getbnum_safe(bname,getSession());
+                	i = getbnum_safe(bname,getSession(), 1);
             	if (i==0)
 					return SHOW_REFRESH;
 

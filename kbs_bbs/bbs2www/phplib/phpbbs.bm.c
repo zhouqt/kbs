@@ -316,13 +316,14 @@ PHP_FUNCTION(bbs_denyusers)
  * add user to deny list
  * function bbs_denyadd(char* board,char* userid,char* exp,int denyday,int manual_deny);
  *  @return the result
- *     0 : seccess
+ *     0 : success
  *     -1: board NOT exist
  *     -2: do NOT have permission
  *     -3: user NOT exist
  *     -4: already in list
  *     -5: time long error
  *     -6: need denymsg
+ *     -7: user CAN'T post here
  *  @author: windinsn
  */
 PHP_FUNCTION(bbs_denyadd)
@@ -352,6 +353,8 @@ PHP_FUNCTION(bbs_denyadd)
     if (getuser(userid,&lookupuser)==0)
         RETURN_LONG(-3);
     strcpy(userid,lookupuser->userid);
+    if (!haspostperm(lookupuser, brd -> filename))
+        RETURN_LONG(-7);
     if (deny_me(userid, board))
 	    RETURN_LONG(-4);  
 

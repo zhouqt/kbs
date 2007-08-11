@@ -721,7 +721,7 @@ int m_editbrd(void){
     clear();
     move(0,0);prints("\033[1;32m修改讨论区说明与设定\033[m");
     move(1,0);clrtobot();
-    make_blist(0);
+    make_blist(0, 1);
     
     in_do_sendmsg=1;
     i = namecomplete("请输入讨论区名称: ",buf);
@@ -765,7 +765,7 @@ int m_editbrd(void){
             WAIT_RETURN;clear();
             return -1;
         }
-        pos = getbnum_safe(buf,getSession());
+        pos = getbnum_safe(buf,getSession(), 1);
         if(!pos){
             move(2,0);prints("错误的讨论区名称!");
             WAIT_RETURN;clear();
@@ -1311,7 +1311,7 @@ int modify_board(int bid){
                 if(*buf==' ')
                     newbh.group=0;
                 else{
-                    i=getbnum_safe(buf,getSession());
+                    i=getbnum_safe(buf,getSession(), 1);
                     if(!i){
                         move(13,0);clrtoeol();getdata(13,2,"\033[1;31m错误: 输入的讨论区不存在!\033[m",buf,1,NOECHO,NULL,true);
                         break;
@@ -2446,6 +2446,15 @@ if (ret==-2) {
                     if (buf[0] >= '0' && buf[0] < '0' + n) {
                         strcpy(buf, reason[buf[0] - '0']);
                     }
+#ifdef AUTO_CHECK_REGISTER_FORM
+                    if (ret == -2) {
+#endif
+                    sprintf(genbuf, "%s 拒绝 %s 的身份确认.", uid, uinfo.userid);
+                    strncpy(fdata[7], buf, STRLEN - 1);
+                    securityreport(genbuf, lookupuser, fdata, getSession());
+#ifdef AUTO_CHECK_REGISTER_FORM
+                    }
+#endif
                 
 #ifdef AUTO_CHECK_REGISTER_FORM
                    if (ret==-2)
@@ -2773,7 +2782,7 @@ int set_BM(void){
     clear();
     stand_title("任免版主");
     move(1,0);
-    make_blist(0);
+    make_blist(0, 1);
     namecomplete("输入讨论区名称: ",bname);
     if(!*bname){
         move(2,0);

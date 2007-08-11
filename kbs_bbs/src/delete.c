@@ -38,7 +38,7 @@ int d_board(void){
     }
     clear();
     stand_title("删除讨论区");
-    make_blist(0);
+    make_blist(0, 1);
     move(1, 0);
     namecomplete("请输入讨论区: ", bname);
     if (bname[0] == '\0')

@@ -1312,7 +1312,7 @@ void showtitle(const char *title, const char *mid){
     if(currboard)
 	    sprintf(note,"ÌÖÂÛÇø [%s]",currboard->filename);
     else{
-        currboardent=getbnum_safe(DEFAULTBOARD,getSession());
+        currboardent=getbnum_safe(DEFAULTBOARD,getSession(), 1);
         currboard=(struct boardheader*)getboard(currboardent);
         if(!currboard){
             currboardent=0;

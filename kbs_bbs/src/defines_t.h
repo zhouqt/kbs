@@ -140,7 +140,7 @@ int check_stuffmode();
 int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int do_reply(struct _select_def* conf,struct fileheader *fileinfo);
 int do_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
-void make_blist(int addfav);
+void make_blist(int addfav, int mode);
 int digest_post(int ent, struct fileheader *fhdr, char *direct);
 int mark_post(int ent, struct fileheader *fhdr, char *direct);
 int process_upload(int nUpload, int maxShow, char *ans, struct ea_attach_info* ai);

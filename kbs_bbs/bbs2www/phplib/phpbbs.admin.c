@@ -326,7 +326,7 @@ PHP_FUNCTION(bbs_admin_getboardparam) {
         WRONG_PARAM_COUNT;
     }
     
-    bid = getbnum_safe(boardname, getSession());
+    bid = getbnum_safe(boardname, getSession(), 1);
     if(!bid) {
         RETURN_LONG(-1);
     }
@@ -394,7 +394,7 @@ PHP_FUNCTION(bbs_admin_setboardparam) {
     strncpy(newbh.des, des, 194);
     newbh.flag = (unsigned int)flag;
     if(parentbname[0] != '\0') {
-        parentbid = getbnum_safe(parentbname, getSession());
+        parentbid = getbnum_safe(parentbname, getSession(), 1);
         if(!parentbid) {
             // 所属目录不存在
             RETURN_LONG(-4);

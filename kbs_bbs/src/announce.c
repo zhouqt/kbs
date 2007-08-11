@@ -462,7 +462,7 @@ char *path;
 	    pathslice = strtok_r( NULL , pathdelim , &savept);
 	    pathnum ++ ;
 	}
-	objectbid = getbnum_safe(pathslice, getSession());
+	objectbid = getbnum_safe(pathslice, getSession(), 1);
 	if (!objectbid) return 0; //不可见版面 ? - atppp 20051118
 	objectboard = getboard(objectbid);
 	if (chk_currBM(objectboard->BM, getCurrentUser()))
@@ -578,12 +578,12 @@ int level;
         a_prompt(-1, "输入欲搜寻之讨论区名称: ", key);
     }
 
-    setbpath(bpath, key);
+    if ((num = getbid(key, &fhdr)) == 0)
+        return 0;
+    setbpath(bpath, fhdr -> filename);
     if ((*key == '\0') || (stat(bpath, &st) == -1))     /* 判断board是否存在 */
         return 0;
     if (!S_ISDIR(st.st_mode))
-        return 0;
-    if ((num = getbid(key, &fhdr)) == 0)
         return 0;
 
 
@@ -1505,7 +1505,7 @@ void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
 	board[0]='\0';
 
     ann_get_board(m->path, board, sizeof(board));
-	if(board[0] =='\0' || (bid=getbnum_safe(board,getSession()))==0){
+	if(board[0] =='\0' || (bid=getbnum_safe(board,getSession(), 1))==0){
         snprintf(buf,buf_len-9,"http://%s/%s?path=%s/%s",
           get_my_webdomain(0), phpname, m->path+10, M_ITEM(m,m->now)->fname);
 	  return;

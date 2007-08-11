@@ -160,16 +160,17 @@ void printutitle()
 
 int g_board_names(struct boardheader *fhdrp,void* arg)
 {
-    if (check_read_perm(getCurrentUser(), fhdrp)) {
+    int mode = *((int *) arg);
+    if (((mode == 1) && check_read_perm(getCurrentUser(), fhdrp)) || ((mode == 2) && check_see_perm(getCurrentUser(), fhdrp))) {
         AddNameList(fhdrp->filename);
     }
     return 0;
 }
 
-void make_blist(int addfav)
+void make_blist(int addfav, int mode)
 {                               /* 所有版 版名 列表 */
     CreateNameList();
-    apply_boards((int (*)()) g_board_names,NULL);
+    apply_boards((int (*)()) g_board_names, &mode);
 	if(addfav){
 		int i;
 		for( i=0; i<bdirshm->allbrd_list_t; i++){
@@ -220,13 +221,13 @@ int get_a_boardname(char *bname, char *prompt)
      * struct boardheader fh; 
      */
 
-    make_blist(0);
+    make_blist(0, 1);
     namecomplete(prompt, bname);        /* 可以自动搜索 */
     if (*bname == '\0') {
         return 0;
     }
     /*---	Modified by period	2000-10-29	---*/
-    if (getbnum_safe(bname,getSession()) <= 0)
+    if (getbnum_safe(bname,getSession(), 1) <= 0)
         /*---	---*/
     {
         move(1, 0);
@@ -1786,7 +1787,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     else
         prints("请输入讨论区名称 [\033[1;32m%s\033[m]: ",currboard->filename);
 
-    make_blist(addfav);               /* 生成所有Board名 列表 */
+    make_blist(addfav, 1);               /* 生成所有Board名 列表 */
 	in_do_sendmsg=true;
     if((ret=namecomplete(NULL,bname))=='#'){ /* 提示输入 board 名 */
 		super_select_board(bname);
@@ -1810,7 +1811,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	}
 
     setbpath(bpath,bname);
-    if(!dashd(bpath)||!(bid=getbnum_safe(bname,getSession()))){
+    if(!dashd(bpath)||!(bid=getbnum_safe(bname,getSession(), 1))){
         move(2,0);clrtoeol();
         prints("\033[1;37m%s\033[0;33m<ENTER>\033[m","错误的讨论区名称...");
         WAIT_RETURN;
@@ -1854,10 +1855,10 @@ int board_query()
 	prints("请输入您要查询的版面英文名称，按空格键或Tab键补齐。");
 	move(1,0);
 	prints("版面查询：");
-	make_blist(0);
+	make_blist(0, 2);
 	namecomplete(NULL, bname);
 	if(*bname!='\0') {
-        bid = getbnum_safe(bname,getSession());
+        bid = getbnum_safe(bname,getSession(), 2);
         if (bid == 0)
     	{
             move(2, 0);
@@ -5135,7 +5136,7 @@ static int split_thread_me(struct _select_def* conf, struct fileheader* fh,int e
     return ret;
 }
 
-static int split_thread(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+int split_thread(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
     int ent;
     char buf[STRLEN];
@@ -5175,6 +5176,29 @@ static int split_thread(struct _select_def* conf, struct fileheader* fh, void* e
     arg->writearg=NULL;
     conf->pos=ent; /*恢复原来的ent*/
 
+    /* restore .ORIGIN when splitted, fancyrabbit Jul 10 2007 */
+    if (!(setboardorigin(arg -> board -> filename, -1)))
+    {
+        int fd;
+        setbdir(DIR_MODE_ORIGIN, buf, arg -> board -> filename);
+        if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1)
+        {
+            char buff[256];
+            fh -> reid = fh -> id;
+            fh -> groupid = fh -> id;
+            if (!strncmp(fh -> title, "Re: ", 4))
+            {
+                strncpy(buff, fh -> title + 4, 256);
+                strcpy(fh -> title, buff);
+            }
+            if (!(mmap_search_apply(fd, fh, insert_func)))
+                setboardorigin(arg -> board -> filename, 1);
+            close(fd);
+        }
+    }
+    else
+        board_regenspecial(arg -> board -> filename, DIR_MODE_ORIGIN, NULL);
+    /* .ORIGIN restored */
     return DIRCHANGED;
 }
 
@@ -5387,7 +5411,7 @@ int Read()
         return -1;
     }
     in_mail = false;
-    bid = getbnum_safe(currboard->filename,getSession());
+    bid = getbnum_safe(currboard->filename,getSession(), 1);
 
     currboardent=bid;
     currboard=(struct boardheader*)getboard(bid);

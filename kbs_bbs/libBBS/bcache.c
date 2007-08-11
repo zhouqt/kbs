@@ -306,13 +306,12 @@ int get_manageable_bids(struct userec *user, char *buf, int buflen)
 
 
 
-
-int getbnum_safe(const char *bname, session_t *session)
+int getbnum_safe(const char *bname, session_t *session, const int mode)
 {
     register int i;
 
     for (i = 0; i < brdshm->numboards; i++)
-        if (check_read_perm(session->currentuser,&bcache[i]))
+        if ((((mode == 1) && check_read_perm(session->currentuser,&bcache[i]))) || ((mode == 2) && check_see_perm(session -> currentuser, &bcache[i])))
             if (!strncasecmp(bname, bcache[i].filename, STRLEN))
                 return i + 1;
     return 0;

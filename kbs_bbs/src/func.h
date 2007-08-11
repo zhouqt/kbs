@@ -280,7 +280,7 @@ void unlock_sem_check(int lockid);
 /* define in bcache.c */
 	void flush_bcache(); /* 同步bcache*/
     void board_setcurrentuser(int idx,int num); /*设置在线用户计数*/
-    int getbnum_safe(const char *bname, session_t *session);
+    int getbnum_safe(const char *bname, session_t *session, const int mode);
     void resolve_boards(ARG_VOID);
     int get_boardcount(ARG_VOID);
     const struct boardheader *getbcache(const char *bname);
@@ -425,6 +425,7 @@ void unlock_sem_check(int lockid);
     typedef int (*search_handler_t) (int fd, fileheader_t * base, int ent, int total, bool match, void *arg);
     int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
     int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func);
+    int insert_func(int fd, struct fileheader *start, int ent, int total, struct fileheader *data, bool match);
     int get_effsize(char * ffn);
     int get_effsize_attach(char *ffn, unsigned int *att);
 	

@@ -436,7 +436,7 @@ int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, sessio
     return 0;   /* success */
 }
 
-static int insert_func(int fd, struct fileheader *start, int ent, int total, struct fileheader *data, bool match)
+int insert_func(int fd, struct fileheader *start, int ent, int total, struct fileheader *data, bool match)
 {
     int i;
     struct fileheader UFile;

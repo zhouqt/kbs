@@ -438,6 +438,15 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
                 pressreturn();
                 goto Here;
             }
+            /* fancyrabbit Jul 20 2007, 不准封该版不能发文的 ... */
+            if (!haspostperm(denyuser, currboard -> filename))
+            {
+                move(3, 0);
+                prints("%s 没有在本版的发表权限, 不能封禁", uident);
+                clrtoeol();
+                pressreturn();
+                goto Here; /* I hate goto too! */
+            }
             
             if (*uident != '\0') {
                 addtodeny(uident);
