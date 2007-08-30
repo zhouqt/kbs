@@ -187,7 +187,11 @@ int exec_mbem(const char *command){
     char buf[1024],*p,*q;
     int orig_mode=-1;
     void *dll;
-    if(HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&!HAS_PERM(getCurrentUser(),(PERM_SYSOP|PERM_ADMIN)))
+    if(HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&!HAS_PERM(getCurrentUser(),(PERM_SYSOP|PERM_ADMIN))
+#ifdef NEWSMTH
+            && !strstr(command, "@mod:admin/")
+#endif
+    )
         EM_QUIT("您目前不具有休闲娱乐权限, 无法执行此项操作...");
     strcpy(buf,command);
     if(!(p=strstr(buf,"@mod")))

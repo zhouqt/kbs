@@ -2969,7 +2969,14 @@ int edit_board_delete_read_perm(void){
         return -1;
     }
     if(!HAS_PERM(user,PERM_BOARDS)||!user->title){
-        prints("%s\033[0;33m<Enter>\033[m","所选择用户不具有访问特定版面回收站的权限和身份...");
+        sethomefile(datafile, user -> userid, "board_delete_read");
+        if (!stat(datafile, &st))
+        {
+            unlink(datafile);
+            prints("%s\033[0;33m<Enter>\033[m", "所选择用户原访问列表已清空 ...");
+        }
+        else
+            prints("%s\033[0;33m<Enter>\033[m","所选择用户不具有访问特定版面回收站的权限和身份...");
         WAIT_RETURN;
         clear();
         return -1;

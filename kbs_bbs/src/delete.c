@@ -164,7 +164,8 @@ int suicide(void){
 
         /*kick_user(&uinfo);
            exit(0); */
-        abort_bbs(0);
+        /*abort_bbs(0);*/
+        kick_user_utmp(getSession() -> currentuid, NULL, 0);
     }
     return 0;
 }
@@ -332,7 +333,10 @@ int giveupnet(void){
         prints("\n\n你已经开始戒网了");
         pressanykey();
         if (ans[0] == '1')
-            abort_bbs(0);
+        {
+            //abort_bbs(0);
+            kick_user_utmp(getSession() -> currentuid, NULL, 0);
+        }
     }
     return 0;
 }

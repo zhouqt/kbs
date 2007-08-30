@@ -1565,9 +1565,13 @@ int modify_userinfo(int uid,int mode){
                             break;
                         }
                         j=atoi(buf);
-                        if((nuser.score_user+j)<0)
-                            nuser.score_user=0;
-                        nuser.score_user+=j;
+                        /* fancyrabbit Aug 30 2007, 积分不能给扣负了 ... */
+                        /*if((nuser.score_user+j)<0)
+                            nuser.score_user=0;*/
+                        if ((nuser.score_user += j) > INT_MAX)
+                            nuser.score_user = 0;
+                        else
+                            nuser.score_user+=j;
                     }
                     else{
                         if(!mu_digit_string(buf)){
