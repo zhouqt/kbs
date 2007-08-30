@@ -708,7 +708,7 @@ static int kickuser_count(struct user_info *uentp, int *arg, int pos){
 }
 /* uentp == NULL means to kick all logins */
 int kick_user_utmp(int uid, struct user_info *uentp, int signal) {
-    int i;
+    int i, currsave;
     struct kickuser_save s;
     s.count = 0;
     signal = signal ? signal: SIGHUP;
@@ -720,12 +720,28 @@ int kick_user_utmp(int uid, struct user_info *uentp, int signal) {
         s.pid[0] = uentp->pid;
         s.count = 1;
     }
+    currsave = -1;
     for(i=0;i<s.count;i++) {
         struct user_info *enp = s.entp[i];
         if (enp->active) {
-            if (enp->pid != 1)
+            if (enp -> pid == getpid() && s.count > 1)
+            {
+                currsave = i;
+                continue;
+            }
+            else if (enp->pid != 1)
                 kill(enp->pid, signal);
             clear_utmp(get_utmpent_num(enp), uid , s.pid[i]);
+        }
+    }
+    if (currsave != -1)
+    {
+        struct user_info *enp = s.entp[currsave];
+        if (enp -> active)
+        {
+            if (enp -> pid != 1)
+                kill(enp -> pid, signal);
+            clear_utmp(get_utmpent_num(enp), uid, s.pid[currsave]);
         }
     }
     return s.count;
