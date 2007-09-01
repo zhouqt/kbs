@@ -1570,8 +1570,6 @@ int modify_userinfo(int uid,int mode){
                             nuser.score_user=0;*/
                         if ((nuser.score_user += j) > INT_MAX)
                             nuser.score_user = 0;
-                        else
-                            nuser.score_user+=j;
                     }
                     else{
                         if(!mu_digit_string(buf)){
