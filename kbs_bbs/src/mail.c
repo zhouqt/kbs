@@ -350,6 +350,8 @@ int do_send(char *userid, char *title, char *q_file)
     if (!strchr(userid, '@')) {
         if (getuser(userid, &user) == 0)
             return -1;
+        /* fancyrabbit Sep 14 2007, fixed replied mail lost bug after modifying ID-case */
+        sprintf(userid, user -> userid);
         ret = check_mail_perm(getCurrentUser(), user);
 
         switch(ret) {

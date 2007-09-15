@@ -2017,9 +2017,10 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
         ptr=(const struct fileheader*)cptr;
         count=size/sizeof(struct fileheader);
         for(selected=0,i=0;i<count;i++){
+            /* fancyrabbit Sep 14 2007, case insensitive ba ... */
             if(getCurrentUser()->firstlogin
                 &&(get_posttime(&ptr[i])>getCurrentUser()->firstlogin)
-                &&!strcmp(ptr[i].owner,getCurrentUser()->userid)){
+                &&!strcasecmp(ptr[i].owner,getCurrentUser()->userid)){
                 info=ptr[i];
                 strnzhcpy(info.title,ptr[i].title,34);
                 for(p=&info.title[32];p>info.title&&*p==' ';p--)
