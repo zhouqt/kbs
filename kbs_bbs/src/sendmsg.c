@@ -465,6 +465,9 @@ void r_msg()
     int hasnewmsg;
     int savemode;
 
+    if(!HAS_PERM(getCurrentUser(), PERM_BASIC))
+        return;
+    
     noscroll();
     savemode=uinfo.mode;
     modify_user_mode(MSGING);

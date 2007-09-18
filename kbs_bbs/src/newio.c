@@ -642,7 +642,7 @@ int igetkey()
 
 #if defined(SMTH) || defined(FREE)
 	if (scrint&&ch==Ctrl('V')) {
-            if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=LOCKSCREEN&&!dicting){
+            if (getCurrentUser()&&HAS_PERM(getCurrentUser(),PERM_BASIC)&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=LOCKSCREEN&&!dicting){
 				dicting=1;
 	            exec_mbem("@mod:service/libdict.so#dict_main");
 				dicting=0;

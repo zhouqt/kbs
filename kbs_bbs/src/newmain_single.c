@@ -1090,8 +1090,8 @@ void main_bbs(int convit, char *argv)
 #ifdef NEWSMTH
     // 如果是戒了登录的，可以进去积分商店自助解除之。 Sep 2007 pig2532
     if(strcmp(getCurrentUser()->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_BASIC)) {
-        domenu("NOTHING");
-        Goodbye();
+        while(true)
+            domenu("NOTHING");
         exit(0);
     }
 #endif /* NEWSMTH */
