@@ -596,19 +596,26 @@ void login_query()
     oflush();
     if (strcasecmp(getCurrentUser()->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_BASIC)) {
         int s[GIVEUPINFO_PERM_COUNT];
+        bool can_in = false;
         get_giveupinfo(getCurrentUser(),s);
         if(!s[0])
             prints("\033[1;33m系统错误或您已经被封禁登录权限, 请设法联系 \033[1;32mSYSOP\033[1;33m 获知原因...\033[m\n");
         else{
             i=(int)(((s[0]<0)?(-s[0]):s[0])-(time(NULL)/86400));
-            if(s[0]>0)
+            if(s[0]>0) {
                 prints("\033[1;33m您已经处于戒网(登录)状态, 目前距离戒网结束 %d 天...\033[m\n",i);
+                can_in = true;
+            }
             else
                 prints("\033[1;33m你已经被封禁登录权限, 目前距离封禁结束 %d 天...\033[m\n",i);
         }
         oflush();
         sleep(1);
-        exit(1);
+#ifdef NEWSMTH
+        // 戒登录的用户仍然可以进去。 Sep 2007 pig2532
+        if(!can_in)
+#endif /* NEWSMTH */
+            exit(1);
     }
 #ifdef DEBUG
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
@@ -1079,6 +1086,16 @@ void main_bbs(int convit, char *argv)
         abort_bbs(0);
     }
     login_query();
+
+#ifdef NEWSMTH
+    // 如果是戒了登录的，可以进去积分商店自助解除之。 Sep 2007 pig2532
+    if(strcmp(getCurrentUser()->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_BASIC)) {
+        domenu("NOTHING");
+        Goodbye();
+        exit(0);
+    }
+#endif /* NEWSMTH */
+    
     user_login();
 //    m_init();
     clear();
