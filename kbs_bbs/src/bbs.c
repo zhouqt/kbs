@@ -4185,7 +4185,7 @@ int Goodbye(void){                      /*ÀëÕ¾ Ñ¡µ¥ */
         {-1, -1, -1, 0, NULL}
     };
 
-    if(!HAS_PERM(getCurrentUser(), PERM_BASIC))
+    if(strcmp(getCurrentUser()->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_BASIC))
         exit(0);
     
     level_conf[0].x = left + 7;
