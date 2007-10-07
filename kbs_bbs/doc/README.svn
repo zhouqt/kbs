@@ -1,3 +1,50 @@
-$Id: README.cvs 9685 2006-10-15 05:57:31Z atppp $
+$Id$
 
-这里要写点啥……
+KBS 开发组 SVN 服务器说明
+
+1. KBS svn 访问
+
+目前暂定为 8080 端口。
+匿名访问地址为 http://svn.kcn.cn:8080/repos/kbs/trunk 
+
+目前 kbs 代码主分支为 kbsbbs-2.0 的开发版本。
+
+相关的 modules:
+kbs_bbs:  主程序代码
+www2   :  Web 部分
+sshbbsd:  ssh 接口的代码
+bbshome:  一个 bbs 站点例子，特别注意这个模块是建新站必须的
+innbbsd:  转信程序
+
+其中 sshbbsd, bbshome, innbbsd 都应该在 kbs_bbs 目录下 checkout
+www2 应该在 web 主目录下 checkout，请参见相关安装文档。
+
+获得代码之后生成 configure 文件：在 kbs_bbs, sshbbsd 目录下分别运行
+    ./autogen.sh
+之后，就可以按照正常方式安装使用 BBS 代码了。
+
+获得主分支代码的命令参考：
+export SVNROOT="http://svn.kcn.cn:8080/repos/kbs/trunk"
+svn co "$SVNROOT/kbs_bbs"
+cd kbs_bbs
+svn co "$SVNROOT/sshbbsd"
+svn co "$SVNROOT/innbbsd"
+svn co "$SVNROOT/bbshome"
+./autogen.sh
+cd sshbbsd; ./autogen.sh;
+
+在 Windows 操作系统上，可以先安装 TortoiseSVN 软件，然后用上面的
+匿名访问地址下载 KBS 的最新代码。
+
+
+
+2. KBS trac 访问
+
+目前还在补充各种文档中，以后可以从上面了解 KBS 的文档、开发计划和
+开发进度等信息。直接在浏览器中输入下面的地址：
+           http://trac.kcn.cn/kbs/
+
+
+
+
+
