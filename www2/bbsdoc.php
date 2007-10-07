@@ -130,7 +130,7 @@ document.write('<tr><td align="center" colspan="<?php echo ($managemode?6:5); ?>
 c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo $article["OWNER"]; ?>',<?php
 		$flags = $article["FLAGS"];
 		echo "'" . $flags[0] . $flags[3] . "'";
-?>,<?php echo $article["POSTTIME"]; ?>,'<?php echo htmlspecialchars($article["TITLE"], ENT_QUOTES); ?> ',<?php echo $article["EFFSIZE"]; ?>,<?php echo ($flags[1]=="y")?"1":"0"; ?>);
+?>,<?php echo $article["POSTTIME"]; ?>,'<?php echo addslashes(htmlspecialchars($article["TITLE"], ENT_QUOTES)); ?> ',<?php echo $article["EFFSIZE"]; ?>,<?php echo ($flags[1]=="y")?"1":"0"; ?>);
 <?php
 	}
 ?>
