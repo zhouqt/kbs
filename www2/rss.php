@@ -38,12 +38,10 @@ if ($type == "g") {
 	$ftype = $dir_modes["MARK"];
 	$title = $desc = "保留区";
 	bbs_checkmark($board);
-/*
 } else if ($type == "o") {
 	$ftype = $dir_modes["ORIGIN"];
 	$title = "";
 	$desc = "主题";
-*/
 } else {
 	die; //TODO?
 }
