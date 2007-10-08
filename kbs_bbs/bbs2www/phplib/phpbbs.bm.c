@@ -82,9 +82,9 @@ PHP_FUNCTION(bbs_bmmanage)
     /* if in DELETED mode, num is transfered instead of id at parameter "id" */
     int ac = ZEND_NUM_ARGS();
     if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &board_len, &id, &mode, &zhiding) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-	
+        WRONG_PARAM_COUNT;
+    }
+
     bid = getbid(board, &bh);
     if (!bid) RETURN_LONG(-1);
     strcpy(board,bh->filename);
@@ -119,13 +119,13 @@ PHP_FUNCTION(bbs_bmmanage)
         if (fd < 0) 
             RETURN_LONG(-3);
         while (1) {
-    	    if (read(fd,&f, sizeof(struct fileheader)) <= 0)
-    		    break;               
-    	    if (f.id==id) {
-    		    find=1;
-    		    break;
-    	    }
-    	    ent++;
+            if (read(fd,&f, sizeof(struct fileheader)) <= 0)
+                break;               
+            if (f.id==id) {
+                find=1;
+                break;
+            }
+            ent++;
         }
         close(fd);
         if (!find)
@@ -194,31 +194,31 @@ PHP_FUNCTION(bbs_bmmanage)
             flag = FILE_DING_FLAG;
             data.accessed[0] = f.accessed[0]; // to reserve flags. hack! - atppp
         }
-	else if (mode == 7)
-	    flag = FILE_PERCENT_FLAG;
-	else if (mode == 8)
-	    flag = FILE_DELETE_FLAG;
-	else if (mode == 9)
-	    flag = FILE_SIGN_FLAG;
-    else if ((mode == 10) || (mode == 11))
-    {
-        ret = ann_article_import((mode == 10) ? board : NULL, f.title, f.filename, getCurrentUser()->userid);
-        if (ret < 0)
+        else if (mode == 7)
+            flag = FILE_PERCENT_FLAG;
+        else if (mode == 8)
+            flag = FILE_DELETE_FLAG;
+        else if (mode == 9)
+            flag = FILE_SIGN_FLAG;
+        else if ((mode == 10) || (mode == 11))
         {
-            RETURN_LONG(-9);
+            ret = ann_article_import((mode == 10) ? board : NULL, f.title, f.filename, getCurrentUser()->userid);
+            if (ret < 0)
+            {
+                RETURN_LONG(-9);
+            }
+            flag = FILE_IMPORT_FLAG;
         }
-        flag = FILE_IMPORT_FLAG;
-    }
-    else if (mode == 12) {    /* import */
-        a_Save(NULL, bh->filename, &f, true, NULL, 0, getCurrentUser()->userid);
-        ret = 0;
-    }
-    else if (mode == 13) {    /* import without head and qmd */
-        a_SeSave(NULL, bh->filename, &f, true, NULL, 0, 0, getCurrentUser()->userid);
-        ret = 0;
-    }
-	else
-            RETURN_LONG(-3);
+        else if (mode == 12) {    /* import */
+            a_Save(NULL, bh->filename, &f, true, NULL, 0, getCurrentUser()->userid);
+            ret = 0;
+        }
+        else if (mode == 13) {    /* import without head and qmd */
+            a_SeSave(NULL, bh->filename, &f, true, NULL, 0, 0, getCurrentUser()->userid);
+            ret = 0;
+        }
+        else
+                RETURN_LONG(-3);
         
         dirarg.filename = dir;  
         dirarg.ent = ent;
