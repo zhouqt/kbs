@@ -1,0 +1,23 @@
+这些是水木 2005 年从 32bit 转 64bit 时候的转换程序。
+现在的代码有了新的变化，使用这些程序需要特别确认各类结构的定义。
+代码仅供参考，请做好备份。
+
+需要转换的文件们：
+.BOARDS
+.PASSWDS
+用户目录 msgindex clockdata
+投票目录 vote
+
+
+
+另外：
+
+发信人: atppp (Big Mouse), 信区: ****
+标  题: 32bit->64bit innbbsd 启动故障备忘
+发信站: ****
+
+history.pag 数据结构有 long，32bit->64bit 会有问题
+解决办法，在文本格式的 history 文件开头手动添加一条远古的文章记录
+这样启动 innbbsd 会触发从 history 更新 history.pag
+
+
