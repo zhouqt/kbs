@@ -4,8 +4,7 @@ KBS 开发组 SVN 服务器说明
 
 1. KBS svn 访问
 
-目前暂定为 8080 端口。
-匿名访问地址为 http://svn.kcn.cn:8080/repos/kbs/trunk 
+匿名访问地址为 http://svn.kcn.cn/repos/kbs/trunk 
 
 目前 kbs 代码主分支为 kbsbbs-2.0 的开发版本。
 
@@ -24,7 +23,7 @@ www2 应该在 web 主目录下 checkout，请参见相关安装文档。
 之后，就可以按照正常方式安装使用 BBS 代码了。
 
 获得主分支代码的命令参考：
-export SVNROOT="http://svn.kcn.cn:8080/repos/kbs/trunk"
+export SVNROOT="http://svn.kcn.cn/repos/kbs/trunk"
 svn co "$SVNROOT/kbs_bbs"
 cd kbs_bbs
 svn co "$SVNROOT/sshbbsd"
