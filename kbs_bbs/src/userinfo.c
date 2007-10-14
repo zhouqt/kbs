@@ -1335,6 +1335,12 @@ int modify_userinfo(int uid,int mode){
                     setpasswd(&buf[80],&nuser);
                     snprintf(buf,MU_LENGTH,"%s",md5_mask);
                     MU_SET(1,user,md5passwd,str,"%s",buf);
+                    if (!i && strcasecmp(nuser.userid, ouser.userid))
+                    {
+                        nuser.firstlogin = time(NULL);
+                        MU_GET_TIME(nuser.firstlogin);
+                        MU_SET(11, user, firstlogin, val, "%s", buf);
+                    }
                     break;
                 case 2:
                     MU_SHOW_HINT(i);
@@ -1614,8 +1620,11 @@ int modify_userinfo(int uid,int mode){
             switch((i=(pos-1))){
                 case 0:
                 case 1:
-                    MU_RESET(i,user,userid);
-                    MU_RESET(i,user,md5passwd);
+                    /* fancyrabbit Sep 17 2007, should reset these values together, somewhat a dirty fix ...*/
+                    if (change & 0x01)
+                        MU_RESET(11, user, firstlogin);
+                    MU_RESET(0, user, userid);
+                    MU_RESET(1, user, md5passwd);
                     break;
                 case 2:
                     MU_RESET(i,user,username);
@@ -1649,6 +1658,11 @@ int modify_userinfo(int uid,int mode){
                     break;
                 case 11:
                     MU_RESET(i,user,firstlogin);
+                    if (change & 0x01)
+                    {
+                        MU_RESET(0, user, userid);
+                        MU_RESET(1, user, md5passwd);
+                    }
                     break;
                 case 12:
                     MU_RESET(i,user,lastlogin);
@@ -1727,7 +1741,7 @@ int modify_userinfo(int uid,int mode){
             return -7;
         }
         if(verify&0x01)
-            change&=(~0x03);
+            change&=(~0x803);
     }
     memcpy(&vuser,urec,sizeof(struct userec));
     if(read_userdata(urec->userid,&vdata)==-1){
@@ -1746,7 +1760,8 @@ int modify_userinfo(int uid,int mode){
     MU_EXEC(8,data,telephone);
     MU_EXEC(9,user,title);
     MU_EXEC(10,data,realemail);
-    MU_EXEC(11,user,firstlogin);
+    /* 挪下边去 ... */
+    /*MU_EXEC(11,user,firstlogin);*/
     MU_EXEC(12,user,lastlogin);
     MU_EXEC(13,user,lasthost);
     MU_EXEC(14,user,numlogins);
@@ -1791,9 +1806,15 @@ int modify_userinfo(int uid,int mode){
     }
     while(0);
     if(!i)
+    {
         MU_EXEC(1,user,md5passwd);
+#ifdef CONV_PASS
+        MU_EXEC(1, user, passwd);
+#endif
+    }
     else
-        change&=(~0x03);
+        change&=(~0x803);
+    MU_EXEC(11,user,firstlogin);
     memcpy(urec,&vuser,sizeof(struct userec));
     if(write_userdata(urec->userid,&vdata)==-1){
         MU_PUT((MU_ITEM+2),MU_MSG(R,"回写用户数据时发生致命错误..."));

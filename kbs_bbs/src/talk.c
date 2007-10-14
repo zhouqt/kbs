@@ -2014,7 +2014,7 @@ int badlist(void){
             if (!searchuser(userid)) {
                 prints("这个使用者代号是错误的.\n");
                 clear_press();
-            } else if (!strcasecmp(userid, getCurrentUser()->userid)) {
+            } else if ((tmp[0] == 'a' || tmp[0] == 'A') && !strcasecmp(userid, getCurrentUser()->userid)) {
                 prints("不能是自己的代号\n");
                 clear_press();
             } else {

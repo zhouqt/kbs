@@ -1567,7 +1567,7 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
     int fd,y,x,ret;
     void *map;
     const void *p;
-    if(!fh||!getuser(fh->owner,NULL)||!strcmp(fh->owner,getCurrentUser()->userid))
+    if(!fh||!getuser(fh->owner,NULL)||!strcasecmp(fh->owner,getCurrentUser()->userid))
         return DONOTHING;
     getyx(&y,&x);
     saveline(t_lines-2,0,linebuf);
