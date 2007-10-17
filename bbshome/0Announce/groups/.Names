@@ -2,26 +2,37 @@
 # Title=艺术文化
 #
 Name=电脑技术
+Attach=0
 Path=~/comp.faq
 Numb=1
 #
 Name=本站系统
+Attach=0
 Path=~/system.faq
 Numb=2
 #
 Name=休闲娱乐
+Attach=0
 Path=~/rec.faq
 Numb=3
 #
 Name=谈天说地
+Attach=0
 Path=~/talk.faq
 Numb=4
 #
 Name=其  他
+Attach=0
 Path=~/other.faq
 Numb=5
 #
 Name=艺术文化
+Attach=0
 Path=~/literal.faq
 Numb=6
+#
+Name=BBS 系统
+Attach=0
+Path=~/system.faq
+Numb=7
 #
