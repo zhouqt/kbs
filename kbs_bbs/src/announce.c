@@ -475,7 +475,7 @@ char *path;
 int a_Import(path, key, fileinfo, nomsg, direct, ent)
 char *path, *key;
 struct fileheader *fileinfo;
-int nomsg;
+int nomsg; /* fancyrabbit Oct 12 2007, nomsg == true 从不出现提示改为(不出现提示 && 不计 bmlog) */
 char *direct;                   /* Leeward 98.04.15 */
 int ent;
 {
@@ -549,7 +549,7 @@ int ent;
             /*
              * Leeward 98.04.15 add below FILE_IMPORTED 
              */
-			if(ret==0)
+			if(ret==0 && !nomsg) /* b4 操作不再重复计算 bmlog, 注意不要误伤, fancyrabbit Oct 12 2007 */
             	bmlog(getCurrentUser()->userid, currboard->filename, 12, 1);
         } else {
             if (!nomsg) {
@@ -1809,6 +1809,7 @@ MENU *father;
                 do{
                     const struct boardheader *bh;
                     char bname[32],ans[4];
+                    int ret;
                     clear();
                     move(1,0);
                     if(!get_a_boardname(bname,"请输入要转贴的讨论区名称: ")||!(bh=getbcache(bname)))
@@ -1863,8 +1864,24 @@ MENU *father;
                         WAIT_RETURN;
                         break;
                     }
-                    post_cross(getCurrentUser(),bh,"",M_ITEM(&me, me.now)->title,fname,0,false,ans[0],5,getSession());
-                    prints("\033[1;32m%s\033[0;33m<Enter>\033[m","转载完成!");
+                    ret = post_cross(getCurrentUser(),bh,"",M_ITEM(&me, me.now)->title,fname,0,false,ans[0],5,getSession());
+                    switch (ret)
+                    {
+                        case 0 :
+                            prints("\033[1;32m%s\033[0;33m<Enter>\033[m","转载完成!");
+                            break;
+                        case -1:
+                            prints("\033[1;33m%s\033[0;33m<Enter>\033[m", "转载过程中发生错误 ...");
+                            break;
+                        case -2:
+                            prints("\n\n        很抱歉，本文可能含有不当内容，需经审核方可发表。\n\n"
+                                    "        根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待\n"
+                                    "    站务人员的审核，不要多次尝试发表此文章。\n\n"
+                                    "        如有疑问，请致信 SYSOP 咨询。");
+                            move(t_lines - 1, 0);
+                            prints("%s", "                              \x1b[33m请按 ◆\x1b[36mEnter\x1b[33m◆ 继续\x1b[m");
+                            break;
+                    }
                     WAIT_RETURN;
                 }
                 while(0);

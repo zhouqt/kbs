@@ -1013,7 +1013,7 @@ static long edit_attach(char *fn){
 #undef EA_PER_PAGE
 #undef EA_TMP_DIR
 
-int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length, int add_loginfo)
+int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length, int add_loginfo, int filtrate)
 {
     struct textline *p = firstline;
     FILE *fp=NULL;
@@ -1098,7 +1098,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
         abort[0] = 'a';
 
 #ifdef FILTER
-    if (((abort[0] != 'a')&&(abort[0] != 'e'))&&
+    if (((abort[0] != 'a')&&(abort[0] != 'e'))&& filtrate &&
         (uinfo.mode==EDIT)) {
     while (p != NULL) {
         if(check_badword_str(p->data, strlen(p->data), getSession())) {
@@ -2238,7 +2238,7 @@ void vedit_key(int ch)
 
 extern int icurrchar, ibufsize;
 
-static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos,int add_loginfo)
+static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos,int add_loginfo, int filtrate)
 {
     int newch, ch = 0, foo;
     struct textline *st_tmp, *st_tmp2;
@@ -2282,7 +2282,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
                 firstline->prev = st_tmp;
                 firstline = st_tmp2;
             }
-            foo = write_file(filename, saveheader, eff_size,pattachpos,attach_length, add_loginfo);
+            foo = write_file(filename, saveheader, eff_size,pattachpos,attach_length, add_loginfo, filtrate);
             if (foo != KEEP_EDITING)
                 return foo;
             if (headlines) {
@@ -2327,7 +2327,7 @@ int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos,int add_
 #ifdef NEW_HELP
 	helpmode = HELP_EDIT;
 #endif
-    ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos, add_loginfo);
+    ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos, add_loginfo, 1);
 #ifdef NEW_HELP
 	helpmode = oldhelpmode;
 #endif
@@ -2335,7 +2335,7 @@ int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos,int add_
     return ans;
 }
 
-int vedit_post(char *filename,int saveheader,long* eff_size,long* pattachpos)
+int vedit_post(char *filename,int saveheader,long* eff_size,long* pattachpos, int filtrate)
 {
     int ans, t;
 
@@ -2343,7 +2343,7 @@ int vedit_post(char *filename,int saveheader,long* eff_size,long* pattachpos)
     showansi = 0;
     ismsgline = (DEFINE(getCurrentUser(), DEF_EDITMSG)) ? 1 : 0;
     domsg();
-    ans = raw_vedit(filename, saveheader, 4, eff_size,pattachpos, 0);   /*Haohmaru.99.5.5.应该保留一个空行 */
+    ans = raw_vedit(filename, saveheader, 4, eff_size,pattachpos, 0, filtrate);   /*Haohmaru.99.5.5.应该保留一个空行 */
     showansi = t;
     return ans;
 }

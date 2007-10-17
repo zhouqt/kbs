@@ -543,6 +543,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
     char board[STRLEN],name[STRLEN],ans[4];
     int inmail=(((struct read_arg*)conf->arg)->mode==DIR_MODE_MAIL),mode,need_unlink=0;
     unsigned int cut_attach=0;
+    int ret;
     if(!info||!HAS_PERM(getCurrentUser(),PERM_POST))
         return DONOTHING;
     if(!inmail)
@@ -668,7 +669,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
             WAIT_RETURN;
             return FULLUPDATE;
     }
-    if(post_cross(getCurrentUser(),bh,currboard->filename,quote_title,name,Anony,inmail,ans[0],mode,getSession())==-1){
+    if((ret = post_cross(getCurrentUser(),bh,currboard->filename,quote_title,name,Anony,inmail,ans[0],mode,getSession()))==-1){
         if(need_unlink)
             unlink(name);
         move(3,0);clrtoeol();
@@ -676,6 +677,21 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
         WAIT_RETURN;
         return FULLUPDATE;
     }
+#ifdef FILTER
+    else if (ret == -2) /* filtered ... */
+    {
+        clear();
+        move(3, 0);
+        prints("\n\n        很抱歉，本文可能含有不当内容，需经审核方可发表。\n\n"
+                   "        根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待\n"
+                   "    站务人员的审核，不要多次尝试发表此文章。\n\n"
+                   "        如有疑问，请致信 SYSOP 咨询。");
+        pressreturn();
+        if (need_unlink)
+            unlink(name);
+        return FULLUPDATE;
+    }
+#endif
     if(need_unlink)
         unlink(name);
     move(3,0);clrtoeol();
@@ -3247,7 +3263,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	strncpy(buf, genbuf, 512);
 	buf[511]=0;
 	attachpos = fileinfo->attachment;
-    if (vedit_post(buf, false, &eff_size,&attachpos) != -1) {
+    if (vedit_post(buf, false, &eff_size,&attachpos, public_board(currboard)) != -1) {
 		int changemark=0;
 		if (attachpos != fileinfo->attachment){
             fileinfo->attachment=attachpos;
@@ -3317,7 +3333,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         char tmp2[STRLEN];      /* Leeward 98.03.29 */
 
 #ifdef FILTER
-        if (check_badword_str(buf, strlen(buf), getSession())) {
+        if (public_board(currboard) && check_badword_str(buf, strlen(buf), getSession())) {
             clear();
             move(3, 0);
             outs("     很抱歉，该标题可能含有不恰当的内容，请仔细检查换个标题。");
@@ -4919,6 +4935,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     char linebuffer[LINELEN*3];
     char annpath[MAXPATH];
     struct write_dir_arg dirarg;
+    unsigned char accessed[2];
 
     if (fh==NULL)
         return DONOTHING;
@@ -5085,7 +5102,10 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
         if(strlen(buf) >= STRLEN )buf[STRLEN-1] = 0;
         strcpy(title,buf);
         //post file to the board
-        if(post_file(getCurrentUser(),"",annpath,currboard->filename,title,0,5,getSession()) < 0) {//fail
+        /*if(post_file(getCurrentUser(),"",annpath,currboard->filename,title,0,5,getSession()) < 0) {//fail*/
+        accessed[0] = 0; accessed[1] = FILE_READ; /* fancyrabbit Oct 12 2007 合集默认不可 re */
+        if (post_file_alt(annpath, getCurrentUser(), title, currboard -> filename, NULL, 0x04, accessed))
+        {
             sprintf(buf,"发表文章到版面出错!请按 ENTER 键退出 << ");
             a_prompt(-1,buf,title);
             saveline(t_lines - 2, 1, NULL);

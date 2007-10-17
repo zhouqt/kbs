@@ -1275,7 +1275,7 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
     modify_user_mode(EDIT);
     clear();
     attachpos = fileinfo->attachment;
-    if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
+    if (vedit_post(genbuf, false, &eff_size,&attachpos, 0) != -1) {
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title,getSession());
 

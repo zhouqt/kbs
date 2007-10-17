@@ -380,7 +380,7 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
             }
         }
     }
-    if (user != NULL)
+    if (user != NULL && !(flag & ARG_BMFUNC_FLAG)) /* b1/b3 操作不再重复计算 bmlog, fancyrabbit Oct 12 2007 */
         bmlog(user->userid, board, 8, 1);
     newbbslog(BBSLOG_USER, "Del '%s' on '%s'", fh.title, board);        /* bbslog */
     return 0;
@@ -830,7 +830,7 @@ static int getcross(const char *filepath,const char *quote_file,struct userec *u
     }
     else if(mode==1){
         time_t current=time(NULL);
-        fprintf(fout,"发信人: "DELIVER" (自动发信系统), 信区: %s\n",sourceboard);
+        fprintf(fout,"发信人: "DELIVER" (自动发信系统), 信区: %s\n",toboard -> filename);
         fprintf(fout,"标  题: %s\n",title);
         fprintf(fout,"发信站: %s自动发信系统 (%24.24s)\n\n",BBS_FULL_NAME,ctime(&current));
         fprintf(fout,"【此篇文章是由自动发信系统所张贴】\n\n");
@@ -1013,13 +1013,14 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
 #ifdef SMTH
     if (!strcmp(title, "请版面尽快产生一名或多名版主") && mode == 2)
     {
-	    postfile.accessed[0] |= FILE_MARKED;
-	    postfile.accessed[1] |= FILE_READ;
+        postfile.accessed[0] |= FILE_MARKED;
+        postfile.accessed[1] |= FILE_READ;
         set_posttime(&postfile);
-	    add_top(&postfile, toboard -> filename, 0);
+        add_top(&postfile, toboard -> filename, 0);
     }
 #endif /* SMTH */
-    after_post(user, &postfile, toboard->filename, NULL, !(Anony), session);
+    if (after_post(user, &postfile, toboard->filename, NULL, !(Anony), session) == -2)
+        return -2;
     return 1;
 }
 
@@ -1039,6 +1040,151 @@ int post_file(struct userec *user, const char *fromboard, const char *filename, 
     return 0;
 }
 
+
+/* 支持带标记的 post_file ... 重新造个轮子吧
+ * 修改自 etnlegend 的 post_announce(), 感谢之 ...
+ * caller 须保证发帖的合法性 ...
+ * 不统计 owner 的 bmlog(文) ... 暂不支持匿名发文/带附件文/过滤 ...
+ * mode: 0x01 写一个 deliver 的 header
+ *       0x02 转信
+ *       0x04 调用 write_header: 指定 0x01 时无效
+ * fancyrabbit Oct 12 2007
+ */
+
+int post_file_alt(const char *filename, struct userec *user, const char *title, const char *to_board, const char *from_board, unsigned char mode, const unsigned char accessed[2])
+{
+    FILE *fp_in, *fp_out;
+    struct fileheader fh;
+    bool conf_cross;
+    char buf[PATHLEN], bufcp[READ_BUFFER_SIZE], save_title[STRLEN];
+    int fd;
+#ifdef HAVE_BRC_CONTROL
+    int brc_save;
+#endif
+    time_t now;
+    if ((!(mode & 0x01) && !user) || !to_board || !title)
+        return 7;
+    bzero(&fh, sizeof(struct fileheader));
+    conf_cross = (from_board && (*from_board));
+    if (!getboardnum(to_board, NULL))
+        return 1;
+    setbfile(buf, to_board, "");
+    if (GET_POSTFILENAME(fh.filename, buf))
+        return 2;
+    set_posttime(&fh);
+    if (mode & 0x01)
+        memcpy(fh.owner, DELIVER, OWNER_LEN);
+    else
+        memcpy(fh.owner, user -> userid, OWNER_LEN);
+    fh.owner[OWNER_LEN - 1] = 0;
+    sprintf(save_title, "%s%s", title, conf_cross ? " (转载)" : "");
+    strnzhcpy(fh.title, save_title, ARTICLE_TITLE_LEN);
+    if (mode & 0x02)
+    {
+        fh.innflag[0] = 'S';
+        fh.innflag[1] = 'S';
+    }
+    else
+    {
+        fh.innflag[0] = 'L';
+        fh.innflag[1] = 'L';
+    }
+    fh.accessed[0] = accessed[0]; fh.accessed[1] = accessed[1];
+    setbfile(buf, to_board, fh.filename);
+    if (!(fp_out = fopen(buf, "w")))
+        return 3;
+    if (!(fp_in = fopen(filename, "r")))
+    {
+        fclose(fp_out);
+        return 4;
+    }
+    if (mode & 0x01)
+    {
+        now = time(NULL);
+        fprintf(fp_out, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", to_board);
+        fprintf(fp_out, "标  题: %s\n", fh.title);
+        fprintf(fp_out, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
+        fprintf(fp_out, "【此篇文章是由自动发信系统所张贴】\n\n");        
+    }
+    else if (conf_cross)
+    {
+        write_header(fp_out, user, 0, to_board, fh.title, 0, (mode & 0x02) ? 2 : 0, getSession());
+        fprintf(fp_out, "【 以下文字转载自 %s 讨论区 】\n", from_board);
+    }
+    else if (mode & 0x04)
+        write_header(fp_out, user, 0, to_board, fh.title, 0, (mode & 0x02) ? 2 : 0, getSession());
+
+    while (fgets(bufcp, READ_BUFFER_SIZE, fp_in))
+        fputs(bufcp, fp_out);
+    fclose(fp_in);
+    fclose(fp_out);
+    fh.eff_size = get_effsize_attach(buf, NULL);
+#ifdef HAVE_BRC_CONTROL
+    brc_save = getSession()->brc_currcache;
+    getSession() -> brc_currcache = -1;
+#endif
+    if (mode & 0x02)
+        outgo_post(&fh, to_board, save_title, getSession());
+    setbdir(DIR_MODE_NORMAL, buf, to_board);
+    if((fd = open(buf, O_WRONLY|O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) == -1){
+#ifdef HAVE_BRC_CONTROL
+        getSession() -> brc_currcache = brc_save;
+#endif
+        return 5;
+    }
+    lock_reg(fd, F_SETLKW, F_WRLCK, 0, SEEK_SET, 0);
+    fh.id = get_nextid(to_board);
+    fh.groupid = fh.id;
+    fh.reid = fh.id;
+    lseek(fd, 0, SEEK_END);
+    if (safewrite(fd, &fh, sizeof(struct fileheader)) == -1){
+        flock(fd, LOCK_UN);
+        close(fd);
+#ifdef HAVE_BRC_CONTROL
+        getSession() -> brc_currcache = brc_save;
+#endif
+        setbfile(buf, to_board, fh.filename);
+        unlink(buf);
+        return 6;
+    }
+    lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+    close(fd);
+    updatelastpost(to_board);
+    if (setboardorigin(to_board, -1))
+        board_regenspecial(to_board, DIR_MODE_ORIGIN, NULL);
+    else
+    {
+        setbdir(DIR_MODE_ORIGIN, buf, to_board);
+        if(!((fd = open(buf, O_WRONLY|O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) < 0)){
+            lock_reg(fd, F_SETLKW, F_WRLCK, 0, SEEK_SET, 0);
+            lseek(fd, 0, SEEK_END);
+            safewrite(fd, &fh, sizeof(struct fileheader));
+            lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+            close(fd);
+        }
+    }
+    /* 初始化 replycount */
+#ifdef HAVE_REPLY_COUNT
+    modify_reply_count(to_board, fh.id, 1, 1, &fh);
+#endif
+    setboardtitle(to_board, 1);
+    if (fh.accessed[0] & FILE_MARKED)
+        setboardmark(to_board, 1);
+#ifdef HAVE_BRC_CONTROL
+    getSession() -> brc_currcache = brc_save;
+#endif
+    /* 写 postlog */
+#ifndef NEWPOSTSTAT
+    if (!(mode & 0x01) && user)
+        write_posts(user -> userid, to_board, fh.groupid);
+#endif
+#ifdef NEWPOSTLOG
+    if (!(mode & 0x01) && user)
+        newpostlog(user -> userid, to_board, fh.title, fh.groupid);
+#endif
+    return 0;
+}
+    
 
 /*
  * 注意：fh->attachment = 0           如果没有附件 (这个时候整个文件需要过滤)
@@ -2352,15 +2498,31 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, const struct bo
      */
     if (flag & FILE_SIGN_FLAG) {
         if (data->accessed[0] & FILE_SIGN)
+        {
             originFh->accessed[0] |= FILE_SIGN;
+            if (dobmlog)
+                bmlog(session -> currentuser -> userid, board -> filename, 15, 1);
+        }
         else
+        {
             originFh->accessed[0] &= ~FILE_SIGN;
+            if (dobmlog)
+                bmlog(session -> currentuser -> userid, board -> filename, 16, 1);
+        }
     }
     if (flag & FILE_PERCENT_FLAG) {
         if (data->accessed[0] & FILE_PERCENT)
+        {
             originFh->accessed[0] |= FILE_PERCENT;
+            if (dobmlog)
+                bmlog(session -> currentuser -> userid, board -> filename, 15, 1);
+        }
         else
+        {
             originFh->accessed[0] &= ~FILE_PERCENT;
+            if (dobmlog)
+                bmlog(session -> currentuser -> userid, board -> filename, 16, 1);
+        }
     }
     /*
      * 标记删除 处理

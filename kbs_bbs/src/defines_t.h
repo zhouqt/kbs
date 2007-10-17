@@ -235,7 +235,7 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
 
 /* edit.c */
 int vedit(char *filename, int saveheader,long* eff_size,long* pattachpos,int add_loginfo);
-int vedit_post(char *filename, int saveheader,long* eff_size,long* pattachpos);
+int vedit_post(char *filename, int saveheader,long* eff_size,long* pattachpos, int filtrate);
 void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Anony);
 void keep_fail_post();
 
