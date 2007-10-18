@@ -1754,6 +1754,10 @@ struct key_command mail_comms[] = {
 int m_read(void){
     char curmaildir[STRLEN];
     int returnmode=CHANGEMODE;
+    int oldmode;
+
+    oldmode = uinfo.mode;
+    modify_user_mode(MAIL);
 #ifdef NEW_HELP
     int oldhelpmode = helpmode;
 #endif
@@ -1771,6 +1775,7 @@ int m_read(void){
     helpmode = oldhelpmode;
 #endif
     in_mail = false;
+    modify_user_mode(oldmode);
     return FULLUPDATE /* 0 */ ;
 }
 
