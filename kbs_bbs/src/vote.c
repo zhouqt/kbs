@@ -652,11 +652,13 @@ char *bname;
     makevdir(bname);
     for (;;) {
         getdata(2, 0,
-                "(1)是非, (2)单选, (3)复选, (4)数值 (5)问答 (6)取消 ? : ",
+                "(0)取消, (1)是非, (2)单选, (3)复选, (4)数值, (5)问答 ? [0] ",
                 genbuf, 2, DOECHO, NULL, true);
-        genbuf[0] -= '0';
-        if (genbuf[0] == 6) {
-            prints("取消此次投票\n");
+        if (genbuf[0])
+            genbuf[0] -= '0';
+        if (genbuf[0] == 0) {
+            prints("取消此次投票");
+            refresh();
             sleep(1);
             return FULLUPDATE;
         }
