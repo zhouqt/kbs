@@ -2347,6 +2347,11 @@ if (ret==-2) {
                 write_userdata(uinfo.userid, &ud);
 				memcpy(&(um->ud), &ud, sizeof(ud));
 				end_mmapfile(um, sizeof(struct usermemo), -1);
+#ifdef NEWSMTH
+                /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
+                sethomefile(buf, uinfo.userid, "conveyID");
+                f_rm(buf);
+#endif /* NEWSMTH */
 #ifdef AUTO_CHECK_REGISTER_FORM
          if (ret==-2)
          {

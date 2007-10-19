@@ -228,9 +228,11 @@ void check_register_info()
     const char *newregfile;
     //int perm;
     char buf[STRLEN];
+#ifndef NEWSMTH
+    /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
 	char career[STRLEN];
 	char phone[40];
-
+#endif
     clear();
     sprintf(buf, "%s", email_domain());
     if (!(getCurrentUser()->userlevel & PERM_BASIC)) {
@@ -274,10 +276,13 @@ void check_register_info()
 	sethomefile(buf,getCurrentUser()->userid,"conveyID");
 	if(dashf(buf))
 	{
-	
+#ifndef NEWSMTH
+        /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
         move(6,0);
 		prints("此ID由您的朋友转让给您,恭喜您获得此ID,请填写以下资料.");
+#endif
 		getCurrentUser()->firstlogin = getCurrentUser()->lastlogin; /* atppp 20050312 */
+#ifndef NEWSMTH
 		do{
 		    getdata(7,0,"学校系级或单位全称(具体到部门):",career,STRLEN,DOECHO,NULL,true);
 		}while(strlen(career) < 4);
@@ -294,6 +299,7 @@ void check_register_info()
 		getSession()->currentmemo->ud.realemail[STRLEN-16-1]='\0';
 //		write_userdata(getCurrentUser()->userid,&curruserdata);
 		write_userdata(getCurrentUser()->userid,&(getSession()->currentmemo->ud));
+#endif /* NEWSMTH */
 	}
 
 #ifdef HAVE_BIRTHDAY
@@ -532,7 +538,10 @@ int ConveyID(void){
 
     clear();
     move(1, 0);
+#ifndef NEWSMTH
+    /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
     prints("选择转让ID后,新用户上站填写完资料,即可获得用户权限!\n\n");
+#endif
     prints("\033[1;31m特别提醒! !转让ID后原来的一切个人资料都不复存在!!\033[m\n\n");
     prints("\033[1;31m该ID的上站次数将下调到不超过10，文章数将调整为0。\033[m\n");
     prints("\033[1;31m该ID生命力的计算时间将从新用户接受转让时刻开始重新计算。\033[m\n");
@@ -579,6 +588,11 @@ int ConveyID(void){
 		system(systembuf);
 		sprintf(systembuf,"/bin/rm %s/.*",buf);
         system(systembuf);
+#ifdef NEWSMTH
+        /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
+        sprintf(buf, "tmp/email/%s", getCurrentUser() -> userid);
+        f_rm(buf);
+#endif
 
 		//生成转让ID文件
         sethomefile(filename,getCurrentUser()->userid,"conveyID");
@@ -612,6 +626,9 @@ int ConveyID(void){
 		}
 		getCurrentUser()->signature = 0;
 		getCurrentUser()->usedspace = 0;
+#ifdef NEWSMTH
+        getCurrentUser() -> score_user = 0;
+#endif
 
 		//clear 用户信息
 //		bzero(&curruserdata,sizeof(struct userdata));

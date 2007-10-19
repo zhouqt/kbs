@@ -506,6 +506,9 @@ int x_fillform(void){
     char rname[NAMELEN], addr[STRLEN];
     char phone[STRLEN], career[STRLEN], birth[STRLEN];
     char ans[5], *mesg, *ptr;
+#ifdef NEWSMTH
+    char buf[PATHLEN];
+#endif
     FILE * fn;
     time_t now;
     struct userdata ud;
@@ -523,7 +526,13 @@ int x_fillform(void){
         pressreturn();
         return -1;
     }
+#ifdef NEWSMTH
+    /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
+    sethomefile(buf, getCurrentUser() -> userid, "conveyID");
+    if (((time(NULL) - getCurrentUser() -> firstlogin) < REGISTER_WAIT_TIME) && !dashf(buf))
+#elif
     if ((time(0) - getCurrentUser()->firstlogin) < REGISTER_WAIT_TIME)
+#endif
 	{
         prints("您首次登入本站未满" REGISTER_WAIT_TIME_NAME "...");
         prints("请先四处熟悉一下，在满" REGISTER_WAIT_TIME_NAME "以后再填写注册单。");
