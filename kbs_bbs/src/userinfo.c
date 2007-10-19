@@ -530,7 +530,7 @@ int x_fillform(void){
     /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
     sethomefile(buf, getCurrentUser() -> userid, "conveyID");
     if (((time(NULL) - getCurrentUser() -> firstlogin) < REGISTER_WAIT_TIME) && !dashf(buf))
-#elif
+#else
     if ((time(0) - getCurrentUser()->firstlogin) < REGISTER_WAIT_TIME)
 #endif
 	{
