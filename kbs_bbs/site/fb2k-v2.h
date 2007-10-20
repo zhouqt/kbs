@@ -74,7 +74,7 @@
 #define DAY_DELETED_CLEAN	30
 #define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
 
-#define	REGISTER_WAIT_TIME	(1)
+#define	REGISTER_WAIT_TIME	(60)
 #define	REGISTER_WAIT_TIME_NAME	"1 分钟"
 
 #define MAIL_MAILSERVER     "127.0.0.1:25"
