@@ -483,7 +483,7 @@ int set_board(int bid,struct boardheader *board,struct boardheader *oldbh)
     	    for (i=0;i<MAXBOARD;i++)
     	        if (bcache[i].group==bid) 
                     board->board_data.group_total++;
-       } else if ((board->group)&&(bcache[bid-1].group!=board->group)) {
+       } else if (((board->group) || (bcache[bid - 1].group)) &&(bcache[bid-1].group!=board->group)) {
        //修正版面目录的版面数
             if (bcache[bid-1].group)
                 bcache[bcache[bid-1].group-1].board_data.group_total--;
