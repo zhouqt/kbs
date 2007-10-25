@@ -884,13 +884,14 @@ int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
 
 #ifdef DENYANONY
 /* stiger,增加封禁某人的发文权限1天 */
-int giveup_addpost(char *userid){
+int giveup_addpost(char *userid, int day){
     struct userec *user;
-    int s[GIVEUPINFO_PERM_COUNT];
+    int i,s[GIVEUPINFO_PERM_COUNT];
     if(!(getuser(userid,&user)))
         return 0;
+	memset(s, 0, sizeof(s));
     get_giveupinfo(user,s);
-    s[1]=-(1+(!s[1]?(time(NULL)/86400):((s[1]<0)?(-s[1]):s[1])));
+    s[1]=day+(!s[1]?(time(NULL)/86400):((s[1]<0)?(-s[1]):s[1]));
     user->userlevel&=~PERM_POST;
     return (save_giveupinfo(user,s)+1);
 }

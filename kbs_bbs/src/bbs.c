@@ -3533,45 +3533,63 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 	struct fileheader tmpfh;
 	int ret=0;
 	int fd;
+	int day;
+	char say[100];
+	char title[80];
+	char buff[256];
+	FILE *fp;
 
-    if(!anonymousboard(currboard->filename) || strcmp(currboard->filename, fileinfo->owner))
+    if(!anonymousboard(currboard->filename))
 		return DONOTHING;
 	if(!HAS_PERM(getCurrentUser(), PERM_SYSOP))
 		return DONOTHING;
+	clear();
+
 	setbfile(anonybuf, currboard->filename, ".ANONYDIR");
 	if ((fd = open(anonybuf, O_RDWR, 0644)) >= 0){
 		ret = get_records_from_id(fd, fileinfo->id, &tmpfh, 1, NULL);
 		close(fd);
-
-		if(ret != 0){
-			ret = giveup_addpost(tmpfh.owner);
-			if(ret){
-				char title[80];
-				char buff[256];
-				FILE *fp;
-				sprintf(buff,"tmp/%s.%d.ad", getCurrentUser()->userid, (int)getpid());
-				if((fp=fopen(buff,"w"))==NULL){
-					ret = 0;
-				}else{
-					fprintf(fp,"%s :\n\n",tmpfh.owner);
-					fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\033[1;31m%s\033[m,\n%s决定追加取消您的全站post权限1天\n",currboard->filename,fileinfo->title,getCurrentUser()->userid);
-					fprintf(fp,"\n匿名封禁对于您看来您将是被强制戒发文权限1天，请您放心，没有人知道被封禁的人具体是你，站长和斑竹也都不知道\n");
-					fclose(fp);
-
-					sprintf(title,"%s取消%s版匿名作者原id发文权限1天", getCurrentUser()->userid, currboard->filename);
-					mail_file("SYSOP", buff, tmpfh.owner, title, BBSPOST_COPY, NULL);
-					unlink(buff);
-					securityreport(title, NULL,NULL, getSession());
-				}
-			}
-		}
 	}
 
-	clear();
-	if(ret)
-		prints("成功\n");
-	else
-		prints("失败\n");
+	if( ret <= 0){
+		move(2,0);
+		prints("系统出错，找不到匿名作者\n");
+		pressanykey();
+		return FULLUPDATE;
+	}
+
+	move(2,0);
+	prints("文章标题:%s\n", fileinfo->title);
+
+    getdata(4, 0, "您要追加封禁作者全站发文权限几天(最多14天):[0]", anonybuf, 3, DOECHO, NULL, true);
+	day = atoi(anonybuf);
+	if(day <=0 || day > 14)
+		return FULLUPDATE;
+
+    getdata(5, 0, "封禁留言:", say, 100, DOECHO, NULL, true);
+
+	giveup_addpost(tmpfh.owner, day);
+
+	sprintf(buff,"tmp/%s.%d.ad", getCurrentUser()->userid, getpid());
+	if((fp=fopen(buff,"w"))!=NULL){
+		fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\n\n      \033[1;31m%s\033[m\n\n决定追加取消您的全站post权限%d天\n",currboard->filename,fileinfo->title, day);
+		if(say[0])
+			fprintf(fp, "\n追加留言:%s\n", say);
+		fprintf(fp,"\n匿名封禁对于您看来您将是被强制戒发文权限\n请您放心，没有人会知道被封禁的人具体是你\n");
+		fclose(fp);
+
+		sprintf(title,"取消%s版匿名作者发文权限%d天", currboard->filename, day);
+		mail_file("SYSOP", buff, tmpfh.owner, title, BBSPOST_COPY, NULL);
+		unlink(buff);
+
+		setbfile(buff, currboard->filename, fileinfo->filename);
+		post_file(getCurrentUser(), "", buff, "AnonyDeny", title, 0, 2, getSession());
+        post_file(getCurrentUser(), "", buff, currboard->filename, title, 0, 2, getSession());
+	}
+
+	move(8,0);
+	prints("成功\n");
+
 	pressanykey();
 
 	return FULLUPDATE;

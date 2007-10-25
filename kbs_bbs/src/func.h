@@ -61,7 +61,7 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     int get_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]);
     int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]);
 #ifdef DENYANONY
-	int giveup_addpost(char *userid);
+	int giveup_addpost(char *userid, int day);
 #endif
     int do_after_login(struct userec* user,int unum,int mode);
     int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode,int locked);
