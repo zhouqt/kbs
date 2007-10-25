@@ -584,10 +584,10 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
         } else {
             if (filecheck) {
                 if (!(*filecheck) (ptr + (id - 1) * size, arg)) {
-                    for (id = 0; id * size < filesize; id++)
+                    for (id = 1; id * size <= filesize; id++)
                         if ((*filecheck) (ptr + (id - 1) * size, arg))
                             break;
-                    if (id * size >= filesize)
+                    if (id * size > filesize)
                         ret = -2;
                 }
             }
@@ -626,10 +626,10 @@ int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG file
         } else {
             if (filecheck) {
                if (!(*filecheck) (ptr + (id - 1) * size, arg)) {
-                  for (id = 0; id * size < filesize; id++)
+                  for (id = 1; id * size <= filesize; id++)
                       if ((*filecheck) (ptr + (id - 1) * size, arg))
                          break;
-                      if (id * size >= filesize)
+                      if (id * size > filesize)
                          ret = -2;
                }
             }
