@@ -370,7 +370,8 @@ reenter:
                 break;
             case 'm':
             case 'M':
-                if(count!=0)mail_msg(getCurrentUser(), getSession());
+                if(count!=0)
+                    mail_msg(all ? 2 : 0, getCurrentUser(), getSession());
                 goto outofhere;
             default:
                 goto reenter;

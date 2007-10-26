@@ -4392,7 +4392,7 @@ int Goodbye(void){                      /*离站 选单 */
         char buf[STRLEN], *ptr;
 
         if (DEFINE(getCurrentUser(), DEF_MAILMSG /*离站时寄回所有信息 */ ) && (get_msgcount(0, getCurrentUser()->userid))) {
-                mail_msg(getCurrentUser(),getSession());
+                mail_msg(0, getCurrentUser(),getSession());
         }
 #if !defined(FREE) && !defined(ZIXIA)
 		else

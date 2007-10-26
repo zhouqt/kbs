@@ -592,7 +592,7 @@ void unlock_sem_check(int lockid);
     int load_msgtext(char *uident, struct msghead *head, char *msgbuf);
     int translate_msg(char* src, struct msghead *head, char* dest,session_t* session);
     int get_msgcount(int id, char *uident);
-    void mail_msg(struct userec* user,session_t* session);
+    void mail_msg(int id, struct userec* user,session_t* session);
     int clear_msg(char *uident);
     int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode, int srcpid, session_t* session);
     int canmsg(struct userec *fromuser, struct user_info *uin);

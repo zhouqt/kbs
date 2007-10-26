@@ -38,7 +38,7 @@ PHP_FUNCTION(bbs_mailwebmsgs){
     if (ZEND_NUM_ARGS()!=0 ) {
         WRONG_PARAM_COUNT;
     }
-	mail_msg(getCurrentUser(), getSession());
+	mail_msg(0, getCurrentUser(), getSession());
 	RETURN_TRUE;
 }
 

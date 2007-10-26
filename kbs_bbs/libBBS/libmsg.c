@@ -735,7 +735,7 @@ int translate_msg(char* src, struct msghead *head, char* dest,session_t* session
     return ret+2;
 }
 
-void mail_msg(struct userec* user,session_t* session)
+void mail_msg(int id, struct userec* user,session_t* session)
 {
     char fname[MAXPATH];
     char buf[MAX_MSG_SIZE],showmsg[MAX_MSG_SIZE*2];
@@ -752,12 +752,12 @@ void mail_msg(struct userec* user,session_t* session)
     if (!fn) return;
 
     now = time(0);
-    sprintf(title, "[%20.20s] 所有讯息备份", ctime(&now) + 4);
+    sprintf(title, "[%20.20s] %s讯息备份", ctime(&now) + 4, id ? "部分" : "所有");
 
     write_header(fn, user,1,NULL,title,0,0,session);
-    count = get_msgcount(0, user->userid);
+    count = get_msgcount(id, user->userid);
     for(i=0;i<count;i++) {
-        load_msghead(0, user->userid, i, &head);
+        load_msghead(id, user->userid, i, &head);
         load_msgtext(user->userid, &head, buf);
         translate_msg(buf, &head, showmsg,session);
         fprintf(fn, "%s", showmsg);
@@ -766,7 +766,8 @@ void mail_msg(struct userec* user,session_t* session)
 
     mail_file(user->userid, fname, user->userid, title, BBSPOST_MOVE, NULL);
     unlink(fname);
-    clear_msg(user->userid);
+    if (!id)
+        clear_msg(user->userid);
 }
 
 #ifdef SMS_SUPPORT
