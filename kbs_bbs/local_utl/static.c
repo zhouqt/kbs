@@ -161,6 +161,8 @@ int main(int argc,char* argv[])
 
                 fprintf(fp,"总数: %d\n每月总平均: %d\n",
 			total+total2,count+count2==0?0:(total+total2)/(count+count2));
+                count = 0;
+                total = 0;
 	        fprintf(fp, "\n\x1b[1;36m                  本月每天统计数据\x1b[m\n");
 		fprintf(fp,"\n      1      2      3      4      5      6      7      8      9     10     11");
 		fprintf(fp,"\n-----------------------------------------------------------------------------\n");
