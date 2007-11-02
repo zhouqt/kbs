@@ -554,11 +554,11 @@ int alcounter(struct user_info *uentp, char *arg, int pos)
     canseecloak = (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible) ? 0 : 1;
     if (myfriend(uentp->uid, NULL,getSession())) {
         count_friends++;
-        if (!canseecloak)
+        if (!canseecloak && strcmp(getCurrentUser()->userid, uentp->userid)) /*让隐身的人可以看见自己, jiangjun, 2007.11.1*/
             count_friends--;
     }
     count_users++;
-    if (!canseecloak)
+    if (!canseecloak && strcmp(getCurrentUser() -> userid, uentp -> userid)) /* 你把这漏了 ... fancy Nov 2 2007 */
         count_users--;
     return 1;
 }
