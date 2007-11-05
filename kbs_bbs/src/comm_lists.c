@@ -104,6 +104,7 @@ static const CMD_LIST CMD[]={
     {"UserDefine",          x_userdefine,                           0},
     {"UDefine",             x_userdefine1,                          0},
     {"DoVote",              x_vote,                                 0},
+    {"SetRcmdBrd",          set_rcmdbrd,                            0},
 
 #if HAVE_MYSQL_SMTH+0 == 1
     {"Addrlist",            al_read,                                0},

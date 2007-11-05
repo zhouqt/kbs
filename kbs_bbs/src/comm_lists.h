@@ -124,6 +124,7 @@ KBS_COMM_LISTS_FUNC_V(x_results);
 KBS_COMM_LISTS_FUNC_V(x_userdefine);
 KBS_COMM_LISTS_FUNC_V(x_userdefine1);
 KBS_COMM_LISTS_FUNC_V(x_vote);
+KBS_COMM_LISTS_FUNC_V(set_rcmdbrd);
 
 #if HAVE_MYSQL_SMTH+0 == 1
 KBS_COMM_LISTS_FUNC_V(al_read);

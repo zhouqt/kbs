@@ -1419,3 +1419,155 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
     return FULLUPDATE;
 }
 
+/*
+ *  Term下管理推荐版面, jiangjun, 2007.11.02
+ */
+
+#define MAXRCMDBRD 15
+/* 注意, 这个 show_rcmd_brd() 没有翻页功能, 这数别给太大了 ... fancy Nov 5 2007 */
+#define RCMDBOARD  "xml/rcmdbrd.xml"
+
+void show_rcmd_brd(struct boardheader bh[], int total)
+{
+    int i=0;
+    char buf[STRLEN];
+
+    move(3, 0);
+    clrtobot();
+    prints("目前已添加 \033[1;32m%d\033[m 个推荐版面:", total);
+    while(i<total){
+        if(bh[i].filename[0]==0)
+            break;
+        move(i+4, 0);
+        sprintf(buf, "\033[1;3%dm%-20s\t%-20s\033[m", i%2?2:3, bh[i].filename, bh[i].title+13);
+        prints(buf);
+        i++;
+    }
+}
+
+int set_rcmdbrd()
+{
+    char buf[256],buf1[256], *ptr, ans[2];
+    FILE *fp;
+    int i, total, bid;
+    struct boardheader bh[MAXRCMDBRD], *newbh;
+
+    total = 0;
+
+    if(!HAS_PERM(getCurrentUser(), PERM_SYSOP))
+        return DONOTHING;
+
+    newbh = (struct boardheader *) malloc(sizeof(struct boardheader));
+    memset(&bh, 0, MAXRCMDBRD * sizeof(struct boardheader));
+/* get old recommend board data */
+    if((fp=fopen(RCMDBOARD, "r"))!=NULL){
+        while(fgets(buf, 256, fp)!=NULL){
+            if((ptr=strstr(buf, "EnglishName"))!=NULL){
+                strcpy(buf1, ptr+strlen("EnglishName>"));
+                if((ptr=strchr(buf1, '<'))!=NULL)
+                    *ptr = '\0';
+                if(getboardnum(buf1, &(bh[total]))==0)
+                    continue;
+                total++;
+            }
+            if(total>=MAXRCMDBRD)
+                break;
+        }
+        fclose(fp);
+    }
+
+    while(1){
+        clear();
+        move(0, 0);
+        prints("推荐讨论区选单");
+/*Here:  // board exists while adding or deleteing, should goto here*/
+        show_rcmd_brd(bh, total);
+        getdata(1, 0, "(A)添加讨论区 (D)删除讨论区 (E)退出 [E]: ", ans, 2, DOECHO, NULL, true);
+        if(ans[0]=='a' || ans[0]=='A'){
+            if(total>=MAXRCMDBRD){
+                move(2, 0);
+                prints("已经达到最大推荐讨论区数目!");
+                WAIT_RETURN;
+                continue;
+            }
+            make_blist(0, 1);
+            move(1, 0);
+            namecomplete("请输入欲添加的讨论区英文名: ", buf);
+            if(!buf[0])
+                continue;
+            bid=getboardnum(buf, newbh);
+            if(bid==0){
+                move(2, 0);
+                prints("错误讨论区!");
+                WAIT_RETURN;
+                continue;
+            }
+            if(!public_board(newbh)){
+                move(2, 0);
+                prints("请勿推荐内部讨论区!");
+                WAIT_RETURN;
+                continue;
+            }
+            for(i=0;i<total;i++){
+                if(!strcasecmp(buf, bh[i].filename)){
+                    move(2, 0);
+                    prints("已经添加该讨论区!");
+                    WAIT_RETURN;
+                    /*goto Here;*/
+                    break;
+                }
+            }
+            if (i < total) continue;
+            memcpy(&(bh[total]), newbh, sizeof(struct boardheader));
+            total ++;
+        }else if(ans[0]=='d' || ans[0]=='D'){
+            getdata(1, 0, "请输入欲删除的讨论区英文名: ", buf, STRLEN, DOECHO, NULL, true);
+            if(buf[0]){
+                for(i=0;i<total;i++){
+                    if(!strcasecmp(buf, bh[i].filename)){
+                        /*bh[i].filename[0]='\0';
+                        memmove(&(bh[i]), &(bh[i+1]), (total - i - 1) * sizeof(struct boardheader));
+                        memset(&(bh[total-1]), 0, sizeof(struct boardheader));
+                        total --;
+                        move(2, 0);
+                        prints("已经删除讨论区");
+                        WAIT_RETURN;
+                        goto Here;*/
+                        break;
+                    }
+                }
+                if (i < total)
+                {
+                    bh[i].filename[0]='\0';
+                    memmove(&(bh[i]), &bh[i+1], (total - i - 1) * sizeof(struct boardheader));
+                    memset(&(bh[total-1]), 0, sizeof(struct boardheader));
+                    total --;
+                    move(2, 0);
+                    prints("已经删除讨论区");
+                    WAIT_RETURN;
+                    continue;
+                }
+                move(2, 0);
+                prints("讨论区不在列表中");
+                WAIT_RETURN;
+            }
+        }else
+            break;
+    }
+
+    free(newbh);
+    if((fp=fopen(RCMDBOARD, "w"))==NULL){
+        move(2, 0);
+        prints("系统错误!");
+        WAIT_RETURN;
+        return FULLUPDATE;
+    }
+    fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n"
+                "<RecommendBoards>\n");
+    for(i=0;i<total;i++){
+        fprintf(fp, "<Board><EnglishName>%s</EnglishName></Board>\n", bh[i].filename);
+    }
+    fprintf(fp, "</RecommendBoards>\n");
+    fclose(fp);
+    return FULLUPDATE;
+}
