@@ -53,7 +53,7 @@ domxml_open_file().....等警告。
                                
     新开版面       newboards.xml gen_new_boards_html()       gennewboard
   
-    推荐版面       rcmdbrd.xml   gen_recommend_boards_html() 手工写的没有程序
+    推荐版面       rcmdbrd.xml   gen_recommend_boards_html() 参见 3.3.3 节
   
     人气排名       board.xml     gen_board_rank_html()       usage
   
@@ -83,9 +83,16 @@ domxml_open_file().....等警告。
     按 ;3，此文章进入 Recommand 版，站务在 Recommend 版需要推荐的文章前面按 g
     就可以使得此文章出现在 web 首页导读的推荐文章了。
   
-3.3.3 手工生成 rcmdbrd.xml
-  
-    编辑，$(BBSHOME)/xml/rcmdbrd.xml，按照以下格式，感谢 windinsn 提供
+3.3.3 生成 rcmdbrd.xml
+
+    在 menu.ini 中添加或取消如下行的注释
+
+@SetRcmdBrd  0, 0, PERM_SYSOP, "TSetRcmdBrd", "T) 设定 web 首页导读推荐版面"
+
+    在主菜单 ~ 之后通过此选单进行设定。$(SRCDIR)/src/xyz.c 中 MAXRCMDBRD 宏控
+    制可用此选单设定的最大推荐版面数量。
+
+    也可手工编辑 $(BBSHOME)/xml/rcmdbrd.xml，按照以下格式，感谢 windinsn 提供
 
 <?xml version="1.0" encoding="GBK"?>
 <RecommendBoards>
