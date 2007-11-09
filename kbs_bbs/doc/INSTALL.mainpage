@@ -85,7 +85,7 @@ domxml_open_file().....等警告。
   
 3.3.3 生成 rcmdbrd.xml
 
-    在 menu.ini 中添加或取消如下行的注释
+    在 menu.ini 中合适位置添加如下行 (或取消如下行的注释)
 
 @SetRcmdBrd  0, 0, PERM_SYSOP, "TSetRcmdBrd", "T) 设定 web 首页导读推荐版面"
 

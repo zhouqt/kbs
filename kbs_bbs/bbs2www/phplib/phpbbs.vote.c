@@ -440,11 +440,10 @@ PHP_FUNCTION(bbs_start_vote)
 		sprintf(buff,"[通知] %s 举办投票: %s",bp->filename,ball.title);
 		fprintf(fp,"%s",buff);
 		fclose(fp);
-		if( !normal_board(bp->filename) ){
-			post_file(getCurrentUser(), "", buf, bp->filename, buff, 0,1, getSession());
-		}else{
+		if( normal_board(bp->filename) ){
 			post_file(getCurrentUser(), "", buf, "vote", buff, 0,1, getSession());
 		}
+		post_file(getCurrentUser(), "", buf, bp->filename, buff, 0,1, getSession());
 		unlink(buf);
 	}
 
