@@ -1071,10 +1071,13 @@ static void flush_user_title()
     if ((titlefile = fopen(USER_TITLE_FILE, "w")) == NULL) {
         bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
     } else {
-        int i;
+        int i, fd;
+        fd = fileno(titlefile);
+        lock_reg(fd, F_SETLKW, F_WRLCK, 0, SEEK_SET, 0);
         for (i=0;i<255;i++) {
                 fprintf(titlefile,"%s\n",uidshm->user_title[i]);
         }
+        lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
         fclose(titlefile);
     }
 }
