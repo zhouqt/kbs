@@ -8,7 +8,7 @@ struct binfo {
     char expname[50];
     int times;
     int sum;
-} st[MAXBOARD];
+} st[MAXBOARD+1];
 
 int numboards = 0;
 
@@ -110,7 +110,7 @@ char *timetostr(i)
     minute = (i / 60);
     hour = minute / 60;
     minute = minute % 60;
-    sec = i & 60;
+    sec = i % 60;
     sprintf(str, "%2d:%2d:%2d", hour, minute, sec);
     return str;
 }
@@ -211,11 +211,11 @@ int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
     c[0] = max[0] / 30 + 1;
     c[1] = max[1] / 30 + 1;
     c[2] = max[2] / 30 + 1;
+    st[numboards].times = ave[0] / numboards;
+    st[numboards].sum = ave[1] / numboards;
+    strcpy(st[numboards].boardname, "Average");
+    strcpy(st[numboards].expname, "总平均");
     numboards++;
-    st[numboards - 1].times = ave[0] / numboards;
-    st[numboards - 1].sum = ave[1] / numboards;
-    strcpy(st[numboards - 1].boardname, "Average");
-    strcpy(st[numboards - 1].expname, "总平均");
 
     fprintf(op, "名次 %-15.15s%-25.25s %5s %8s %10s\n", "讨论区名称", "中文叙述", "人次", "累积时间", "平均时间");
     fprintf(op3, "      \033[37m1 \033[m\033[34m%2s\033[37m= %d (总人次) \033[37m1 \033[m\033[32m%2s\033[37m= %s (累积总时数) \033[37m1 \033[m\033[31m%2s\033[37m= %d 秒(平均时数)\n\n",
