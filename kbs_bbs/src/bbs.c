@@ -3433,12 +3433,30 @@ int del_ding(struct _select_def *conf,struct fileheader *info,void *varg){
 int zhiding_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
+    int ret;
     if (fileinfo==NULL)
         return DONOTHING;
     if(conf->pos>arg->filecount)
         return del_ding(conf,fileinfo,extraarg);
-    if (add_top(fileinfo, currboard->filename, 0)!=0)
-        return DONOTHING;
+    if ((ret = add_top(fileinfo, currboard->filename, 0))!=0)
+    {
+        if (ret == 4)
+        {
+            move(t_lines - 1, 0); clrtoeol();
+            prints("已达最大置底数目! \033[0;33m<Enter>\033[m");
+            WAIT_RETURN;
+            return FULLUPDATE;
+        }
+        else if (ret == 5)
+        {
+            move(t_lines - 1, 0); clrtoeol();
+            prints("本文已被置底! \033[0;33m<Enter>\033[m");
+            WAIT_RETURN;
+            return FULLUPDATE;
+        }
+        else
+            return DONOTHING;
+    }
     return DIRCHANGED;
 }
 

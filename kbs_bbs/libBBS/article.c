@@ -2269,9 +2269,11 @@ int add_top(struct fileheader *fileinfo, const char *boardname, int flag)
     top.accessed[0] = flag;
     setbfile(newpath, boardname, fileinfo->filename);
     setbdir(DIR_MODE_ZHIDING, dirpath, boardname);
-    if (get_num_records(dirpath, sizeof(top)) > MAX_DING) {
+    if (get_num_records(dirpath, sizeof(top)) >= MAX_DING) {
         return 4;
     }
+    if (search_record(dirpath, NULL, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpname, top.filename) > 0)
+        return 5;
     link(newpath, path);
     append_record(dirpath, &top, sizeof(top));
     board_update_toptitle(getbid(boardname, NULL), true);
@@ -2291,7 +2293,7 @@ static int add_digest(struct fileheader *fileinfo, const char *boardname)
     digest.accessed[0] = 0;
     setbfile(newpath, boardname, fileinfo->filename);
     setbdir(DIR_MODE_DIGEST, dirpath, boardname);
-    if (get_num_records(dirpath, sizeof(digest)) > MAX_DIGEST) {
+    if (get_num_records(dirpath, sizeof(digest)) >= MAX_DIGEST) {
         return 4;
     }
     link(newpath, path);
