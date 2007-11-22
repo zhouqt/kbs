@@ -2005,13 +2005,16 @@ int badlist(void){
             break;
         }
         if (((tmp[0] == 'a' || tmp[0] == 'A') && (cnt < MAX_IGNORE)) || ((tmp[0] == 'd' || tmp[0] == 'D') && (cnt > 0))) {
-            usercomplete("请输入使用者代号(只按 ENTER 结束输入): ", userid);
+            if (tmp[0] == 'a' || tmp[0] == 'A')
+                usercomplete("请输入使用者代号(只按 ENTER 结束输入): ", userid);
+            else
+                getdata(1, 0, "请输入使用者代号(只按 ENTER 结束输入): ", userid, IDLEN + 1, DOECHO, NULL, true);
             if (userid[0] == '\0') {
                 move(1, 0);
                 clrtoeol();
                 continue;
             }
-            if (!searchuser(userid)) {
+            if ((tmp[0] == 'a' || tmp[0] == 'A') && !searchuser(userid)) {
                 prints("这个使用者代号是错误的.\n");
                 clear_press();
             } else if ((tmp[0] == 'a' || tmp[0] == 'A') && !strcasecmp(userid, getCurrentUser()->userid)) {
