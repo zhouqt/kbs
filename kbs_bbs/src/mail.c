@@ -742,10 +742,17 @@ int m_send(char *userid)
     return 0;
 }
 
+extern int stuffmode;
+
 int read_mail(struct fileheader *fptr)
 {
+    struct stat st;
     setmailfile(genbuf, getCurrentUser()->userid, fptr->filename);
+    if (!lstat(genbuf, &st))
+        if (S_ISLNK(st.st_mode))
+            stuffmode = 1;
     ansimore_withzmodem(genbuf, false, fptr->title);
+    stuffmode = 0;
     fptr->accessed[0] |= FILE_READ;
     return 0;
 }
@@ -1033,7 +1040,6 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 extern int bug_possible;
 #endif
 
-extern int stuffmode;
 
 int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
