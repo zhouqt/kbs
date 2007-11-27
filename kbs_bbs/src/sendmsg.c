@@ -560,7 +560,7 @@ void r_msg()
         if(head.mode==6) canreply = 1;
         else
 #endif
-        if(head.mode==3||uin==NULL||uin->mode==BBSNET||uin->mode==TETRIS||uin->mode==WINMINE) canreply = 0;
+        if(head.mode==3||uin==NULL||uin->mode==BBSNET||uin->mode==TETRIS||uin->mode==WINMINE||uin->mode==LOCKSCREEN) canreply = 0;
         else canreply = 1;
         
         clrtoeol();
