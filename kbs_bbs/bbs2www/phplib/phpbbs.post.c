@@ -675,7 +675,7 @@ PHP_FUNCTION(bbs_updatearticle)
 
 
 /*
- * function bbs_edittitle(string boardName , int id , string newTitle , int dirMode)
+ * function bbs_edittitle(string boardName , int id , string newTitle , int dirMode[, int is_tex])
  * 修改文章标题
  * @author: windinsn apr 28,2004
  * return 0 : 成功
@@ -695,7 +695,7 @@ PHP_FUNCTION(bbs_edittitle)
 {
     char *board,*title;
     int  board_len,title_len;
-    long  id , mode;
+    long  id , mode, is_tex=-1;
     char path[STRLEN];
     char dirpath[STRLEN];
     struct fileheader f;
@@ -706,7 +706,15 @@ PHP_FUNCTION(bbs_edittitle)
     bool find;
     
     int ac = ZEND_NUM_ARGS();
-    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sls/l", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
+	if(ac == 4) {
+        if (zend_parse_parameters(4 TSRMLS_CC, "sls/l", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
+            WRONG_PARAM_COUNT;
+    }
+    else if(ac == 5) {
+        if (zend_parse_parameters(5 TSRMLS_CC, "sls/ll", &board, &board_len, &id , &title, &title_len , &mode, &is_tex) == FAILURE) 
+            WRONG_PARAM_COUNT;
+    }
+    else
         WRONG_PARAM_COUNT;
     
     if (title_len == 0)
@@ -781,7 +789,9 @@ PHP_FUNCTION(bbs_edittitle)
         title[256] = '\0';
     }
     process_control_chars(title,NULL);
-    if (!strcmp(title,f.title)) //无需修改
+	if(((f.accessed[1] & FILE_TEX) && (is_tex == 1)) || (!(f.accessed[1] & FILE_TEX) && (is_tex == 0)))
+        is_tex = -1; 
+    if (!strcmp(title,f.title) && (is_tex == -1)) //无需修改
         RETURN_LONG(0);
 #ifdef FILTER
     if (check_badword_str(title, strlen(title), getSession()))
@@ -793,6 +803,10 @@ PHP_FUNCTION(bbs_edittitle)
     
     /* update .DIR START */
     strnzhcpy(f.title, title, ARTICLE_TITLE_LEN);
+    if(is_tex == 0)
+        f.accessed[1] &= ~FILE_TEX;
+    else if(is_tex == 1)
+        f.accessed[1] |= FILE_TEX;
     setbdir(mode, dirpath, brd->filename);
     fd = open(dirpath, O_RDONLY, 0);
     if (fd!=-1) {
@@ -839,6 +853,11 @@ PHP_FUNCTION(bbs_edittitle)
         }
     }
     setboardtitle(brd->filename, 1);    
+    if(is_tex != -1) {
+        setbfile(dirpath, brd->filename, f.filename);
+        if(dashf(dirpath))
+            f_touch(dirpath);
+    }
     /* update .DIR END   */
     RETURN_LONG(0);
 }
