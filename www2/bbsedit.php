@@ -50,7 +50,7 @@
 	
 	if (isset($_GET['do'])) {
 
-		if($_POST["havemath"] == "1")
+		if(@$_POST["havemath"] == "1")
 			$is_tex = 1;
 		else
 			$is_tex = 0;

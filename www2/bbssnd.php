@@ -37,6 +37,11 @@
 		$reID = 0;
 	if (bbs_is_outgo_board($brdArr)) $outgo = intval(@$_POST["outgo"]);
 	else $outgo = 0;
+
+	if(@$_POST["havemath"] == "1")
+		$is_tex = 1;
+	else
+		$is_tex = 0;
 	
 	settype($reID, "integer");
 			
@@ -57,7 +62,7 @@
 	}
 	$ret = bbs_postarticle($boardName, rtrim($_POST["title"]), 
 		($tmpl ? $contents :$_POST["text"]), intval(@$_POST["signature"]), $reID, 
-		$outgo, $anony, @intval($_POST["mailback"]), 0);
+		$outgo, $anony, @intval($_POST["mailback"]), $is_tex);
 	switch ($ret) {
 		case -1:
 			html_error_quit("错误的讨论区名称!");
