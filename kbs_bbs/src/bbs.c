@@ -2794,7 +2794,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     char buf[256], buf2[256], buf3[STRLEN], buf4[STRLEN];
 //	char tmplate[STRLEN];
 	int use_tmpl=0;
-    int aborted, anonyboard;
+    int aborted, anonyboard, havemath=0;
     int replymode = 1;          /* Post New UI */
     char ans[8], ooo, include_mode = 'S';
     struct boardheader *bp;
@@ -2945,7 +2945,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         sprintf(buf3, "引言模式 [%c]", include_mode);
         move(t_lines - 4, 0);
         clrtoeol();
-        prints("\033[m发表文章于 %s 讨论区  %s %s %s\n", currboard->filename, (anonyboard) ? (Anony == 1 ? "\033[1m要\033[m使用匿名" : "\033[1m不\033[m使用匿名") : "", mailback? "回复到信箱":"",use_tmpl?"使用模板":"");
+        prints("\033[m发表文章于 %s 讨论区  %s %s %s %s\n", currboard->filename, havemath ? "\033[1;31mMath\033[m" : "", (anonyboard) ? (Anony == 1 ? "\033[1m要\033[m使用匿名" : "\033[1m不\033[m使用匿名") : "", mailback? "回复到信箱":"",use_tmpl?"使用模板":"");
         clrtoeol();
         prints("使用标题: %s\n", (buf[0] == '\0') ? "[正在设定主题]" : buf);
 
@@ -3032,6 +3032,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             if(currboard->flag&BOARD_ATTACH || HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
                 nUpload = process_upload(nUpload, 10, ans, ai);
             }
+        } else if (ooo == 'X') {  // switch FILE_TEX flag
+#ifdef SOLEE            
+	        havemath = 1 - havemath;
+#endif /* SOLEE */
         } else {
             /*
              * Changed by KCN,disable color title 
@@ -3172,6 +3176,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         clear();
         return FULLUPDATE;
     }
+    if(havemath)
+        post_file.accessed[1] |= FILE_TEX;
     /*
      * 在boards版版主发文自动添加文章标记 Bigman:2000.8.12 
      */
