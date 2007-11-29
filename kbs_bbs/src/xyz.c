@@ -1305,7 +1305,29 @@ static int get_cancelo(struct fileheader *fh)
 		return 0;
 }
 
-#define FH_SELECT_NUM 3
+static int perm_tex(struct fileheader *fh)
+{
+	if(isowner(getCurrentUser(), fh)) return 1;
+    return chk_currBM(currboard->BM,getCurrentUser());
+}
+static int set_tex(struct fileheader *fh, int i)
+{
+	if(i==0){
+		fh->accessed[1] &= ~FILE_TEX;
+	}else{
+		fh->accessed[1] |= FILE_TEX;
+	}
+	return 1;
+}
+static int get_tex(struct fileheader *fh)
+{
+	if(fh->accessed[1] & FILE_TEX)
+		return 1;
+	else
+		return 0;
+}
+
+#define FH_SELECT_NUM 4
 static struct _fh_select
 {
 	char *desc;
@@ -1316,7 +1338,8 @@ static struct _fh_select
 {
 	{"回文转寄到信箱", perm_mailback, set_mailback, get_mailback},
 	{"转信发表", perm_innflag, set_innflag, get_innflag},
-	{"收精华标记", perm_cancelo, set_cancelo, get_cancelo}
+	{"收精华标记", perm_cancelo, set_cancelo, get_cancelo},
+    {"TEX标记", perm_tex, set_tex, get_tex}
 };
 
 int show_fhselect(struct _select_def *conf, int i)
@@ -1393,6 +1416,12 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
         for(i=0; i<FH_SELECT_NUM; i++){
         	if((perms & (1<<i)) && ( (oldlevel & (1<<i)) != (newlevel & (1<<i)) ) ){
         		fh_select[i].set(fh, newlevel & (1<<i));
+                if(i == 3) {
+                    char bfile[PATHLEN];
+                    setbfile(bfile, currboard->filename, fh->filename);
+                    if(dashf(bfile))
+                        f_touch(bfile);
+                }
         	}
         }
         

@@ -898,6 +898,19 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             typesufix = "\x1b[m";
         }
     }
+
+#ifdef SOLEE
+    if(ent->accessed[1] & FILE_TEX) {
+        if (type == ' ') {
+            strcpy(typeprefix ,"\x1b[41m");
+            typesufix = "\x1b[m";
+        } else {
+            strcpy(typeprefix ,"\x1b[1;31m");
+            typesufix = "\x1b[m";
+        }
+    }
+#endif /* SOLEE */
+	
     filetime = get_posttime(ent);
     if (filetime > 740000000) {
 #ifdef HAVE_COLOR_DATE
