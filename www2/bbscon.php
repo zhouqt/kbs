@@ -138,7 +138,7 @@
 <script type="text/javascript" src="static/www2-addons.js"></script>
 <h1><?php echo $brdarr["NAME"]; ?> °æ <?php echo $dir_name[$ftype]; ?></h1>
 <?php
-	if(defined("www2dev") && defined("ENABLE_JSMATH") && $article["IS_TEX"]) {
+	if(defined("ENABLE_JSMATH") && $article["IS_TEX"]) {
 		print("<script src=\"/jsMath/easy/load.js\"></script>");
 	}
 ?>

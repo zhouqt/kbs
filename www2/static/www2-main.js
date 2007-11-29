@@ -20,6 +20,7 @@ if (gIE) {
 }
 var kbsrc = null; //namespace in this window
 var www2dev = (typeof gwww2dev != "undefined");
+var havejsmath = (typeof gjsmath != "undefined");
 var gIE6Fx = ((gIE && !gIE5) || gFx || www2dev);
 
 if (!Array.prototype.push) {

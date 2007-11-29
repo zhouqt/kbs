@@ -361,6 +361,7 @@ function page_header($title, $flag = "", $otherheaders = false) {
 <title><?php echo $title; ?></title>
 <?php
  if (defined("www2dev")) echo "<script>var gwww2dev=true;</script>";
+ if (defined("ENABLE_JSMATH")) echo "<script var gjsmath=true;</script>";
 ?> 
 <script src="static/www2-main.js" type="text/javascript"></script>
 <script>writeCss();</script>

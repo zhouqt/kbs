@@ -50,7 +50,11 @@
 	
 	if (isset($_GET['do'])) {
 
-		$ret = bbs_edittitle($board, $id, rtrim($_POST["title"]), $ftype);
+		if($_POST["havemath"] == "1")
+			$is_tex = 1;
+		else
+			$is_tex = 0;
+		$ret = bbs_edittitle($board, $id, rtrim($_POST["title"]), $ftype, $is_tex);
 		if($ret != 0)
 		{
 			switch($ret)
@@ -115,6 +119,9 @@
 </legend>
 发信人: <?php echo $articles[1]['OWNER']; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 标&nbsp;&nbsp;题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo htmlspecialchars($articles[1]['TITLE'],ENT_QUOTES); ?> " />
+<?php if(defined("ENABLE_JSMATH")) { ?>
+<input type="checkbox" name="havemath" value="1" <?php print($articles[1]["IS_TEX"] ? "checked " : ""); ?>/>数学公式
+<?php } ?>
 <textarea name="text" onkeydown='return textarea_okd(dosubmit, event);' wrap="physical" id="sfocus">
 <?php
 	print(htmlspecialchars(bbs_originfile($board,$articles[1]['FILENAME'])));

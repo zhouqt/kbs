@@ -426,6 +426,7 @@ replyForm.prototype.f = function() {
 	if (this.ano) html += '<input type="checkbox" name="anony" value="1" />匿名';
 	if (this.outgo) html += '<input type="checkbox" name="outgo" value="1"' + (this.lsave?'':' checked="checked"') + '/>转信';
 	html += '<input type="checkbox" name="mailback" value="1" />re文抄送信箱';
+	if (havejsmath) html += '<input type="checkbox" name="havemath" value="1" />数学公式';
 	if (this.pDiv) {
 		var rm = [['S','前三行(默认)'],['Y','该作者全文'],['N','不引用'],['R','R模式(不推荐)'],['A','全文']];
 		var v = '['
