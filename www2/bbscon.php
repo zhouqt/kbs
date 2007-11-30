@@ -33,7 +33,11 @@
 		html_error_quit("错误的文章号");
 	}
 	settype($id, "integer");
-	
+
+	$use_tex = 1;
+	if(@$_GET["tex"] == "no")
+		$use_tex = 0;
+
 	$indexModify = @filemtime(bbs_get_board_index($board, $dir_modes["NORMAL"]));
 
 	// 获取上一篇或下一篇，同主题上一篇或下一篇的指示
@@ -138,7 +142,7 @@
 <script type="text/javascript" src="static/www2-addons.js"></script>
 <h1><?php echo $brdarr["NAME"]; ?> 版 <?php echo $dir_name[$ftype]; ?></h1>
 <?php
-	if(defined("ENABLE_JSMATH") && $article["IS_TEX"]) {
+	if(defined("ENABLE_JSMATH") && $article["IS_TEX"] && $use_tex) {
 		print("<script src=\"/jsMath/easy/load.js\"></script>");
 	}
 ?>

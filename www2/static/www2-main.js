@@ -843,7 +843,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	}
 	w(str);
 }
-docWriter.prototype.o = function(id, gid, author, flag, time, title, size, imported) {
+docWriter.prototype.o = function(id, gid, author, flag, time, title, size, imported, is_tex) {
 	var rowclass;	
 	if (www2dev && top.hlInfo && !this.man) {
 		var info = top.hlInfo.split(',');
@@ -896,9 +896,17 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 			} else {
 				str += '<span class="normal">(' + size + ')</span>';
 			}
+			if (is_tex) {
+				str += ' <a href="bbscon.php?bid=' + this.bid + '&id=' + id;
+				if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"];
+				str += '&tex=no">[TeXÔ´Âë]</a>';
+			}
 			break;
 		default:
 			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '">' + title + '</a>';
+			if (is_tex) {
+				str += ' <a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '&tex=no">[TeXÔ´Âë]</a>';
+			}
 			break;
 	}
 	str += '</td></tr>';
