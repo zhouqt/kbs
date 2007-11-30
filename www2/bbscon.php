@@ -34,9 +34,9 @@
 	}
 	settype($id, "integer");
 
-	$use_tex = 1;
-	if(@$_GET["tex"] == "no")
-		$use_tex = 0;
+	$use_tex = 0;
+	if(@$_GET["tex"] == "yes")
+		$use_tex = 1;
 
 	$indexModify = @filemtime(bbs_get_board_index($board, $dir_modes["NORMAL"]));
 

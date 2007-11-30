@@ -890,6 +890,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 		case dir_modes["NORMAL"]:
 			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id;
 			if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"];
+			if (is_tex) str += '&tex=yes';
 			str += '">' + title + '</a>';
 			if (size >= 1000) {
 				str += '<span class="red">(' + (Math.floor(size / 100) / 10.0) + 'k)</span>';
@@ -899,13 +900,15 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 			if (is_tex) {
 				str += ' <a href="bbscon.php?bid=' + this.bid + '&id=' + id;
 				if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"];
-				str += '&tex=no">[TeX源码]</a>';
+				str += '">[TeX源码]</a>';
 			}
 			break;
 		default:
-			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '">' + title + '</a>';
+			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num);
+			if (is_tex) str += '&tex=yes';
+			str += '">' + title + '</a>';
 			if (is_tex) {
-				str += ' <a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '&tex=no">[TeX源码]</a>';
+				str += ' <a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '">[TeX源码]</a>';
 			}
 			break;
 	}
