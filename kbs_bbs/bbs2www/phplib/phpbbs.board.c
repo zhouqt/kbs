@@ -245,14 +245,15 @@ PHP_FUNCTION(bbs_safe_getboard)
         }
     }
     nb = public_board(bh);
-    /*if (!nb) {*/
+    if (!nb) {
         if (getCurrentUser() == NULL) {
             RETURN_NULL();
         }
-        if (!check_read_perm(getCurrentUser(), bh)) {
-            RETURN_NULL();
-        }
-    /*}*/
+    }
+    if (!check_read_perm(getCurrentUser(), bh)) {
+        RETURN_NULL();
+    }
+    
     bs = getbstatus(bid);
     if (array_init(array) != SUCCESS) {
         RETURN_NULL();
