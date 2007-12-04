@@ -53,7 +53,10 @@
 		else
 			$redirt_id = $articles[0]["ID"];
 		bbs_brcaddread($brdarr["NAME"], $redirt_id);
-		header("Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id);
+		$url = "Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id;
+		if(defined("ENABLE_JSMATH") && $use_tex && $articles[0]["IS_TEX"])
+			$url .= "&tex=yes";
+		header($url);
 		exit;
 	}
 	elseif ($ptr == "tp")
@@ -66,7 +69,10 @@
 		else
 			$redirt_id = $articles[0]["ID"];
 		bbs_brcaddread($brdarr["NAME"], $redirt_id);
-		header("Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id);
+		$url = "Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id;
+		if(defined("ENABLE_JSMATH") && $use_tex && $articles[0]["IS_TEX"])
+			$url .= "&tex=yes";
+		header($url);
 		exit;
 	}
 
@@ -109,7 +115,10 @@
 		if ($isnormalboard && cache_header("public",$indexModify,10)) exit;
 		
 		bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
-		header("Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $articles[0]["ID"]);
+		$url = "Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $articles[0]["ID"];
+		if(defined("ENABLE_JSMATH") && $use_tex && $articles[0]["IS_TEX"])
+			$url .= "&tex=yes";
+		header($url);
 		exit;
 	}
 	if (!$ftype && $ptr == 'n' && $articles[2]["ID"] != 0)
@@ -117,7 +126,10 @@
 		if ($isnormalboard && cache_header("public",$indexModify,10)) exit;
 		
 		bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
-		header("Location: " ."bbscon.php?bid=" . $brdnum . "&id=" . $articles[2]["ID"]);
+		$url = "Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $articles[2]["ID"];
+		if(defined("ENABLE_JSMATH") && $use_tex && $articles[2]["IS_TEX"])
+			$url .= "&tex=yes";
+		header($url);
 		exit;
 	}
 
@@ -149,7 +161,7 @@
 <script type="text/javascript"><!--
 var o = new conWriter(<?php echo $ftype; ?>, '<?php echo addslashes($brdarr["NAME"]); ?>', <?php echo $brdnum; ?>, <?php
 echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php
-echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>);
+echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>, <?php echo $article["IS_TEX"] ? ($use_tex ? "2" : "1") : "0"; ?>);
 o.h(1);
 att = new attWriter(<?php echo $brdnum; ?>,<?php echo $id; ?>,<?php echo $ftype; ?>,<?php echo $num; ?>,<?php echo ($cacheable?"1":"0"); ?>);
 <?php $s = bbs2_readfile($filename); if (is_string($s)) echo $s; ?>

@@ -1043,7 +1043,7 @@ function clearArticleDiv(id) {
 	}
 }
 
-function conWriter(ftype, board, bid, id, gid, reid, favtxt, num) {
+function conWriter(ftype, board, bid, id, gid, reid, favtxt, num, use_tex) {
 	this.board = escape(board);
 	this.ftype = ftype;
 	this.bid = bid;
@@ -1076,10 +1076,17 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num) {
 		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
 	if (this.ftype == 0) {
-		ret += '[<a href="' + this.baseurl + '&p=p">上一篇</a>] ';
-		ret += '[<a href="' + this.baseurl + '&p=n">下一篇</a>] ';
-		ret += '[<a href="' + this.baseurl + '&p=tp">同主题上篇</a>] ';
-		ret += '[<a href="' + this.baseurl + '&p=tn">同主题下篇</a>]';
+		var tex_app = '';
+		if (use_tex == 2) {
+			tex_app = '&tex=yes';
+			ret += '[<a href="' + this.baseurl + '">TeX Source</a>] ';
+		}
+		else if(use_tex == 1)
+			ret += '[<a href="' + this.baseurl + '&tex=yes">TeX Rendered</a>] ';
+		ret += '[<a href="' + this.baseurl + '&p=p' + tex_app + '">上一篇</a>] ';
+		ret += '[<a href="' + this.baseurl + '&p=n' + tex_app + '">下一篇</a>] ';
+		ret += '[<a href="' + this.baseurl + '&p=tp' + tex_app + '">同主题上篇</a>] ';
+		ret += '[<a href="' + this.baseurl + '&p=tn' + tex_app + '">同主题下篇</a>]';
 	} else {
 		ret += '<span style="color:#CCCCCC">[上一篇] [下一篇] [同主题上篇] [同主题下篇]</span>';
 	}
