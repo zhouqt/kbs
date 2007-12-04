@@ -1474,7 +1474,7 @@ reget:
             pressreturn();
             break;              /*Haohmaru.98.12.19,不能回文章的版 */
         }
-        if (fileinfo->accessed[1] & FILE_READ) {        /*Haohmaru.99.01.01.文章不可re */
+        if (fileinfo->accessed[1] & FILE_READ && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {        /*Haohmaru.99.01.01.文章不可re */
             clear();
             move(3, 0);
             prints("\n\n            很抱歉，本文已经设置为不可re模式,请不要试图讨论本文...\n");
@@ -2439,12 +2439,23 @@ int do_reply(struct _select_def* conf,struct fileheader *fileinfo)
 
     if (fileinfo==NULL)
         return DONOTHING;
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP))
     if (fileinfo->accessed[1] & FILE_READ) {    /*Haohmaru.99.01.01.文章不可re */
-        clear();
-        move(3, 0);
-        prints("\n\n            很抱歉，本文已经设置为不可re模式,请不要试图讨论本文...\n");
-        pressreturn();
-        return FULLUPDATE;
+        if (HAS_PERM(getCurrentUser(), PERM_SYSOP))
+        {
+            clear();
+            getdata(3, 0, "本文已经设置为不可re模式, 是否强制回复? [y/N]: ", buf, 2, DOECHO, NULL, true);
+            if ((buf[0] != 'y') && (buf[0] != 'Y'))
+                return FULLUPDATE;
+        }
+        else
+        {
+            clear();
+            move(3, 0);
+            prints("\n\n            很抱歉，本文已经设置为不可re模式,请不要试图讨论本文...\n");
+            pressreturn();
+            return FULLUPDATE;
+        }
     }
     setbfile(buf, currboard->filename, fileinfo->filename);
     strcpy(replytitle, fileinfo->title);
@@ -3178,6 +3189,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     }
     if(havemath)
         post_file.accessed[1] |= FILE_TEX;
+    if (re_file && re_file -> accessed[1] & FILE_READ)
+        post_file.accessed[1] |= FILE_READ;
     /*
      * 在boards版版主发文自动添加文章标记 Bigman:2000.8.12 
      */
