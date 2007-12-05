@@ -5778,7 +5778,7 @@ static int read_top_post(struct _select_def *conf,struct fileheader *fh,void *va
                 move(5,0);
                 if(currboard->flag&BOARD_NOREPLY)
                     prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","该版面已设置为不可回复文章...");
-                else if(fh->accessed[1]&FILE_READ)
+                else if(fh->accessed[1]&FILE_READ && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
                     prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","本文已设置为不可回复, 请勿试图讨论...");
                 else{
                     do_reply(conf,fh);
