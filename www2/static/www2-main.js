@@ -1079,10 +1079,10 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num, use_tex) {
 		var tex_app = '';
 		if (use_tex == 2) {
 			tex_app = '&tex=yes';
-			ret += '[<a href="' + this.baseurl + '">TeX Source</a>] ';
+			ret += '[<a href="' + this.baseurl + '">TeX源码</a>] ';
 		}
 		else if(use_tex == 1)
-			ret += '[<a href="' + this.baseurl + '&tex=yes">TeX Rendered</a>] ';
+			ret += '[<a href="' + this.baseurl + '&tex=yes">TeX数学公式</a>] ';
 		ret += '[<a href="' + this.baseurl + '&p=p' + tex_app + '">上一篇</a>] ';
 		ret += '[<a href="' + this.baseurl + '&p=n' + tex_app + '">下一篇</a>] ';
 		ret += '[<a href="' + this.baseurl + '&p=tp' + tex_app + '">同主题上篇</a>] ';
