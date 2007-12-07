@@ -3622,6 +3622,7 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 
 	sprintf(buff,"tmp/%s.%d.ad", getCurrentUser()->userid, getpid());
 	if((fp=fopen(buff,"w"))!=NULL){
+        struct userec *u_deny;
 		fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\n\n      \033[1;31m%s\033[m\n\n决定追加取消您的全站post权限%d天\n",currboard->filename,fileinfo->title, day);
 		if(say[0])
 			fprintf(fp, "\n追加留言:%s\n", say);
@@ -3634,7 +3635,13 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 
 		setbfile(buff, currboard->filename, fileinfo->filename);
 		post_file(getCurrentUser(), "", buff, "AnonyDeny", title, 0, 2, getSession());
-        post_file(getCurrentUser(), "", buff, currboard->filename, title, 0, 2, getSession());
+#ifdef SECONDSITE
+        if(strcmp(currboard->filename, "SecretSky") == 0)
+            getuser("guest", &u_deny);
+        else
+#endif /* SECONDSITE */
+            u_deny = getCurrentUser();
+        post_file(u_deny, "", buff, currboard->filename, title, 0, 2, getSession());
 	}
 
 	move(8,0);
