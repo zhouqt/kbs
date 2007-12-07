@@ -439,7 +439,11 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
                 goto Here;
             }
             /* fancyrabbit Dec 4 2007, 不准封进不去的 ... */
-            if (!check_read_perm(denyuser, currboard))
+            if (!check_read_perm(denyuser, currboard)
+#ifdef COMMEND_ARTICLE
+                    && strcmp(currboard -> filename, COMMEND_ARTICLE)
+#endif
+               )
             {
                 move(3, 0);
                 prints("%s 没有本版的读取权限, 不能封禁", uident);
