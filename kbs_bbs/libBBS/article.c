@@ -2493,8 +2493,8 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, const struct bo
     if (flag & FILE_COMMEND_FLAG) {
         if (data->accessed[1] & FILE_COMMEND)
             originFh->accessed[1] |= FILE_COMMEND;
-        else
-            originFh->accessed[1] &= ~FILE_COMMEND;
+        /*else
+            originFh->accessed[1] &= ~FILE_COMMEND;*/
     }
 #endif
 

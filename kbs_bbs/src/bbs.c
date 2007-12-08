@@ -369,9 +369,12 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 
     if (!isbm
 #ifdef OPEN_NOREPLY
-		&& (flag!=FILE_NOREPLY_FLAG || strcmp(fileinfo->owner,getCurrentUser()->userid) )
+		&& (flag!=FILE_NOREPLY_FLAG || /*strcmp(fileinfo->owner,getCurrentUser()->userid)*/ !isowner(getCurrentUser(), fileinfo))
 #endif
-					)
+#ifdef COMMEND_ARTICLE
+        && (flag != FILE_COMMEND_FLAG) /* 权限判断 caller 来保证, 这里保证任何人推荐都修改 FILE_COMMEND 属性 fancy Dec 9 2007 */
+#endif
+        )
         return DONOTHING;
     if (conf->pos > arg->filecount) {
     if (flag == FILE_MARK_FLAG)
@@ -3519,7 +3522,8 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 
 	if(chk_currBM(currBM, getCurrentUser())) mode |= 0x1;
 #if defined(OPEN_NOREPLY) || defined(COMMEND_ARTICLE)
-	if(!strcmp(getCurrentUser()->userid, fileinfo->owner)) mode |= 0x4;
+	/*if(!strcmp(getCurrentUser()->userid, fileinfo->owner)) mode |= 0x4;*/
+    if (isowner(getCurrentUser(), fileinfo)) mode |= 0x4;
 #endif
 
 
