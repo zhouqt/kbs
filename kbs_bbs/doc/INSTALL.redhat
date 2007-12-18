@@ -34,8 +34,8 @@ libtool                可选
 以上软件都可以直接用 yum 安装，或者使用 Fedora 光盘里的 rpm 安装。
 
 2. 编译安装 kbsbbs
-    下载 kbsbbs 的源代码有两种方法，一种是通过 cvs 方式获取，另一种是下载每
-日更新的 kbsbbs-snapshot 代码包。用 cvs 方式下载源代码请参考 doc/README.cvs
+    下载 kbsbbs 的源代码有两种方法，一种是通过 svn 方式获取，另一种是下载每
+日更新的 kbsbbs-snapshot 代码包。用 svn 方式下载源代码请参考 doc/README.svn
 文件。
 
     注意在 site/ 子目录里面有名字为 fb2k-v2.c 和 fb2k-v2.h 的文件，这两个文件
@@ -44,7 +44,7 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
 一致。可以使用命令 id bbs 来获得 bbs 用户的 uid gid。
 
     然后进入 kbsbbs 的源代码目录，执行下列命令完成编译。
-        contrib/build-RH9.sh
+        contrib/build-redhat.sh
 
     编译成功后，用下列命令进行安装。
         make install
@@ -52,7 +52,7 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
 
     如果你使用的是 snapshot: 
         将 kbsbbs 源代码目录 bbs2www/html 下的文件复制到 /var/www/html/。
-    如果你使用的是 cvs:
+    如果你使用的是 svn:
         在 /var/www/ 目录下 checkout www2 模块，并将老的 /var/www/html 目录
         改名，把 www2 目录改名为 html。
 
