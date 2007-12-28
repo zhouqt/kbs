@@ -485,7 +485,7 @@ int get_favread(void){
 
 	clear();
 	move(1,0);
-	prints("同步他人收藏夹,好友名单和未读标记到本ID.\n会导致本ID原来的收藏夹,好友名单和未读标记丢失，慎用\n");
+	prints("同步他人收藏夹,好友名单,未读标记和自定义功能键到本ID.\n会导致本ID原来的收藏夹,好友名单,未读标记和自定义功能键丢失，慎用\n");
     getdata(5, 0, "请输入对方ID:", destid, IDLEN+1, DOECHO, NULL, true);
 	if(destid[0] == '\0' || destid[0] == '\n'){
 		clear();
@@ -519,7 +519,7 @@ int get_favread(void){
 	}
 	move(8,0);
 	prints("\033[32m为了保证数据同步性，操作前请先退出本id其他登录\033[m\n");
-	prints("\033[31m本次操作会覆盖本id原收藏夹、好友名单和未读标记，无法恢复\033[m");
+	prints("\033[31m本次操作会覆盖本id原收藏夹、好友名单、未读标记和自定义功能键，无法恢复\033[m");
 	getdata(10,0,"确信要进行此操作吗? [y/N] ", passwd, 2, DOECHO, NULL, true);
 	if (passwd[0] != 'y' && passwd[0] != 'Y'){
 		clear();
@@ -561,6 +561,16 @@ int get_favread(void){
         sethomefile(mypath,getCurrentUser()->userid,"friends");
         f_cp(dpath,mypath,0);
         getfriendstr(getCurrentUser(),get_utmpent(getSession()->utmpent),getSession());
+        count++;
+    }
+
+    getdata(15, 0, "同步自定义功能键? [Y]: ", passwd, 2, DOECHO, NULL, true);
+    if (toupper(passwd[0]) != 'N')
+    {
+        sethomefile(dpath, destuser -> userid, "definekey");
+        sethomefile(mypath, getCurrentUser() -> userid, "definekey");
+        f_cp(dpath, mypath, 0);
+        load_key(NULL);
         count++;
     }
 
