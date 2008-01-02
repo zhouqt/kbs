@@ -359,6 +359,7 @@ static int read_key(struct _select_def *conf, int command)
                     list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
                 }
+                else ret = SHOW_REFRESH; /* fancy Jan 3 2008, PREV 这部分干吗还非和 NEXT 要拧着逻辑 ... */
             }
             if (ret==SHOW_REFRESH) {
                 arg->readmode=READ_NORMAL;
