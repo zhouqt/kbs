@@ -368,7 +368,7 @@ PHP_FUNCTION(bbs_start_vote)
 
 	ball.opendate = time(0);
 	ball.type = type;
-	ball.maxdays = 1;
+	ball.maxdays = ball_maxdays;
 
 	if(type == 1){
 		ball.maxtkt = 1;
