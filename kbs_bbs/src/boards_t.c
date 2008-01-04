@@ -580,6 +580,99 @@ int query_bm(void){
 }
 /* END - etnlegend, 2005.10.16, 查询版主更新 */
 
+/* fancy Jan 4 2008, 查询俱乐部权限 */
+int query_club_rights_core(const char *userid, int limited, int mode)
+{
+    struct userec *user;
+    const struct boardheader *bh;
+    char buf[16];
+    int line, count, n, flag;
+    clear();
+    move(0, 0);
+    prints("\033[1;32m[查询俱乐部权限]\033[m");
+    if(!userid || !*userid)
+    {
+        move(1, 0);
+        usercomplete("查询用户: ", buf);
+        move(2, 0);
+        clrtobot();
+    }
+    else
+        sprintf(buf, "%s", userid);
+    if (!*buf || !getuser(buf, &user))
+    {
+        move(1, 0);
+        prints("\033[1;31m取消查询或非法用户...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;
+        clear();
+        return FULLUPDATE;
+    }
+    sprintf(buf, "%s", user->userid);
+    if (!mode)
+    {
+        char ans[2];
+        getdata(2, 0, "查询读取(R)/发表(P)权限: [R] ", ans, 2, DOECHO, NULL, true);
+        if (toupper(ans[0]) == 'P')
+            flag = 1;
+        else
+            flag = 0;
+    }
+    else
+        flag = mode - 1;
+    move(1, 0); clrtobot();
+    prints("\033[1;37m用户 \033[1;33m%s\033[37m 出现于下列%s限制俱乐部版面的%s权限列表中\033[m", buf, flag ? "写" : "读", flag ? "发表" : "读取");
+
+    for(line = 3, count = 0, n = 0; n < get_boardcount(); n++)
+    {
+        if (!(bh = getboard(n + 1)) || !*(bh -> filename))
+            continue;
+        if (flag ? !(bh -> flag & BOARD_CLUB_WRITE) : !(bh -> flag & BOARD_CLUB_READ))
+            continue;
+        if (limited && !check_read_perm(getCurrentUser(), bh))
+            continue;
+        if (flag ? (user -> club_write_rights[(bh -> clubnum - 1) >> 5] & (1 << ((bh -> clubnum - 1) & 0x1f)))
+                : (user -> club_read_rights[(bh -> clubnum - 1) >> 5] & (1 << ((bh -> clubnum - 1) & 0x1f))))
+        {
+            count++;
+            if (!(line < t_lines - 3))
+            {
+                int key;
+                move(line + 1,0);
+                prints("\033[1;32m按 \033[1;33m<Enter>/<Space>\033[1;32m 继续查询或者 \033[1;33m<Esc>/<Q>\033[1;32m 结束查询: \033[m");
+                do
+                {
+                    key = igetch();
+                }
+                while (key != 13 && key != 32 && key != 27 && key != 113 && key != 81);
+                if (key == 13 || key == 32)
+                {
+                    line = 2;
+                    move(line++, 0);
+                    clrtobot();
+                }
+                else
+                    break;
+            }
+            move(line++, 0);
+            sprintf(genbuf, "\033[1;37m[%02d] %s %-32s %-32s\033[m", count,
+                (line % 2) ? "\033[1;33m" : "\033[1;36m", bh -> filename, bh -> title + 13);
+            prints("%s", genbuf);
+        }
+    }
+    move(line + 1, 0);
+    clrtoeol();
+    prints("\033[1;32m查询%s\033[1;32m完成: 查询到 \033[1;33m%d\033[1;32m 个结果...\033[1;37m<Enter>\033[m",
+        (n < get_boardcount()) ? "\033[1;33m未" : "已", count - ((n < get_boardcount()) ? 1 : 0));
+    WAIT_RETURN;
+    clear();
+    return FULLUPDATE;
+}
+
+int query_club_rights(void){
+    return query_club_rights_core(NULL, !HAS_PERM(getCurrentUser(), PERM_SYSOP), 0);
+}
+/* end of query_club_rights */
+
 static int check_newpost(struct newpostdata *ptr)
 {
     struct BoardStatus *bptr;

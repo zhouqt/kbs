@@ -283,6 +283,7 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag);
 int show_boardinfo(const char *bname);
 int query_bm_core(const char *userid,int limited);
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);
+int query_club_rights_core(const char *userid, int limited, int mode);
 int choose_board(int newflag, const char *boardprefix,int group,int yank_flag);
 /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
 

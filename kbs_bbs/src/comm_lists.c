@@ -60,6 +60,7 @@ static const CMD_LIST CMD[]={
     {"PostArticle",         Post,                                   0},
     {"ProtectID",           ProtectID,                              0},
     {"QueryBUser",          query_bm,                               0},
+    {"QueryClub",           query_club_rights,                      0},
     {"ReadBoard",           ReadBoard,                              0},
     {"SearchIP",            search_ip,                              0},
     {"SearchTrace",         searchtrace,                            0},
@@ -67,6 +68,7 @@ static const CMD_LIST CMD[]={
     {"XBoardManager",       set_BM,                                 0},
     {"SetAlarm",            set_clock,                              0},
     {"SetACL",              set_ip_acl,                             0},
+    {"SetRcmdBrd",          set_rcmdbrd,                            0},
     {"Setsyspass",          setsystempasswd,                        0},
     {"ShowMsg",             show_allmsgs,                           0},
     {"Notepad",             shownotepad,                            0},
@@ -104,7 +106,6 @@ static const CMD_LIST CMD[]={
     {"UserDefine",          x_userdefine,                           0},
     {"UDefine",             x_userdefine1,                          0},
     {"DoVote",              x_vote,                                 0},
-    {"SetRcmdBrd",          set_rcmdbrd,                            0},
 
 #if HAVE_MYSQL_SMTH+0 == 1
     {"Addrlist",            al_read,                                0},

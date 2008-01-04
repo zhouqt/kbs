@@ -1358,11 +1358,33 @@ int read_authorinfo(struct _select_def *conf,struct fileheader *fh,void *arg){
 }
 
 /* etnlegend, 2005.10.16, 查询版主更新 */
+/* fancy Jan 4 2008, 查询俱乐部权限挤进来 ... */
 
 int read_showauthorBM(struct _select_def *conf,struct fileheader *fh,void *arg){
+    int key;
     if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
         return DONOTHING;
-    return query_bm_core(fh->owner,false);
+    clear();
+    move(0, 0);
+    prints("\033[1;32m[综合查询功能]\033[m");
+    move(2, 0);
+    prints("  [0] 退出\n  [1] 任职版面\n  [2] 俱乐部读权限清单\n  [3] 俱乐部写权限清单\n\n请选择: ");
+    key = igetch();
+    switch (key)
+    {
+        case '1':
+            return query_bm_core(fh->owner,false);
+            break;
+        case '2':
+            return query_club_rights_core(fh -> owner, false, 1);
+            break;
+        case '3':
+            return query_club_rights_core(fh -> owner, false, 2);
+            break;
+        default:
+            break;
+    }
+    return FULLUPDATE;
 }
 /* END - etnlegend, 2005.10.16, 查询版主更新 */
 
