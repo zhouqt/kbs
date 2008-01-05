@@ -594,14 +594,12 @@ int query_club_rights_core(const char *userid, int limited, int mode)
     {
         move(1, 0);
         usercomplete("查询用户: ", buf);
-        move(2, 0);
-        clrtobot();
     }
     else
         sprintf(buf, "%s", userid);
     if (!*buf || !getuser(buf, &user))
     {
-        move(1, 0);
+        move(1, 0); clrtobot();
         prints("\033[1;31m取消查询或非法用户...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;
         clear();
@@ -611,6 +609,8 @@ int query_club_rights_core(const char *userid, int limited, int mode)
     if (!mode)
     {
         char ans[2];
+        move(1, 10); prints("\033[1;37m%s\033[m", buf);
+        move(2, 0); clrtobot();
         getdata(2, 0, "查询读取(R)/发表(P)权限: [R] ", ans, 2, DOECHO, NULL, true);
         if (toupper(ans[0]) == 'P')
             flag = 1;

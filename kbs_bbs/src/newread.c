@@ -1362,12 +1362,20 @@ int read_authorinfo(struct _select_def *conf,struct fileheader *fh,void *arg){
 
 int read_showauthorBM(struct _select_def *conf,struct fileheader *fh,void *arg){
     int key;
+    struct userec *user;
     if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
         return DONOTHING;
     clear();
     move(0, 0);
     prints("\033[1;32m[综合查询功能]\033[m");
-    move(2, 0);
+    move(1, 0);
+    if (!getuser(fh -> owner, &user))
+    {
+        prints("\033[1;31m非法用户...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;
+        return FULLUPDATE;
+    }
+    prints("查询用户: \033[1;37m%s\033[m\n\n", user -> userid);
     prints("  [0] 退出\n  [1] 任职版面\n  [2] 俱乐部读权限清单\n  [3] 俱乐部写权限清单\n\n请选择: ");
     key = igetch();
     switch (key)
