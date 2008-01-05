@@ -16,7 +16,7 @@ const char * const permstrings[] = {
         "可见隐身",             /* PERM_SEECLOAK */
         "长期帐号",         /* PERM_XEMPT */
         "编辑系统档案",         /* PERM_WELCOME */
-        "板主",                 /* PERM_BOARDS */
+        "版主",                 /* PERM_BOARDS */
         "帐号管理员",           /* PERM_ACCOUNTS */
         "水木智囊团",       /* PERM_CHATCLOAK */
         "封禁娱乐权限",           /* PERM_DENYRELAX */
