@@ -2442,7 +2442,6 @@ int do_reply(struct _select_def* conf,struct fileheader *fileinfo)
 
     if (fileinfo==NULL)
         return DONOTHING;
-    if (HAS_PERM(getCurrentUser(), PERM_SYSOP))
     if (fileinfo->accessed[1] & FILE_READ) {    /*Haohmaru.99.01.01.ндуб╡╩©иre */
         if (HAS_PERM(getCurrentUser(), PERM_SYSOP))
         {
