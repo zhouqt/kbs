@@ -565,7 +565,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
     NLNode *head,*start,*curr;
     FILE *fp;
     struct userec *user;
-    char genbuf[1024],buf[256],line[256],fn[256],userid[16],ans[4],**p_users;
+    char genbuf[1024],buf[256],line[256],fn[256],userid[16],ans[4],**p_users, *sp_com;
     int i,j,k,write_perm,need_refresh,count,page;
     void *arg[2];
     if(!chk_currBM(currBM,getCurrentUser()))
@@ -781,6 +781,8 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 "    \033[1;31m-\033[1;37m 起始的行表示删除其后的用户;\033[m\n"
                 "    \033[1;32m+\033[1;37m 起始的行表示增加其后的用户;\033[m\n"
                 "    \033[1;37m无前缀时默认操作为增加...\033[m\n\n"
+                "    \033[1;37m用户 ID 后可指定特定的附加说明, 若不指定, \033[m\n"
+                "    \033[1;37m则使用全局的附加说明...\033[m\n\n"
                 "\033[1;37m按 \033[1;32m<Enter>\033[1;37m 键后开始编辑批量修改列表: \033[m");
             WAIT_RETURN;
             saveline(0,0,NULL);
@@ -823,10 +825,17 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         continue;
                     case '-':
                         trimstr(&line[1]);
+                        /* fancy Jan 11 2008, 加入特定附加说明支持 ... */
+                        sp_com = strchr(&line[1], 32);
+                        if (sp_com)
+                        {
+                            *sp_com++ = 0;
+                            trimstr(sp_com);
+                        }
                         if(!getuser(&line[1],&user)||!get_user_club_perm(user,currboard,write_perm))
                             continue;
                         if(!del_user_club_perm(user,currboard,write_perm)){
-                            club_maintain_send_mail(user->userid,comment,1,write_perm,currboard,getSession());
+                            club_maintain_send_mail(user->userid, sp_com ? sp_com : comment,1,write_perm,currboard,getSession());
                             j++;
                         }
                         break;
@@ -834,10 +843,17 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         line[0]=32;
                         trimstr(line);
                     default:
+                        /* fancy Jan 11 2008, 加入特定附加说明支持 ... */
+                        sp_com = strchr(line, 32);
+                        if (sp_com)
+                        {
+                            *sp_com++ = 0;
+                            trimstr(sp_com);
+                        }
                         if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,currboard,write_perm))
                             continue;
                         if(!set_user_club_perm(user,currboard,write_perm)){
-                            club_maintain_send_mail(user->userid,comment,0,write_perm,currboard,getSession());
+                            club_maintain_send_mail(user->userid, sp_com ? sp_com : comment,0,write_perm,currboard,getSession());
                             i++;
                         }
                         break;
