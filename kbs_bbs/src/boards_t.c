@@ -630,8 +630,7 @@ int query_club_rights_core(const char *userid, int limited, int mode)
             continue;
         if (limited && !check_read_perm(getCurrentUser(), bh))
             continue;
-        if (flag ? (user -> club_write_rights[(bh -> clubnum - 1) >> 5] & (1 << ((bh -> clubnum - 1) & 0x1f)))
-                : (user -> club_read_rights[(bh -> clubnum - 1) >> 5] & (1 << ((bh -> clubnum - 1) & 0x1f))))
+        if (get_user_club_perm(user, bh, flag))
         {
             count++;
             if (!(line < t_lines - 3))
