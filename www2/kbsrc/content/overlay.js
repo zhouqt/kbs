@@ -51,11 +51,11 @@ KBSRC.prototype = {
 				txt = "KBSRC Activated (synchronizing)"
 				img = "chrome://kbsrc/skin/kbsrcTransfer.gif";
 			} else {
-				var minutes = 0;
+				var minutes = -1;
 				if (oHost.lastSync > 0) {
 					minutes = Math.floor(((new Date()).getTime() - oHost.lastSync) / 60000);
 				}
-				txt = "KBSRC Activated (last sync: " + (minutes ? (minutes + " minutes before") : "never") + ")";
+				txt = "KBSRC Activated (last sync: " + ((minutes>=0) ? (minutes + " minutes before") : "never") + ")";
 				img = "chrome://kbsrc/skin/kbsrcEnabled.gif";
 			}
 			document.getElementById('kbsrc-tooltip-value').setAttribute("value", txt);
