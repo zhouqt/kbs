@@ -2,23 +2,23 @@
 <RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
          xmlns:NC="http://home.netscape.com/NC-rdf#"
          xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <RDF:Seq RDF:about="rdf:#$VRYuV">
-    <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.6"/>
-  </RDF:Seq>
+  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
+                   em:version="0.9.7"
+                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAFMUiuFg7yoJk+yE6UOZuPBNcYHFqjwrKqlXJNBX3ZnDbAly6VGn+FsP648QRQ0zZZdq39RHFwYSXM8swqYFkTs0KKy0hwpr8lEq3Y4/Seq8Ok5vJlJFJEMQRthXA1xf6vJVepeYdMZOfHfcEGT3/7VV1A/sffdMSzsstp5Rb5xk">
+    <em:updates RDF:resource="rdf:#$VRYuV"/>
+  </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.7"
+                   em:version="0.9.7"
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAHhGjZ+gOfBGuixuNdt4vF9RniT+4IecsqKZD8V9iuYsbVoA60CPDdazMjpRa/yRSIihCDEGIf5e4/wY8wTXq+FtOodLeBDFdMZELcGBNLHbCYTa2KbUn2LZ8cqJ7qubStuU/wbVgfac4KPW85qB8l1lcxAPVkS3BTnLq/ec+act">
+    <em:targetApplication RDF:resource="rdf:#$.RYuV"/>
+  </RDF:Description>
   <Description RDF:about="rdf:#$.RYuV"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.0"
                    em:maxVersion="3.0"
                    em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi" />
-  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.6"
-                   em:version="0.9.6"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAEHxL6weva4xFHtWQ5bAMxXZb5Wt68Y3URJfkre/5YKG89XnjRiS/8uf6yEE7f15hZekyhVi7UqLvUeQ0MzZUg+U3wibgTrrW7K0v4CsdfslEaPSDXP4TssNKfEco4pEPuI3Ab8sWJjdHvu2QYB+u2UlxQXq0ljZUbcTVjcQp+zx">
-    <em:targetApplication RDF:resource="rdf:#$.RYuV"/>
-  </RDF:Description>
-  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
-                   em:version="0.9.6"
-                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAEVe9HFsWy5neOsmS2+03e56ErbnLPmA2+jIRfSVTHLX70IOYibnlwesd9JaIMJ2PH6HPpJsWSUwtJCirM8+XFOIRnyNA6oweNKd80MT8O4b0sT+0JZ7dd2NtH+J8C8Us5VDjSvILqlm/enKg1w+KVISKheysMrw+HIn2ftPGduZ">
-    <em:updates RDF:resource="rdf:#$VRYuV"/>
-  </RDF:Description>
+  <RDF:Seq RDF:about="rdf:#$VRYuV">
+    <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.7"/>
+  </RDF:Seq>
 </RDF:RDF>
