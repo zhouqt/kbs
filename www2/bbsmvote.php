@@ -32,40 +32,40 @@
 			else
 				$ball_desp = "本投票暂时没有描述";
 
-			if(isset($_POST["numlogin"])){
+			/*if(isset($_POST["numlogin"])){
 				$numlogin = $_POST["numlogin"];
 				settype($numlogin,"integer");
 				if($numlogin < 0)
 					$numlogin = 0;
 			}
-			else
+			else*/
 				$numlogin = 0;
 
-			if(isset($_POST["numpost"])){
+			/*if(isset($_POST["numpost"])){
 				$numpost = $_POST["numpost"];
 				settype($numpost,"integer");
 				if($numpost < 0)
 					$numpost = 0;
 			}
-			else
+			else*/
 				$numpost = 0;
 
-			if(isset($_POST["numstay"])){
+			/*if(isset($_POST["numstay"])){
 				$numstay = $_POST["numstay"];
 				settype($numstay,"integer");
 				if($numstay < 0)
 					$numstay = 0;
 			}
-			else
+			else*/
 				$numstay = 0;
 
-			if(isset($_POST["numday"])){
+			/*if(isset($_POST["numday"])){
 				$numday = $_POST["numday"];
 				settype($numday,"integer");
 				if($numday < 0)
 					$numday = 0;
 			}
-			else
+			else*/
 				$numday = 0;
 
 			if(isset($_POST["maxdays"])){
