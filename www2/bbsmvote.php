@@ -230,7 +230,7 @@ function clearItem(){
 <div id="oDivItems">
 </div>
 
-<!--
+<?php /*
 <hr class="default">
 限制投票资格选项:<br>
 上站次数限制:<input type="text" name="numlogin" value="0"><br>
@@ -238,7 +238,7 @@ function clearItem(){
 上站总时数限制:<input type="text" name="numstay" value="0"><br>
 帐号注册时间限制:<input type="text" name="numday" value="0"><br>
 <hr class="default">
--->
+*/ ?>
 <center>
 <input type="submit" name="submit" value="确定">
 [<a href="javascript:history.go(-1)">快速返回</a>]
