@@ -93,9 +93,9 @@ doc/ 目录的文件及 水木社区 (http://newsmth.net/) BBSMan_Dev 版的文章。
 5. 配置 apache 和 php
     下面这些步骤同样用 root 用户进行。
 
-      cd /usr/lib/php4 ( 也可能是 /usr/lib/php/modules )
+      cd /usr/lib/php/modules ( 也可能是 /usr/lib/php4 )
       ln -s /var/www/libexec/bbs/libphpbbslib.so
-      目录 /usr/lib/php4 是 PHP 所配置的 extension_dir 路径，在不同的系统中
+      目录 /usr/lib/php/modules 是 PHP 所配置的 extension_dir 路径，在不同的系统中
 可能会不一样，如果出现问题，请按照下面第 6 步的方法检查。
 
     编辑 /etc/php.ini 文件，修改
