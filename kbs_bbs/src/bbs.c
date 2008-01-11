@@ -801,7 +801,7 @@ void readtitle(struct _select_def* conf)
             readmode="回收";
             break;
         case DIR_MODE_JUNK:
-            readmode="纸娄";
+            readmode="纸篓";
             break;
         case DIR_MODE_ORIGIN:
             readmode="原作";
