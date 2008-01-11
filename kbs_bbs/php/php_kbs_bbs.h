@@ -21,10 +21,6 @@
 #ifndef PHP_KBS_BBS_H
 #define PHP_KBS_BBS_H
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif /* _GNU_SOURCE */
-
 #include "php.h"
 #include "php_ini.h"
 

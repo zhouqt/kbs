@@ -60,7 +60,7 @@ AC_ARG_ENABLE(admin,
 [
 	if test "$enableval" = "yes" ; then
 	        if test -d $srcdir/admin; then
-                    AC_CONFIG_FILES(admin/Makefile)
+                    AC_CONFIG_FILES([admin/Makefile])
                     BBSSUBDIRS="$BBSSUBDIRS admin"
 	        else
         	        AC_MSG_ERROR([can't find admin package,please get it first!])
@@ -75,8 +75,8 @@ AC_ARG_ENABLE(innbbsd,
 	if test "$enableval" = "yes" ; then
 	        if test -d $srcdir/innbbsd; then
                     BBS_LIB_ICONV
-                    AC_CONFIG_FILES(innbbsd/Makefile
-                                    innbbsd/linkinnd.sh)
+                    AC_CONFIG_FILES([innbbsd/Makefile
+                                    innbbsd/linkinnd.sh])
                     BBSSUBDIRS="$BBSSUBDIRS innbbsd"
 	        else
         	        AC_MSG_ERROR([can't find innbbsd package,please get it first!])
@@ -90,7 +90,7 @@ AC_ARG_ENABLE(ssh,
 [
   if test "$enableval" = "yes" ; then
 		if test -d $srcdir/sshbbsd; then
-			AC_CONFIG_SUBDIRS(sshbbsd)
+			AC_CONFIG_SUBDIRS([sshbbsd])
             BBSSUBDIRS="$BBSSUBDIRS sshbbsd"
 		else
 			AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
@@ -98,34 +98,8 @@ AC_ARG_ENABLE(ssh,
   fi
 ])
 
-if [ test -z "$enable_www" ]; then
-	enable_www=yes
-fi
-
-AC_ARG_ENABLE(www,
-[  --enable-www
-                          enable web support(need bbs2www package)],
-[
-	if test "$enableval" = "yes" ; then
-		if test -d $srcdir/bbs2www; then
-            AC_CONFIG_FILES([bbs2www/Makefile
-                             bbs2www/lib/Makefile
-                             bbs2www/phplib/Makefile
-                             bbs2www/phplib/config.m4])
-            BBSSUBDIRS="$BBSSUBDIRS bbs2www"
-		else
-			AC_MSG_ERROR([can't find bbs2www package,please get it first!])
-		fi
-		AC_DEFINE([HAVE_WWW], [1], [Define to enable www support.])
-		CONFIG_HAVE_WWW=1
-	else
-		CONFIG_HAVE_WWW=0
-	fi
-])
-AC_SUBST(CONFIG_HAVE_WWW)
+m4_include(scripts.in)
 AC_SUBST(BBSSUBDIRS)
-
-m4_include(bbs2www.in)
 
 AC_ARG_ENABLE(customizing,
 [  --enable-customizing
@@ -231,7 +205,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_YACC
-m4_include(config.lib)
+m4_include(deplibs.in)
 
 if test "$GCC" = "yes"; then
   CFLAGS="$CFLAGS -Wpointer-arith -Wall"

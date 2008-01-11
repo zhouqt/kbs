@@ -1,0 +1,32 @@
+# Checking PHP script support
+if [ test -z "$with_php" ]; then
+  with_php="yes"
+fi
+
+AC_ARG_WITH(php,
+[  --with-php=path
+                          specify PHP installation directory],
+PHP_DIR="$withval", PHP_DIR="yes")
+
+if test "$PHP_DIR" != "no"; then
+  if test "$PHP_DIR" = "yes"; then
+    AC_PATH_PROG([PHPCONFIG], [php-config], [none],
+                 [/home/share/php/bin:/usr/local/bin:$PATH])
+  else
+    AC_PATH_PROG([PHPCONFIG], [php-config], [none],
+                 [$PHP_DIR/bin])
+  fi
+
+  if test "$PHPCONFIG" = "none"; then
+    AC_MSG_ERROR(php-config not found)
+  fi
+
+  AC_CONFIG_FILES([php/Makefile
+                   php/config.m4])
+  BBSSUBDIRS="$BBSSUBDIRS php"
+  PHPBBSLIBPATH=`$PHPCONFIG --extension-dir`
+  PHPINCLUDES=`$PHPCONFIG --includes`
+  AC_SUBST(PHPINCLUDES)
+  AC_SUBST(PHPBBSLIBPATH)
+
+fi

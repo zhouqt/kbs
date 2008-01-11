@@ -15,7 +15,8 @@ EXTRA_DIST = php_kbs_bbs.h \
              phpbbs.system.h \
              phpbbs.user.h  \
              phpbbs.vote.h \
-             phpbbs.wforum.h 
+             phpbbs.wforum.h \
+			 bbslib.h
 libdir=@PHPBBSLIBPATH@
 lib_LTLIBRARIES = libphpbbslib.la
 phpdir=@PHPBBSLIBPATH@
@@ -36,7 +37,8 @@ libphpbbslib_la_SOURCES = phpbbslib.c \
                           phpbbs.system.c \
                           phpbbs.user.c  \
                           phpbbs.vote.c \
-                          phpbbs.wforum.c 
-libphpbbslib_la_LIBADD = -L../../libBBS -lBBS -L../../libsystem -lsystem -L../lib -lbbslib
-AM_CFLAGS  = -I$(top_srcdir)/src -I$(top_srcdir)/bbs2www/include -I@PHPBASE@ -I@PHPBASE@/main -I@PHPBASE@/Zend -I@PHPBASE@/TSRM -DCOMPILE_DL_KBS_BBS
+                          phpbbs.wforum.c \
+						  bbslib.c
+libphpbbslib_la_LIBADD = $(top_builddir)/libBBS/libBBS.la $(top_builddir)/libsystem/libsystem.la
+AM_CFLAGS  = @PHPINCLUDES@ -I$(top_srcdir)/src -DCOMPILE_DL_KBS_BBS
 CLEANFILES=@EXTRA_CLEAN@
