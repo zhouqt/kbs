@@ -98,9 +98,6 @@ AC_ARG_ENABLE(ssh,
   fi
 ])
 
-m4_include(scripts.in)
-AC_SUBST(BBSSUBDIRS)
-
 AC_ARG_ENABLE(customizing,
 [  --enable-customizing
                           enable customizing in INI file],
@@ -205,11 +202,15 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_YACC
-m4_include(deplibs.in)
 
 if test "$GCC" = "yes"; then
   CFLAGS="$CFLAGS -Wpointer-arith -Wall"
 fi
+
+m4_include(scripts.in)
+m4_include(deplibs.in)
+
+AC_SUBST(BBSSUBDIRS)
 
 # Checks for libraries.
 AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c

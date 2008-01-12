@@ -17,9 +17,9 @@ EXTRA_DIST = php_kbs_bbs.h \
              phpbbs.vote.h \
              phpbbs.wforum.h \
 			 bbslib.h
-libdir=@PHPBBSLIBPATH@
+libdir=@PHPEXTDIR@
 lib_LTLIBRARIES = libphpbbslib.la
-phpdir=@PHPBBSLIBPATH@
+phpdir=@PHPEXTDIR@
 #php_DATA=funcs.php
 libphpbbslib_la_SOURCES = phpbbslib.c \
                           phpbbs.announce.c \
@@ -40,5 +40,5 @@ libphpbbslib_la_SOURCES = phpbbslib.c \
                           phpbbs.wforum.c \
 						  bbslib.c
 libphpbbslib_la_LIBADD = $(top_builddir)/libBBS/libBBS.la $(top_builddir)/libsystem/libsystem.la
-AM_CFLAGS  = @PHPINCLUDES@ -I$(top_srcdir)/src -DCOMPILE_DL_KBS_BBS
+AM_CFLAGS  = @PHPCFLAGS@ -I$(top_srcdir)/src -DCOMPILE_DL_KBS_BBS
 CLEANFILES=@EXTRA_CLEAN@

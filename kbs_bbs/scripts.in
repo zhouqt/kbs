@@ -21,12 +21,19 @@ if test "$PHP_DIR" != "no"; then
     AC_MSG_ERROR(php-config not found)
   fi
 
+  PHP_OLD_CFLAGS=$CFLAGS
+  PHPINCLUDES=`$PHPCONFIG --includes`
+  CFLAGS="$PHPINCLUDES $CFLAGS"
+  AC_CHECK_DECL([_GNU_SOURCE], [],
+                [export PHPCFLAGS=-D_GNU_SOURCE], [#include <php.h>])
+  CFLAGS=$PHP_OLD_CFLAGS
+
+  PHPCFLAGS="$PHPINCLUDES $PHPCFLAGS"
+  PHPEXTDIR=`$PHPCONFIG --extension-dir`
+  AC_SUBST(PHPCFLAGS)
+  AC_SUBST(PHPEXTDIR)
   AC_CONFIG_FILES([php/Makefile
                    php/config.m4])
   BBSSUBDIRS="$BBSSUBDIRS php"
-  PHPBBSLIBPATH=`$PHPCONFIG --extension-dir`
-  PHPINCLUDES=`$PHPCONFIG --includes`
-  AC_SUBST(PHPINCLUDES)
-  AC_SUBST(PHPBBSLIBPATH)
 
 fi
