@@ -752,7 +752,16 @@ void mail_msg(int id, struct userec* user,session_t* session)
     if (!fn) return;
 
     now = time(0);
-    sprintf(title, "[%20.20s] %s讯息备份", ctime(&now) + 4, id ? "部分" : "所有");
+    /* fancy Jan 13 2008, 区分以 sender/content 搜寻, 有点儿 dirty ... */
+    if (id > 0)
+        sprintf(title, "[%20.20s] 部分讯息备份 (发讯人)", ctime(&now) + 4);
+    else if (!id)
+        sprintf(title, "[%20.20s] 所有讯息备份", ctime(&now) + 4);
+    else
+    {
+        sprintf(title, "[%20.20s] 部分讯息备份 (内容)", ctime(&now) + 4);
+        id = -id;
+    }
 
     write_header(fn, user,1,NULL,title,0,0,session);
     count = get_msgcount(id, user->userid);

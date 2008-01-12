@@ -347,7 +347,11 @@ reenter:
                     }
                     close(fd2);
                     close(fd);
-                    all = 1;
+                    /* fancy Jan 13 2008, Çø·Ö i ºÍ s ... */
+                    if (toupper(ch) == 'S')
+                        all = -1;
+                    else
+                        all = 1;
                 }
                 break;
             case 'c':
@@ -371,7 +375,7 @@ reenter:
             case 'm':
             case 'M':
                 if(count!=0)
-                    mail_msg(all ? 2 : 0, getCurrentUser(), getSession());
+                    mail_msg((all == 1) ? 2 : (!all) ? 0 : -2, getCurrentUser(), getSession());
                 goto outofhere;
             default:
                 goto reenter;
