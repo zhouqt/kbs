@@ -1390,6 +1390,9 @@ int read_showauthorBM(struct _select_def *conf,struct fileheader *fh,void *arg){
             return query_club_rights_core(fh -> owner, false, 2);
             break;
         default:
+            move(t_lines - 1, 0); clrtobot();
+            prints("ÍË³ö ...\033[0;33m<Enter>\033[m");
+            WAIT_RETURN;
             break;
     }
     return FULLUPDATE;
