@@ -8,8 +8,8 @@ if (!isset($topdir))
 
 // NOTE: If you want to statically link kbs_bbs phpbbslib into php,
 //       you *MUST* set enable_dl variable to Off in php.ini file.
-if (BUILD_PHP_EXTENSION==0)
-	@dl("$topdir/../libexec/bbs/libphpbbslib.so");
+if (!defined("BUILD_PHP_EXTENSION") || BUILD_PHP_EXTENSION==0)
+	@dl("libphpbbslib.so");
 
 chdir(BBS_HOME);
 if (!bbs_ext_initialized())
@@ -332,8 +332,8 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 	if ($cachemode=="") {
 		cache_header("nocache");
 	}
+	echo '<?xml version="1.0" encoding="'.$charset.'"?>'."\n";
 ?>
-<?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
 	 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

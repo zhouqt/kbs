@@ -43,8 +43,8 @@
 	
 	Header("Content-type: file/html");
 	Header("Content-Disposition: inline;filename=".$pc["USER"]."_blog_".substr($archDate[0],0,8)."_".substr($archDate[1],0,8).".html");
+echo '<?xml version="1.0" encoding="gb2312"?>';
 ?>
-<?xml version="1.0" encoding="gb2312"?>
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

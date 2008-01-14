@@ -9,7 +9,7 @@ if (!isset($topdir))
 // NOTE: If you want to statically link kbs_bbs phpbbslib into php,
 //       you *MUST* set enable_dl variable to Off in php.ini file.
 if (!defined("BUILD_PHP_EXTENSION") || BUILD_PHP_EXTENSION==0)
-	@dl("$topdir/../libexec/bbs/libphpbbslib.so");
+	@dl("libphpbbslib.so");
 
 chdir(BBS_HOME);
 if (!bbs_ext_initialized())

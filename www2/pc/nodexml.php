@@ -69,20 +69,16 @@ pc_db_close($link);
 
 header("Content-Type: text/xml");
 header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"]."_".html_format($node[subject]).".xml");
-?>
-<?xml version="1.0" encoding="GB2312"?>
-<?php
+echo '<?xml version="1.0" encoding="GB2312"?>';
 	if( $stylesheet === 0 )
 	{
-?>
-<?xml-stylesheet type="text/xsl" href="/pc/nodexsl.php?id=<?php echo $pc["USER"]; ?>"?>
-<?php
+	echo '<?xml-stylesheet type="text/xsl" href="/pc/indexxsl.php?id='.$pc["USER"].'"?>';
 	}
 	elseif( $stylesheet === 1 )
 	{
+	echo '<?xml-stylesheet type="text/css" href="/pc/indexxsl.php?id='.$pc["USER"].'"?>';
+	}
 ?>
-<?xml-stylesheet type="text/css" href="/pc/nodexsl.php?id=<?php echo $pc["USER"]; ?>"?>
-<?php   }   ?>
 <!-- Edited by windinsn@smth.org -->
 <rdf:RDF xmlns:smthBlog="http://www.smth.org/blog/ns/1.0/" 
 	 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 

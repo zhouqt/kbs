@@ -3,8 +3,8 @@
 	
 	function pc_rss_init()
 	{
+	echo '<?xml version="1.0" encoding="gb2312"?>';
 ?>
-<?xml version="1.0" encoding="gb2312"?>
 <rdf:RDF 
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:dc="http://purl.org/dc/elements/1.1/" 
@@ -137,8 +137,8 @@
 	
 	function pc_rss2_init($rss)
 	{
+	echo '<?xml version="1.0" encoding="gb2312" ?>';
 ?>
-<?xml version="1.0" encoding="gb2312" ?>
 <rss version="2.0">
 	<channel>
 		<title><?php echo $rss[channel][title]; ?></title>

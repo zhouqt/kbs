@@ -4,8 +4,8 @@ require("pcstat.php");
 
 function pc_opml_init($opmlTitle)
 {
+echo '<?xml version="1.0" encoding="gb2312" ?>';
 ?>
-<?xml version="1.0" encoding="gb2312" ?> 
 <opml>
 <head>
 <title><?php echo htmlspecialchars($opmlTitle); ?></title>

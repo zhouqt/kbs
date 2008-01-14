@@ -18,8 +18,8 @@
 	{
 		header("Content-Type: text/xml");
 		header("Content-Disposition: inline;filename=rss.xml");
+		echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
-<?xml version="1.0" encoding="UTF-8"?>
 <response>
 <error>0</error>
 </response>
@@ -30,8 +30,8 @@
 	{
 		header("Content-Type: text/xml");
 		header("Content-Disposition: inline;filename=rss.xml");
+		echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
-<?xml version="1.0" encoding="UTF-8"?>
 <response>
 <error>1</error>
 <message><?php echo $err; ?></message>
