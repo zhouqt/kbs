@@ -93,11 +93,6 @@ doc/ 目录的文件及 水木社区 (http://newsmth.net/) BBSMan_Dev 版的文章。
 5. 配置 apache 和 php
     下面这些步骤同样用 root 用户进行。
 
-      cd /usr/lib/php/modules ( 也可能是 /usr/lib/php4 )
-      ln -s /var/www/libexec/bbs/libphpbbslib.so
-      目录 /usr/lib/php/modules 是 PHP 所配置的 extension_dir 路径，在不同的系统中
-可能会不一样，如果出现问题，请按照下面第 6 步的方法检查。
-
     编辑 /etc/php.ini 文件，修改
       short_open_tag = Off
       magic_quotes_gpc = off
@@ -125,8 +120,6 @@ doc/ 目录的文件及 水木社区 (http://newsmth.net/) BBSMan_Dev 版的文章。
     然后在浏览器中输入地址 http://server_address/info.php，查看输出页面，
 如果页面中没有 kbs_bbs support enabled 这一行，说明 kbsbbs 的 phpbbslib
 extension 没有起作用。
-    注意查找  extension_dir 的配置路径，这个配置路径之下必须有一个
-libphpbbslib.so 文件符号连接到 /var/www/libexec/bbs/libphpbbslib.so。
     另外 apache 的 error log 也可能有有用的信息：/var/log/httpd/error_log。
 
     Fedore 默认将 httpd 服务加入 SELinux 保护，如果开启 SELinux 会导致
