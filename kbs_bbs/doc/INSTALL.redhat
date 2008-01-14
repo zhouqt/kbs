@@ -29,7 +29,7 @@ php-mysql              可选
 autoconf               可选
 automake               可选
 libtool                可选
-     (以上 3 个只有使用 CVS 时才需要)
+     (以上 3 个只有使用 SVN 时才需要)
 
 以上软件都可以直接用 yum 安装，或者使用 Fedora 光盘里的 rpm 安装。
 

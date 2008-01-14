@@ -38,7 +38,7 @@ gmp-4.1.2              可选      选择 ssh 方式支持才需要
                        定一个，例如放在自己 home 目录的某个子目录下
 
 2.2 安装 libesmtp 和 gmp
-    从 ftp://cvs.kcn.cn 下载 libesmtp-cygwin.tar.gz 和 gmp-cygwin.tar.gz 
+    从 ftp://svn.kcn.cn 下载 libesmtp-cygwin.tar.gz 和 gmp-cygwin.tar.gz 
 二进制包，可放在 $(SRCDIR) 目录下，使用如下命令进行安装：
           tar zxPf libesmtp-cygwin.tar.gz
           tar zxPf gmp-cygwin.tar.gz
@@ -113,7 +113,7 @@ identity.pub 文件可预先在 Linux 或 FreeBSD 下生成，然后复制到 cygwin 里面
 
     如果你使用的是 snapshot: 
         将 kbsbbs 源代码目录 bbs2www/html 下的文件复制到 /usr/local/www/htdocs。
-    如果你使用的是 cvs:
+    如果你使用的是 svn:
         在 /usr/local/www 目录下 checkout www2 模块，并将 www2 目录改名为 htdocs。
 
     php 的配置文件可以从 php 源代码目录得到，将 php.ini-dist 复制为

@@ -24,7 +24,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 	    $BBSSRC/libBBS/libpc.c
 	    $BBSSRC/src/personal_corp.c
 	    $WWWHOME/pc/ 目录
-	    如果缺少上述代码，请通过 cvs 更新您的kbsbbs或下载最新的kbsbbs-snapshot
+	    如果缺少上述代码，请通过 svn 更新您的kbsbbs或下载最新的kbsbbs-snapshot
 	    代码。
 	1.3 确认您的系统配置文件($BBSHOME/etc/sysconf.ini)中含有下面的字段:
 		MYSQLBLOGHOST       = ""    //MySQL服务器地址
@@ -49,7 +49,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     php 4.3.0 或更高版本；
 
 3. 全新安装
-    通过 cvs 获得最新的kbsbbs代码(方法见 README.cvs 文档)，或是从 http://cvs.kcn.cn
+    通过 svn 获得最新的kbsbbs代码(方法见 README.svn 文档)，或是从 http://dev.kcn.cn
 下载 kbsbbs-snapshot 版本的kbsbbs代码。然后按照 INSTALL 文档进行安装。
 配置时需要注意下面三点：
     1) 在 MySQL 中建立 KBS.Blog 所需要的数据库结构，见 DB.Blog.Strucure.sql 文档；

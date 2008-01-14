@@ -27,9 +27,9 @@ FreeBSD、Solaris 8/9 for X86/SPARC 等)上的编译和安装，主要讨论用完全定制的方
 1. 需要的软件
 zlib                   必须
 libesmtp > 0.8         可选
-autoconf-2.57          可选      如果从 cvs 下载源代码编译安装则必需
-automake-1.6.X         可选      如果从 cvs 下载源代码编译安装则必需
-libtool-1.4.X          可选      如果从 cvs 下载源代码编译安装则必需
+autoconf-2.57          可选      如果从 svn 下载源代码编译安装则必需
+automake-1.6.X         可选      如果从 svn 下载源代码编译安装则必需
+libtool-1.4.X          可选      如果从 svn 下载源代码编译安装则必需
 apache_1.3.X           可选      选择 web 界面支持才需要
   or apache2
 php >= 4.3.0           可选      选择 web 界面支持才需要
@@ -86,8 +86,8 @@ libesmtp 的话，则系统中必须安装有 sendmail 程序。
     gmp 可以直接使用操作系统自带的软件包。
 
 2.3 下载 kbsbbs、apache 和 php 的代码包
-    下载 kbsbbs 的源代码有两种方法，一种是通过 cvs 方式获取，另一种是下载每
-日更新的 kbsbbs-snapshot 代码包。用 cvs 方式下载源代码请参考 doc/README.cvs
+    下载 kbsbbs 的源代码有两种方法，一种是通过 svn 方式获取，另一种是下载每
+日更新的 kbsbbs-snapshot 代码包。用 svn 方式下载源代码请参考 doc/README.svn
 文件。把 kbsbbs、apache 和 php 的代码包放在 $(SRCDIR) 目录，然后分别解开。
 
     注意在 site/ 子目录里面有名字为 fb2k-v2.c 和 fb2k-v2.h 的文件，这两个文件
@@ -194,7 +194,7 @@ phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 就是必须执行的步骤了。
 
     如果你使用的是 snapshot: 
         将 kbsbbs 源代码目录 bbs2www/html 下的文件复制到 $(WWWHOME)/htdocs。
-    如果你使用的是 cvs:
+    如果你使用的是 svn:
         在 $(WWWHOME) 目录下 checkout www2 模块，并将 www2 目录改名为 htdocs。
 
     php 的配置文件可以从 php 源代码目录得到，将 php.ini-dist 复制为
