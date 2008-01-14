@@ -184,6 +184,10 @@ $(BBSHOME) 下去，创建必要的子目录并确保设置正确的权限。以后更改源代码的话，只
         AddType application/x-httpd-php .php
     这一行没有被注释掉（apache2 不需要检查此设置）
 
+    使用 apache2 时，在 /etc/apache2/sites-enabled/000-default 文件中，注释掉
+        RedirectMatch ^/$ /apache2-default/
+    一行以去除默认的重定向（apache 不需要做此项设置）
+
     如果使用下载 snapshot 包的方式获得源码，则
     将 kbsbbs 源代码目录 bbs2www/html 下的文件复制到 /var/www/
     如果使用 SVN 方式获取源码，则
@@ -191,7 +195,7 @@ $(BBSHOME) 下去，创建必要的子目录并确保设置正确的权限。以后更改源代码的话，只
 
     php5 的配置文件在 /etc/php5/apache2/php.ini，打开该文件，
     将 short_open_tag 的值修改为 Off，magic_quotes_gpc 也应该设置成 Off。
-    在合适的位置加入一行
+    在 /etc/php5/conf.d/ 目录里面建立 kbs.ini 文件，内容只有一行：
         extension=libphpbbslib.so
 
 4. 运行
