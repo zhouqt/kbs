@@ -1049,7 +1049,7 @@ void load_user_title()
     FILE* titlefile;
     bzero(uidshm->user_title,sizeof(uidshm->user_title));
     if ((titlefile = fopen(USER_TITLE_FILE, "r")) == NULL) {
-        bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
+        bbslog("3system", "Can't open " USER_TITLE_FILE " file %s", strerror(errno));
     } else {
         int i;
         for (i=0;i<255;i++) {
@@ -1069,7 +1069,7 @@ static void flush_user_title()
 {
     FILE* titlefile;
     if ((titlefile = fopen(USER_TITLE_FILE, "w")) == NULL) {
-        bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
+        bbslog("3system", "Can't open " USER_TITLE_FILE " file %s", strerror(errno));
     } else {
         int i, fd;
         fd = fileno(titlefile);
