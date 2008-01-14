@@ -114,7 +114,7 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
           ./configure --prefix=$(PHPHOME) \
              --with-apxs=$(WWWHOME)/bin/apxs --disable-debug \
              --enable-pic --disable-rpath --enable-inline-optimization \
-             --with-dom --with-gd --with-freetype-dir=/usr/lib \
+             --with-dom --with-gd --with-freetype-dir \
              --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
              --enable-track-vars
           make
@@ -133,8 +133,7 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
 
     然后执行下面的一系列命令：
           ./configure --prefix=$(BBSHOME) --enable-site=fb2k-v2 \
-              --with-www=$(WWWHOME) --with-php=$(PHPHOME)/include/php \
-              --with-mysql --enable-ssh --enable-ssl
+              --with-php=$(PHPHOME) --with-mysql --enable-ssh --enable-ssl
           make
           make install
           
@@ -155,9 +154,7 @@ make install-home，因为执行的话就会丢失 bbs 数据！
           --with-libesmtp[=DIR]   让 kbsbbs 支持 libesmtp，DIR 为 libesmtp 库
                                   文件所在目录，如果不指明则自动检测
           --without-libesmtp      不让 kbsbbs 支持 libesmtp
-          --with-www=DIR          设定 kbsbbs web 子系统的安装目录，要求 DIR
-                                  目录下存在名为 html 或 htdocs 的子目录
-          --with-php[=DIR]        让 kbsbbs 找到 php 头文件所在目录，如果不
+          --with-php[=DIR]        让 kbsbbs 找到 php 的安装目录，如果不
                                   指明 DIR 则自动检测
 
 2.6[不推荐] 将 phpbbslib 放入 php 并再次编译安装 php
@@ -201,16 +198,12 @@ phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 就是必须执行的步骤了。
 $(PHPHOME)/lib/php.ini，然后编辑 php.ini 文件，将 short_open_tag 
 的值修改为 off，magic_quotes_gpc 也应该设置成 off。
 
-    如果没有执行上面的 2.6 步骤，那么再执行下面两个操作：
-    (1) 执行命令
-        cd $(WWWHOME)/libexec
-        ln -s bbs/libphpbbslib.so
-    (2) 修改 php.ini 文件，将
+    如果没有执行上面的 2.6 步骤，那么再执行下面的操作：
+        修改 php.ini 文件，将
             extension_dir = ./
-        修改为
-            extension_dir = $(WWWHOME)/libexec
-        加入一行
+        注释掉，再加入一行
             extension=libphpbbslib.so
+        PHP 将会使用默认的扩展库路径，可以用 php-config --extention-dir 查看。
 
 4. 运行
 
