@@ -15,8 +15,7 @@ F.A.Q.）。本文档是专门针对 kbsbbs 系统写的一个安装过程参考。
 
 1 重新编译 kbsbbs
 1.1 代码简介
-    转信的代码都在源代码的 innbbsd/ 目录。如果你使用 CVS，需要在 kbs_bbs 
-源代码目录下 checkout innbbsd 模块。innbbsd/doc/tw/ 下面有一些比较好的
+    转信的代码都在源代码的 innbbsd/ 目录。innbbsd/doc/tw/ 下面有一些比较好的
 文档可以看看。程序基本功能介绍：
     innbbsd 这个是接收文章的程序。程序默认监听 internet 7777 端口接受被动转
             信，还监听一个 unix-socket 接受后面 bbsnnrp 程序的请求。

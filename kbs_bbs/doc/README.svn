@@ -11,11 +11,7 @@ KBS 开发组 SVN 服务器说明
 相关的 modules:
 kbs_bbs:  主程序代码
 www2   :  Web 部分
-sshbbsd:  ssh 接口的代码
-bbshome:  一个 bbs 站点例子，特别注意这个模块是建新站必须的
-innbbsd:  转信程序
 
-其中 sshbbsd, bbshome, innbbsd 都应该在 kbs_bbs 目录下 checkout
 www2 应该在 web 主目录下 checkout，请参见相关安装文档。
 
 获得代码之后生成 configure 文件：在 kbs_bbs, sshbbsd 目录下分别运行
@@ -26,9 +22,6 @@ www2 应该在 web 主目录下 checkout，请参见相关安装文档。
 export SVNROOT="http://svn.kcn.cn/repos/kbs/trunk"
 svn co "$SVNROOT/kbs_bbs"
 cd kbs_bbs
-svn co "$SVNROOT/sshbbsd"
-svn co "$SVNROOT/innbbsd"
-svn co "$SVNROOT/bbshome"
 ./autogen.sh
 cd sshbbsd; ./autogen.sh;
 
