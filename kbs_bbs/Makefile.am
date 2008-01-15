@@ -1,7 +1,7 @@
-EXTRA_DIST = lib/* README INSTALL \
+EXTRA_DIST = README INSTALL makedist.sh config.icc \
              site/fb2k-v2.c site/fb2k-v2.h site/default.c site/default.h \
-             bbshome innbbsd config.icc doc/* makedist.sh \
-             contrib/crontab.SMTH contrib/build-redhat.sh bbs2www/*
+             lib bbs2www bbshome innbbsd doc \
+             contrib/crontab.SMTH contrib/build-redhat.sh
 SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs service @BBSSUBDIRS@
 CLEANFILES=@EXTRA_CLEAN@
 AM_MAKEFLAGS=-s 
