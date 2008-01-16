@@ -32,8 +32,9 @@ if test "$PHP_DIR" != "no"; then
   PHPEXTDIR=`$PHPCONFIG --extension-dir`
   AC_SUBST(PHPCFLAGS)
   AC_SUBST(PHPEXTDIR)
-  AC_CONFIG_FILES([php/Makefile
-                   php/config.m4])
+  AC_CONFIG_FILES([php/Makefile])
   BBSSUBDIRS="$BBSSUBDIRS php"
 
 fi
+
+AC_CONFIG_FILES([php/config.m4])

@@ -41,8 +41,9 @@ if test "$PHP_KBS_BBS" != "no"; then
   dnl fi
 
   dnl # --with-kbs_bbs -> add include path
-  PHP_ADD_INCLUDE(@WWWSRCDIR@/../src)
-  PHP_ADD_INCLUDE("@WWWSRCDIR@/include")
+  PHP_ADD_INCLUDE(@abs_top_builddir@)
+  PHP_ADD_INCLUDE(@abs_top_srcdir@/src)
+  PHP_ADD_INCLUDE(@abs_top_srcdir@/php)
 
   dnl # --with-kbs_bbs -> chech for lib and symbol presence
   dnl LIBNAME=kbs_bbs # you may want to change this
@@ -60,10 +61,28 @@ if test "$PHP_KBS_BBS" != "no"; then
   dnl
   dnl # --with-kbs_bbs -> chech for lib and symbol presence
 
-  PHP_ADD_LIBRARY_WITH_PATH(system,@WWWSRCDIR@/../libsystem,KBS_BBS_SHARED_LIBADD)
-  PHP_ADD_LIBRARY_WITH_PATH(BBS,@WWWSRCDIR@/../libBBS,KBS_BBS_SHARED_LIBADD)
-  PHP_ADD_LIBRARY_WITH_PATH(bbslib,@WWWSRCDIR@/lib,KBS_BBS_SHARED_LIBADD)
+  PHP_ADD_LIBRARY_WITH_PATH(system, @prefix@/lib, KBS_BBS_SHARED_LIBADD)
+  PHP_ADD_LIBRARY_WITH_PATH(BBS, @prefix@/lib, KBS_BBS_SHARED_LIBADD)
   PHP_SUBST(KBS_BBS_SHARED_LIBADD)
 
-  PHP_NEW_EXTENSION(kbs_bbs, phpbbslib.c, $ext_shared)
+  PHP_NEW_EXTENSION(kbs_bbs, 
+                    [phpbbslib.c \
+                      phpbbs_announce.c \
+                      phpbbs_article.c \
+                      phpbbs_admin.c \
+                      phpbbs_bm.c \
+                      phpbbs_board.c \
+                      phpbbs_file.c \
+                      phpbbs_friend.c \
+                      phpbbs_mail.c \
+                      phpbbs_msg.c \
+                      phpbbs_post.c \
+                      phpbbs_reg.c \
+                      phpbbs_session.c \
+                      phpbbs_system.c \
+                      phpbbs_user.c  \
+                      phpbbs_vote.c \
+                      phpbbs_wforum.c \
+                      bbslib.c],
+                    $ext_shared)
 fi
