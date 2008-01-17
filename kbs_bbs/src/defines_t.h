@@ -29,7 +29,7 @@ void noscroll();
 void setfcolor(int i,int j);
 void setbcolor(int i);
 void resetcolor();
-int scr_cols,scr_lns;
+extern int scr_cols,scr_lns;
 void clear_whole_line(int i);
 void move(int y, int x);
 
