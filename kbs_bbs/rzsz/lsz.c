@@ -148,7 +148,7 @@ int Beenhereb4;                 /* How many times we've been ZRPOS'd same place 
 int no_timeout = FALSE;
 size_t max_blklen = 1024;
 size_t start_blklen = 0;
-int zmodem_requested;
+extern int zmodem_requested;
 time_t stop_time = 0;
 
 int error_count;

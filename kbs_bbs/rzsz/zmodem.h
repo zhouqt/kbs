@@ -1,3 +1,6 @@
+#ifndef ZMODEM_H
+#define ZMODEM_H
+
 /* zmodem.h - ZMODEM protocol constants
 
   Copyright (C) until 1998 Chuck Forsberg (OMEN Technology Inc)
@@ -124,5 +127,5 @@
 /* Parameters for ZCOMMAND frame ZF0 (otherwise 0) */
 #define ZCACK1	1               /* Acknowledge, then do command */
 
-
+#endif /* ZMODEM_H */
 /* End of ZMODEM.H */

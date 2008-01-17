@@ -64,7 +64,7 @@ FILE *fout;
 static int Lastrx;
 static int Crcflg;
 static int Firstsec;
-int errors;
+extern int errors;
 extern int Restricted;             /* restricted; no /.. or ../ in filenames */
 int Readnum = HOWMANY;          /* Number of bytes to ask for in read() from modem */
 int skip_if_not_found;
@@ -82,7 +82,7 @@ int Thisbinary;                 /* current file is to be received in bin mode */
 int try_resume = FALSE;
 int junk_path = FALSE;
 extern int no_timeout;
-enum zm_type_enum protocol;
+extern enum zm_type_enum protocol;
 int zmodem_requested = FALSE;
 
 #ifdef SEGMENTS
@@ -116,15 +116,15 @@ static size_t getfree(void);
 
 static long buffersize = 32768;
 
-char Lzmanag;                   /* Local file management request */
-char zconv;                     /* ZMODEM file conversion request */
-char zmanag;                    /* ZMODEM file management request */
-char ztrans;                    /* ZMODEM file transport request */
-int Zctlesc;                    /* Encode control characters */
+extern char Lzmanag;                   /* Local file management request */
+extern char zconv;                     /* ZMODEM file conversion request */
+extern char zmanag;                    /* ZMODEM file management request */
+extern char ztrans;                    /* ZMODEM file transport request */
+extern int Zctlesc;                    /* Encode control characters */
 extern int Zrwindow;            /* RX window size (controls garbage count) */
 
 int tryzhdrtype = ZRINIT;       /* Header type to send corresponding to Last rx close */
-time_t stop_time;
+extern time_t stop_time;
 
 
 /* called by signal interrupt or terminate to clean things up */
