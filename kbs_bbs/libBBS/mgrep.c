@@ -50,9 +50,11 @@ struct pattern_image {
 	struct pat_list hashtable[max_num+1]; /* 保存所有的pattern hash数据,0节点恒为index=0*/
 };
 
+#if 0 // those defined in lvars.c already...???!!
 int ONLYCOUNT, FNAME, SILENT, FILENAMEONLY;
 int INVERSE;
 int WORDBOUND, WHOLELINE, NOUPPER;
+#endif
 
 static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img, session_t* session);
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* patt_img);
