@@ -19,8 +19,7 @@ www2 应该在 web 主目录下 checkout，请参见相关安装文档。
 之后，就可以按照正常方式安装使用 BBS 代码了。
 
 获得主分支代码的命令参考：
-export SVNROOT="http://svn.kcn.cn/repos/kbs/trunk"
-svn co "$SVNROOT/kbs_bbs"
+svn co "http://svn.kcn.cn/repos/kbs/trunk/kbs_bbs"
 cd kbs_bbs
 ./autogen.sh
 cd sshbbsd; ./autogen.sh;
