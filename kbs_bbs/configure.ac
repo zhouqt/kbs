@@ -6,6 +6,9 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
 case "${host}" in
+  *-apple-darwin*)
+        OSTYPE="MACOSX"
+        ;;
   i*86-*-freebsd*)
         OSTYPE="FREEBSD"
         ;;      

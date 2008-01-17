@@ -586,9 +586,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
         commandline = commbuf;
     }
     setsid();
-#ifdef AIX
-    setpgrp();
-#elif defined FREEBSD
+#if defined(FREEBSD) || defined(MACOSX)
     setpgid(0, 0);
 #else
     // by zixia setpgrp(0, 0);
