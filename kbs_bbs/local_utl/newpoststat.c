@@ -472,7 +472,7 @@ void writestat(int mytype)
 
 #ifdef BLESS_BOARD
         if (mytype == 4)
-            fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[22]);
+            fprintf(fp, "                                                                         %s\x1b[m\n", surfix_bless[22]);
 #endif
         fclose(fp);
     }

@@ -303,7 +303,7 @@ void writestat(int mytype, struct postrec_old *dobucket[HASHSIZE])
 
 #ifdef BLESS_BOARD
         if (mytype == 4)
-            fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[20]);
+            fprintf(fp, "                                                                         %s\x1b[m\n", surfix_bless[20]);
 #endif
         fclose(fp);
     }
