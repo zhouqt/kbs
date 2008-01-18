@@ -2,6 +2,7 @@
 # $Id$
 #
 # 快速编译脚本 for RedHat 9, Fedora Core 1/2/3/4/5/6, Fedora 7/8
+#                  RedHat Enterprise Linux/CentOS 5
 #
 # 修改这里的参数定制您的站点
 # BBSHOME 表示您的 BBS 所在的目录
