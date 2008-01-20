@@ -195,6 +195,7 @@ $(BBSHOME) 下去，创建必要的子目录并确保设置正确的权限。以后更改源代码的话，只
 
     php5 的配置文件在 /etc/php5/apache2/php.ini，打开该文件，
     将 short_open_tag 的值修改为 Off，magic_quotes_gpc 也应该设置成 Off。
+    将 session.save_path 目录（如 /var/lib/php5/）设置成 bbs 用户可写。
     在 /etc/php5/conf.d/ 目录里面建立 kbs.ini 文件，内容只有一行：
         extension=libphpbbslib.so
 
