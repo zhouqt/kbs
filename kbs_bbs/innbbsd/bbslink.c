@@ -264,7 +264,7 @@ void save_outgoing(soverview_t *sover,const char *filename,const char *userid,co
         innbbsdlog("<bbslink> save_outgoing:group %s   server %s\n", group, server);
     }
     if (!server || !*server) {
-        sprintf(PATH_BUF, "%.*s (local)", sizeof PATH_BUF - 9, MYBBSID);
+        sprintf(PATH_BUF, "%.*s (local)", (int)(sizeof PATH_BUF - 9), MYBBSID);
         PATH = PATH_BUF;
         serveraddr = "";
         sover->path = PATH;
