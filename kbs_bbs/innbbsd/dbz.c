@@ -1046,7 +1046,7 @@ datum key;
          */
         buffer[keysize] = '\0'; /* terminated for DEBUG */
         (void) mapcase(buffer, buffer, keysize);
-        DEBUG(("fetch: buffer (%s) looking for (%s) size = %d\n", buffer, key.dptr, keysize));
+        DEBUG(("fetch: buffer (%s) looking for (%s) size = %ld\n", buffer, key.dptr, (long int)keysize));
         if (memcmp((POINTER) key.dptr, (POINTER) buffer, cmplen) == 0 && (*sepp == conf.fieldsep || *sepp == '\0')) {
             /*
              * we found it 

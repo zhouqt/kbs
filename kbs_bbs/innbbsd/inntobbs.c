@@ -61,7 +61,7 @@ nodelist_t *nl;
     /*
      * path2 = (char*)mymalloc(strlen(nl->node) + 3); 
      */
-    sprintf(path2, "!%.*s!", sizeof path2 - 3, nl->node);
+    sprintf(path2, "!%.*s!", (int)(sizeof path2 - 3), nl->node);
     if (strstr(path1, path2) != NULL)
         return 1;
     if (nl->exclusion && *nl->exclusion) {
@@ -70,7 +70,7 @@ nodelist_t *nl;
         for (exclude = nl->exclusion, ptr = strchr(exclude, ','); exclude && *exclude; ptr = strchr(exclude, ',')) {
             if (ptr)
                 *ptr = '\0';
-            sprintf(path2, "!%.*s!", sizeof path2 - 3, exclude);
+            sprintf(path2, "!%.*s!", (int)(sizeof path2 - 3), exclude);
             if (strstr(path1, path2) != NULL)
                 return 1;
             if (ptr) {

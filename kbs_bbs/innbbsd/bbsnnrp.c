@@ -336,7 +336,7 @@ int main(int argc, char **argv)
         if (isfile(active)) {
             strncpy(BBSNNRP.activefile, active, sizeof BBSNNRP.activefile);
         } else if (strchr(active, '/') == NULL) {
-            sprintf(BBSNNRP.activefile, "%s/innd/%.*s", BBSHOME, sizeof BBSNNRP.activefile - 7 - strlen(BBSHOME), active);
+            sprintf(BBSNNRP.activefile, "%s/innd/%.*s", BBSHOME, (int)(sizeof BBSNNRP.activefile - 7 - strlen(BBSHOME)), active);
         } else {
             strncpy(BBSNNRP.activefile, active, sizeof BBSNNRP.activefile);
         }
