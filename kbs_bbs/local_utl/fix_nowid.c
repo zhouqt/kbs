@@ -2,7 +2,7 @@
 
 int generate_board_title(struct boardheader *bh,void* arg)
 {
-    int fd2, total, i;
+    int fd2, total;
     char olddirect[PATHLEN];
     char *ptr;
     struct fileheader * ptr1;

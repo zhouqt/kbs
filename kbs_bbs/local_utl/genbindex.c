@@ -2,8 +2,6 @@
 
 int generate_board(struct boardheader *bh,void* arg)
 {
-	char buf[256];
-
 	if(bh==NULL || bh->filename[0]=='\0')
 		return 0;
 

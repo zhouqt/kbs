@@ -9,7 +9,7 @@
 extern int errno;
 
 int mailmode;
-struct fileheader data[20000];
+struct fileheader data[40000];
 int len = 0;
 extern const char alphabet[];
 
@@ -241,7 +241,7 @@ int main(int argc, char **argv){
     i = 1;
     getallpost(name,NULL);
     qsort(data, len, sizeof(struct fileheader), cmpfile);
-    printf("end.len=%d %d", len, len * sizeof(struct fileheader));
+    printf("end.len=%d %ld", len, (long int)(len * sizeof(struct fileheader)));
     if (write(file, data, len * sizeof(struct fileheader)) == -1)
         perror("write error");
     if (close(file))

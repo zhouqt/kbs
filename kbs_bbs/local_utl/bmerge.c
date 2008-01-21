@@ -1,4 +1,6 @@
 #include "bbs.h"
+#define USE_FILE_COPY
+
 #ifndef USE_FILE_COPY
 #define USE_HARD_LINK
 #else

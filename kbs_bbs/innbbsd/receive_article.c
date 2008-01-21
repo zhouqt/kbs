@@ -266,7 +266,7 @@ int receive_article()
         innbbsdlog(" :Err: your bbsid %s too long\n", MYBBSID);
         return 0;
     }
-    sprintf(xpath, "%s!%.*s", MYBBSID, sizeof(xpath) - strlen(MYBBSID) - 2, PATH);
+    sprintf(xpath, "%s!%.*s", MYBBSID, (int)(sizeof(xpath) - strlen(MYBBSID) - 2), PATH);
     PATH = xpath;
     for (pathptr = PATH; pathptr != NULL && (pathptr = strstr(pathptr, ".edu.tw")) != NULL;) {
         if (pathptr != NULL) {
