@@ -1476,7 +1476,7 @@ void a_manager(MENU *pm,int ch)
         }
 }
 
-void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
+static void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg, int domainflag)
 {
 	char board[STRLEN], path[MAXPATH], phpname[20];
     MENU *m=(MENU *)arg;
@@ -1494,7 +1494,7 @@ void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
 #if 0 // orz pig2532 started on 20061121 
  	    /* 如果bbs0an.php支持数字串方式的精华区路径，则下面一段可删除 */
  	    snprintf(buf, buf_len, "http://%s/bbs0an.php?path=%s",
- 	        get_my_webdomain(0), path+10);
+ 	        get_my_webdomain(domainflag), path+10);
  	    return;
  	    /* 以上 */
 #endif
@@ -1507,7 +1507,7 @@ void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
     ann_get_board(m->path, board, sizeof(board));
 	if(board[0] =='\0' || (bid=getbnum_safe(board,getSession(), 1))==0){
         snprintf(buf,buf_len-9,"http://%s/%s?path=%s/%s",
-          get_my_webdomain(0), phpname, m->path+10, M_ITEM(m,m->now)->fname);
+          get_my_webdomain(domainflag), phpname, m->path+10, M_ITEM(m,m->now)->fname);
 	  return;
 	}
 
@@ -1527,7 +1527,7 @@ void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg)
 	if(tmp==NULL) return;
 
     snprintf(buf,buf_len-9,"http://%s/%s?p=%d",
-        get_my_webdomain(0), phpname, bid);
+        get_my_webdomain(domainflag), phpname, bid);
 
 	for(; tmp; tmp=(MENU *)(tmp->nowmenu)){
 		if(strlen(buf) < buf_len-9){
@@ -1545,7 +1545,7 @@ void ann_showinfo(MENU *m)
 {
     char url[STRLEN];
     
-    ann_get_current_url(url, STRLEN, NULL, 0, m);
+    ann_get_current_url(url, STRLEN, NULL, 0, m, 0);
     
     clear();
     move(3, 0);
@@ -1559,11 +1559,13 @@ void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos
 {
     char bap[PATHLEN];
     
-    ann_get_current_url(buf, buf_len, ext, len, arg);
     if(attachpos != -1)
     {
+        ann_get_current_url(buf, buf_len, ext, len, arg, 1);
         sprintf(bap, "&ap=%ld", attachpos);
         strcat(buf, bap);
+    } else {
+        ann_get_current_url(buf, buf_len, ext, len, arg, 0);
     }
 }
 
