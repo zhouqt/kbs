@@ -114,6 +114,9 @@ int UndeleteArticle(struct _select_def *conf,struct fileheader *fh, void *varg){
             WAIT_RETURN;
             break;
         case 1:
+            /* 恢复自删文章之后文章数 +1, jiangjun 2007.12.05 */
+            if (arg->mode==DIR_MODE_SELF && isowner(getCurrentUser(), fh) && !junkboard(currboard->filename) && strcmp(currboard->filename, SYSMAIL_BOARD))
+                getCurrentUser()->numposts++;
             move(t_lines-1,0);
             clrtoeol();
             prints("\033[1;34;47m\t%s\033[K\033[m","恢复成功, 按 <Enter> 键继续!");
