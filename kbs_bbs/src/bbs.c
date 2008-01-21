@@ -1055,29 +1055,43 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 }
 
 
-char *get_my_webdomain(int force)
+/* flag: -1: force, 0: normal, 1: attach url */
+char *get_my_webdomain(int flag)
 {
 	static char myurl[80];
+	static char myatturl[80];
 	static int urlinit=0;
 
-	if(force) urlinit=0;
+	if(flag==-1) urlinit=0;
 
 	if(!urlinit){
 		FILE *fp;
 		char buf[256];
 		char *c;
+		int attinit=0;
 
 		sethomefile(buf, getCurrentUser()->userid, "myurl");
 		if((fp=fopen(buf,"r"))!=NULL){
 			if(fgets(myurl,80,fp)){
 				if((c=strchr(myurl,'\n'))!=NULL) *c='\0';
 				if((c=strchr(myurl,'\r'))!=NULL) *c='\0';
-				if(strlen(myurl)>5)
+				if(strlen(myurl)>5) {
+                    strcpy(myatturl, myurl);
 					urlinit=1;
+                    attinit=1;
+				}
 			}
 			fclose(fp);
 		}
-		if(!urlinit){
+        if (!attinit) {
+			const char *c=sysconf_str("BBS_ATTDOMAIN");
+			if(c!=NULL){
+				attinit=1;
+				strncpy(myatturl, c, 80);
+				myatturl[79]='\0';
+			}
+        }
+		if (!urlinit){
 			const char *c=sysconf_str("BBS_WEBDOMAIN");
 			if(c!=NULL){
 				urlinit=1;
@@ -1085,14 +1099,18 @@ char *get_my_webdomain(int force)
 				myurl[79]='\0';
 			}
 		}
-		if(!urlinit){
+		if (!urlinit){
 			strncpy(myurl, sysconf_str("BBSDOMAIN"), 80);
 			myurl[79]='\0';
 			urlinit=1;
 		}
+        if (!attinit) {
+            strcpy(myatturl, myurl);
+            attinit=1;
+        }
 	}
 
-	return myurl;
+	return ((flag==1) ? myatturl : myurl);
 
 }
 
@@ -1143,7 +1161,7 @@ static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long atta
             memcpy(base64_info, info, 9);
             to64frombits((unsigned char*)base64_info+9, (unsigned char*)info+9, 24);
             snprintf(buf,buf_len,"http://%s/att.php?%s%s",
-                get_my_webdomain(0),base64_info,ext);
+                get_my_webdomain(1),base64_info,ext);
             return;
 #else
             ktype = 'n';
@@ -1155,7 +1173,7 @@ static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long atta
         if (zd) sprintf(ftype, ".%d.0", DIR_MODE_ZHIDING);
         
         snprintf(buf,buf_len,"http://%s/att.php?%c.%d.%d%s.%ld%s",
-            get_my_webdomain(0),ktype,currboardent,fh->id,ftype,attachpos,ext);
+            get_my_webdomain(1),ktype,currboardent,fh->id,ftype,attachpos,ext);
     } else {
         if (zd) sprintf(ftype, "&ftype=%d", DIR_MODE_ZHIDING);
         

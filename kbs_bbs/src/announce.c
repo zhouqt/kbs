@@ -1575,7 +1575,7 @@ void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
      * @todo: generate temp sid
      */
       snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s&ap=%ld",
-        get_my_webdomain(0),fname+10,attachpos);
+        get_my_webdomain(1),fname+10,attachpos);
 }
 
 #ifdef FB2KPC

@@ -776,7 +776,7 @@ int x_edits(void){
             if (getSession()->currentmemo->ud.signum&&(getCurrentUser()->signature==0))
             	getCurrentUser()->signature=1;
         }else if(!strcmp(e_file[ch], "myurl")){
-			get_my_webdomain(1);
+			get_my_webdomain(-1);
 		}
         bbslog("user","%s",buf);
         pressreturn();
@@ -798,7 +798,7 @@ int x_edits(void){
             	getCurrentUser()->signature=1;
             prints("系统重新设定以及读入你的签名档...");
         }else if(!strcmp(e_file[ch], "myurl")){
-			get_my_webdomain(1);
+			get_my_webdomain(-1);
 		}
         bbslog("user","%s",buf);
     } else

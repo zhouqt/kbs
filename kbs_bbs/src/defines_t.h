@@ -151,7 +151,7 @@ int sequential_read2(int ent);
 void do_quote(char *filepath, char quote_mode, char* q_file,char* q_user);
 void setqtitle(char *stitle);
 void RemoveAppendedSpace(char *ptr);
-char *get_my_webdomain(int force);
+char *get_my_webdomain(int flag);
 
 /*vote.c*/
 int b_notes_edit();
