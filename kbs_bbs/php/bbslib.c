@@ -520,6 +520,16 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         ui.freshtime = time(0);
         ui.mode = WEBEXPLORE;
         
+#ifdef HAVE_ACTIVATION
+        if (!(user->flags & ACTIVATED_FLAG)) {
+            struct activation_info ai;
+            getactivation(&ai, user);
+            if (ai.activated) {
+                doactivation(&ai, user, getSession());
+            }
+        }
+#endif
+
         strncpy(ui.userid, user->userid, 20);
         strncpy(ui.realname, ud.realname, 20);
         strncpy(ui.username, user->username, 40);
