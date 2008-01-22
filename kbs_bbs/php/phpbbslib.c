@@ -150,9 +150,7 @@ zend_module_entry kbs_bbs_module_entry = {
 };
 /* }}} */
 
-#ifdef COMPILE_DL_KBS_BBS
 ZEND_GET_MODULE(kbs_bbs)
-#endif
 
 /*
  * Here is the function require when the module loaded
@@ -186,7 +184,7 @@ static int initialize_ext()
     resolve_boards();
     init_bbslog();
     www_data_init();
-	ext_init = 1;
+    ext_init = 1;
 
 	return ext_init;
 }
@@ -202,11 +200,11 @@ static int initialize_ext()
  */
 PHP_FUNCTION(bbs_ext_initialized)
 {
-	if (!get_initialized()) {
+    if (!get_initialized()) {
         RETURN_FALSE;
-	} else {
+    } else {
         RETURN_TRUE;
-	}
+    }
 }
 
 /**
@@ -220,17 +218,14 @@ PHP_FUNCTION(bbs_ext_initialized)
  */
 PHP_FUNCTION(bbs_init_ext)
 {
-	int ret = 0;
-	if (!get_initialized())
+    int ret = 0;
+    if (!get_initialized())
         ret = initialize_ext();
-	if (ret)
-	{
-    	RETURN_TRUE;
-	}
-	else
-	{
-		RETURN_FALSE;
-	}
+    if (ret) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
 }
 
 PHP_FUNCTION(bbs_get_webdomain)
@@ -240,7 +235,7 @@ PHP_FUNCTION(bbs_get_webdomain)
     if(c==NULL){
         c=sysconf_str("BBSDOMAIN");
         if (c==NULL) c = ""; //ft, should I say TODO here?
-	}
+    }
     RETURN_STRING((char *)c,1);
 }
 
@@ -250,9 +245,9 @@ PHP_MINIT_FUNCTION(kbs_bbs)
 #define MY_REGISTER_STRING_CONSTANT(name, str, flags)  zend_register_string_constant((name), strlen(name)+1, (char*)(str), (flags), module_number TSRMLS_CC)
 
     int i;
-	char old_cwd[256], buf[256];
-	getcwd(old_cwd, sizeof(old_cwd));
-	chdir(BBSHOME);
+    char old_cwd[256], buf[256];
+    getcwd(old_cwd, sizeof(old_cwd));
+    chdir(BBSHOME);
     MY_REGISTER_STRING_CONSTANT("BBS_HOME",BBSHOME,CONST_CS | CONST_PERSISTENT);
     MY_REGISTER_STRING_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,CONST_CS | CONST_PERSISTENT);
 
@@ -359,7 +354,7 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     for (i=0; i<MAXBOARD; i++) phpbbs_zap_buf[i] = 1;
 
 
-	chdir(old_cwd);
+    chdir(old_cwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");
 #endif
@@ -429,8 +424,6 @@ PHP_RSHUTDOWN_FUNCTION(kbs_bbs)
     return SUCCESS;
 }
 
-/* {{{ PHP_MINFO_FUNCTION
- *  */
 PHP_MINFO_FUNCTION(kbs_bbs)
 {
     php_info_print_table_start();
