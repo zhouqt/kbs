@@ -749,7 +749,7 @@ int valid_article(pmt, abort)
         temp = 0;
         if (len < 8 || lines==0 || (lines<=2 && (len/lines) < 16)) {
             move(y, 0);
-            prints("\t本篇文章非常简短, 系统认为灌水文章.\n");
+            prints("\t本篇文章非常简短, 系统认为是灌水文章.\n");
             /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
             y += 3;
             temp = 1;
