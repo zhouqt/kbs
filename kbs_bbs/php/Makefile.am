@@ -40,5 +40,5 @@ libphpbbslib_la_SOURCES = phpbbslib.c \
                           phpbbs_wforum.c \
                           bbslib.c
 libphpbbslib_la_LIBADD = $(top_builddir)/libBBS/libBBS.la $(top_builddir)/libsystem/libsystem.la
-AM_CFLAGS  = @PHPCFLAGS@ -I$(top_srcdir)/src
+AM_CFLAGS  = @PHPCFLAGS@ -I$(top_srcdir)/src -DCOMPILE_DL_KBS_BBS
 CLEANFILES=@EXTRA_CLEAN@

@@ -150,7 +150,9 @@ zend_module_entry kbs_bbs_module_entry = {
 };
 /* }}} */
 
+#ifdef COMPILE_DL_KBS_BBS
 ZEND_GET_MODULE(kbs_bbs)
+#endif
 
 /*
  * Here is the function require when the module loaded
