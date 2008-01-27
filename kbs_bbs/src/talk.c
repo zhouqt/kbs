@@ -212,15 +212,6 @@ int t_cmpuids(int uid, struct user_info *up)
 {
     return (up->active && uid == up->uid);
 }
-static int query_format_time(char *buf,time_t timestamp){
-    struct tm *desc=localtime(&timestamp);
-    if(!desc){
-        strcpy(buf,"Î´ÖªÊ±¼ä");
-        return -1;
-    }
-    sprintf(buf,"%04d-%02d-%02d %02d:%02d",desc->tm_year+1900,desc->tm_mon+1,desc->tm_mday,desc->tm_hour,desc->tm_min);
-    return 0;
-}
 
 #ifdef FREE
 static char   * horoscope(month, day)
