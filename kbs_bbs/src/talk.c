@@ -440,6 +440,7 @@ int t_query(char* q_id)
 #endif
 
     if ((genbuf[0]) && seecount) {
+        prints("目前在站上，状态如下：\n");
         prints(genbuf);
         prints("\n");
     }
