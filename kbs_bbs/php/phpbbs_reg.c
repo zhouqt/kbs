@@ -693,11 +693,10 @@ PHP_FUNCTION(bbs_is_invalid_id)
 }
 
 
-
+#ifdef HAVE_ACTIVATION
 
 PHP_FUNCTION(bbs_sendactivation)
 {
-#ifdef HAVE_ACTIVATION
     struct activation_info ai;
 	char* userid;
 	int   userid_len;
@@ -713,13 +712,10 @@ PHP_FUNCTION(bbs_sendactivation)
 		RETURN_LONG(-1);
     getactivation(&ai, uc);
     RETURN_LONG(sendactivation(&ai, uc, getSession()));
-#endif
-    RETURN_LONG(0);
 }
 
 PHP_FUNCTION(bbs_doactivation)
 {
-#ifdef HAVE_ACTIVATION
     struct activation_info ai;
 	char* userid;
 	int   userid_len;
@@ -735,7 +731,6 @@ PHP_FUNCTION(bbs_doactivation)
 		RETURN_LONG(-1);
     getactivation(&ai, uc);
     doactivation(&ai, uc, getSession());
-#endif
     RETURN_LONG(0);
 }
 
@@ -749,7 +744,6 @@ PHP_FUNCTION(bbs_doactivation)
 **/
 PHP_FUNCTION(bbs_setactivation)
 {
-#ifdef HAVE_ACTIVATION
 	char* userid;
 	int   userid_len;
 	char* filebody;
@@ -772,7 +766,6 @@ PHP_FUNCTION(bbs_setactivation)
 		RETURN_LONG(-10);
 	fprintf(fn,"%s",filebody);
 	fclose(fn);
-#endif
 	RETURN_LONG(0);
 }
 
@@ -786,7 +779,6 @@ PHP_FUNCTION(bbs_setactivation)
 */
 PHP_FUNCTION(bbs_getactivation)
 {
-#ifdef HAVE_ACTIVATION
 	char* userid;
 	int   userid_len;
 	zval *activation;
@@ -812,8 +804,50 @@ PHP_FUNCTION(bbs_getactivation)
     memcpy(buf + 1, ai.activationcode, ACTIVATIONLEN);
     strcpy(buf + 1 + ACTIVATIONLEN, ai.reg_email);
 	ZVAL_STRING(activation,buf,1);
-#endif
 	RETURN_LONG(0);
 }
+#endif /* HAVE_ACTIVATION */
 
+
+#ifdef NEWSMTH
+
+PHP_FUNCTION(bbs_getinvite_email)
+{
+	struct invite in;
+	char *id;
+	char *passwd;
+	int id_len, passwd_len;
+
+    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &id, &id_len, &passwd, &passwd_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+
+	if( id[0] == '/' || strchr(id,'.') )
+		RETURN_LONG(0);
+
+	memset(&in, 0, sizeof(in));
+	if(get_invite(id, passwd, &in) <= 0){
+		RETURN_LONG(0);
+	}
+
+	RETURN_STRING(in.email, 1);
+
+}
+
+PHP_FUNCTION(bbs_cleaninvite)
+{
+	char *userid;
+	char *inviteid;
+	int userid_len, inviteid_len;
+	int ret;
+
+    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &inviteid, &inviteid_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+
+	ret = clean_invite(userid, inviteid);
+
+	RETURN_LONG(ret);
+}
+#endif /* NEWSMTH */
 
