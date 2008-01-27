@@ -156,7 +156,11 @@ static int show_user_plan(char userid[IDLEN], char *fix)
         return true;
     }
 }
-int t_printstatus(struct user_info *uentp, int *arg, int pos)
+struct _tag_printstatus {
+    int seecount;
+    char *statusbuf;
+};
+static int t_printstatus(struct user_info *uentp, struct _tag_printstatus *arg, int pos)
 {
     char buf[80],buf2[20],buf3[80];
     char* p;
@@ -164,10 +168,7 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
         if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
             return COUNT;
     }
-    (*arg)++;
-    if (*arg == 1)
-		genbuf[0]='\0';
-//        strcpy(genbuf, "目前在站上，状态如下：\n");
+    (arg->seecount)++;
 
     p = idle_str(buf3,uentp);
     if(p[0]==' '&&p[1]==' ') buf2[0]=0;
@@ -176,10 +177,10 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
 			uentp->invisible?(uentp->pid==1?"\033[33m":"\033[32m"):(uentp->pid==1?"\033[36m":""), 
 			modestring(buf3,uentp->mode, uentp->destuid, 0,   /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                           (uentp->in_chat ? uentp->chatid : NULL)), buf2);
-    strcat(genbuf, buf);
+    strcat(arg->statusbuf, buf);
 
-    if ((*arg) % 8 == 0)
-        strcat(genbuf, "\n");
+    if ((arg->seecount) % 8 == 0)
+        strcat(arg->statusbuf, "\n");
     UNUSED_ARG(pos);
     return COUNT;
 }
@@ -346,6 +347,7 @@ int t_query(char* q_id)
     char permstr[USER_TITLE_LEN];
     int exp, perf;              /*Add by SmallPig */
     char *newline;
+    char statusbuf[512] = {'\0'};
 
 #if defined(FREE) || defined(ZIXIA)
 	move(0, 0);
@@ -380,10 +382,12 @@ int t_query(char* q_id)
 #else
         prints("%s (%s) 共上站 %d 次，发表过 %d 篇文章", lookupuser->userid, lookupuser->username, lookupuser->numlogins, lookupuser->numposts);
 #endif
-    if ((newline = strchr(genbuf, '\n')) != NULL)
-        *newline = '\0';
-    seecount = 0;
-    logincount = apply_utmp((APPLY_UTMP_FUNC) t_printstatus, 10, lookupuser->userid, &seecount);
+    {
+        struct _tag_printstatus tp;
+        tp.seecount = 0; tp.statusbuf = statusbuf;
+        logincount = apply_utmp((APPLY_UTMP_FUNC) t_printstatus, 10, lookupuser->userid, &tp);
+        seecount = tp.seecount;
+    }
     /*
      * 获得离线时间 Luzi 1998/10/23 
      */
@@ -430,9 +434,9 @@ int t_query(char* q_id)
            (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #endif
 
-    if ((genbuf[0]) && seecount) {
+    if (seecount) {
         prints("目前在站上，状态如下：\n");
-        prints(genbuf);
+        prints(statusbuf);
         prints("\n");
     }
     show_user_plan(lookupuser->userid,NULL);
@@ -445,7 +449,7 @@ int t_query(char* q_id)
         char *t1, *t2, *t3;
         struct user_info *uin;
         move(t_lines - 1, 0);
-        if ((genbuf[0]) && seecount) {
+        if (seecount) {
             t1 = "聊天[\x1b[1;32mt\x1b[m\x1b[0;44m]";
             t2 = "送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m]";
         }
@@ -477,7 +481,7 @@ int t_query(char* q_id)
                 break;
 #endif
             case 'T':
-                if (!((genbuf[0]) && seecount)) break;
+                if (!seecount) break;
                 if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
                     break;
                 uin = t_search(uident, false);
@@ -485,7 +489,7 @@ int t_query(char* q_id)
                 ttt_talk(uin);
                 break;
             case 'S':
-                if (!((genbuf[0]) && seecount)) break;
+                if (!seecount) break;
                 if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
 	                break;
                 uin = t_search(uident, false);
