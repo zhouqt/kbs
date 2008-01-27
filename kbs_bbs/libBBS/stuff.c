@@ -2417,14 +2417,13 @@ int check_ip_acl(char * id, char * sip)
     return 0;
 }
 
-#ifdef HAVE_ACTIVATION
-int my_rand(int max) {
+static int my_rand(int max) {
     return (int) ((double)max*rand()/(RAND_MAX+1.0));
 }
 
 #define RANDCHAR "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-char * randchar(char *c, int n){
+static char * randchar(char *c, int n){
     int i,j;
     srand(time(NULL));
     srand(my_rand(RAND_MAX));
@@ -2436,6 +2435,7 @@ char * randchar(char *c, int n){
 	return c;
 }
 
+#ifdef HAVE_ACTIVATION
 void create_activation(struct activation_info *ai)
 {
     randchar(ai->activationcode, ACTIVATIONLEN);
