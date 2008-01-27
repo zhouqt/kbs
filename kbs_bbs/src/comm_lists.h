@@ -84,7 +84,6 @@ KBS_COMM_LISTS_FUNC_V(query_club_rights);
 KBS_COMM_LISTS_FUNC_V(ReadBoard);
 KBS_COMM_LISTS_FUNC_V(search_ip);
 KBS_COMM_LISTS_FUNC_V(searchtrace);
-KBS_COMM_LISTS_FUNC_V(Select);
 KBS_COMM_LISTS_FUNC_V(set_BM);
 KBS_COMM_LISTS_FUNC_V(set_clock);
 KBS_COMM_LISTS_FUNC_V(set_ip_acl);
@@ -126,6 +125,18 @@ KBS_COMM_LISTS_FUNC_V(x_results);
 KBS_COMM_LISTS_FUNC_V(x_userdefine);
 KBS_COMM_LISTS_FUNC_V(x_userdefine1);
 KBS_COMM_LISTS_FUNC_V(x_vote);
+
+#ifdef HAVE_ACTIVATION
+KBS_COMM_LISTS_FUNC_V(x_manageactivation);
+KBS_COMM_LISTS_FUNC_V(x_sendactivation);
+#endif
+
+#ifdef NEWSMTH
+KBS_COMM_LISTS_FUNC_V(invite);
+KBS_COMM_LISTS_FUNC_V(Select);
+#else /* ! NEWSMTH */
+KBS_COMM_LISTS_FUNC_V(ReadBoard);
+#endif /* NEWSMTH */
 
 #if HAVE_MYSQL_SMTH+0 == 1
 KBS_COMM_LISTS_FUNC_V(al_read);

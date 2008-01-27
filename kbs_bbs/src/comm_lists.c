@@ -107,6 +107,18 @@ static const CMD_LIST CMD[]={
     {"UDefine",             x_userdefine1,                          0},
     {"DoVote",              x_vote,                                 0},
 
+#ifdef HAVE_ACTIVATION
+    {"ManageActivation",    x_manageactivation,                     0},
+    {"SendActivation",      x_sendactivation,                       0},
+#endif
+
+#ifdef NEWSMTH
+    {"Invite",              invite,                                 0},
+    {"ReadBoard",           Select,                                 0},
+#else /* ! NEWSMTH */
+    {"ReadBoard",           ReadBoard,                              0},
+#endif /* NEWSMTH */
+
 #if HAVE_MYSQL_SMTH+0 == 1
     {"Addrlist",            al_read,                                0},
 #endif /* HAVE_MYSQL_SMTH+0 == 1 */

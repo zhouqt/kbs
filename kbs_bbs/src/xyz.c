@@ -412,6 +412,88 @@ int XCheckLevel(void){
     return 0;
 }
 
+#ifdef HAVE_ACTIVATION
+int x_manageactivation(void){
+    int id;
+    struct userec *lookupuser;
+    struct activation_info ai;
+    char title[STRLEN];
+
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+        move(3, 0);
+        clrtobot();
+        prints("抱歉, 只有SYSOP权限的管理员才能管理用户激活");
+        pressreturn();
+        return 0;
+    }
+
+    modify_user_mode(ADMIN);
+    if (!check_systempasswd()) {
+        return 0;
+    }
+    clear();
+    move(0, 0);
+    prints(NAME_USER_SHORT "激活控制\n");
+    clrtoeol();
+    move(1, 0);
+    usercomplete("请输入" NAME_USER_SHORT " ID: ", genbuf);
+    if (genbuf[0] == '\0') {
+        clear();
+        return 0;
+    }
+    if (!(id = getuser(genbuf, &lookupuser))) {
+        move(3, 0);
+        prints("非法 ID");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    getactivation(&ai, lookupuser);
+    move(4, 0);
+    if (lookupuser->flags & ACTIVATED_FLAG) {
+        prints("用户已经激活. 激活 email: %s\n\n", ai.reg_email);
+        if (askyn("按 Y 取消用户激活", false)) {
+            ai.activated = 0;
+            setactivation(&ai, lookupuser);
+            lookupuser->flags &= ~ACTIVATED_FLAG;
+            sprintf(title, "%s 取消 %s 用户激活", getCurrentUser()->userid, lookupuser->userid);
+        } else {
+            clear();
+            return 0;
+        }
+    } else {
+        prints("\033[1;31m用户还没有激活\033[0m\n\n");
+        if (askyn("按 Y 手动激活用户", false)) {
+            ai.activated = 1;
+            setactivation(&ai, lookupuser);
+            lookupuser->flags |= ACTIVATED_FLAG;
+            sprintf(title, "%s 手动激活 %s 用户", getCurrentUser()->userid, lookupuser->userid);
+        } else {
+            clear();
+            return 0;
+        }
+    }
+    {
+    	FILE *fout;
+    	char buf[STRLEN];
+
+    	sprintf(buf, "tmp/mactivation.%s",getCurrentUser()->userid);
+        if ((fout = fopen(buf, "w")) != NULL)
+    	{
+            fprintf(fout, "%s\n", title);
+            fprintf(fout, "以下是个人资料");
+            getuinfo(fout, lookupuser);
+            fclose(fout);
+    		post_file(getCurrentUser(), "", buf, "Activation", title, 0, 2, getSession());
+    		unlink(buf);
+    	}
+    }
+    clear();
+    return 0;
+}
+#endif /* HAVE_ACTIVATION */
+
 int Xdelipacl(void){
     int id;
     struct userec *lookupuser;

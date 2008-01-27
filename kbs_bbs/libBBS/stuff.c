@@ -27,6 +27,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+#include <sys/resource.h>
 
 extern char *getenv();
 static const char *const invalid[] = {
@@ -2416,6 +2417,280 @@ int check_ip_acl(char * id, char * sip)
     return 0;
 }
 
+#ifdef HAVE_ACTIVATION
+int my_rand(int max) {
+    return (int) ((double)max*rand()/(RAND_MAX+1.0));
+}
+
+#define RANDCHAR "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+char * randchar(char *c, int n){
+    int i,j;
+    srand(time(NULL));
+    srand(my_rand(RAND_MAX));
+	j = strlen(RANDCHAR);
+    for (i=0;i<n;i++) {
+        c[i] = RANDCHAR[my_rand(j)];
+    }
+	c[n] = '\0';
+	return c;
+}
+
+void create_activation(struct activation_info *ai)
+{
+    randchar(ai->activationcode, ACTIVATIONLEN);
+    ai->activated = 0;
+    ai->reg_email[0] = '\0';
+}
+
+int getactivation(struct activation_info *ai, struct userec *user)
+{
+    char afile[PATHLEN], buf[STRLEN];
+    FILE *fn;
+	sethomefile(afile,user->userid,"activation");
+	if ((fn=fopen(afile,"r")) != NULL) {
+        if (fgets(buf,STRLEN,fn) != NULL) {
+            buf[STRLEN - 1] = '\0';
+            if (strlen(buf) >= ACTIVATIONLEN + 1) {
+                ai->activated = (buf[0] == '1') ? 1 : 0;
+                memcpy(ai->activationcode, buf + 1, ACTIVATIONLEN);
+                ai->activationcode[ACTIVATIONLEN] = '\0';
+                strcpy(ai->reg_email, buf + 1 + ACTIVATIONLEN);
+                fclose(fn);
+                return 1;
+            }
+        }
+        fclose(fn);
+    }
+    create_activation(ai);
+    return setactivation(ai, user);
+}
+
+int setactivation(struct activation_info *ai, struct userec *user)
+{
+    char afile[PATHLEN], buf[STRLEN * 2];
+    FILE *fn;
+    buf[0] = ai->activated ? '1' : '0';
+    memcpy(buf + 1, ai->activationcode, ACTIVATIONLEN);
+    strcpy(buf + 1 + ACTIVATIONLEN, ai->reg_email);
+	sethomefile(afile,user->userid,"activation");
+    if ((fn=fopen(afile,"w")) == NULL) return 0;
+	fprintf(fn,"%s",buf);
+	fclose(fn);
+    return 1;
+}
+
+int sendactivation(struct activation_info *ai, struct userec *user, session_t* session)
+{
+    int return_no;
+    FILE *fout;
+    char buf[STRLEN];
+    const char *c=sysconf_str("BBS_WEBDOMAIN");
+    if (!c) c=sysconf_str("BBSDOMAIN");
+    sprintf(buf, "tmp/activationemail.%s",user->userid);
+    if ((fout = fopen(buf, "w")) == NULL) return 1;
+    fprintf(fout, "欢迎您来到%s。\n您的注册信息是：\n", BBS_FULL_NAME);
+    fprintf(fout, "用户名：%s\n", user->userid);
+    fprintf(fout, "Email: %s\n", ai->reg_email);
+    fprintf(fout, "激活码：%s\n", ai->activationcode);
+    fprintf(fout, "激活地址：http://%s/bbsact.php?userid=%s&acode=%s\n", 
+                       c, user->userid, ai->activationcode);
+	fprintf(fout, "您可以直接点击激活地址来激活您的帐号。\n\n");
+	fprintf(fout, "如果您使用 telnet/ssh 登录：也可以通过下面任何一种方式激活帐号：\n");
+	fprintf(fout, "1. 在 telnet/ssh 进站的时候输入激活码\n");
+	fprintf(fout, "2. 主菜单选择 I) 个人工具箱 -〉J) 激活码操作 来输入激活码\n");
+    fclose(fout);
+    return_no = bbs_sendmail(buf, BBS_FULL_NAME "欢迎您", ai->reg_email, 0, 1, session);
+    unlink(buf);
+    return return_no;
+}
+
+int doactivation(struct activation_info *ai, struct userec *user, session_t* session)
+{
+	FILE *fout;
+	char buf2[STRLEN],buf[STRLEN];
+
+    ai->activated = 1;
+    if (setactivation(ai, user) == 0) return 0;
+
+	sprintf(buf, "tmp/activation.%s",user->userid);
+    if ((fout = fopen(buf, "w")) != NULL)
+	{
+        fprintf(fout, "激活 email   : %s\n", ai->reg_email);
+        fprintf(fout, "激活 IP      : %s\n", session->fromhost);
+        fprintf(fout, "以下是个人资料");
+        getuinfo(fout, user);
+        fclose(fout);
+		sprintf(buf2, "%s %s", ai->reg_email, session->fromhost);
+		post_file(user, "", buf, "Activation", buf2, 0, 2, session);
+		unlink(buf);
+	}
+    user->flags |= ACTIVATED_FLAG;
+    return 1;
+}
+#endif /* HAVE_ACTIVATION */
+
+#ifdef NEWSMTH
+#define INVITEFILE "etc/inviteme"
+int send_invite(struct userec *user, session_t* session, char *email, char *msg)
+{
+	FILE *fp;
+	FILE *fpp;
+	struct invite in;
+	char buf[PATHLEN];
+	char title[STRLEN];
+	int retry=10;
+	int expireday=0;
+
+	memset(&in, 0, sizeof(in));
+	do{
+		if(retry < 0) return -2;
+		retry --;
+		randchar(in.inviteid, INVITE_ID_LEN);
+		sprintf(buf, "invite/%s", in.inviteid);
+	}while (dashf(buf));
+	randchar(in.passwd, INVITE_PASSWD_LEN);
+
+	if(1){
+		in.expire = 0;
+		expireday = 0;
+	}else if(HAS_PERM(user,PERM_SYSOP)){
+		in.expire = time(NULL) + 86400*100;
+		expireday = 100;
+	}else{
+		in.expire = time(NULL) + 86400*30;
+		expireday = 30;
+	}
+
+	sprintf(title, "%s 邀请您来到" BBS_FULL_NAME, user->userid);
+	if((fp=fopen(buf, "w"))==NULL)
+		return -1;
+
+	fprintf(fp,"%s 邀请您光临水木社区\n", user->userid );
+	fprintf(fp,"您可以直接注册成为社区一员,注册地址:\n    http://www.newsmth.net/bbsinvite.php?s=%s&p=%s\n", in.inviteid, in.passwd );
+	if(expireday)
+		fprintf(fp, "有效期 %d 天，超过有效期您也可以通过http://www.newsmth.net/随时注册成水木社区一员\n", expireday);
+	if(msg[0])
+		fprintf(fp, "%s 还想对您说: %s\n\n", user->userid, msg);
+
+	if((fpp=fopen(INVITEFILE,"r"))!=NULL){
+		char tmp[256];
+		while(fgets(tmp, 256, fpp)){
+			fputs(tmp, fp);
+		}
+		fclose(fpp);
+	}
+	fclose(fp);
+
+    retry = bbs_sendmail(buf, title, email, 0, 1, session);
+	if( retry ){
+		unlink(buf);
+		return -3;
+	}
+
+	if((fp=fopen(buf, "w"))==NULL)
+		return -4;
+
+	fprintf(fp,"%s\n", in.passwd);
+	fprintf(fp,"%s\n", user->userid);
+	fprintf(fp,"%s\n", email);
+	fprintf(fp,"%lu\n", in.expire);
+	fclose(fp);
+
+	return 0;
+}
+
+int get_invite(char *inviteid, char *passwd, struct invite *in){
+	FILE *fp;
+	char f[PATHLEN];
+	char *c;
+	time_t exp=0;
+
+	sprintf(f, "invite/%s", inviteid);
+	if((fp=fopen(f,"r"))==NULL)
+		return -2;
+	
+	if(!fgets(f, PATHLEN, fp))
+		goto out;
+	if(passwd && strncmp(passwd, f, INVITE_PASSWD_LEN)){
+		fclose(fp);
+		return -3;
+	}
+
+	if(!fgets(f, PATHLEN, fp))
+		goto out;
+	if((c=strchr(f,'\n'))!=NULL) *c='\0';
+	strncpy(in->userid, f, IDLEN);
+	in->userid[IDLEN]='\0';
+
+	if(!fgets(f, PATHLEN, fp))
+		goto out;
+	if((c=strchr(f,'\n'))!=NULL) *c='\0';
+	strncpy(in->email, f, STRLEN-1);
+	in->email[STRLEN-1]='\0';
+
+	if(!fgets(f, PATHLEN, fp))
+		goto out;
+	if(sscanf(f,"%lu",&exp) < 1 || (exp > 0 && exp < time(NULL)) ){
+		fclose(fp);
+		return -4;
+	}
+	in->expire = exp;
+
+	fclose(fp);
+
+	return 1;
+
+out:
+	fclose(fp);
+	return -1;
+}
+
+int clean_invite(char *userid, char *inviteid){
+	struct invite in;
+	char f[PATHLEN];
+	struct userec *uc;
+	struct activation_info ai;
+
+	if(getuser(userid,&uc)==0)
+		return -1;
+
+	sprintf(f, "invite/%s", inviteid);
+
+	memset(&in, 0, sizeof(in));
+	if(get_invite(inviteid, NULL, &in) <= 0 && in.email[0]=='\0'){
+		unlink(f);
+		return -2;
+	}else{
+		FILE *fout;
+		char buf2[STRLEN],buf[STRLEN];
+
+		sprintf(buf, "tmp/invite.%s",uc->userid);
+	    if ((fout = fopen(buf, "w")) != NULL)
+		{
+        	fprintf(fout, "我的 email   : %s\n", in.email);
+        	fprintf(fout, "我的 IP      : %s\n", getSession()->fromhost);
+        	fclose(fout);
+			sprintf(buf2, "%s通过%s邀请我", in.userid, in.email);
+			post_file(uc, "", buf, "Invite", buf2, 0, 2, getSession());
+			unlink(buf);
+		}
+	}
+
+	unlink(f);
+
+	create_activation(&ai);
+	strcpy(ai.reg_email, in.email);
+
+	setactivation(&ai, uc);
+
+	doactivation(&ai, uc, getSession());
+    uc->firstlogin -= REGISTER_WAIT_TIME;
+
+    return 1;
+}
+#endif /* NEWSMTH */
+
 char * filter_upload_filename(char *s) {
     char *ptr = s;
     for( ; *ptr != '\0'; ptr++) {
@@ -2695,5 +2970,13 @@ void* dl_function(const char *s_library,const char *s_function,void **p_handle){
     }
     *p_handle=handle;
     return function;
+}
+
+/* Enable core dump*/
+void enable_core_dump(int max_size) {
+  struct rlimit rl;
+  getrlimit(RLIMIT_CORE, &rl);
+  rl.rlim_cur = rl.rlim_max < max_size ? rl.rlim_max : max_size;
+  setrlimit(RLIMIT_CORE, &rl);
 }
 

@@ -178,6 +178,7 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     int addtofile(char filename[STRLEN], char str[STRLEN]);
     void bbssettime(time_t t);
     time_t bbstime(time_t * t);
+    void enable_core_dump(int max_size);
     int getwwwguestcount(ARG_VOID);
     int del_from_file(char filename[STRLEN], char str[STRLEN]);
     int setpublicshmreadonly(int readonly);
@@ -773,4 +774,11 @@ int init_all(ARG_VOID);
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef NEWSMTH
+int send_invite(struct userec*,session_t*,char*,char*);
+int get_invite(char*,char*,struct invite*);
+int clean_invite(char*,char*);
+#endif /* NEWSMTH */
+
 #endif

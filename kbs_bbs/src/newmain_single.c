@@ -426,6 +426,40 @@ static int strallalpha(char *uid)
 }
 #endif
 
+#ifdef NEWSMTH
+#define ZONGZE_FILE "etc/zongze"
+static void get_zongze()
+{
+	char ans[10];
+
+	while(1){
+		clear();
+
+	    if (dashf(ZONGZE_FILE))
+        	ansimore2(ZONGZE_FILE, false, 0, 20);
+
+		move(t_lines-3, 0);
+		prints("\033[1;43m             ************按s查看具体条款****************          \033[m");
+		while(1){
+			move(t_lines-2, 0);
+			clrtoeol();
+			getdata(t_lines-2, 0, "您是否同意以上条款?[y/n]", ans, 3, DOECHO, NULL, true);
+			if(ans[0] == 's' || ans[0] == 'S' || ans[0]=='y' || ans[0]=='Y' || ans[0]=='n' || ans[0]=='N' )
+				break;
+		}
+		if(ans[0]=='s' || ans[0]=='S'){
+			clear();
+			ansimore(ZONGZE_FILE, true);
+			continue;
+		}
+		if(ans[0]=='n' || ans[0]=='N'){
+			exit(0);
+		}
+		break;
+	}
+}
+#endif /* NEWSMTH */
+
 void login_query()
 {
 	const char *ptr;
@@ -497,6 +531,9 @@ void login_query()
         if (strcasecmp(uid, "new") == 0) {
 #ifdef LOGINASNEW
             if (check_ban_IP(getSession()->fromhost, buf) <= 0) {
+#ifdef NEWSMTH
+                get_zongze();
+#endif
                 new_register();
                 sethomepath(tmpstr, getCurrentUser()->userid);
                 sprintf(buf, "/bin/mv -f %s " BBSHOME "/homeback/%s", tmpstr, getCurrentUser()->userid);
@@ -772,6 +809,158 @@ void showsysinfo(char * fn)
     fclose(fp);
 }
 
+#ifdef NEWSMTH
+int invite(void){
+	char buf[STRLEN];
+	char msg[1000];
+	char ans[3];
+
+	if ( ! HAS_PERM(getCurrentUser(), PERM_POST) ){
+		clear();
+		move(0,0);
+		prints("您暂时没有权限邀请他人\n");
+		pressanykey();
+		return -1;
+	}
+	if ( getSession()->currentmemo->ud.lastinvite > time(NULL) - 86400  && !HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
+		clear();
+		move(0,0);
+		prints("请距离上次邀请24小时后再邀请他人\n");
+		pressanykey();
+		return -1;
+	}
+	clear();
+	move(3,0);
+	prints("请输入您要邀请的用户的信箱,邀请信将发送到此信箱\n");
+    getdata(4, 0, "> ", buf, STRLEN - 3, DOECHO, NULL, true);
+
+	if(buf[0]=='\0' || buf[0]=='\n' || buf[0]=='\n')
+		return -1;
+    if (invalidaddr(buf) || !strstr(buf, "@") || !strstr(buf, ".")) {
+		move(6,0);
+		prints("信箱不合法\n");
+		pressanykey();
+		return -1;
+	}
+
+	move(6,0);
+	prints("请输入您要给对方说的话，ctrl+q换行\n");
+    multi_getdata(7, 0, 79, NULL, msg, 999, 12, true, 0);
+
+	getdata(20, 0, "确定要发送吗？(Y/n)[Y]:\n", ans, 2, DOECHO, NULL, true);
+	if(ans[0]=='n' || ans[0]=='N')
+		return -1;
+
+	if (send_invite(getCurrentUser(), getSession(), buf, msg) >= 0){
+		FILE *fout;
+		char buf2[STRLEN], buf3[STRLEN];
+
+		getSession()->currentmemo->ud.lastinvite=time(NULL);
+		write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud) );
+
+		sprintf(buf3, "tmp/sendinvite.%s",getCurrentUser()->userid);
+	    if ((fout = fopen(buf3, "w")) != NULL)
+		{
+        	fprintf(fout, "我的 IP      : %s\n", getSession()->fromhost);
+        	fclose(fout);
+			sprintf(buf2, "%s邀请%s", getCurrentUser()->userid, buf);
+			post_file(getCurrentUser(), "", buf3, "Invite", buf2, 0, 2, getSession());
+			unlink(buf3);
+		}
+
+		move(6,0);
+		prints("邀请信息已经发送至信箱:%s\n", buf);
+		pressreturn();
+	}else{
+		move(6,0);
+		prints("发送失败\n");
+		pressreturn();
+	}
+	return 0;
+}
+#endif /* NEWSMTH */
+
+#ifdef HAVE_ACTIVATION
+static void check_activation()
+{
+    char buf[STRLEN];
+    struct activation_info ai;
+    int re;
+    if (getCurrentUser()->flags & ACTIVATED_FLAG || !strcmp(getCurrentUser()->userid, "guest") )
+        return;
+
+    getactivation(&ai, getCurrentUser());
+    if (ai.activated) {
+        doactivation(&ai, getCurrentUser(), getSession());
+        return;
+    }
+    clear();
+    strcpy(buf, ai.reg_email);
+    while(1) {
+        move(3,0); clrtobot();
+        prints("您的帐号没有激活，将不能发文，请输入您的 email 以便激活码发送到您的信箱。\n");
+        prints("如果您输入空的邮件地址，将不发送激活码直接提示您输入激活码。\n");
+        getdata(5, 0, "> ", buf, STRLEN - 3, DOECHO, NULL, false);
+        create_activation(&ai);
+        if (buf[0]) {
+            if (invalidaddr(buf) || !strstr(buf, "@") || !strstr(buf, ".")) {
+                prints("信箱不合法, 请重新输入\n");
+                pressreturn();
+                continue;
+            }
+            strcpy(ai.reg_email, buf);
+            setactivation(&ai, getCurrentUser());
+            re = sendactivation(&ai, getCurrentUser(), getSession());
+            if (re) {
+                prints("激活码发送失败，错误码 %d\n", re);
+                if (askyn("重新发送吗", true)) {
+                    continue;
+                }
+            } else {
+                prints("激活码发送成功，您可以点击信箱内链接激活帐号，或在下面输入激活码。\n");
+            }
+        }
+        break;
+    }
+    for (re=0;re<9;re++) {
+        move(12,0); clrtobot();
+        prints("请输入您收到的激活码。进站后您也可以在个人工具箱内选择激活码操作来输入激活码。\n");
+        prints("如果您已经激活帐号或想通过信箱内链接激活帐号，可以直接按回车继续。\n");
+        getdata(14, 0, "> ", buf, ACTIVATIONLEN+1, DOECHO, NULL, true);
+        if (getCurrentUser()->flags & ACTIVATED_FLAG) {
+            prints("帐户已经激活。\n");
+            pressreturn();
+            return;
+        }
+        if (buf[0] == '\0') return;
+        if (strncmp(buf, ai.activationcode, ACTIVATIONLEN) == 0) {
+            doactivation(&ai, getCurrentUser(), getSession());
+            prints("恭喜您，您的帐户已经激活。\n");
+            pressreturn();
+            return;
+        }
+        if (!askyn("激活码不正确，重试吗", true)) {
+            return;
+        }
+    }
+    prints("尝试太多次了。\n");
+    pressreturn();
+    return;
+}
+
+int x_sendactivation(void){
+    if(getCurrentUser()->flags&ACTIVATED_FLAG){
+        move(3,0);
+        clrtobot();
+        prints("您的帐号已经激活。");
+        pressreturn();
+    }
+    else
+        check_activation();
+    return 0;
+}
+#endif /* HAVE_ACTIVATION */
+
 void user_login()
 {
     char fname[STRLEN];
@@ -932,6 +1121,9 @@ void user_login()
         getCurrentUser()->firstlogin = login_start_time - 7 * 86400;
     }
     check_register_info();
+#ifdef HAVE_ACTIVATION
+    check_activation();    
+#endif
     load_mail_list(getCurrentUser(),&user_mail_list);
 }
 
