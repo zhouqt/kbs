@@ -527,6 +527,24 @@ struct protect_id_passwd {
     char answer[STRLEN];    //Œ Ã‚¥∞∏
 };
 
+#define ACTIVATIONLEN   15
+struct activation_info {
+    int activated;
+    char activationcode[ACTIVATIONLEN + 1];
+    char reg_email[STRLEN];
+};
+
+#define INVITE_ID_LEN 6
+#define INVITE_PASSWD_LEN 10
+
+struct invite {
+	char inviteid[INVITE_ID_LEN + 1];
+	char passwd[INVITE_PASSWD_LEN +1];
+	char userid[IDLEN + 1];
+	char email[STRLEN];
+	time_t expire;
+};
+
 struct fileheader_num {
     struct fileheader fh;
     int num;

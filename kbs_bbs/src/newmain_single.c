@@ -529,7 +529,7 @@ void login_query()
             exit(1);
         } else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
             getCurrentUser()->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
-            getCurrentUser()->flags = PAGER_FLAG;
+            getCurrentUser()->flags = PAGER_FLAG | ACTIVATED_FLAG;
             break;
         } else {
             if (!convcode)

@@ -619,6 +619,9 @@ int ConveyID(void){
             SET_UNDEFINE(getCurrentUser(),DEF_USEGB);
 
         getCurrentUser()->flags |= PAGER_FLAG;
+#ifdef HAVE_ACTIVATION
+		getCurrentUser()->flags &= ~ACTIVATED_FLAG;
+#endif
         getCurrentUser()->title = 0;
 		for(i = 0; i < MAXCLUB>>5 ; i++){
 		    getCurrentUser()->club_read_rights[i] = 0;

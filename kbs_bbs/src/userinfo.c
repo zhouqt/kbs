@@ -533,13 +533,21 @@ int x_fillform(void){
 #else
     if ((time(0) - getCurrentUser()->firstlogin) < REGISTER_WAIT_TIME)
 #endif
-	{
+{
         prints("您首次登入本站未满" REGISTER_WAIT_TIME_NAME "...");
         prints("请先四处熟悉一下，在满" REGISTER_WAIT_TIME_NAME "以后再填写注册单。");
         pressreturn();
         return -1;
 	}
-    
+#ifdef HAVE_ACTIVATION
+    if (!(getCurrentUser()->flags & ACTIVATED_FLAG))
+    {
+        prints("您还没有激活帐号,请先激活帐号再填写注册单.上站时将提示激活步骤.");
+        pressreturn();
+        return -1;
+    }
+#endif
+
 	if ((fn = fopen("new_register", "r")) != NULL) {
         while (fgets(genbuf, STRLEN, fn) != NULL) {
             if ((ptr = strchr(genbuf, '\n')) != NULL)

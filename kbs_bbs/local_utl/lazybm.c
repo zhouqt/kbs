@@ -132,10 +132,10 @@ void checkBMs(void)
     BMInfo *pBM;
 
     if(onlynormal) {
-        fc1 = 30;
-        bc1 = 42;
-        fc2 = 34;
-        bc2 = 43;
+        fc1 = 37;
+        bc1 = 40;
+        fc2 = 37;
+        bc2 = 40;
     }
     else {
         fc1 = 37;

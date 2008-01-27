@@ -2,7 +2,7 @@
 #define _TEMPLATE_H
 
 #define TEMPLATE_DIR ".templ"
-#define MAX_TEMPLATE 20
+#define MAX_TEMPLATE 40
 #define MAX_CONTENT 20
 #define TMPL_BM_FLAG 0x1
 #define MAX_CONTENT_LENGTH 555

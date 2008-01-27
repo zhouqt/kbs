@@ -10,6 +10,17 @@ void mysql_report_error(MYSQL *s);
 extern "C" {
 #endif
 
+
+#ifdef HAVE_ACTIVATION
+    void create_activation(struct activation_info *ai);
+    int getactivation(struct activation_info *ai, struct userec *user);
+    int setactivation(struct activation_info *ai, struct userec *user);
+    int sendactivation(struct activation_info *ai, struct userec *user, session_t* session);
+    int doactivation(struct activation_info *ai, struct userec *user, session_t* session);
+#endif
+
+    int invalidaddr(char *addr);
+    
 	char *showuserip(struct userec *user, char *ip);
     char *c_exp(int exp);
     char *c_perf(int perf);
