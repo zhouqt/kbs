@@ -2423,20 +2423,31 @@ int doforward(char *direct, struct fileheader *fh)
         char data[3];
         int isbig5;
 
-        data[0] = 0;
-        prints("若您要将信件转寄到台湾请输入 Y 或 y\n");
-        getdata(7, 0, "转成BIG5码? [N]: ", data, 2, DOECHO, 0, 0);
-        if (data[0] == 'y' || data[0] == 'Y')
-            isbig5 = 1;
-        else
-            isbig5 = 0;
-
-        data[0] = 0;
-        getdata(8, 0, "过滤ANSI控制符? [Y]: ", data, 2, DOECHO, 0, 0);
-        if (data[0] == 'n' || data[0] == 'N')
+#if defined(NEWSMTH) && !defined(SECONDSITE)
+        char *ptr;
+        ptr = strchr(receiver, '@');
+        if(strcasecmp(ptr, "@2.newsmth.net") == 0) {
             noansi = 0;
-        else
-            noansi = 1;
+            isbig5 = 0;
+        }
+        else 
+#endif
+        {
+            data[0] = 0;
+            prints("若您要将信件转寄到台湾请输入 Y 或 y\n");
+            getdata(7, 0, "转成BIG5码? [N]: ", data, 2, DOECHO, 0, 0);
+            if (data[0] == 'y' || data[0] == 'Y')
+                isbig5 = 1;
+            else
+                isbig5 = 0;
+
+            data[0] = 0;
+            getdata(8, 0, "过滤ANSI控制符? [Y]: ", data, 2, DOECHO, 0, 0);
+            if (data[0] == 'n' || data[0] == 'N')
+                noansi = 0;
+            else
+                noansi = 1;
+        }
 
         prints("转寄信件给 %s, 请稍候....\n", receiver);
 
