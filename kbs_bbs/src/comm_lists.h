@@ -130,13 +130,11 @@ KBS_COMM_LISTS_FUNC_V(x_vote);
 KBS_COMM_LISTS_FUNC_V(x_manageactivation);
 KBS_COMM_LISTS_FUNC_V(x_sendactivation);
 #endif
-
 #ifdef NEWSMTH
 KBS_COMM_LISTS_FUNC_V(invite);
+#endif
 KBS_COMM_LISTS_FUNC_V(Select);
-#else /* ! NEWSMTH */
 KBS_COMM_LISTS_FUNC_V(ReadBoard);
-#endif /* NEWSMTH */
 
 #if HAVE_MYSQL_SMTH+0 == 1
 KBS_COMM_LISTS_FUNC_V(al_read);
