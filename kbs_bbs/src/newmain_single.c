@@ -901,13 +901,13 @@ static void check_activation()
         prints("您的帐号没有激活，将不能发文，请输入您的 email 以便激活码发送到您的信箱。\n");
         prints("如果您输入空的邮件地址，将不发送激活码直接提示您输入激活码。\n");
         getdata(5, 0, "> ", buf, STRLEN - 3, DOECHO, NULL, false);
-        create_activation(&ai);
         if (buf[0]) {
             if (invalidaddr(buf) || !strstr(buf, "@") || !strstr(buf, ".")) {
                 prints("信箱不合法, 请重新输入\n");
                 pressreturn();
                 continue;
             }
+            create_activation(&ai);
             strcpy(ai.reg_email, buf);
             setactivation(&ai, getCurrentUser());
             re = sendactivation(&ai, getCurrentUser(), getSession());
