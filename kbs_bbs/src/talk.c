@@ -129,8 +129,7 @@ int t_pager(void){
 /*此函数只负责列印说明档，并不管清除或定位的问题。*/
 extern int minln; //added by bad
 
-int show_user_plan(userid)
-char userid[IDLEN];
+static int show_user_plan(char userid[IDLEN], char *fix)
 {
     int i;
     char pfile[STRLEN], pbuf[256];
@@ -138,13 +137,13 @@ char userid[IDLEN];
 
     sethomefile(pfile, userid, "plans");
     if ((pf = fopen(pfile, "r")) == NULL) {
-        prints("\033[36m没有个人说明档\033[m\n");
+       	prints("\033[36m没有个人说明档\033[m %s\n", fix?fix:"");
 /*fclose(pf); *//*
  * * * Leeward 98.04.20 
  */
         return false;
     } else {
-        prints("\033[36m个人说明档如下：\033[m\n");//added by bad
+       	prints("\033[36m个人说明档如下：\033[m %s\n", fix?fix:"");//added by bad
         getyx(&minln, &i);
         for (i = 1; i <= scr_lns-8; i++) {
             if (fgets(pbuf, sizeof(pbuf), pf))
@@ -167,7 +166,8 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
     }
     (*arg)++;
     if (*arg == 1)
-        strcpy(genbuf, "目前在站上，状态如下：\n");
+		genbuf[0]='\0';
+//        strcpy(genbuf, "目前在站上，状态如下：\n");
 
     p = idle_str(buf3,uentp);
     if(p[0]==' '&&p[1]==' ') buf2[0]=0;
@@ -211,6 +211,15 @@ int talk_showstatus(struct user_info *uentp, struct _tag_talk_showstatus *arg, i
 int t_cmpuids(int uid, struct user_info *up)
 {
     return (up->active && uid == up->uid);
+}
+static int query_format_time(char *buf,time_t timestamp){
+    struct tm *desc=localtime(&timestamp);
+    if(!desc){
+        strcpy(buf,"未知时间");
+        return -1;
+    }
+    sprintf(buf,"%04d-%02d-%02d %02d:%02d",desc->tm_year+1900,desc->tm_mon+1,desc->tm_mday,desc->tm_hour,desc->tm_min);
+    return 0;
 }
 
 #ifdef FREE
@@ -289,21 +298,13 @@ unsigned char    month, day;
 
 int t_query(char* q_id)
 {
-    char uident[STRLEN], *newline;
+    char uident[STRLEN];
     int tuid = 0;
-    int exp, perf;              /*Add by SmallPig */
-    char qry_mail_dir[STRLEN];
-    char planid[IDLEN + 2];
-    char permstr[USER_TITLE_LEN];
-    char exittime[40];
-    time_t exit_time, temp /*Haohmaru.98.12.04 */ ;
-    int logincount, seecount, oldmode;
+    int seecount, oldmode;
     struct userec *lookupuser;
+    char buf[STRLEN];
 
     if (q_id==NULL) {
-        /*
-         * count = shortulist(NULL); 
-         */
         oldmode = uinfo.mode;
         modify_user_mode(QUERY);
         move(2, 0);
@@ -342,8 +343,19 @@ int t_query(char* q_id)
         return -1;
     }
     uinfo.destuid = tuid;
-/*    UPDATE_UTMP(destuid,uinfo);  I think it is not very importance.KCN*/
-/*    search_ulist( &uin, t_cmpuids, tuid );*/
+
+#ifdef NEWSMTH
+    seecount = display_userinfo(lookupuser);
+#else
+  { /* start of default display_userinfo */
+    int logincount;
+    time_t exit_time, temp /*Haohmaru.98.12.04 */ ;
+    char exittime[40];
+    char qry_mail_dir[STRLEN];
+    char permstr[USER_TITLE_LEN];
+    int exp, perf;              /*Add by SmallPig */
+    char *newline;
+
 #if defined(FREE) || defined(ZIXIA)
 	move(0, 0);
 #else
@@ -377,7 +389,6 @@ int t_query(char* q_id)
 #else
         prints("%s (%s) 共上站 %d 次，发表过 %d 篇文章", lookupuser->userid, lookupuser->username, lookupuser->numlogins, lookupuser->numposts);
 #endif
-    strcpy(planid, lookupuser->userid);
     if ((newline = strchr(genbuf, '\n')) != NULL)
         *newline = '\0';
     seecount = 0;
@@ -432,10 +443,13 @@ int t_query(char* q_id)
         prints(genbuf);
         prints("\n");
     }
-    show_user_plan(planid);
+    show_user_plan(lookupuser->userid,NULL);
+  } /* end of default display_userinfo */
+#endif /* NEWSMTH */
+
+
     if (oldmode != LUSERS && oldmode != LAUSERS && oldmode != FRIEND && oldmode != GMENU) {
         int ch;
-        char buf[STRLEN];
         char *t1, *t2, *t3;
         struct user_info *uin;
         move(t_lines - 1, 0);
@@ -503,7 +517,7 @@ int t_query(char* q_id)
             case 'L':
                 do{
                     struct stat st;
-                    sethomefile(buf,planid,"plans");
+                    sethomefile(buf,lookupuser->userid,"plans");
                     if(!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size){
                         ansimore(buf,true);
                         move(0,0);
@@ -712,7 +726,7 @@ int ttt_talk(struct user_info *userinfo)
 
         move(3, 0);
         clrtobot();
-        show_user_plan(uident);
+        show_user_plan(uident,NULL);
         getdata(2, 0, "确定要和他/她聊天吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf != 'y' && *genbuf != 'Y') {
             clear();
@@ -968,7 +982,7 @@ int talkreply()
      */
     move(5, 0);
     clrtobot();
-    show_user_plan(page_requestorid);
+    show_user_plan(page_requestorid,NULL);
     /*
      * Add by SmallPig 
      */
