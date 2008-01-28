@@ -1,7 +1,9 @@
 EXTRA_DIST = definekey.* ansihelp.txt
 SUBDIRS=pip worker personaldns
 noinst_HEADERS = tcplib.h
-lib_LTLIBRARIES = libfriendtest.la libbbsnet.la libpandora.la libdict.la libquiz.la libkiller.la libkiller2.la libcalendar.la libcalc.la libansieditor.la libiquery.la libtt.la libtetris.la libwinmine.la
+lib_LTLIBRARIES = libfriendtest.la libbbsnet.la libpandora.la libdict.la libquiz.la \
+                  libkiller.la libkiller2.la libcalendar.la libcalc.la libansieditor.la \
+                  libiquery.la libtt.la libtetris.la libwinmine.la
 libfriendtest_la_SOURCES = friendtest.c
 libbbsnet_la_SOURCES = bbsnet.c tcplib.c
 libpandora_la_SOURCES = pandora.c tcplib.c
