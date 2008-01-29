@@ -582,7 +582,7 @@ int a_savenames(MENU *pm){
     ITEM *it;
     struct stat st;
     char name[PATHLEN];
-    int i;
+    int i, j;
     sprintf(name,"%s/.Names",pm->path);
     if(!stat(name,&st)&&S_ISREG(st.st_mode)&&st.st_mtime!=pm->modified_time)
         return -2;
@@ -597,7 +597,7 @@ int a_savenames(MENU *pm){
     else
         fprintf(fp,"# Title=%s\n",pm->mtitle);
     fprintf(fp,"%s\n","#");
-    for(i=0;i<pm->total;i++){
+    for(i=0,j=1;i<pm->total;i++){
         if(!(it=pm->pool[i]))
             continue;
         if(!strncmp(it->title,"[нд╪Ч] ",7)
@@ -616,7 +616,7 @@ int a_savenames(MENU *pm){
         }
         else
             fprintf(fp,"Path=~/%s\n",it->fname);
-        fprintf(fp,"Numb=%d\n",(i+1));
+        fprintf(fp,"Numb=%d\n",(j++));
         fprintf(fp,"%s\n","#");
     }
     fclose(fp);
