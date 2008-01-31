@@ -3544,7 +3544,7 @@ int refresh_reply_count(const char* bname, int gid) {
     BBS_TRY {
         if(!safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &head, &buf.st_size)) {
             close(fd);
-            return 0;
+            BBS_RETURN(0);
         }
         count = buf.st_size / sizeof(struct fileheader);
         ptr = (struct fileheader *)head;
