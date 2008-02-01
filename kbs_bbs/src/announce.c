@@ -1289,7 +1289,7 @@ void a_manager(MENU *pm,int ch)
                 } else if (dashd(fpath)) {
                     move(1, 0);
                     clrtoeol();
-                    getdata(1, 0, "°æÖ÷: ", uident, STRLEN - 1, DOECHO, NULL, false);
+                    getdata(1, 0, "°æÖ÷: ", uident, IDLEN + 1, DOECHO, NULL, false);
                     if (uident[0] != '\0')
                         sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
                     else
