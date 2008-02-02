@@ -180,6 +180,12 @@ void deliverreport(char *title,char *str);
 int check_proxy_IP(const char *ip,char *reason);
 
 /* talk.c */
+struct _tag_printstatus {
+    int seecount;
+    char *statusbuf;
+};
+int t_printstatus(struct user_info *uentp, struct _tag_printstatus *arg, int pos);
+int show_user_plan(char userid[IDLEN], char *fix);
 int friend_add();
 void creat_list();
 int deleteoverride(char *uident);

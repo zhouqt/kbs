@@ -129,7 +129,7 @@ int t_pager(void){
 /*此函数只负责列印说明档，并不管清除或定位的问题。*/
 extern int minln; //added by bad
 
-static int show_user_plan(char userid[IDLEN], char *fix)
+int show_user_plan(char userid[IDLEN], char *fix)
 {
     int i;
     char pfile[STRLEN], pbuf[256];
@@ -156,11 +156,8 @@ static int show_user_plan(char userid[IDLEN], char *fix)
         return true;
     }
 }
-struct _tag_printstatus {
-    int seecount;
-    char *statusbuf;
-};
-static int t_printstatus(struct user_info *uentp, struct _tag_printstatus *arg, int pos)
+
+int t_printstatus(struct user_info *uentp, struct _tag_printstatus *arg, int pos)
 {
     char buf[80],buf2[20],buf3[80];
     char* p;
