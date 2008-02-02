@@ -196,6 +196,21 @@ else
 fi
 AC_SUBST(BBSSITE)
 
+
+AC_ARG_ENABLE([site-term],
+[  --enable-site-term
+                          Turn on site term C file ],
+[
+    siteterm=true
+    if test -f $srcdir/site/$BBSSITE-term.c; then
+        AC_CONFIG_LINKS(src/site-term.c:$SITEDIR/$BBSSITE-term.c)
+    else
+        AC_MSG_ERROR([ERROR! No $BBSSITE-term.c found in site/.]);
+    fi
+],[ siteterm=false ])
+AM_CONDITIONAL([SITETERM], [test x$siteterm = xtrue])
+
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_AWK

@@ -1351,6 +1351,13 @@ if test '!' -d ../src && '!' -d ../libBBS; then
 	AC_MSG_ERROR([can't find bbs source directory])
 fi
 
+AC_ARG_ENABLE([site-term],
+[  --enable-site-term
+                          Turn on site term C file ],
+[ siteterm=true ],[ siteterm=false ])
+AM_CONDITIONAL([SITETERM], [test x$siteterm = xtrue])
+
+
 AH_TEMPLATE([LASTLOG_IS_DIR],
 			[Define if /var/adm/lastlog or whatever it is called is a directory
    			(e.g. SGI IRIX).])
