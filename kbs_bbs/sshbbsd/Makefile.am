@@ -44,7 +44,7 @@ BBSD_SRCS = $(srcdir)/../src/bbs.c $(srcdir)/../src/delete.c $(srcdir)/../src/ma
            $(srcdir)/../src/definekey.c $(srcdir)/../src/calltime.c $(srcdir)/../src/tmpl.c $(srcdir)/../src/msg_manager.c\
            $(srcdir)/../src/addr_manage.c $(srcdir)/../src/personal_corp.c $(srcdir)/../src/newread.c $(srcdir)/../src/newhelp.c
 if SITETERM
-BBSD_SRCS += $(builddir)/../src/site-term.c
+BBSD_SRCS += $(top_builddir)/../src/site-term.c
 endif
 
 CLEANFILES=@EXTRA_CLEAN@
