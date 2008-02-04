@@ -61,7 +61,6 @@ static const CMD_LIST CMD[]={
     {"ProtectID",           ProtectID,                              0},
     {"QueryBUser",          query_bm,                               0},
     {"QueryClub",           query_club_rights,                      0},
-    {"ReadBoard",           ReadBoard,                              0},
     {"SearchIP",            search_ip,                              0},
     {"SearchTrace",         searchtrace,                            0},
     {"SelectBoard",         Select,                                 0},
