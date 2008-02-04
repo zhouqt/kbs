@@ -1047,7 +1047,7 @@ int post_file(struct userec *user, const char *fromboard, const char *filename, 
  * 不统计 owner 的 bmlog(文) ... 暂不支持匿名发文/带附件文/过滤 ...
  * mode: 0x01 写一个 deliver 的 header
  *       0x02 转信
- *       0x04 调用 write_header: 指定 0x01 时无效
+ *       0x04 调用 write_header, 同时指定 0x01 时写入 deliver header ...
  * fancyrabbit Oct 12 2007
  */
 
@@ -1098,22 +1098,21 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
         fclose(fp_out);
         return 4;
     }
-    if (mode & 0x01)
+    if (mode & 0x04)
     {
-        now = time(NULL);
-        fprintf(fp_out, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", to_board);
-        fprintf(fp_out, "标  题: %s\n", fh.title);
-        fprintf(fp_out, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
-        fprintf(fp_out, "【此篇文章是由自动发信系统所张贴】\n\n");        
+        if (mode & 0x01)
+        {
+            now = time(NULL);
+            fprintf(fp_out, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", to_board);
+            fprintf(fp_out, "标  题: %s\n", fh.title);
+            fprintf(fp_out, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
+            fprintf(fp_out, "【此篇文章是由自动发信系统所张贴】\n\n"); 
+        }
+        else
+            write_header(fp_out, user, 0, to_board, fh.title, 0, (mode & 0x02) ? 2 : 0, getSession());
     }
-    else if (conf_cross)
-    {
-        write_header(fp_out, user, 0, to_board, fh.title, 0, (mode & 0x02) ? 2 : 0, getSession());
+    if (conf_cross)
         fprintf(fp_out, "【 以下文字转载自 %s 讨论区 】\n", from_board);
-    }
-    else if (mode & 0x04)
-        write_header(fp_out, user, 0, to_board, fh.title, 0, (mode & 0x02) ? 2 : 0, getSession());
-
     while (fgets(bufcp, READ_BUFFER_SIZE, fp_in))
         fputs(bufcp, fp_out);
     fclose(fp_in);
