@@ -383,7 +383,7 @@ int main(void){
     gen_board_rank_xml(numboards, st);
 #endif
 
-    /*每周三计算完后，清楚这周记录，并备份boardusage.week */
+    /*每周三计算完后，清除这周记录，并备份boardusage.week */
     sprintf(buf, "%s/%d/%d/%d_%d.boardusage.week.bak", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
     if( t.tm_wday == 3 ){
         f_mv(weeklogfile, buf);
