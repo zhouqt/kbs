@@ -426,6 +426,7 @@ static int strallalpha(char *uid)
 }
 #endif
 
+#ifndef SSHBBS
 #ifdef NEWSMTH
 #define ZONGZE_FILE "etc/zongze"
 static void get_zongze()
@@ -459,6 +460,7 @@ static void get_zongze()
 	}
 }
 #endif /* NEWSMTH */
+#endif /* SSHBBS */
 
 void login_query()
 {
