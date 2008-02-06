@@ -646,7 +646,7 @@ void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony
     /*
      * 由Bigman增加:2000.8.10 Announce版匿名发文问题 
      */
-    if (!strcmp(currboard, "Announce"))
+    if (!strcmp(currboard, "Announce") || !strcmp(currboard, "Penalty"))
         fprintf(fp, "\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, BBS_FULL_NAME);
     else
         fprintf(fp, "\n\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(session->currentuser, session->fromhost));
@@ -784,7 +784,7 @@ void write_header(FILE * fp, struct userec *user, int in_mail, const char *board
          * }
          */
 #ifdef SMTH
-        if (!strcmp(board, "Announce") && Anony)
+        if ((!strcmp(board, "Announce") || !strcmp(board, "Penalty")) && Anony)
             /*
              * added By Bigman 
              */
@@ -1045,7 +1045,7 @@ int post_file(struct userec *user, const char *fromboard, const char *filename, 
  * 修改自 etnlegend 的 post_announce(), 感谢之 ...
  * caller 须保证发帖的合法性 ...
  * 不统计 owner 的 bmlog(文) ... 暂不支持匿名发文/带附件文/过滤 ...
- * mode: 0x01 写一个 deliver 的 header
+ * mode: 0x01 deliver 发文
  *       0x02 转信
  *       0x04 调用 write_header, 同时指定 0x01 时写入 deliver header ...
  * fancyrabbit Oct 12 2007
