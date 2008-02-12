@@ -735,7 +735,7 @@ return:
 */
 PHP_FUNCTION(bbs_club_write)
 {
-    char *bname, *clubop, *line, *info;
+    char *bname, *clubop, *line, *info, *sp_com;
     int bname_len, clubop_len, info_len;
     long mode;
     struct userec *user;
@@ -766,21 +766,33 @@ PHP_FUNCTION(bbs_club_write)
         RETURN_LONG(0);
     case '-':
         trimstr(line);
+        /* pig2532 Jan 2008, 模仿兔子的特定附加说明 */
+        sp_com = strchr(line, 32);
+        if(sp_com) {
+            *sp_com++ = 0;
+            trimstr(sp_com);
+        }
         if(!getuser(line,&user)||!get_user_club_perm(user,brd,mode))
             RETURN_LONG(0);
         if(!del_user_club_perm(user,brd,mode)){
-            club_maintain_send_mail(user->userid,info,1,mode,brd,getSession());
+            club_maintain_send_mail(user->userid, sp_com ? sp_com : info,1,mode,brd,getSession());
         }
         break;
     case '+':
         line++;
     default:
         line--;
+        /* pig2532 Jan 2008, 模仿兔子的特定附加说明 */
+        sp_com = strchr(line, 32);
+        if(sp_com) {
+            *sp_com++ = 0;
+            trimstr(sp_com);
+        }
         trimstr(line);
         if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,brd,mode))
             RETURN_LONG(0);
         if(!set_user_club_perm(user,brd,mode)){
-            club_maintain_send_mail(user->userid,info,0,mode,brd,getSession());
+            club_maintain_send_mail(user->userid,sp_com ? sp_com : info,0,mode,brd,getSession());
         }
         break;
     }
