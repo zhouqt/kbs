@@ -130,11 +130,12 @@ function submitclub()
 <input type="button" value="确定" onclick="submitclub();" id="btnsubmit"></div>
 </form></td><td width="50%">
 　　在左边的框中输入要操作的用户名，每行写一个，带“+”
-号前缀的表示添加该用户，带“-”号前缀的表示删除该用户，不带前缀的默认为添加用户。以“#”号开头的行为注释，不起作用。例如：
+号前缀的表示添加该用户，带“-”号前缀的表示删除该用户，不带前缀的默认为添加用户。以“#”号开头的行为注释，不起作用。用户名后可加空格并附加说明，不附加说明的用户将采用下面指定的全局附加说明。例如：
 <br><br>
 #this line has no effect<br>
-+pig2532<br>
++pig2532 这是猪猪猪<br>
 -atppp<br>
+fancyrabbit 兔子兔子！<br>
 </td></tr>
 </table><br><br>
 <?php
