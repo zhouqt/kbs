@@ -767,7 +767,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
         else if(ans[0]=='I'){
             move(1,0);
             clrtobot();
-            sprintf(genbuf,"\033[1;37m附加说明 [\033[1;36m%s\033[1;37m]: \033[m",comment);
+            sprintf(genbuf,"\033[1;37m全局附加说明 [\033[1;36m%s\033[1;37m]: \033[m",comment);
             getdata(1,0,genbuf,buf,64,DOECHO,NULL,true);
             if(buf[0]){
                 trimstr(buf);
@@ -781,8 +781,9 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 "    \033[1;31m-\033[1;37m 起始的行表示删除其后的用户;\033[m\n"
                 "    \033[1;32m+\033[1;37m 起始的行表示增加其后的用户;\033[m\n"
                 "    \033[1;37m无前缀时默认操作为增加...\033[m\n\n"
-                "    \033[1;37m用户 ID 后可指定特定的附加说明, 若不指定, \033[m\n"
-                "    \033[1;37m则使用全局的附加说明...\033[m\n\n"
+                "    \033[1;37m用户 ID 后可指定特定的附加说明,\033[m\n"
+                "    \033[1;37m以\033[1;33m空格\033[1;37m作为 ID 与附加说明间的分隔符,\033[m\n"
+                "    \033[1;37m若不指定, 则该行操作使用之前设定的全局附加说明...\033[m\n\n"
                 "\033[1;37m按 \033[1;32m<Enter>\033[1;37m 键后开始编辑批量修改列表: \033[m");
             WAIT_RETURN;
             saveline(0,0,NULL);
