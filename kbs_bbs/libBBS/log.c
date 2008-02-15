@@ -198,22 +198,24 @@ int bbslog(const char *from, const char *fmt, ...)
 int bmlog(const char *id, const char *boardname, int type, int value)
 {
 /*
-type - meaning
-  0          停留时间
-  1          进版
-  2          版内发文
-  3          收入文摘
-  4          去掉文摘
-  5          区段
-  6          标记文章
-  7          去掉标记
-  8          删除文章
-  9          恢复删除
+type        meaning
+  0         停留时间
+  1         进版次数
+  2         版内发文
+  3         收入文摘
+  4         去掉文摘
+  5         区段
+  6         去掉 m 标记
+  7         标记 m
+  8         删除文章
+  9         恢复删除
   10        封禁
   11        解封
   12        收入精华
   13        整理精华
   14        相同主题
+  15        标记 #/%
+  16        去掉 #/% 标记
 */
 #ifndef NEWBMLOG
     int fd, data[DATALEN];
