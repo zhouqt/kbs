@@ -240,7 +240,7 @@ static void writelog(struct bbs_msgbuf *msg)
 
     ch=msg->mtext[0];
     msg->mtext[0]=0;
-    snprintf(header, 256, "[%02u/%02u %02u:%02u:%02u %5lu %lu] %s %c%s", n->tm_mon + 1, n->tm_mday, n->tm_hour, n->tm_min, n->tm_sec, (long int) msg->pid, msg->mtype, msg->userid,ch,&msg->mtext[1]);
+    snprintf(header, 256, "[%d-%02u-%02u %02u:%02u:%02u %5lu %lu] %s %c%s", n->tm_year + 1900, n->tm_mon + 1, n->tm_mday, n->tm_hour, n->tm_min, n->tm_sec, (long int) msg->pid, msg->mtype, msg->userid,ch,&msg->mtext[1]);
     if (pconf->buf) {
         if ((int) (pconf->bufptr + strlen(header)) <= pconf->bufsize) {
             strcpy(&pconf->buf[pconf->bufptr], header);
