@@ -420,7 +420,7 @@ PHP_FUNCTION(bbs_postarticle)
     strncpy(post_file.owner, anony ? board : getCurrentUser()->userid, OWNER_LEN);
     post_file.owner[OWNER_LEN - 1] = 0;
 
-    if ((!strcmp(board, "Announce")) && (!strcmp(post_file.owner, board)))
+    if ((!strcmp(board, "Announce") || !strcmp(board, "Penalty")) && (!strcmp(post_file.owner, board)))
         strcpy(post_file.owner, "SYSOP");
     fp = fopen(filepath, "w");
     write_header(fp, getCurrentUser(), 0, board, title, anony, (local_save ? 1 : 2), getSession());
@@ -445,7 +445,7 @@ PHP_FUNCTION(bbs_postarticle)
         fprintf(fp, "\n");
     }
     color = (getCurrentUser()->numlogins % 7) + 31; /* 颜色随机变化 */
-    if (!strcmp(board, "Announce"))
+    if (!strcmp(board, "Announce") || !strcmp(board, "Penalty"))
         fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME, BBS_FULL_NAME);
     else
         fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(getCurrentUser(), getSession()->fromhost));

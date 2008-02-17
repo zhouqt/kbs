@@ -3112,7 +3112,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
      * strcpy(post_file.owner,"SYSOP");
      */
 
-    if ((!strcmp(currboard->filename, "Announce")) && (!strcmp(post_file.owner, currboard->filename)))
+    if ((!strcmp(currboard->filename, "Announce") || (!strcmp(currboard->filename, "Penalty"))) && (!strcmp(post_file.owner, currboard->filename)))
         strcpy(post_file.owner, "SYSOP");
 
     setbfile(filepath, currboard->filename, post_file.filename);

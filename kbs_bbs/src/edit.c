@@ -785,7 +785,7 @@ void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Ano
     /*
      * 由Bigman增加:2000.8.10 Announce版匿名发文问题 
      */
-    if (!strcmp(currboard, "Announce"))
+    if (!strcmp(currboard, "Announce") || !strcmp(currboard, "Penalty"))
         fprintf(fp, "\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, BBS_FULL_NAME);
     else
         fprintf(fp, "\n\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
