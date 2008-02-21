@@ -713,7 +713,7 @@ static inline int mu_show_help(int n){
         "选择此项可进行用户登录统计修改相关操作...",
         "选择此项可进行用户发表文章统计修改相关操作...",
         "选择此项可进行用户日均在线时间查看相关操作...",
-        "选择此项可进行用户积分修改相关操作...",
+        "选择此项可进行用户积分统计修改相关操作...",
         "选择此项可进行用户权限修改相关操作...",
         "<Enter> 选择, <Esc> 退出, <~> 恢复原设定..."
     };
@@ -1133,7 +1133,7 @@ int modify_userinfo(int uid,int mode){
         "用户名称","用户密码","用户昵称","真实姓名","用户性别",
         "出生日期","通信地址","电子邮件","联系电话","用户身份",
         "注册资料","注册时间","最近访问","登录来源","登录统计",
-        "发文统计","在线统计","用户积分","用户权限","结束操作"
+        "发文统计","在线统计","积分统计","用户权限","结束操作"
     };
     static const char *title="\033[1;32m[设定用户资料]\033[m";
 #if !defined(HAVE_BIRTHDAY)||!defined(NEWSMTH)
@@ -1241,8 +1241,10 @@ int modify_userinfo(int uid,int mode){
 #ifndef NEWSMTH
     MU_MENUFORM(17,N,"%s",invalid);
 #else /* NEWSMTH */
-    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
-        "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));
+    /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
+        "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
+    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
+        "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
     MU_MENUFORM(17,N,"%s",buf);
 #endif /* ! NEWSMTH */
     MU_MENUFORM(18,N,"<%s>",gen_permstr(nuser.userlevel,buf));
@@ -1580,7 +1582,16 @@ int modify_userinfo(int uid,int mode){
 #ifdef NEWSMTH
                 case 17:
                     MU_SHOW_HINT(i);
-                    MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户积分数量{<N>|<+N>|<-N>}: "),buf,9);
+                    MU_GET(MU_CURR_ROW, MU_MSG(Y, "请选择要修改的积分种类{U(用户)|M(管理)}: "), buf, 2);
+                    if (!((k = (toupper(buf[0]) == 'U')) || (toupper(buf[0]) == 'M')))
+                    {
+                        MU_PUT(MU_CURR_ROW, MU_MSG(C, "选择的积分种类不合法..."));
+                        break;
+                    }
+                    if (k)
+                        MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户积分数量{<N>|<+N>|<-N>}: "),buf,9);
+                    else
+                        MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的管理积分数量{<N>|<+N>|<-N>}: "),buf,9);
                     MU_TRIM_BREAK(buf);
                     if(buf[0]=='+'||buf[0]=='-'){
                         if(!mu_digit_string(&buf[1])){
@@ -1591,19 +1602,32 @@ int modify_userinfo(int uid,int mode){
                         /* fancyrabbit Aug 30 2007, 积分不能给扣负了 ... */
                         /*if((nuser.score_user+j)<0)
                             nuser.score_user=0;*/
-                        if ((nuser.score_user += j) > INT_MAX)
-                            nuser.score_user = 0;
+                        if (k)
+                        {
+                            if ((nuser.score_user += j) > INT_MAX)
+                                nuser.score_user = 0;
+                        }
+                        else if ((nuser.score_manager += j) > INT_MAX)
+                            nuser.score_manager = 0;
                     }
                     else{
                         if(!mu_digit_string(buf)){
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
                             break;
                         }
-                        nuser.score_user=atoi(buf);
+                        if (k)
+                            nuser.score_user = atoi(buf);
+                        else
+                            nuser.score_manager=atoi(buf);
                     }
-                    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
-                        "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));
+                    /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
+                        "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
+                    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
+                        "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
                     MU_SET(i,user,score_user,val,"%s",buf);
+                    if (change & (1 << i))
+                        break;
+                    MU_SET(i, user, score_manager, val, "%s", buf);
                     break;
 #endif /* NEWSMTH */
                 case 18:
@@ -1699,6 +1723,9 @@ int modify_userinfo(int uid,int mode){
 #ifdef NEWSMTH
                 case 17:
                     MU_RESET(i,user,score_user);
+                    /* dirty fix here */
+                    change |= (1 << i);
+                    MU_RESET(i,user,score_manager);
                     break;
 #endif /* NEWSMTH */
                 case 18:
@@ -1749,6 +1776,7 @@ int modify_userinfo(int uid,int mode){
     MU_VERIFY(16,user,stay,val);
 #ifdef NEWSMTH
     MU_VERIFY(17,user,score_user,val);
+    MU_VERIFY(17,user,score_manager,val);
 #endif /* NEWSMTH */
     MU_VERIFY(18,user,userlevel,val);
     if(verify){
@@ -1786,6 +1814,7 @@ int modify_userinfo(int uid,int mode){
     MU_EXEC(16,user,stay);
 #ifdef NEWSMTH
     MU_EXEC(17,user,score_user);
+    MU_EXEC(17,user,score_manager);
 #endif /* NEWSMTH */
     MU_EXEC(18,user,userlevel);
     if(change&0x04){
