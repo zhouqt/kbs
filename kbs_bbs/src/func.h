@@ -17,6 +17,12 @@ extern "C" {
     int setactivation(struct activation_info *ai, struct userec *user);
     int sendactivation(struct activation_info *ai, struct userec *user, session_t* session);
     int doactivation(struct activation_info *ai, struct userec *user, session_t* session);
+#ifdef NEWSMTH
+    int send_invite(struct userec*,session_t*,char*,char*);
+    int get_invite(char*,char*,struct invite*);
+    int clean_invite(char*,char*);
+#endif /* NEWSMTH */
+
 #endif
 
     int invalidaddr(char *addr);
@@ -775,10 +781,5 @@ int init_all(ARG_VOID);
 }
 #endif
 
-#ifdef NEWSMTH
-int send_invite(struct userec*,session_t*,char*,char*);
-int get_invite(char*,char*,struct invite*);
-int clean_invite(char*,char*);
-#endif /* NEWSMTH */
 
 #endif

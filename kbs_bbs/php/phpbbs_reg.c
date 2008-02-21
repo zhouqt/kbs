@@ -809,7 +809,7 @@ PHP_FUNCTION(bbs_getactivation)
 #endif /* HAVE_ACTIVATION */
 
 
-#ifdef NEWSMTH
+#if defined(NEWSMTH) && defined(HAVE_ACTIVATION)
 
 PHP_FUNCTION(bbs_getinvite_email)
 {
@@ -849,5 +849,5 @@ PHP_FUNCTION(bbs_cleaninvite)
 
 	RETURN_LONG(ret);
 }
-#endif /* NEWSMTH */
+#endif /* defined(NEWSMTH) && defined(HAVE_ACTIVATION) */
 

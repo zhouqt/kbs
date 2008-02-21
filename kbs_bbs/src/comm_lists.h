@@ -130,7 +130,7 @@ KBS_COMM_LISTS_FUNC_V(x_vote);
 KBS_COMM_LISTS_FUNC_V(x_manageactivation);
 KBS_COMM_LISTS_FUNC_V(x_sendactivation);
 #endif
-#ifdef NEWSMTH
+#if defined(NEWSMTH) && defined(HAVE_ACTIVATION)
 KBS_COMM_LISTS_FUNC_V(invite);
 #endif
 KBS_COMM_LISTS_FUNC_V(Select);

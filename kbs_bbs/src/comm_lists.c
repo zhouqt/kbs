@@ -111,8 +111,11 @@ static const CMD_LIST CMD[]={
     {"SendActivation",      x_sendactivation,                       0},
 #endif
 
-#ifdef NEWSMTH
+#if defined(NEWSMTH) && defined(HAVE_ACTIVATION)
     {"Invite",              invite,                                 0},
+#endif
+
+#ifdef NEWSMTH
     {"ReadBoard",           Select,                                 0},
 #else /* ! NEWSMTH */
     {"ReadBoard",           ReadBoard,                              0},

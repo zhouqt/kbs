@@ -2417,6 +2417,7 @@ int check_ip_acl(char * id, char * sip)
     return 0;
 }
 
+#ifdef HAVE_ACTIVATION
 static int my_rand(int max) {
     return (int) ((double)max*rand()/(RAND_MAX+1.0));
 }
@@ -2435,7 +2436,6 @@ static char * randchar(char *c, int n){
 	return c;
 }
 
-#ifdef HAVE_ACTIVATION
 void create_activation(struct activation_info *ai)
 {
     randchar(ai->activationcode, ACTIVATIONLEN);
@@ -2528,7 +2528,6 @@ int doactivation(struct activation_info *ai, struct userec *user, session_t* ses
     user->flags |= ACTIVATED_FLAG;
     return 1;
 }
-#endif /* HAVE_ACTIVATION */
 
 #ifdef NEWSMTH
 #define INVITEFILE "etc/inviteme"
@@ -2690,6 +2689,7 @@ int clean_invite(char *userid, char *inviteid){
     return 1;
 }
 #endif /* NEWSMTH */
+#endif /* HAVE_ACTIVATION */
 
 char * filter_upload_filename(char *s) {
     char *ptr = s;

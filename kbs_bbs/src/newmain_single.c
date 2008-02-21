@@ -811,7 +811,7 @@ void showsysinfo(char * fn)
     fclose(fp);
 }
 
-#ifdef NEWSMTH
+#if defined(NEWSMTH) && defined(HAVE_ACTIVATION)
 int invite(void){
 	char buf[STRLEN];
 	char msg[1000];
@@ -880,7 +880,7 @@ int invite(void){
 	}
 	return 0;
 }
-#endif /* NEWSMTH */
+#endif /* defined(NEWSMTH) && defined(HAVE_ACTIVATION) */
 
 #ifdef HAVE_ACTIVATION
 static void check_activation()

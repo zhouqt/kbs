@@ -40,7 +40,7 @@ PHP_FUNCTION(bbs_cleaninvite);
 #define PHP_BBS_REG_EXPORT_FUNCTIONS2
 #endif
 
-#ifdef NEWSMTH
+#if defined(NEWSMTH) && defined(HAVE_ACTIVATION)
 #define PHP_BBS_REG_EXPORT_FUNCTIONS3 \
     PHP_FE(bbs_getinvite_email, NULL) \
     PHP_FE(bbs_cleaninvite, NULL)
