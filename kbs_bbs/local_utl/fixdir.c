@@ -79,14 +79,13 @@ int addfile(const char* filename){
     
         if (stat(filename, &st)) {
             return 0;
-	}
+    }
         if ((art = fopen(filename, "r")) != NULL) {
             char *p;
     
             bzero(&fh, sizeof(fh));
-            fgets(buf1, 256, art);
-            if (buf1 == 0) {
-		fclose(art);
+            if (!fgets(buf1, 256, art)) {
+                fclose(art);
                 return 0;
             }
             p = strchr(buf1 + 8, ' ');
@@ -97,9 +96,8 @@ int addfile(const char* filename){
                 *p=0;
             strncpy(fh.owner, buf1 + 8, OWNER_LEN);
             fh.owner[OWNER_LEN-1]=0;
-            fgets(buf2, 256, art);
-            if (buf2 == 0) {
-		fclose(art);
+            if (!fgets(buf2, 256, art)) {
+                fclose(art);
                 return 0;
             }
             /* etnlegend, 2006.04.07, 这地方用 strpbrk 比较好... */
@@ -111,12 +109,12 @@ int addfile(const char* filename){
                 fh.accessed[0] |= FILE_READ;
             }
             if (strncmp(buf1, "发信站", 6) && strncmp(buf1, "寄信人: ", 8) && strncmp(buf1, "发信人: ", 8)) {
-		fclose(art);
+                fclose(art);
                 return 0;
             }
             if ((strncmp(buf2, "标  题: ", 8))
                 && (strncmp(buf2, "标　题: ", 8))) {
-		fclose(art);
+                fclose(art);
                 return 0;
             }
 		set_posttime(&fh);
