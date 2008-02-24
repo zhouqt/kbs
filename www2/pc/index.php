@@ -406,7 +406,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 ?>
 <center>
 <tbody>
-<table cellspacing=0 cellpadding=0 border=0 width=780>
+<table cellspacing=0 cellpadding=0 border=0 width=780 style="text-align:left;">
 
 	<tr><td colspan=2 height=167><img src="style/earthsong/es_r1_c1.jpg" border=0></td></tr>
 	<tr>
