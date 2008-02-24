@@ -406,7 +406,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 ?>
 <center>
 <tbody>
-<table cellspacing=0 cellpadding=0 border=0 width=780 style="text-align:left;">
+<table cellspacing=0 cellpadding=0 border=0 width=780 class="ll">
 
 	<tr><td colspan=2 height=167><img src="style/earthsong/es_r1_c1.jpg" border=0></td></tr>
 	<tr>
@@ -425,7 +425,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 </table>
 </tbody>
 <tbody>
-<table cellspacing=0 cellpadding=5 border=0 width=780>
+<table cellspacing=0 cellpadding=5 border=0 width=780 class="ll">
 
 	<tr>
 		<td class="bloglists"><?php pc_user_infor($pc); ?></td>
@@ -433,7 +433,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 </table>
 </tbody>
 <tbody>
-<table cellspacing=0 cellpadding=5 border=0 width=780>
+<table cellspacing=0 cellpadding=5 border=0 width=780 class="ll">
 	<tr>
 		<td width="40%" class="bloglists">
 			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
@@ -471,7 +471,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 ?>
 </tbody>
 <tbody>
-<table cellspacing=0 cellpadding=5 border=0 width=780>
+<table cellspacing=0 cellpadding=5 border=0 width=780 class="ll">
 	<tr>
 		<td width="40%" class="bloglists">
 			<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
@@ -504,7 +504,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 </table>
 </tbody>
 <tbody>
-<table cellspacing=0 cellpadding=5 border=0 width=780>
+<table cellspacing=0 cellpadding=5 border=0 width=780 class="ll">
 	<tr>
 		<td class="bloglists2" id="bloglists2">
 		<strong>每月档案 &gt;&gt; </strong><?php pc_get_archfile($pc); ?>
@@ -513,7 +513,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 </table>
 </tbody>
 <tbody>
-<table cellspacing=0 cellpadding=5 border=0 width=780>
+<table cellspacing=0 cellpadding=5 border=0 width=780 class="ll">
 	<tr>
 		<td class="bloglists2">
 		<strong>友情链接 &gt;&gt; <?php display_blog_friend_links($pc); ?>&nbsp;
@@ -548,7 +548,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
      */
     powered_by_smth();
 ?>
-<br />&copy;All Rights Reserved
+<br /><span class="copystyle">&copy;</span>All Rights Reserved
 &nbsp;&nbsp;
 <?php echo pc_personal_domainname($pc["USER"]); ?>
 </td></tr>
@@ -702,7 +702,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 		<br />
 	<span style="text-align:center;display:block;">更新时间: <?php echo time_format($pc["MODIFY"]); ?>
 		&nbsp;
-		&copy;All Rights Reserved
+		<span class="copystyle">&copy;</span>All Rights Reserved
 		&nbsp;&nbsp;
 		<?php echo pc_personal_domainname($pc["USER"]); ?></span>
 		</p>
@@ -900,7 +900,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
     powered_by_smth();
 ?>	
 	<br />
-&copy;All Rights Reserved
+<span class="copystyle">&copy;</span>All Rights Reserved
 &nbsp;&nbsp;
 <?php echo pc_personal_domainname($pc["USER"]); ?>
 </td></tr>
