@@ -343,7 +343,7 @@ int cal;
 	 * time_t now;
 	 */
 	tm = (time(0) - start_time + d.bbtime) / 60 / 30;
-	if (mode == "Y") {
+	if (!strcmp(mode, "Y")) {
 		if (tm >= 0 && tm <= 3) {
 			if (cal == 1)
 				tiredvary =
@@ -380,7 +380,7 @@ int cal;
 			else if (cal == 0)
 				tiredvary = (rand() % prob + base) * 1;
 		}
-	} else if (mode == "N") {
+	} else if (!strcmp(mode, "N")) {
 		tiredvary = rand() % prob + base;
 	}
 
