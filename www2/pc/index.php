@@ -173,7 +173,7 @@ blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows["nid"]); ?>;
 		echo "</ul>";
 		
 ?>
-<p class="f1" align="right">
+<p class="f1" style="text-align:right;">
 <a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>">
 更多
 </a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -700,11 +700,11 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
     powered_by_smth();
 ?>		
 		<br />
-	更新时间: <?php echo time_format($pc["MODIFY"]); ?>
+	<span style="text-align:center;display:block;">更新时间: <?php echo time_format($pc["MODIFY"]); ?>
 		&nbsp;
 		&copy;All Rights Reserved
 		&nbsp;&nbsp;
-		<?php echo pc_personal_domainname($pc["USER"]); ?>
+		<?php echo pc_personal_domainname($pc["USER"]); ?></span>
 		</p>
 		</td>
 	</tr>
