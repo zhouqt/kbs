@@ -669,7 +669,7 @@ void process_no_bm(const struct boardheader *bh){
         return;
     if(!getuser("SYSOP",&user_sysop))
         user_sysop=getCurrentUser();
-    sprintf(buf,"%s 版面目前没有斑竹",bh->filename);
+    sprintf(buf,"%s 版面目前没有版主",bh->filename);
     post_file(user_sysop,"",NO_BM_FILE,"BD_Discuss",buf,0,2,getSession());
     post_file(user_sysop,"",NO_BM_FILE,bh->filename,"请版面尽快产生一名或多名版主",0,2,getSession());
 #undef NO_BM_FILE
