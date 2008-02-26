@@ -105,7 +105,7 @@ static void sysconf_addmenu(FILE * fp, char *key)
 {
     struct smenuitem *pm;
     char buf[256];
-    char *cmd, *arg[5], *ptr;
+    char *cmd, *arg[5], *ptr, *q;
     int n;
 
     /*
@@ -113,14 +113,15 @@ static void sysconf_addmenu(FILE * fp, char *key)
      */
     sysconf_addkey(key, "menu", sysconf_menu);
     while (fgets(buf, sizeof(buf), fp) != NULL && buf[0] != '%') {
-        cmd = strtok(buf, " \t\n");
+        q = buf;
+        cmd = strsep(&q, " \t\n");
         if (cmd == NULL || *cmd == '#') {
             continue;
         }
         arg[0] = arg[1] = arg[2] = arg[3] = arg[4] = "";
         n = 0;
         for (n = 0; n < 5; n++) {
-            if ((ptr = strtok(NULL, ",\n")) == NULL)
+            if (!(ptr = strsep(&q, ",\n")))
                 break;
             while (*ptr == ' ' || *ptr == '\t')
                 ptr++;
@@ -196,7 +197,7 @@ static void parse_sysconf(const char *fname)
 {
     FILE *fp;
     char buf[256];
-    char tmp[256], *ptr;
+    char tmp[256], *ptr, *q;
     char *key, *str;
     int val;
 
@@ -208,11 +209,11 @@ static void parse_sysconf(const char *fname)
         ptr = buf;
         while (*ptr == ' ' || *ptr == '\t')
             ptr++;
-
+        q = ptr;
         if (*ptr == '%') {
-            strtok(ptr, " \t\n");
+            strsep(&q, " \t\n");
             if (strcmp(ptr, "%menu" /*菜单 */ ) == 0) {
-                str = strtok(NULL, " \t\n");
+                str = strsep(&q, " \t\n");
                 if (str != NULL)
                     sysconf_addmenu(fp, str);
             } else {            /*其它，如screen设计 */

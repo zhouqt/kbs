@@ -1128,10 +1128,10 @@ int chk_BM_instr(const char *BMstr, const char *bmname)
     p = BMstrbuf;
     for (;;)
     {
-        if (!strcmp(strsep(&p, delim), bmname))
-            return 1;
-        else if (!p)
+        if (!p)
             return 0;
+        else if (!strcmp(strsep(&p, delim), bmname))
+            return 1;
     }
 }
 
