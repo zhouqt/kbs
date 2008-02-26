@@ -523,14 +523,16 @@ int a_loadnames(MENU *pm,session_t *session){
             strncpy(it.fname,&buf[(buf[5]=='~'&&buf[6]=='/')?7:5],(STRLEN-1));
             if(it.fname[0]=='.'&&it.fname[1]=='.')
                 continue;
-            if(strstr(it.fname,"!@#$%")){
+            if(strpbrk(it.fname,"!@#$%")){
+                char *q;
                 strcpy(name,it.fname);
-                if((p=strtok(name,"!@#$%")))
-                    strncpy(host,p,(STRLEN-1));
-                if((p=strtok(NULL,"!@#$%")))
-                    strncpy(it.fname,p,(STRLEN-1));
-                if((p=strtok(NULL,"!@#$%")))
-                    it.port=atoi(p);
+                p = name;
+                if ((q = strsep(&p, "!@#$%")))
+                    strncpy(host, q, STRLEN - 1);
+                if ((q = strsep(&p, "!@#$%")))
+                    strncpy(it.fname, q, STRLEN - 1);
+                if ((q = strsep(&p, "!@#$%")))
+                    it.port = atoi(q);
             }
             if(a_additem_base(pm,it.title,it.fname,(!host[0]?NULL:host),it.port,it.attachpos)==-2)
                 break;
