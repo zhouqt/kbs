@@ -696,12 +696,12 @@ int bad_user_id(const char *userid)
                 *ptr = 0;
                 ptr = buf;
                 if (*ptr != '#') {
-	    			if (*ptr == '*'){
-		    			if(strcasestr(userid, ptr+1)){
-			    			fclose(fp);
-				    		return 1;
-					    }
-    				}
+                    if (*ptr == '*'){
+                        if(strcasestr(userid, ptr+1)){
+                            fclose(fp);
+                            return 1;
+                        }
+                    }
                     if (strcasecmp(ptr, userid) == 0) {
                         if (ptr[IDLEN + 1] > 47 && ptr[IDLEN + 1] < 58) { /*Haohmaru.99.12.24 */
                             char timebuf[50];
