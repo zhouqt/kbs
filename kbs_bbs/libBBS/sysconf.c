@@ -107,20 +107,21 @@ static void sysconf_addmenu(FILE * fp, char *key)
     char buf[256];
     char *cmd, *arg[5], *ptr;
     int n;
+    char *save_ptr;
 
     /*
        bbslog("user","%s", key );
      */
     sysconf_addkey(key, "menu", sysconf_menu);
     while (fgets(buf, sizeof(buf), fp) != NULL && buf[0] != '%') {
-        cmd = strtok(buf, " \t\n");
+        cmd = strtok_r(buf, " \t\n", &save_ptr);
         if (cmd == NULL || *cmd == '#') {
             continue;
         }
         arg[0] = arg[1] = arg[2] = arg[3] = arg[4] = "";
         n = 0;
         for (n = 0; n < 5; n++) {
-            if ((ptr = strtok(NULL, ",\n")) == NULL)
+            if ((ptr = strtok_r(NULL, ",\n", &save_ptr)) == NULL)
                 break;
             while (*ptr == ' ' || *ptr == '\t')
                 ptr++;
@@ -199,6 +200,7 @@ static void parse_sysconf(const char *fname)
     char tmp[256], *ptr;
     char *key, *str;
     int val;
+    char *save_ptr;
 
     if ((fp = fopen(fname, "r")) == NULL) {
         return;
@@ -210,39 +212,41 @@ static void parse_sysconf(const char *fname)
             ptr++;
 
         if (*ptr == '%') {
-            strtok(ptr, " \t\n");
+            strtok_r(ptr, " \t\n", &save_ptr);
             if (strcmp(ptr, "%menu" /*菜单 */ ) == 0) {
-                str = strtok(NULL, " \t\n");
+                str = strtok_r(NULL, " \t\n", &save_ptr);
                 if (str != NULL)
                     sysconf_addmenu(fp, str);
             } else {            /*其它，如screen设计 */
                 sysconf_addblock(fp, ptr + 1);
             }
         } else if (*ptr == '#') {
-            key = strtok(ptr, " \t\"\n");
-            str = strtok(NULL, " \t\"\n");
+            key = strtok_r(ptr, " \t\"\n", &save_ptr);
+            str = strtok_r(NULL, " \t\"\n", &save_ptr);
             if (key != NULL && str != NULL && strcmp(key, "#include") == 0) {   /* 用#include filename 来包含其它ini */
                 parse_sysconf(str);
             }
         } else if (*ptr != '\n') {      /*系统参量 定义 */
-            key = strtok(ptr, "=#\n");
-            str = strtok(NULL, "#\n");
+            key = strtok_r(ptr, "=#\n", &save_ptr);
+            str = strtok_r(NULL, "#\n", &save_ptr);
             if ((key != NULL) && (str != NULL)) {
-                strtok(key, " \t");
+                if ((ptr = strpbrk(key, " \t")))
+                    *ptr = 0;
                 while (*str == ' ' || *str == '\t')
                     str++;
                 if (*str == '"') {
                     str++;
-                    strtok(str, "\"");
+                    if ((ptr = strchr(str, '"')))
+                        *ptr = 0;
                     val = atoi(str);
                     sysconf_addkey(key, str, val);
                 } else {
                     val = 0;
                     strcpy(tmp, str);
-                    ptr = strtok(tmp, ", \t");
+                    ptr = strtok_r(tmp, ", \t", &save_ptr);
                     while (ptr != NULL) {
                         val |= sysconf_eval(ptr,strtol(ptr,NULL,0));
-                        ptr = strtok(NULL, ", \t");
+                        ptr = strtok_r(NULL, ", \t", &save_ptr);
                     }
                     sysconf_addkey(key, NULL, val);
                 }

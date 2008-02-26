@@ -1123,7 +1123,7 @@ int chk_BM_instr(const char *BMstr, const char *bmname)
 {
     char *p;
     char BMstrbuf[BM_LEN];
-    const char *delim = ",: ;|&()\n";
+    const char *delim = ",: ;|&()";
     strcpy(BMstrbuf, BMstr);
     p = BMstrbuf;
     for (;;)
