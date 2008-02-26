@@ -224,7 +224,7 @@ type        meaning
     char direct[PATHLEN];
 #endif /* NEWBMLOG */
     const struct boardheader *btemp;
-    char BM[PATHLEN];
+    char BM[BM_LEN];
 
     btemp = getbcache(boardname);
     if (btemp == NULL)

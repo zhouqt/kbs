@@ -382,8 +382,8 @@ void unlock_sem_check(int lockid);
 #ifdef NEWSMTH
     int check_score_level(const struct userec *user,const struct boardheader *bh);
 #endif /* NEWSMTH */
-    int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
-    int chk_currBM(const char BMstr[STRLEN - 1], const struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
+    int chk_BM_instr(const char *BMstr, const char *bmname);       /*查询字符串中是否包含 bmname */
+    int chk_currBM(const char *BMstr, const struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board, int jury);
     int deldeny(struct userec *user, char *board, char *uident, int notice_only, session_t* session);       /* 删除 禁止POST用户 */
     int check_read_perm(const struct userec *user, const struct boardheader *board);

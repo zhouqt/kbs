@@ -1119,24 +1119,24 @@ int check_score_level(const struct userec *user,const struct boardheader *bh){
 }
 #endif /* NEWSMTH */
 
-int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2])
+int chk_BM_instr(const char *BMstr, const char *bmname)
 {
-    char *ptr;
-    char BMstrbuf[STRLEN - 1];
-
+    char *p;
+    char BMstrbuf[BM_LEN];
+    const char *delim = ",: ;|&()\n";
     strcpy(BMstrbuf, BMstr);
-    ptr = strtok(BMstrbuf, ",: ;|&()\0\n");
-    while (1) {
-        if (ptr == NULL)
-            return false;
-        if (!strcmp(ptr, bmname /*,strlen(session->getCurrentUser()->userid) */ ))
-            return true;
-        ptr = strtok(NULL, ",: ;|&()\0\n");
+    p = BMstrbuf;
+    for (;;)
+    {
+        if (!strcmp(strsep(&p, delim), bmname))
+            return 1;
+        else if (!p)
+            return 0;
     }
 }
 
 
-int chk_currBM(const char BMstr[STRLEN - 1], const struct userec *user)
+int chk_currBM(const char *BMstr, const struct userec *user)
         /*
          * 根据输入的版主名单 判断user是否有版主 权限 
          */

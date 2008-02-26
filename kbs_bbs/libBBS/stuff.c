@@ -515,13 +515,15 @@ int seek_in_file(const char* filename, const char* seekstr)
 {
     FILE *fp;
     char buf[STRLEN];
-    char *namep;
+    char *p;
 
     if ((fp = fopen(filename, "r")) == NULL)
         return 0;
     while (fgets(buf, STRLEN, fp) != NULL) {
-        namep = (char *) strtok(buf, ": \n\r\t");
-        if (namep != NULL && strcasecmp(namep, seekstr) == 0) {
+        if ((p = strpbrk(buf, ": \n\r\t")))
+            *p = 0;
+        if (!strcasecmp(buf, seekstr))
+        {
             fclose(fp);
             return 1;
         }
@@ -689,35 +691,39 @@ int bad_user_id(const char *userid)
         return 1;
     if ((fp = fopen(".badname", "r")) != NULL) {
         while (fgets(buf, STRLEN, fp) != NULL) {
-            ptr = strtok(buf, " \n\t\r");
-            if (ptr != NULL && *ptr != '#') {
-				if (*ptr == '*'){
-					if(strcasestr(userid, ptr+1)){
-						fclose(fp);
-						return 1;
-					}
-				}
-                if (strcasecmp(ptr, userid) == 0) {
-                    if (ptr[13] > 47 && ptr[13] < 58) { /*Haohmaru.99.12.24 */
-                        char timebuf[50];
+            if ((ptr = strpbrk(buf, " \n\t\r")))
+            {
+                *ptr = 0;
+                ptr = buf;
+                if (*ptr != '#') {
+	    			if (*ptr == '*'){
+		    			if(strcasestr(userid, ptr+1)){
+			    			fclose(fp);
+				    		return 1;
+					    }
+    				}
+                    if (strcasecmp(ptr, userid) == 0) {
+                        if (ptr[IDLEN + 1] > 47 && ptr[IDLEN + 1] < 58) { /*Haohmaru.99.12.24 */
+                            char timebuf[50];
 
-                        time_t t, now;
+                            time_t t, now;
 
-                        strncpy(timebuf, ptr + 13, 49);
-                        timebuf[49] = 0;
-                        ptr = timebuf;
-                        while (isdigit(*ptr))
-                            ptr++;
-                        *ptr = 0;
-                        t = atol(timebuf);
-                        now = time(0);
-                        if (now - t > 24 * 30 * 3600) {
-                            fclose(fp);
-                            return 0;
+                            strncpy(timebuf, ptr + IDLEN + 1, 49);
+                            timebuf[49] = 0;
+                            ptr = timebuf;
+                            while (isdigit(*ptr))
+                                ptr++;
+                            *ptr = 0;
+                            t = atol(timebuf);
+                            now = time(0);
+                            if (now - t > 24 * 30 * 3600) {
+                                fclose(fp);
+                                return 0;
+                            }
                         }
+                        fclose(fp);
+                        return 1;
                     }
-                    fclose(fp);
-                    return 1;
                 }
             }
             bzero(buf, STRLEN);
