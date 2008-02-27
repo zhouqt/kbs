@@ -26,10 +26,10 @@ struct UCACHE {
 static int ucache_lock()
 {
     int lockfd;
-
+    char errbuf[STRLEN];
     lockfd = open(ULIST, O_RDWR | O_CREAT, 0600);
     if (lockfd < 0) {
-        bbslog("3system", "CACHE:lock ucache:%s", strerror(errno));
+        bbslog("3system", "CACHE:lock ucache:%s", strerror_r(errno, errbuf, STRLEN));
         return -1;
     }
     flock(lockfd, LOCK_EX);
@@ -306,9 +306,8 @@ int load_ucache()
     int usernumber, i;
     int passwdfd;
     int prev;
-
     int fd;
-
+    char errbuf[STRLEN];
     fd=ucache_lock();
     uidshm = (struct UCACHE *) attach_shm("UCACHE_SHMKEY", 3696, sizeof(*uidshm), &iscreate);   /*attach to user shm */
 
@@ -318,7 +317,7 @@ int load_ucache()
 
         load_user_title();
         if ((passwdfd = open(PASSFILE, O_RDWR | O_CREAT, 0644)) == -1) {
-            bbslog("3system", "Can't open " PASSFILE "file %s", strerror(errno));
+            bbslog("3system", "Can't open " PASSFILE " file %s", strerror_r(errno, errbuf, STRLEN));
             ucache_unlock(fd);
             exit(-1);
         }
@@ -1047,9 +1046,10 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
 void load_user_title()
 {
     FILE* titlefile;
+    char errbuf[STRLEN];
     bzero(uidshm->user_title,sizeof(uidshm->user_title));
     if ((titlefile = fopen(USER_TITLE_FILE, "r")) == NULL) {
-        bbslog("3system", "Can't open " USER_TITLE_FILE " file %s", strerror(errno));
+        bbslog("3system", "Can't open " USER_TITLE_FILE " file %s", strerror_r(errno, errbuf, STRLEN));
     } else {
         int i;
         for (i=0;i<255;i++) {
@@ -1068,8 +1068,9 @@ void load_user_title()
 static void flush_user_title()
 {
     FILE* titlefile;
+    char errbuf[STRLEN];
     if ((titlefile = fopen(USER_TITLE_FILE, "w")) == NULL) {
-        bbslog("3system", "Can't open " USER_TITLE_FILE " file %s", strerror(errno));
+        bbslog("3system", "Can't open " USER_TITLE_FILE " file %s", strerror_r(errno, errbuf, STRLEN));
     } else {
         int i, fd;
         fd = fileno(titlefile);

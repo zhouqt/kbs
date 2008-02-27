@@ -8,10 +8,10 @@ static void bcache_setreadonly(int readonly);
 static int bcache_lock()
 {
     int lockfd;
-
+    char errbuf[STRLEN];
     lockfd = creat("bcache.lock", 0600);
     if (lockfd < 0) {
-        bbslog("3system", "CACHE:lock bcache:%s", strerror(errno));
+        bbslog("3system", "CACHE:lock bcache:%s", strerror_r(errno, errbuf, STRLEN));
         return -1;
     }
     bcache_setreadonly(0);
@@ -42,9 +42,10 @@ static void bcache_setreadonly(int readonly)
 {
     int boardfd;
 	void *oldptr = bcache;
+    char errbuf[STRLEN];
     munmap((void *)bcache, MAXBOARD * sizeof(struct boardheader));
     if ((boardfd = open(BOARDS, O_RDWR | O_CREAT, 0644)) == -1) {
-        bbslog("3system", "Can't open " BOARDS "file %s", strerror(errno));
+        bbslog("3system", "Can't open " BOARDS "file %s", strerror_r(errno, errbuf, STRLEN));
         exit(-1);
     }
     if (readonly)
@@ -166,15 +167,16 @@ void resolve_boards()
 {
     int boardfd=-1;
     int iscreate = 0;
+    char errbuf[STRLEN];
 
     if (bcache == NULL) {
         if ((boardfd = open(BOARDS, O_RDWR | O_CREAT, 0644)) == -1) {
-            bbslog("3system", "Can't open " BOARDS "file %s", strerror(errno));
+            bbslog("3system", "Can't open " BOARDS "file %s", strerror_r(errno, errbuf, STRLEN));
             exit(-1);
         }
         bcache = (struct boardheader *) mmap(NULL, MAXBOARD * sizeof(struct boardheader), PROT_READ, MAP_SHARED, boardfd, 0);
         if (bcache == (struct boardheader *) -1) {
-            bbslog("4system", "Can't map " BOARDS "file %s", strerror(errno));
+            bbslog("4system", "Can't map " BOARDS "file %s", strerror_r(errno, errbuf, STRLEN));
             close(boardfd);
             exit(-1);
         }
@@ -574,6 +576,7 @@ int board_regenspecial(const char *board, int mode, char *index)
     int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
     char olddirect[PATHLEN];
     char newdirect[PATHLEN];
+    char errbuf[STRLEN];
     char *ptr;
     struct stat buf;
     int init;
@@ -583,7 +586,7 @@ int board_regenspecial(const char *board, int mode, char *index)
     setbdir(mode,newdirect, board);
 
     if ((fd = open(newdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("user", "recopen err %s:%s", newdirect,strerror(errno));
+        bbslog("user", "recopen err %s:%s", newdirect,strerror_r(errno, errbuf, STRLEN));
         return -1;      /* 创建文件发生错误*/
     }
     ldata.l_type = F_WRLCK;
@@ -604,7 +607,7 @@ int board_regenspecial(const char *board, int mode, char *index)
     }
 
     if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
-        bbslog("user", "recopen err %s:%s", newdirect,strerror(errno));
+        bbslog("user", "recopen err %s:%s", newdirect,strerror_r(errno, errbuf, STRLEN));
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);

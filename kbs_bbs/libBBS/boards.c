@@ -616,7 +616,7 @@ void brc_update(const char *userid,session_t* session)
 {
     int i;
     gzFile fd = NULL;
-    char dirfile[MAXPATH], dirfile_tmp[MAXPATH];
+    char dirfile[MAXPATH], dirfile_tmp[MAXPATH], errbuf[STRLEN];
     unsigned int data[MAXBOARD][BRC_MAXNUM];
     int count;
 
@@ -639,7 +639,7 @@ void brc_update(const char *userid,session_t* session)
 
         errstr = gzerror(fd, &gzerrno);
         if (errno == Z_ERRNO)
-            errstr = strerror(errno);
+            errstr = strerror_r(errno, errbuf, STRLEN);
         bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
 //      f_rm(dirfile);
         return;
@@ -662,7 +662,7 @@ void brc_update(const char *userid,session_t* session)
 
         errstr = gzerror(fd, &gzerrno);
         if (errno == Z_ERRNO)
-            errstr = strerror(errno);
+            errstr = strerror_r(errno, errbuf, STRLEN);
         bbslog("3error", "can't %s open to write:%s", dirfile_tmp, errstr);
         f_rm(dirfile_tmp);
         return;

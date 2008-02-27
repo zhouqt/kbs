@@ -301,7 +301,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
 {
     struct fileheader newmessage;
     struct stat st;
-    char fname[STRLEN], filepath[STRLEN];
+    char fname[STRLEN], filepath[STRLEN], errbuf[STRLEN];
     char buf[255];
     struct userec *touser;      /*peregrine for updating used space */
     int unum;
@@ -339,7 +339,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
         else
             sprintf(buf,"%s",tmpfile);
         if(symlink(buf,filepath)==-1)
-            bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror(errno));
+            bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror_r(errno, errbuf, STRLEN));
         break;
     case BBSPOST_MOVE:
         f_mv(tmpfile, filepath);
