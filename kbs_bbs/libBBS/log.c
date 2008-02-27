@@ -53,11 +53,11 @@ int bdoatexit = 0;
 
 static void getheader(char *header, const char *from, int prio,session_t* session)
 {
-    struct tm *pt;
+    struct tm t, *pt;
     time_t tt;
 
     time(&tt);
-    pt = localtime(&tt);
+    pt = localtime_r(&tt, &t);
 
     sprintf(header, "[%d-%02u-%02u %02u:%02u:%02u %5d %d.%s] %s ", pt->tm_year + 1900, pt->tm_mon + 1, pt->tm_mday, pt->tm_hour, pt->tm_min, pt->tm_sec, (int)getpid(), prio, from, (session==NULL||session->currentuser == NULL) ? "(unknown user)" : session->currentuser->userid);
 }
