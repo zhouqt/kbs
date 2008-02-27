@@ -748,6 +748,7 @@ void write_header(FILE * fp, struct userec *user, int in_mail, const char *board
     char uid[20];
     char uname[40];
     time_t now;
+    char timebuf[STRLEN];
 
     now = time(0);
     strncpy(uid, user->userid, 20);
@@ -799,11 +800,11 @@ void write_header(FILE * fp, struct userec *user, int in_mail, const char *board
      * 增加转信标记 czz 020819 
      */
     if (in_mail)
-        fprintf(fp, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
+        fprintf(fp, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime_r(&now, timebuf));
     else if (mode != 2)
-        fprintf(fp, "发信站: %s (%24.24s), 站内\n", BBS_FULL_NAME, ctime(&now));
+        fprintf(fp, "发信站: %s (%24.24s), 站内\n", BBS_FULL_NAME, ctime_r(&now, timebuf));
     else
-        fprintf(fp, "发信站: %s (%24.24s), 转信\n", BBS_FULL_NAME, ctime(&now));
+        fprintf(fp, "发信站: %s (%24.24s), 转信\n", BBS_FULL_NAME, ctime_r(&now, timebuf));
     if (in_mail)
         fprintf(fp, "来  源: %s \n", session->fromhost);
     fprintf(fp, "\n");
@@ -832,7 +833,7 @@ static int getcross(const char *filepath,const char *quote_file,struct userec *u
         time_t current=time(NULL);
         fprintf(fout,"发信人: "DELIVER" (自动发信系统), 信区: %s\n",toboard -> filename);
         fprintf(fout,"标  题: %s\n",title);
-        fprintf(fout,"发信站: %s自动发信系统 (%24.24s)\n\n",BBS_FULL_NAME,ctime(&current));
+        fprintf(fout,"发信站: %s自动发信系统 (%24.24s)\n\n",BBS_FULL_NAME,ctime_r(&current, buf));
         fprintf(fout,"【此篇文章是由自动发信系统所张贴】\n\n");
     }
     /* fancyrabbit May 28 2007 mode == 5 说明是精华转出或者做合集，含有某些特殊字样的就别不可 re 了 ...*/
@@ -1105,7 +1106,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
             now = time(NULL);
             fprintf(fp_out, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", to_board);
             fprintf(fp_out, "标  题: %s\n", fh.title);
-            fprintf(fp_out, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
+            fprintf(fp_out, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime_r(&now, buf));
             fprintf(fp_out, "【此篇文章是由自动发信系统所张贴】\n\n"); 
         }
         else
@@ -1947,7 +1948,7 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
     FILE *fp, *out;
     char buf[256];
     time_t now;
-    char outname[STRLEN];
+    char outname[STRLEN], timebuf[STRLEN];
     int step = 0;
     int added = 0;
     int asize;
@@ -1975,9 +1976,9 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
             if (Origin2(buf) && (!added)) {
                 now = time(0);
                 if (mode & 1)
-                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
                 else
-                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
                 step = 3;
                 added = 1;
             }
@@ -1988,9 +1989,9 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
     if (!added) {
         now = time(0);
         if (mode & 1)
-            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
         else
-            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
     }
     fclose(fp);
     fclose(out);

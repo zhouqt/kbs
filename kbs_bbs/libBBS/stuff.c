@@ -187,6 +187,7 @@ char *Ctime(time_t clock)
         *p= '\0';
     return (ptr);
 }
+
 int Isspace(char ch)
 {
     return (ch == ' ' || ch == '\t' || ch == 10 || ch == 13);
@@ -976,7 +977,8 @@ time_t get_exit_time(const struct userec *lookupuser, char *exittime)
     else
 #endif
 //    {
-        strcpy(exittime, ctime(&lookupuser->exittime));
+        char timebuf[STRLEN];    
+        strcpy(exittime, ctime_r(&lookupuser->exittime, timebuf));
         return (lookupuser->exittime);
 //    }
 //    return now;
@@ -1090,6 +1092,7 @@ int read_user_memo( char *userid, struct usermemo ** ppum )
 void getuinfo(FILE * fn, struct userec *ptr_urec)
 {
     struct userdata ud;
+    char timebuf[STRLEN];
 
     read_userdata(ptr_urec->userid, &ud);
     fprintf(fn, "\n\n您的代号     : %s\n", ptr_urec->userid);
@@ -1098,8 +1101,8 @@ void getuinfo(FILE * fn, struct userec *ptr_urec)
     fprintf(fn, "居住住址     : %s\n", ud.address);
     fprintf(fn, "电子邮件信箱 : %s\n", ud.email);
     fprintf(fn, "真实 E-mail  : %s\n", ud.realemail);
-    fprintf(fn, "注册日期     : %s", ctime(&ptr_urec->firstlogin));
-    fprintf(fn, "最近光临日期 : %s", ctime(&ptr_urec->lastlogin));
+    fprintf(fn, "注册日期     : %s", ctime_r(&ptr_urec->firstlogin, timebuf));
+    fprintf(fn, "最近光临日期 : %s", ctime_r(&ptr_urec->lastlogin, timebuf));
     fprintf(fn, "最近光临机器 : %s\n", ptr_urec->lasthost);
     fprintf(fn, "上站次数     : %d 次\n", ptr_urec->numlogins);
     fprintf(fn, "文章数目     : %d (Board)\n", ptr_urec->numposts);
@@ -1183,14 +1186,18 @@ int simplepasswd(char *str)
 
 void logattempt(char *uid, char *frm, char *action)
 {
-    char fname[STRLEN];
+    char fname[STRLEN], timebuf[STRLEN], *p;
     int fd, len;
     char buf[256];
     char *act = action ? action : "";
+    time_t now;
 
     if (strcmp(uid, "guest") == 0) return;
-
-    snprintf(buf, sizeof(buf), "%-12.12s  %-30s %-20s %s\n", uid, Ctime(time(0)), frm, act);
+    now = time(NULL);
+    ctime_r(&now, timebuf);
+    if ((p = strchr(timebuf, '\n')))
+        *p = 0;
+    snprintf(buf, sizeof(buf), "%-12.12s  %-30s %-20s %s\n", uid, timebuf, frm, act);
     len = strlen(buf);
     if ((fd = open(BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
         write(fd, buf, len);
@@ -2839,7 +2846,7 @@ void trimstr(char *s){
 void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN], session_t *session)
 {                               /* Leeward: 1997.12.02 */
     FILE *se;
-    char fname[STRLEN];
+    char fname[STRLEN], timebuf[STRLEN];
     char *ptr;
 
 	gettmpfilename( fname, "security" );
@@ -2869,8 +2876,8 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
                 fprintf(se, "服务单位     : %s\n", fdata[3]);
                 fprintf(se, "目前住址     : %s\n", fdata[4]);
                 fprintf(se, "连络电话     : %s\n", fdata[5]);
-                fprintf(se, "注册日期     : %s", ctime(&lookupuser->firstlogin));
-                fprintf(se, "最近光临日期 : %s", ctime(&lookupuser->lastlogin));
+                fprintf(se, "注册日期     : %s", ctime_r(&lookupuser->firstlogin, timebuf));
+                fprintf(se, "最近光临日期 : %s", ctime_r(&lookupuser->lastlogin, timebuf));
                 fprintf(se, "最近光临机器 : %s\n", lookupuser->lasthost);
                 fprintf(se, "上站次数     : %d 次\n", lookupuser->numlogins);
                 fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);

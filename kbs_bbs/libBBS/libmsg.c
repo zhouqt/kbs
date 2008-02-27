@@ -652,9 +652,9 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode, int srcpi
 
 int translate_msg(char* src, struct msghead *head, char* dest,session_t* session)
 {
-    char *time, attstr[STRLEN];
+    char *time, attstr[STRLEN], timebuf[STRLEN];
     int i,j=0,len,pos,ret=0;
-    time = ctime(&head->time);
+    time = ctime_r(&head->time, timebuf);
     dest[0] = 0;
     switch(head->mode) {
         case 0:
@@ -742,7 +742,7 @@ void mail_msg(int id, struct userec* user,session_t* session)
     int i;
     struct msghead head;
     time_t now;
-    char title[STRLEN];
+    char title[STRLEN], timebuf[STRLEN];
     FILE* fn;
     int count;
 
@@ -754,12 +754,12 @@ void mail_msg(int id, struct userec* user,session_t* session)
     now = time(0);
     /* fancy Jan 13 2008, 区分以 sender/content 搜寻, 有点儿 dirty ... */
     if (id > 0)
-        sprintf(title, "[%20.20s] 部分讯息备份 (发讯人)", ctime(&now) + 4);
+        sprintf(title, "[%20.20s] 部分讯息备份 (发讯人)", ctime_r(&now, timebuf) + 4);
     else if (!id)
-        sprintf(title, "[%20.20s] 所有讯息备份", ctime(&now) + 4);
+        sprintf(title, "[%20.20s] 所有讯息备份", ctime_r(&now, timebuf) + 4);
     else
     {
-        sprintf(title, "[%20.20s] 部分讯息备份 (内容)", ctime(&now) + 4);
+        sprintf(title, "[%20.20s] 部分讯息备份 (内容)", ctime_r(&now, timebuf) + 4);
         id = -id;
     }
 

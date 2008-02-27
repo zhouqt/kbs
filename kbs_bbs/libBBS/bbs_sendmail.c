@@ -735,31 +735,32 @@ static int encode_imail_file(
     char *newfile,
     const char *title,
     int isbig5){
-	FILE *fp2;
-	time_t now;
-	char boundary[256];
+    FILE *fp2;
+    time_t now;
+    char boundary[256];
+    char timebuf[STRLEN];
 
-	snprintf(newfile, PATHLEN, "%s.ib", oldfile);
-	if((fp2=fopen(newfile, "w"))==NULL){
-		return -1;
-	}
-	now = time(0);
-	sprintf(boundary,"----=_%ld_%d.attach", now, rand());
-	fprintf(fp2,"Return-Path: <%s@%s>\n", fromid, fromhost);
-	fprintf(fp2,"Received: from %s by %s\n", fromip, fromhost);
-	fprintf(fp2,"From: <%s@%s>\n", fromid, fromhost);
-	fprintf(fp2,"To: %s\n", to);
-	fprintf(fp2,"Date: %s", ctime(&now) );
-	fprintf(fp2,"Reply-To: <%s@%s>\n", fromid, fromhost);
-	fprintf(fp2,"Subject: %s\n", title);
-	fprintf(fp2,"MIME-Version: 1.0\n");
-	fprintf(fp2,"Content-Type: multipart/mixed;\n\tboundary=\"%s\"\n\n", boundary);
+    snprintf(newfile, PATHLEN, "%s.ib", oldfile);
+    if((fp2=fopen(newfile, "w"))==NULL){
+        return -1;
+    }
+    now = time(0);
+    sprintf(boundary,"----=_%ld_%d.attach", now, rand());
+    fprintf(fp2,"Return-Path: <%s@%s>\n", fromid, fromhost);
+    fprintf(fp2,"Received: from %s by %s\n", fromip, fromhost);
+    fprintf(fp2,"From: <%s@%s>\n", fromid, fromhost);
+    fprintf(fp2,"To: %s\n", to);
+    fprintf(fp2,"Date: %s", ctime_r(&now, timebuf) );
+    fprintf(fp2,"Reply-To: <%s@%s>\n", fromid, fromhost);
+    fprintf(fp2,"Subject: %s\n", title);
+    fprintf(fp2,"MIME-Version: 1.0\n");
+    fprintf(fp2,"Content-Type: multipart/mixed;\n\tboundary=\"%s\"\n\n", boundary);
 
     write_imail_file(fp2, oldfile, boundary, isbig5);
     
-	fclose(fp2);
+    fclose(fp2);
 
-	return 0;
+    return 0;
 }
 
 int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noansi,session_t *session)

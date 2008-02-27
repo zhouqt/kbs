@@ -1225,6 +1225,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only,sess
     FILE *fn1;
     char filename[STRLEN];
     char buffer[STRLEN];
+    char timebuf[STRLEN];
     time_t now;
     struct userec *lookupuser;
 
@@ -1239,7 +1240,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only,sess
         sprintf(buffer, "[通知]");
         fprintf(fn1, "寄信人: %s \n", user->userid);
         fprintf(fn1, "标  题: %s\n", buffer);
-        fprintf(fn1, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
+        fprintf(fn1, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime_r(&now, timebuf));
         fprintf(fn1, "来  源: %s \n", SHOW_USERIP(NULL, session->fromhost));
         fprintf(fn1, "\n");
         if (!strcmp(user->userid, DELIVER))
@@ -1250,7 +1251,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only,sess
         sprintf(buffer, "[通知]");
         fprintf(fn1, "寄信人: %s \n", user->userid);
         fprintf(fn1, "标  题: %s\n", buffer);
-        fprintf(fn1, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
+        fprintf(fn1, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime_r(&now, timebuf));
         fprintf(fn1, "来  源: %s \n", SHOW_USERIP(NULL, session->fromhost));
         fprintf(fn1, "\n");
         fprintf(fn1, "您被 %s 版版主 %s 解除封禁\n", board, user->userid);
