@@ -29,7 +29,7 @@
 #include <sys/sem.h>
 #include <sys/resource.h>
 
-extern char *getenv();
+/*extern char *getenv();*/
 static const char *const invalid[] = {
    /* "unknown@",*/
     "root@",
