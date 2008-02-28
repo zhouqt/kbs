@@ -1057,7 +1057,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
     FILE *fp_in, *fp_out;
     struct fileheader fh;
     bool conf_cross;
-    char buf[PATHLEN], bufcp[READ_BUFFER_SIZE], save_title[STRLEN];
+    char buf[PATHLEN], bufcp[READ_BUFFER_SIZE], save_title[STRLEN], timebuf[STRLEN];
     int fd;
 #ifdef HAVE_BRC_CONTROL
     int brc_save;
@@ -1106,7 +1106,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
             now = time(NULL);
             fprintf(fp_out, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", to_board);
             fprintf(fp_out, "标  题: %s\n", fh.title);
-            fprintf(fp_out, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime_r(&now, buf));
+            fprintf(fp_out, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime_r(&now, timebuf));
             fprintf(fp_out, "【此篇文章是由自动发信系统所张贴】\n\n"); 
         }
         else
