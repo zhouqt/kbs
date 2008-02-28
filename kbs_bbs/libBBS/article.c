@@ -1138,7 +1138,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
     fh.reid = fh.id;
     lseek(fd, 0, SEEK_END);
     if (safewrite(fd, &fh, sizeof(struct fileheader)) == -1){
-        flock(fd, LOCK_UN);
+        lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
         close(fd);
 #ifdef HAVE_BRC_CONTROL
         getSession() -> brc_currcache = brc_save;
