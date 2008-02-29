@@ -355,14 +355,17 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 #ifdef COMMEND_ARTICLE
             {FILE_COMMEND_FLAG,1,FILE_COMMEND,"审核通过"},
 #endif
+            {FILE_FEN_FLAG,1,FILE_FEN,"加分"},
             {0,0,0,NULL}
     };
     if (fileinfo==NULL)
         return DONOTHING;
 
+	if(flag==FILE_FEN_FLAG && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
+		return DONOTHING;
+
     if(arg->mode==DIR_MODE_SELF)
         return DONOTHING;
-    
 #ifdef FILTER
 #ifdef SMTH
     if (!strcmp(currboard->filename,"NewsClub")&&haspostperm(getCurrentUser(), currboard->filename)) 
@@ -401,6 +404,31 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
         ret=change_post_flag(&dirarg, arg->mode, currboard,  
             fileinfo,flag, &data,isbm,getSession());
         if (ret==0) {
+    		struct userec *lookupuser;
+			//if((time(0) - get_posttime(fileinfo) < 86400*7) && getuser( fileinfo->owner, &lookupuser) ){
+			if((arg->mode==DIR_MODE_NORMAL||arg->mode==DIR_MODE_THREAD||arg->mode==DIR_MODE_TITLE) && getuser( fileinfo->owner, &lookupuser) ){
+				if(flag==FILE_MARK_FLAG){
+					if(data.accessed[0] & FILE_MARKED){
+						lookupuser->numm++;
+					}else
+						if(lookupuser->numm>0) lookupuser->numm--;
+				}else if(flag == FILE_DIGEST_FLAG){
+					if(data.accessed[0] & FILE_DIGEST){
+						lookupuser->numg++;
+					}else
+						if(lookupuser->numg>0) lookupuser->numg--;
+				}else if(flag == FILE_IMPORT_FLAG){
+					if(data.accessed[0] & FILE_IMPORTED){
+						lookupuser->numx++;
+					}else
+						if(lookupuser->numx>0) lookupuser->numx--;
+				}else if(flag == FILE_FEN_FLAG){
+					if(data.accessed[1] & FILE_FEN){
+						lookupuser->numf++;
+					}else
+						if(lookupuser->numf>0) lookupuser->numf--;
+				}
+			}
 //prompt...
             ret=DIRCHANGED;
         } else if(ret==4 && flag==FILE_DIGEST_FLAG){
@@ -904,19 +932,10 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             typesufix = "\x1b[m";
         }
     }
-
-#ifdef SOLEE
-    if(ent->accessed[1] & FILE_TEX) {
-        if (type == ' ') {
-            strcpy(typeprefix ,"\x1b[41m");
-            typesufix = "\x1b[m";
-        } else {
-            strcpy(typeprefix ,"\x1b[1;31m");
-            typesufix = "\x1b[m";
-        }
-    }
-#endif /* SOLEE */
-	
+	if(manager && (ent->accessed[1] & FILE_FEN)) {
+		strcat(typeprefix , "\x1b[4m");
+        typesufix = "\x1b[m";
+	}
     filetime = get_posttime(ent);
     if (filetime > 740000000) {
 #ifdef HAVE_COLOR_DATE
@@ -1514,6 +1533,9 @@ reget:
 #if 0
     case 'g':
         ret=set_article_flag(conf , fileinfo, FILE_DIGEST_FLAG);       /* Leeward 99.03.02 */
+        break;
+    case '+':
+        ret=set_article_flag(conf , fileinfo, FILE_FEN_FLAG);       /* Leeward 99.03.02 */
         break;
     case 'M':
         ret=set_article_flag(conf , fileinfo, FILE_MARK_FLAG);       /* Leeward 99.03.02 */
@@ -5416,6 +5438,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {';', (READ_KEY_FUNC)noreply_post,(void*)NULL},        /*Haohmaru.99.01.01,设定不可re模式 */
     {'#', (READ_KEY_FUNC)set_article_flag,(void*)FILE_SIGN_FLAG},           /* Bigman: 2000.8.12  设定文章标记模式 */
     {'%', (READ_KEY_FUNC)set_article_flag,(void*)FILE_PERCENT_FLAG},           /* asing: 2004.4.16  设定文章标记模式 */
+    {'+', (READ_KEY_FUNC)set_article_flag,(void*)FILE_FEN_FLAG},
 #ifdef FILTER
     {'@', (READ_KEY_FUNC)set_article_flag,(void*)FILE_CENSOR_FLAG},         /* czz: 2002.9.29 审核被过滤文章 */
 #endif

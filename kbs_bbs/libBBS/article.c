@@ -2458,6 +2458,21 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, const struct bo
     setbfile(buf, board->filename, originFh->filename);
 
     /*
+     * add fen 处理
+     */
+    if (flag & FILE_FEN_FLAG) {
+        if (data->accessed[1] & FILE_FEN) {
+            originFh->accessed[1] |= FILE_FEN;
+            if (dobmlog)
+                bmlog(session->currentuser->userid, board->filename, 15, 1);
+        } else {
+            originFh->accessed[1] &= ~FILE_FEN;
+            if (dobmlog)
+                bmlog(session->currentuser->userid, board->filename, 16, 1);
+        }
+    }
+
+    /*
      * mark 处理
      */
     if (flag & FILE_MARK_FLAG) {
