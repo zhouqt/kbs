@@ -408,6 +408,7 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
         ret=change_post_flag(&dirarg, arg->mode, currboard,  
             fileinfo,flag, &data,isbm,getSession());
         if (ret==0) {
+#ifdef NEWSMTH
     		struct userec *lookupuser;
 			//if((time(0) - get_posttime(fileinfo) < 86400*7) && getuser( fileinfo->owner, &lookupuser) ){
 			if((arg->mode==DIR_MODE_NORMAL||arg->mode==DIR_MODE_THREAD||arg->mode==DIR_MODE_TITLE) && getuser( fileinfo->owner, &lookupuser) ){
@@ -426,7 +427,6 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 						lookupuser->numx++;
 					}else
 						if(lookupuser->numx>0) lookupuser->numx--;
-#ifdef NEWSMTH
 #if 0  // pig2532: 加分标记改为不参与十大统计 不再统计numf
 				}else if(flag == FILE_FEN_FLAG){
 					if(data.accessed[1] & FILE_FEN){
@@ -434,9 +434,9 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 					}else
 						if(lookupuser->numf>0) lookupuser->numf--;
 #endif
-#endif /* NEWSMTH */
 				}
 			}
+#endif /* NEWSMTH */
 //prompt...
             ret=DIRCHANGED;
         } else if(ret==4 && flag==FILE_DIGEST_FLAG){
