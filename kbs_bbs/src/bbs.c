@@ -355,14 +355,18 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 #ifdef COMMEND_ARTICLE
             {FILE_COMMEND_FLAG,1,FILE_COMMEND,"审核通过"},
 #endif
+#ifdef NEWSMTH
             {FILE_FEN_FLAG,1,FILE_FEN,"加分"},
+#endif /* NEWSMTH */
             {0,0,0,NULL}
     };
     if (fileinfo==NULL)
         return DONOTHING;
 
-	if(flag==FILE_FEN_FLAG && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
+#ifdef NEWSMTH
+    if(flag==FILE_FEN_FLAG && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
 		return DONOTHING;
+#endif /* NEWSMTH */
 
     if(arg->mode==DIR_MODE_SELF)
         return DONOTHING;
@@ -422,11 +426,15 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 						lookupuser->numx++;
 					}else
 						if(lookupuser->numx>0) lookupuser->numx--;
+#ifdef NEWSMTH
+#if 0  // pig2532: 加分标记改为不参与十大统计 不再统计numf
 				}else if(flag == FILE_FEN_FLAG){
 					if(data.accessed[1] & FILE_FEN){
 						lookupuser->numf++;
 					}else
 						if(lookupuser->numf>0) lookupuser->numf--;
+#endif
+#endif /* NEWSMTH */
 				}
 			}
 //prompt...
@@ -932,10 +940,12 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             typesufix = "\x1b[m";
         }
     }
+#ifdef NEWSMTH
 	if(manager && (ent->accessed[1] & FILE_FEN)) {
 		strcat(typeprefix , "\x1b[4m");
         typesufix = "\x1b[m";
 	}
+#endif /* NEWSMTH */
     filetime = get_posttime(ent);
     if (filetime > 740000000) {
 #ifdef HAVE_COLOR_DATE
@@ -1534,9 +1544,11 @@ reget:
     case 'g':
         ret=set_article_flag(conf , fileinfo, FILE_DIGEST_FLAG);       /* Leeward 99.03.02 */
         break;
+#ifdef NEWSMTH
     case '+':
         ret=set_article_flag(conf , fileinfo, FILE_FEN_FLAG);       /* Leeward 99.03.02 */
         break;
+#endif /* NEWSMTH */
     case 'M':
         ret=set_article_flag(conf , fileinfo, FILE_MARK_FLAG);       /* Leeward 99.03.02 */
         break;
@@ -5438,7 +5450,9 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {';', (READ_KEY_FUNC)noreply_post,(void*)NULL},        /*Haohmaru.99.01.01,设定不可re模式 */
     {'#', (READ_KEY_FUNC)set_article_flag,(void*)FILE_SIGN_FLAG},           /* Bigman: 2000.8.12  设定文章标记模式 */
     {'%', (READ_KEY_FUNC)set_article_flag,(void*)FILE_PERCENT_FLAG},           /* asing: 2004.4.16  设定文章标记模式 */
+#ifdef NEWSMTH
     {'+', (READ_KEY_FUNC)set_article_flag,(void*)FILE_FEN_FLAG},
+#endif /* NEWSMTH */
 #ifdef FILTER
     {'@', (READ_KEY_FUNC)set_article_flag,(void*)FILE_CENSOR_FLAG},         /* czz: 2002.9.29 审核被过滤文章 */
 #endif

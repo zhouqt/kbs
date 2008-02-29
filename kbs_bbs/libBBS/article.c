@@ -2460,6 +2460,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, const struct bo
     /*
      * add fen 处理
      */
+#ifdef NEWSMTH
     if (flag & FILE_FEN_FLAG) {
         if (data->accessed[1] & FILE_FEN) {
             originFh->accessed[1] |= FILE_FEN;
@@ -2471,6 +2472,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, const struct bo
                 bmlog(session->currentuser->userid, board->filename, 16, 1);
         }
     }
+#endif /* NEWSMTH */
 
     /*
      * mark 处理
