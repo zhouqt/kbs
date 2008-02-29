@@ -9,7 +9,7 @@ case "${host}" in
   *-apple-darwin*)
         OSTYPE="MACOSX"
         ;;
-  i*86-*-freebsd*)
+  *-*-freebsd*)
         OSTYPE="FREEBSD"
         ;;      
   *-*-solaris*) 
