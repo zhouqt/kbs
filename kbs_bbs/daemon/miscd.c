@@ -685,6 +685,7 @@ int main(int argc, char *argv[])
         if (strcasecmp(argv[1], "killuser") == 0) {
             if (resolve_ucache() != 0)
                 return -1;
+            resolve_utmp();
             return dokilluser();
         }
         if (strcasecmp(argv[1], "giveup") == 0) {
