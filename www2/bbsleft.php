@@ -348,6 +348,7 @@
 		<div class="mi"><a href="bbsplan.php">改说明档</a></div>
 		<div class="mi"><a href="bbssig.php">改签名档</a></div>
 		<div class="mi"><a href="bbspwd.php">修改密码</a></div>
+		<div class="mi"><a href="bbsbadlist.php">黑名单</a></div>
 		<div class="mi"><a href="bbsparm.php">修改个人参数</a></div>
 <?php
 		if($currentuser["userlevel"]&BBS_PERM_CLOAK)
