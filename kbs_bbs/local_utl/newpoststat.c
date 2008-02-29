@@ -111,7 +111,7 @@ static char * get_file_title(char *boardname, int threadid, char *title, char *u
 			close(fd);
 
 #ifdef NEWSMTH
-            // pig2532 Feb 2008: ignore topic with FEN flag in site-wide top10
+            // pig2532 Feb 2008: ignore topic with FEN flag in top10
             if(fh.accessed[1] & FILE_FEN)
                 return NULL;
 #endif /* NEWSMTH */
