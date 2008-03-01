@@ -523,6 +523,7 @@ int a_loadnames(MENU *pm,session_t *session){
             strncpy(it.fname,&buf[(buf[5]=='~'&&buf[6]=='/')?7:5],(STRLEN-1));
             if(it.fname[0]=='.'&&it.fname[1]=='.')
                 continue;
+#if 0 /* disabled by fancy, Mar 2 2008 */
             if(strstr(it.fname,"!@#$%")){
                 char *save_ptr;
                 strcpy(name,it.fname);
@@ -533,6 +534,7 @@ int a_loadnames(MENU *pm,session_t *session){
                 if ((p=strtok_r(NULL,"!@#$%",&save_ptr)))
                     it.port=atoi(p);
             }
+#endif
             if(a_additem_base(pm,it.title,it.fname,(!host[0]?NULL:host),it.port,it.attachpos)==-2)
                 break;
         }
