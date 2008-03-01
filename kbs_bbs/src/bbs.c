@@ -2990,7 +2990,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     if (getCurrentUser()->signature > getSession()->currentmemo->ud.signum)      /*签名档No.检查 */
         getCurrentUser()->signature = (getSession()->currentmemo->ud.signum == 0) ? 0 : 1;
     anonyboard = anonymousboard(currboard->filename);     /* 是否为匿名版 */
-    if (!strcmp(currboard->filename, "Announce"))
+    if (!strcmp(currboard->filename, "Announce") || (!strcmp(currboard->filename, "Penalty")))
         Anony = 1;
     else if (anonyboard)
         Anony = ANONYMOUS_DEFAULT;
