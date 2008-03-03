@@ -335,6 +335,7 @@ PHP_FUNCTION(bbs_postarticle)
     int anonyboard, color;
 	int retvalue;
     FILE *fp;
+    int NBUser = 0;
 
 
 	int ac = ZEND_NUM_ARGS();
@@ -356,6 +357,8 @@ PHP_FUNCTION(bbs_postarticle)
     } else {
         WRONG_PARAM_COUNT;
     }
+
+    NBUser = HAS_PERM(getCurrentUser(), PERM_SYSOP);
 
     brd = getbcache(boardName);
     if (getCurrentUser() == NULL) {
@@ -380,10 +383,10 @@ PHP_FUNCTION(bbs_postarticle)
     }
 #endif /* NEWSMTH */
 
-    if (deny_me(getCurrentUser()->userid, board) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
+    if (deny_me(getCurrentUser()->userid, board) && !NBUser)
         RETURN_LONG(-5); //很抱歉, 你被版务人员停止了本版的post权利.
 
-    if (check_last_post_time(getSession()->currentuinfo)) {
+    if (!NBUser && check_last_post_time(getSession()->currentuinfo)) {
         RETURN_LONG(-6); // 两次发文间隔过密, 请休息几秒后再试
     }
 
@@ -416,7 +419,7 @@ PHP_FUNCTION(bbs_postarticle)
     }
     setbfile(filepath, board, post_file.filename);
 
-    anony = anonyboard && anony;
+    anony = (anonyboard || NBUser) && anony;
     strncpy(post_file.owner, anony ? board : getCurrentUser()->userid, OWNER_LEN);
     post_file.owner[OWNER_LEN - 1] = 0;
 
