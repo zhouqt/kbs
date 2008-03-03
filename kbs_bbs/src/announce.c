@@ -1970,7 +1970,8 @@ MENU *father;
             }
             break;
         case 'o':
-            t_friends();
+            if (HAS_PERM(getCurrentUser(), PERM_BASIC))
+                t_friends();
             me.page = 9999;
             break;              /*Haohmaru 98.09.22 */
         case 'v':
