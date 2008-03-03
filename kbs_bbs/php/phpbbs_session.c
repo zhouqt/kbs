@@ -344,6 +344,16 @@ PHP_FUNCTION(bbs_setguest_nologin)
 }
 
 
+PHP_FUNCTION(bbs_setSYSOP_nologin)
+{
+    struct userec *user;
+    int num;
+
+    num = getuser("SYSOP", &user);
+    setcurrentuser(user, num);
+}
+
+
 PHP_FUNCTION(bbs_wwwlogoff)
 {
     if (getCurrentUser()) {
