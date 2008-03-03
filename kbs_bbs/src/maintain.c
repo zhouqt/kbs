@@ -2366,7 +2366,7 @@ if (ret==-2) {
                 sprintf(genbuf, "自动处理程序 让 %s 通过身份确认.", uinfo.userid);
 	 }
 #endif
-         	mail_file(sender, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0, NULL);
+         	mail_file(sender, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", BBSPOST_LINK, NULL);
                 securityreport(genbuf, lookupuser, fdata, getSession());
                 if ((fout = fopen(logfile, "a")) != NULL) {
                     time_t now;
@@ -2605,6 +2605,147 @@ int m_register(void){
         }
     }
     clear();
+    return 0;
+}
+
+/* fancy Mar 3 2008, 追回注册单 ... */
+int m_unregister(void)
+{
+    char buf[PATHLEN], title[ARTICLE_TITLE_LEN], oldrealemail[STRLEN - 16];
+    char *head;
+    int uid, i, cnt, fd;
+    struct userec *user, uinfo;
+    struct userdata ud;
+    struct usermemo *um;
+    struct fileheader *pfh;
+    struct stat st;
+    FILE *fp;
+    off_t size;
+    modify_user_mode(ADMIN);
+    if (!check_systempasswd())
+        return -1;
+    stand_title("追回误通过的注册单");
+    move(1, 0); usercomplete("追回用户: ", buf);
+    if (!buf[0])
+    {
+        move(2, 0); prints("取消 ...\033[0;33m<Enter>\033[m");
+        WAIT_RETURN;
+        return -1;
+    }
+    if (!(uid = getuser(buf, &user)))
+    {
+        move(2, 0); prints("非法用户 ...\033[0;33m<Enter>\033[m");
+        WAIT_RETURN;
+        return -1;
+    }
+    uinfo = *user;
+    disply_userinfo(&uinfo, 1);
+    if (read_userdata(uinfo.userid, &ud) == -1)
+    {
+        move(22, 0); prints("读取用户数据时发生错误 ...\033[0;33m<Enter>\033[m");
+        WAIT_RETURN;
+        return -1;
+    }
+    if (!ud.realemail[0])
+    {
+        move(22, 0); prints("该用户尚未通过注册 ...\033[0;33m<Enter>\033[m");
+        WAIT_RETURN;
+        return -1;
+    }
+    getdata(22, 0, "确认追回该注册单? [y/N]: ", buf, 2, DOECHO, NULL, true);
+    if (toupper(buf[0]) != 'Y')
+    {
+        move(t_lines - 1, 0); prints("取消 ...\033[0;33m<Enter>\033[m");
+        WAIT_RETURN;
+        return -1;
+    }
+    sprintf(buf, "tmp/email/%s", uinfo.userid);
+    unlink(buf);
+    memcpy(oldrealemail, ud.realemail, STRLEN - 16);
+    ud.realemail[0] = 0;
+    if (write_userdata(uinfo.userid, &ud) == -1)
+    {
+        move(t_lines - 1, 0); prints("写入用户数据时发生错误 ...\033[0;33m<Enter>\033[m");
+        WAIT_RETURN;
+        return -1;
+    }
+    uinfo.userlevel = PERM_BASIC;
+    if (update_user(&uinfo, uid, 0) == -1)
+    {
+        move(t_lines - 1, 0); prints("回写用户信息时发生错误 ...\033[0;33m<Enter>\033[m");
+        WAIT_RETURN;
+        return -1;
+    }
+    i = read_user_memo(user -> userid, &um);
+    if ((i >= 0) && (i != sizeof(struct usermemo)))
+        end_mmapfile(um, sizeof(struct usermemo), -1);
+    if (i == sizeof(struct usermemo))
+    {
+        memcpy(&(um -> ud), &ud, sizeof(struct userdata));
+        end_mmapfile(um, sizeof(struct usermemo), -1);
+    }
+    else
+    {
+        sethomefile(buf, user -> userid, "usermemo");
+        unlink(buf);
+    }
+    sprintf(title, "%s 追回 %s 的身份确认.", getCurrentUser() -> userid, uinfo.userid);
+    sprintf(buf, "tmp/unregister_%ld_%d", time(NULL), getpid());
+    if (!(fp = fopen(buf, "w")))
+        return -2;
+    write_header(fp, getCurrentUser(), 0, "reject_registry", title, 0, 0, getSession());
+    fprintf(fp, "系统安全记录系统\n\033[0;32m原因：%s\033[m\n\n\033[1;37m[用户 \033[1;32m%s\033[1;37m 个人资料]\033[m\n\n", title, uinfo.userid);
+    fprintf(fp, "用户昵称    : %s\n", user -> username);
+    fprintf(fp, "真实姓名    : %s\n", ud.realname);
+    fprintf(fp, "居住位置    : %s\n", ud.address);
+    fprintf(fp, "原始注册资料: %s\n", oldrealemail);
+    fprintf(fp, "注册时间    : %s", ctime(&(user -> firstlogin)));
+    fprintf(fp, "最近访问时间: %s", ctime(&(user -> lastlogin)));
+    fprintf(fp, "最近访问来源: %s\n", user -> lasthost);
+    fprintf(fp, "登录数量    : %d\n", user -> numlogins);
+    fprintf(fp, "文章数量    : %d\n", user -> numposts);
+    fclose(fp);
+    post_file(getCurrentUser(), "", buf, "reject_registry", title, 0, -1, getSession());
+    unlink(buf);
+    setmailfile(buf, user -> userid, DOT_DIR);
+    if (((fd = open(buf, O_RDWR)) == -1) || (lock_reg(fd, F_SETLKW, F_WRLCK, 0, SEEK_SET, 0) == -1))
+    {
+        lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+        close(fd);
+        return -3;
+    }
+    BBS_TRY {
+        if (!safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &head, &size))
+        {
+            lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+            close(fd);
+            BBS_RETURN(-4);
+        }
+        cnt = size / sizeof(struct fileheader);
+        pfh = (struct fileheader *)head;
+        pfh += (cnt - 1);
+        for (i = 0; i < cnt; i++, pfh--)
+        {
+            if (!strcmp(pfh -> title, "恭禧你，你已经完成注册。"))
+            {
+                setmailfile(buf, user -> userid, pfh -> filename);
+                if (lstat(buf, &st) || !S_ISLNK(st.st_mode))
+                    continue;
+                sprintf(pfh -> title, "<注册失败> - 请确实而详细的填写注册申请表.");
+                unlink(buf);
+                symlink(BBSHOME"/etc/f_fill.real", buf);
+                break;
+            }
+        }
+    }
+    BBS_CATCH {
+    }
+    BBS_END;
+    end_mmapfile((void *)head, size, -1);
+    lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+    close(fd);
+    move(t_lines - 1, 0); prints("\033[1;33m操作成功!\033[0;33m<Enter>\033[m");
+    WAIT_RETURN;
     return 0;
 }
 

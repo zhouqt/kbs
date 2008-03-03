@@ -74,6 +74,7 @@ KBS_COMM_LISTS_FUNC_V(m_register);
 KBS_COMM_LISTS_FUNC_V(m_sendnull);
 KBS_COMM_LISTS_FUNC_V(m_stoplogin);
 KBS_COMM_LISTS_FUNC_V(m_trace);
+KBS_COMM_LISTS_FUNC_V(m_unregister);
 KBS_COMM_LISTS_FUNC_V(m_vote);
 KBS_COMM_LISTS_FUNC_V(New);
 KBS_COMM_LISTS_FUNC_V(ov_send);

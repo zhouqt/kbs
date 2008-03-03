@@ -54,6 +54,7 @@ static const CMD_LIST CMD[]={
     {"SendMail",            m_sendnull,                             0},
     {"StopLogin",           m_stoplogin,                            0},
     {"SetTrace",            m_trace,                                0},
+    {"RevokeForm",          m_unregister,                           0},
     {"OpenVote",            m_vote,                                 0},
     {"BoardsNew",           New,                                    0},
     {"OverrideSend",        ov_send,                                0},
