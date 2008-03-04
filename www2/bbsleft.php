@@ -189,10 +189,7 @@
 		}
 		else
 		{
-			if (defined("SITE_NEWSMTH")) {
 ?>
-<div class="logo"><script type="text/javascript">putImage('logo.gif','');</script></div>
-<?php       } ?>
 <div class="t2">
 <nobr><script type="text/javascript">putImage('u1.gif','alt="µÇÂ¼ÓÃ»§Ãû" class="pm"');</script>
 &nbsp;&nbsp;<?php echo $currentuser["userid"]; ?></nobr><br/>

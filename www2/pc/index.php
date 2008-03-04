@@ -921,6 +921,7 @@ blogCalendar(<?php echo date("Y,n,j"); ?>);
 	if(!$pc)
 	{
 		pc_db_close($link);
+		header("HTTP/1.1 404 NOT FOUND");
 		html_init("gb2312",$pcconfig["BBSNAME"]."Blog");		
 		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();

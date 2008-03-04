@@ -391,7 +391,8 @@
 </tr>
 <tr>
 	<td class="t5">
-	<input type="checkbox" name="trackback" value="1" checked>允许引用
+	<input type="checkbox" name="trackback" value="1">允许引用
+	(请注意，这个选项是用来允许别的网站在不经您同意的情况下在您的 blog 增加引用链接的，很可能带来大量垃圾信息。)
 	</td>
 </tr>
 <?php

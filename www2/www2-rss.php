@@ -6,7 +6,7 @@ define('_BBS_WWW2_RSS_PHP_', 1);
 define('RSS_ENCODING', "UTF-8");
 
 define('ARTICLE_PER_RSS', 20);
-define('DESC_CHAR_PER_RSS_ITEM', 1000);
+define('DESC_CHAR_PER_RSS_ITEM', 2048);
 
 function cv($c) {
 	return iconv("GB18030", "UTF-8//IGNORE", $c);

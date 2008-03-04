@@ -49,5 +49,5 @@ $has_perm_boards = false;
 if(bbs_ann_traverse_check($filename, $currentuser["userid"]) == 1)
 	$has_perm_boards = true;
 if(!$has_perm_boards)
-       html_error_quit("没有权限。");
+	html_error_quit("没有权限。");
 ?>

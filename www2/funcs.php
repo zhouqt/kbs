@@ -354,10 +354,7 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 	}
 	else{
 ?>
-<script type="text/javascript">
-var cssFile = getBbsStyleFile();
-document.write('<link rel="stylesheet" type="text/css" href="' + cssFile + '"/>');
-</script>
+<link rel="stylesheet" type="text/css" href="default.css"/>
 <?php			
 	}
 	echo($otherheader); 

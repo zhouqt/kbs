@@ -522,36 +522,6 @@ while($board = array_shift($boards))
     <td width="1" class="vline"></td>
     <td width="18">&nbsp;</td>
     <td align="left" valign="top"> 
-<!-- 系统公告开始 暂时屏蔽掉
-      <table width="150" border="0" cellpadding="0" cellspacing="0" class="helpert">
-        <tr> 
-          <td class="helpert_left">&nbsp;</td>
-          <td class="helpert_middle">系统公告</td>
-          <td class="helpert_right"></td>
-          <td>&nbsp;</td>
-        </tr>
-      </table>
-      <table width="150" border="0" cellpadding="0" cellspacing="0" class="helper">
-        <tr> 
-                <td height="20" class="MainContentText"><font color="#6E9E54"><img src="images/wen.gif" width="9" height="7"> 
-                  本站开通国际访问接口</font></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><font color="#6E9E54"><img src="images/wen.gif" width="9" height="7"> 
-                  新版WEB界面启用</font></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><img src="images/wen.gif" width="9" height="7"></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><img src="images/wen.gif" width="9" height="7"></td>
-              </tr>
-              <tr> 
-                <td height="20" class="MainContentText"><img src="images/wen.gif" width="9" height="7"></td>
-        </tr>
-      </table>
-      <br>
-系统公告结束   -->
 <?php
 	//gen_system_vote_html();
 	gen_new_boards_html();

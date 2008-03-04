@@ -482,13 +482,13 @@ function atomic_article() {
 	atomic_header();
 	$html = '<p>';
 	if (!$atomic_ftype) {
+		$html .= '<a href="' . $url . $article["ID"] . '&p=tn">主题下篇</a> ';
+		$html .= '<a href="' . $url . $article["GROUPID"] . '">楼主</a> ';
 		$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
 		if (atomic_uploadable()) $html .= '<a href="?act=post&board='.$atomic_board.'&reid='.$id.'&upload=1">带附件回复</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
-		$html .= '<a href="' . $url . $article["ID"] . '&p=tn">主题下篇</a> ';
-		$html .= '<a href="' . $url . $article["GROUPID"] . '">楼主</a> ';
 		$html .= '<a href="' . $url . $article["REID"] . '">溯源</a> ';
 	}
 	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).
