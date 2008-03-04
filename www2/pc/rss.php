@@ -36,7 +36,10 @@
 			"email" => $pc["USER"].".bbs@".$pcconfig["SITE"]
 			);
 	
-	$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 0 ORDER BY `nid` DESC LIMIT 0 , ".$pcconfig["ETEMS"]."  ;";
+	$nItems = $pcconfig["ETEMS"];
+	if (strcmp($currentuser["userid"], $userid) == 0) $nItems = 100000;
+	
+	$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 0 ORDER BY `nid` DESC LIMIT 0 , ".$nItems."  ;";
 	$result = mysql_query($query,$link);
 	$i = 0;
 	while($rows = mysql_fetch_array($result))
