@@ -41,10 +41,17 @@
 			$day = "0".$day;
 	}
 
-	if( $yesterd )
+	if( $yesterd ){
 		$pngurl = "/bbsstat/todayonline.png";
-	else
+		$pngurl1 = "/bbsstat/todaylogin.png";
+		$pngurl2 = "/bbsstat/todaylogout.png";
+		$pngurl3 = "/bbsstat/todaystay.png";
+	} else {
 		$pngurl = "/bbsstat/".$year."/".$month."/".$day."_useronline.png";
+		$pngurl1 = "/bbsstat/".$year."/".$month."/".$day."_login.png";
+		$pngurl2 = "/bbsstat/".$year."/".$month."/".$day."_logout.png";
+		$pngurl3 = "/bbsstat/".$year."/".$month."/".$day."_stay.png";
+	}
 
 	page_header("用户在线统计");
 ?>
@@ -98,7 +105,9 @@
 <?php
 	}
 ?>
+
 <br>
+在线人数统计<br>
 <?php
 	if( file_exists( $_SERVER["DOCUMENT_ROOT"].$pngurl ) ){
 ?>
@@ -109,6 +118,51 @@
 对不起，暂时无此日统计图表
 <?php
 	}
+?>
+
+<br>
+用户登录统计(y轴为6分钟总登陆人次):<br>
+<?php
+	if( file_exists( $_SERVER["DOCUMENT_ROOT"].$pngurl1 ) ){
+?>
+<img src="<?php echo $pngurl1;?>"></img>
+<?php
+	}else{
+?>
+对不起，暂时无此日统计图表
+<?php
+	}
+?>
+
+<br>
+用户退出统计(y轴同上):<br>
+<?php
+	if( file_exists( $_SERVER["DOCUMENT_ROOT"].$pngurl2 ) ){
+?>
+<img src="<?php echo $pngurl2;?>"></img>
+<?php
+	}else{
+?>
+对不起，暂时无此日统计图表
+<?php
+	}
+?>
+
+<br>
+用户平均停留时间统计(y轴以10s为单位):<br>
+<?php
+	if( file_exists( $_SERVER["DOCUMENT_ROOT"].$pngurl3 ) ){
+?>
+<img src="<?php echo $pngurl3;?>"></img>
+<?php
+	}else{
+?>
+对不起，暂时无此日统计图表
+<?php
+	}
+?>
+
+<?php
 	page_footer();
 ?>
 

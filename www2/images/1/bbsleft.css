@@ -176,3 +176,7 @@ div.pp {
 #kbsrcInfo {
 	display: none;
 }
+.ads {
+	color: blue;
+	font-weight: bold;
+}
