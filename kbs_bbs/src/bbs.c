@@ -941,7 +941,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         }
     }
 #ifdef NEWSMTH
-	if(manager && (ent->accessed[1] & FILE_FEN)) {
+	if(HAS_PERM(getCurrentUser(), PERM_OBOARDS) && (ent->accessed[1] & FILE_FEN)) {
 		strcat(typeprefix , "\x1b[4m");
         typesufix = "\x1b[m";
 	}
