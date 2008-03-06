@@ -1802,6 +1802,8 @@ MENU *father;
             break;
         case Ctrl('C'):
         case Ctrl('P'):
+            if(me.now >= me.num)
+                break;
             if(!HAS_PERM(getCurrentUser(),PERM_POST)||!M_ITEM(&me,me.now))
                 break;
             sprintf(fname,"%s/%s",path,M_ITEM(&me,me.now)->fname);
