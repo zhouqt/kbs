@@ -1,6 +1,6 @@
 /**
  * Part of the KBS BBS Code
- * Copyright (c) 2005-2006 KBS Development Team. (http://dev.kcn.cn/)
+ * Copyright (c) 2005-2008 KBS Development Team. (http://dev.kcn.cn/)
  * Source file is subject to the pending KBS License.
  *
  * You may use and/or modify the source code only for pure personal study
@@ -360,6 +360,7 @@ function generateQuotation(c, mailmode, replymode) {
 }
 
 function showReplyForm(url) {
+	if (readParaCookie() & 0x2000) return true;
 	var o = getObj("divReplyForm");
 	o.style.padding = '0.5em';
 	o.innerHTML = "‘ÿ»Î÷–£¨«Î…‘∫Ú°≠°≠";

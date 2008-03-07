@@ -10,7 +10,7 @@
 	}
 ?>
 <script type="text/javascript"><!--
-	var settings = {"sizer": 3, "pager": 4, "hot": 5, "unread": 12}; /* faint IE5 */
+	var settings = {"sizer": 3, "pager": 4, "hot": 5, "unread": 12, "replyform": 13}; /* faint IE5 */
 	function setInd(n, v) {
 		var ff = getObj(n + 'F');
 		var tt = getObj(n + 'T');
@@ -119,6 +119,10 @@ div.stylesel img {
 				<span class="clickable" onclick="KCNymsw();">关闭</span>
 			<br/>
 <?php } ?>
+			<label>帖子下快速回复:</label>
+				<span class="clickable" onclick="adjSet('replyform', 0)" id="replyformF">启用</span>
+				<span class="clickable" onclick="adjSet('replyform', 1)" id="replyformT">禁用</span>
+			<br/>
 		</div>
 	</fieldset>
 </form>

@@ -1,6 +1,6 @@
 /**
  * Part of the KBS BBS Code
- * Copyright (c) 2005-2006 KBS Development Team. (http://dev.kcn.cn/)
+ * Copyright (c) 2005-2008 KBS Development Team. (http://dev.kcn.cn/)
  * Source file is subject to the pending KBS License.
  *
  * You may use and/or modify the source code only for pure personal study
@@ -1068,11 +1068,7 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num, use_tex) {
 	var ret = '<div class="conPager smaller right">';
 	if (isLogin()) { /* TODO: 某些模式应该禁止显示这两个链接 */
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
-		if (gIE6Fx) {
-			ret += '<a onclick="return showReplyForm(\'' + url + '\');" href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg"') + '</a>';
-		} else {
-			ret += '<a href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
-		}
+		ret += '<a onclick="return showReplyForm(\'' + url + '\');" href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg"') + '</a>';
 		url = 'bbspst.php?board=' + this.board;
 		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
