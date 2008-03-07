@@ -13,7 +13,7 @@ $board = substr($query, 1);
 $brdarr = array();
 $isnormalboard = bbs_safe_getboard(0, $board, $brdarr);
 if (is_null($isnormalboard)) {
-	go_die();
+	die;
 }
 if (strcmp($board, $brdarr["NAME"])) die; //cache consideration
 $brdnum = $brdarr["BID"];
