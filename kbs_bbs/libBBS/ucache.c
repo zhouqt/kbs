@@ -290,13 +290,13 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
     return 0;
 }
 
-static void flush_user_title();
+/*static void flush_user_title();*/
 
 int flush_ucache()
 {
     int ret;
     ret= substitute_record(PASSFILE, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
-    flush_user_title();
+    /*flush_user_title();*/
     return ret;
 }
 
@@ -1065,6 +1065,7 @@ void load_user_title()
 /**
   *  把user_title数组写入磁盘
   */
+#if 0 /* fancy Mar 7 2008, disable it... */
 static void flush_user_title()
 {
     FILE* titlefile;
@@ -1084,6 +1085,7 @@ static void flush_user_title()
         rename(buf, USER_TITLE_FILE);
     }
 }
+#endif
 
 /**
  * 获得title对应的字符串
@@ -1101,6 +1103,7 @@ char* get_user_title(unsigned char titleidx)
  * @param titleidx 1base的title
  * @param newtitle 需要设置的title
  */
+#if 0 /* fancy Mar 7 2008, disable it ... */
 void set_user_title(unsigned char titleidx,char* newtitle)
 {
     int fd;
@@ -1112,6 +1115,7 @@ void set_user_title(unsigned char titleidx,char* newtitle)
     }
     ucache_unlock(fd);
 }
+#endif
 
 /* WWW GUEST这样做有个同步问题，就是当被清除一个
  * GUEST的时候如果正好这个guest刷新了，那么会重写数据结构

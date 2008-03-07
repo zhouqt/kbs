@@ -89,7 +89,7 @@ void flush_cachedata(const char* userid);
 int clean_cachedata(const char* userid,int unum);
 
 char* get_user_title(unsigned char titleidx);
-void set_user_title(unsigned char titleidx,char* newtitle);
+/*void set_user_title(unsigned char titleidx,char* newtitle);*/
 
 /* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/
 
