@@ -67,7 +67,7 @@
 <a name="top"></a>
 <h1 class="ttit">Í¬Ö÷ÌâÔÄ¶Á£º<?php echo htmlspecialchars($articles[0]["TITLE"]); ?> </h1>
 <script type="text/javascript"><!--
-var o = new tconWriter('<?php echo addslashes($board); ?>',<?php echo $bid; ?>,<?php echo $gid; ?>,<?php echo $start; ?>,<?php echo $totalpage; ?>,<?php echo $pno; ?>,<?php echo $startnum; ?>,<?php echo $origins[0]["ID"]; ?>,<?php echo $origins[2]["ID"]; ?>, 0);
+var o = new tconWriter('<?php echo addslashes($board); ?>',<?php echo $bid; ?>,<?php echo $gid; ?>,<?php echo $start; ?>,<?php echo $totalpage; ?>,<?php echo $pno; ?>,<?php echo $startnum; ?>,<?php echo $origins[0]["ID"]; ?>,<?php echo $origins[2]["ID"]; ?>);
 o.h();
 <?php
 	$strs = array();
