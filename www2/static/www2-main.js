@@ -1255,6 +1255,7 @@ brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, 
 	var brdlink, ret = '<tr class="' + (this.index%2?"even":"odd") + '"><td class="center">' + this.index + '</td>';
 	if (group) {
 		ret += '<td>' + putImageCode('groupgroup.gif','alt="＋" title="版面组"') + '</td>';
+		brdlink = 'bbsboa.php?group=' + this.father + '&group2=' + bid;
 	} else {
 		var unread_tag = (unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'u"';
 		var read_tag = (!unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'r"';
@@ -1262,8 +1263,8 @@ brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, 
 		ret += putImageCode('oldgroup.gif','alt="◇" title="已读标志"' + read_tag) + '</td>';
 		this.kbsrc.push(bid);
 		this.kbsrc.push(lastpost); 
+		brdlink = 'bbsdoc.php?board=' + escape(name);
 	}
-	brdlink = 'bbsdoc.php?board=' + escape(name);
 	ret += '<td>&nbsp;<a href="' + brdlink + '">' + htmlize(name) + '</a></td>';
 	ret += '<td class="center">' + htmlize(cls) + '</td>';
 	if (group) {
