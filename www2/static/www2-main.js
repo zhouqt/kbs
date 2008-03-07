@@ -147,17 +147,18 @@ function getCookie(name, def){
 }
 
 var kbsAd = false;
-function getAds(i,l,n) {
+function getAds(i,l,n,t) {
 	var ret = "";
 	if (!kbsAd) {
 		kbsAd = true;
 		ret += "<iframe width='0' height='0' src='images/img.gif' frameborder='0' scrolling='no' id='hfad' name='hfad'></iframe>";
 	}
-	ret += "<a href='" + l + "' target='_blank' onclick='recordAds(" + n + ")'><img src='/images/ads/" + i + "' border='0'/></a>";
+	ret += "<a href='" + l + "' target='_blank' onclick='recordAds(" + n + ")' title='为支持水木发展请点击广告'>"
+		+ (t?t:"<img src='/guangg/g/" + i + "' border='0'/>") + "</a>";
 	return ret;
 }
-function writeAds(i,l,n) {
-	w(getAds(i,l,n));
+function writeAds(i,l,n,t) {
+	w(getAds(i,l,n,t));
 }
 function recordAds(n) {
 	var cc = getCookie('kbsAd', '');
@@ -174,7 +175,7 @@ function recordAds(n) {
 	if (i >= cc.length - 1) {
 		cc.push(n); cc.push(now);
 	}
-	window.frames['hfad'].document.location.href = 'http://dev.kcn.cn/adsense?' + n;
+	window.frames['hfad'].document.location.href = 'http://dev.kcn.cn/adsense.php?' + n;
 	var expire = new Date();
 	expire.setTime(expire.getTime() + 1800000);
 	document.cookie = 'kbsAd=' + cc.join(',') + ';path=/;expires=' + expire.toGMTString();
