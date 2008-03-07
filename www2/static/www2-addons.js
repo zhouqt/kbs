@@ -742,7 +742,6 @@ function convertAnsi(s) {
 
 /* WARNING: now I can only deal with only one ansi container in a page */
 function triggerAnsiDiv(obj,objInner) {
-	if (!gIE6Fx) return;
 	if (!(obj = getObj(obj))) return;
 	if (!(objInner = getObj(objInner))) return;
 	addBootFn(function() {
