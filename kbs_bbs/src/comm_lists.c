@@ -242,8 +242,15 @@ int exec_mbem(const char *command){
 #else /* ! (CYGWIN && SSHBBS) */
     dll=dlopen(p,RTLD_NOW);
 #endif /* CYGWIN && SSHBBS */
-    if(!dll)
+    if(!dll) {
+#ifdef SOLEE
+        clear();
+        move(6, 0);
+        prints("%s", dlerror());
+        WAIT_RETURN;
+#endif /* SOLEE */
         EM_QUIT("模块载入失败, 操作终止...");
+    }
     if(!(func=dlsym(dll,(!q?"mod_main":q)))){
         dlclose(dll);
         EM_QUIT("入口函数装入失败, 操作终止...");
