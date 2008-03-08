@@ -1081,7 +1081,7 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num, use_tex) {
 conWriter.prototype.h = function(isTop) {
 	if (divArtCon) return;
 	var ret = this.headers;
-	if (!isTop) ret = '</div>' + ret + '<div id="divReplyForm"></div>';
+	if (!isTop) ret = '</div>' + ret;
 	else ret += '<div class="article">';
 	w(ret);
 };
@@ -1118,7 +1118,7 @@ conWriter.prototype.t = function() {
 			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&id=' + this.id + '">删除</a>] ';
 		}
 	}
-	ret += '</div>';
+	ret += '</div><div id="divReplyForm"></div>';
 	if (gIE) addBootFn(function() { // fuck you IE
 		var o = getObj("idConOper");
 		o.style.display = "none";

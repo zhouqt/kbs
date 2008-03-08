@@ -81,7 +81,7 @@ if(top.window['f4'])
 <?php
 	}
 ?>
--->
+//-->
 </script>
 <div class="mail">
 <div class="mailH">
