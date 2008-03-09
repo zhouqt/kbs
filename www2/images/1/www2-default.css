@@ -506,6 +506,7 @@ body.wtoogle {
 }
 .wtoogle a, .wtoogle a:active, .wtoogle a:visited {
 	background-color:#CCCCCC;
+	font-family: "Times New Roman", Times, serif;
 	font-size:10px;
 	color: #FFFFFF;
 	text-decoration:none;

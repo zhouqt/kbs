@@ -995,10 +995,9 @@ docWriter.prototype.f = function(rss,related,isclub) {
 			ret += '[<a class="b3" href="bbsdoc.php?board=' + related[i] + '"><font class="b3">' + related[i] + '</font></a>]';
 		}
 	}
-	var allAds = [['TrafficInfo','http://www.kooxoo.com/?fromid=smthpic01','smth_piao.gif',300],
-				  ['Travel','http://www.kooxoo.com/?fromid=smthpic02','smth_lvyou.gif',301],
-				  ['HouseRent','http://www.kooxoo.com/?fromid=smthpic03','smth_house.gif',302],
-				  ['HouseSeek','http://www.kooxoo.com/?fromid=smthpic04','smth_rent.gif',303]];
+	var allAds = [
+		/* ['TrafficInfo','http://www.kooxoo.com/?fromid=smthpic01','smth_piao.gif',300] */
+	];
 	for (i=0;i<allAds.length;i++) {
 		var ad = allAds[i];
 		if (this.board == ad[0]) {
