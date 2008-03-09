@@ -260,7 +260,15 @@ int show_boardinfo(const char *bname)
 	clear();
 
 	move(2,0);
-	prints("\033[1;33m版面名称\033[m: %s %s\n\n", bp->filename, bp->title+1);
+	prints("\033[1;33m版面名称\033[m: %s %s\n", bp->filename, bp->title+1);
+#ifdef NEWSMTH
+    if(bp->score_level)
+        prints("\033[1;33m积分限制\033[m: 发表限制 <%d>\n",bp->score_level);
+    else
+        prints("\n");
+#else /* NEWSMTH */
+    prints("\n");
+#endif /* NEWSMTH */
 	prints("\033[1;33m版面版主\033[m: %s \n", bp->BM);
 #ifdef NEWSMTH
 	prints("\033[1;31m版面web地址\033[m: http://%s.board.newsmth.net/ \n", bp->filename);
