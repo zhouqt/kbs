@@ -223,6 +223,7 @@ PHP_FUNCTION(bbs_safe_getboard)
     int nb;
     const struct boardheader *bh;
     const struct BoardStatus *bs;
+    struct userec *user;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsa", &bid, &boardname, &boardname_len, &array) != SUCCESS)
         WRONG_PARAM_COUNT;
@@ -244,13 +245,16 @@ PHP_FUNCTION(bbs_safe_getboard)
             RETURN_NULL();
         }
     }
+    user = getCurrentUser();
+    if (!user)
+        getuser("guest", &user);
     nb = public_board(bh);
-    if (!nb) {
+    /*if (!nb) {
         if (getCurrentUser() == NULL) {
             RETURN_NULL();
         }
-    }
-    if (!check_read_perm(getCurrentUser(), bh)) {
+    }*/
+    if (!check_read_perm(user, bh)) {
         RETURN_NULL();
     }
     
