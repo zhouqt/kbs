@@ -1922,7 +1922,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     move(1, 0);
     clrtoeol();
     if (arg!=NULL) {
-    arg->mode=DIR_MODE_NORMAL;
+    //arg->mode=DIR_MODE_NORMAL;
     setbdir(arg->mode, arg->direct, currboard->filename);     /* direct 设定 为 当前board目录 */
     }
     return CHANGEMODE;
