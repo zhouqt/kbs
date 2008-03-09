@@ -135,6 +135,14 @@ int dict_main()
             if(ch==13||ch==10) break;
             else if(((ch==KEY_DEL)||(ch==8))&&len) {
                 len--; word[len]=0;
+#ifdef CHINESE_CHARACTER
+            if(DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                if(word[len-1] < 0) {
+                    len--;
+                    word[len] = '\0';
+                }
+            }
+#endif /* CHINESE_CHARACTER */
             }
             else if(ch==KEY_TAB&&len) {
             }
