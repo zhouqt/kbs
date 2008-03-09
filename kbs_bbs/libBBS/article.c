@@ -1952,7 +1952,6 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
     int step = 0;
     int added = 0;
     int asize;
-    struct tm *nowtm;
 
     if ((fp = fopen(fname, "rb")) == NULL)
         return 0;
@@ -1976,11 +1975,10 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
                 continue;
             if (Origin2(buf) && (!added)) {
                 now = time(0);
-                nowtm = localtime(&now);
                 if (mode & 1)
-                    fprintf(out, "\033[36m※ 修改:·%s 于 %d %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, nowtm->tm_year + 1900, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+                    fprintf(out, "\033[36m※ 修改:·%s 于 %20.20s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
                 else
-                    fprintf(out, "\033[36m※ 修改:·%s 于 %d %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, nowtm->tm_year + 1900, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+                    fprintf(out, "\033[36m※ 修改:·%s 于 %20.20s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
                 step = 3;
                 added = 1;
             }
@@ -1990,11 +1988,10 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
     }
     if (!added) {
         now = time(0);
-        nowtm = localtime(&now);
         if (mode & 1)
-            fprintf(out, "\033[36m※ 修改:·%s 于 %d %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, nowtm->tm_year + 1900, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %20.20s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
         else
-            fprintf(out, "\033[36m※ 修改:·%s 于 %d %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, nowtm->tm_year + 1900, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %20.20s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime_r(&now, timebuf) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
     }
     fclose(fp);
     fclose(out);
