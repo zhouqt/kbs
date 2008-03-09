@@ -542,7 +542,7 @@ int MoveFavBoard(int p, int q,session_t* session)
 	if(p<0 || q<0 || p>=session->favbrd_list[session->favnow].bnum || q>=session->favbrd_list[session->favnow].bnum)
 		return -1;
 	if(p == q)
-		return 0;
+		return session->favnow;
 	i=session->favbrd_list[session->favnow].bid[p];
 	if( p > q ){
 		for(k=p; k>q; k--)
