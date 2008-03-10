@@ -385,7 +385,7 @@ void unlock_sem_check(int lockid);
     int chk_BM_instr(const char *BMstr, const char *bmname);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char *BMstr, const struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board, int jury);
-    int deldeny(struct userec *user, char *board, char *uident, int notice_only, session_t* session);       /* 删除 禁止POST用户 */
+    int deldeny(struct userec *user, char *board, char *uident, int notice_only, int dobmlog, session_t* session);       /* 删除 禁止POST用户 */
     int check_read_perm(const struct userec *user, const struct boardheader *board);
     int check_see_perm(const struct userec *user, const struct boardheader *board);
     int is_outgo_board(const char *board);

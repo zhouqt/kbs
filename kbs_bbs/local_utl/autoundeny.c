@@ -114,7 +114,7 @@ int undenyboard(struct boardheader *bh,void* arg)
                                         break;
                                     }
                                 //printf("%s %s\n", bh->filename, uid);
-                                deldeny(&deliveruser, bh->filename, uid, 1, getSession());
+                                deldeny(&deliveruser, bh->filename, uid, 1, 0, getSession());
                             }
                         }
                         buf[idx1] = 0x0a;

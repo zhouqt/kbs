@@ -1219,7 +1219,7 @@ int check_board_delete_read_perm(const struct userec *user,const struct boardhea
 }
 
 
-int deldeny(struct userec *user, char *board, char *uident, int notice_only,session_t* session)
+int deldeny(struct userec *user, char *board, char *uident, int notice_only, int dobmlog, session_t* session)
 {                               /* É¾³ý ½ûÖ¹POSTÓÃ»§ */
     char fn[STRLEN];
     FILE *fn1;
@@ -1273,7 +1273,8 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only,sess
     }
     post_file(user, "", filename, "undenypost", buffer, 0, 1, session);
     unlink(filename);
-    bmlog(user->userid, board, 11, 1);
+    if (dobmlog)
+        bmlog(user->userid, board, 11, 1);
     if (notice_only)
         return 1;
     else

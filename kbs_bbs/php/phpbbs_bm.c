@@ -492,7 +492,7 @@ PHP_FUNCTION(bbs_denydel)
         RETURN_LONG(-2);
         
     if (deny_me(userid, board)) {
-        deldeny(getCurrentUser(), board, userid, 0, getSession());          
+        deldeny(getCurrentUser(), board, userid, 0, 1, getSession());          
         RETURN_LONG(0);
     }
     else

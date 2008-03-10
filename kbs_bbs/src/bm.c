@@ -373,6 +373,8 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     int id;
     FILE *fp;
     int find;                   /*Haohmaru.99.12.09 */
+    char *lptr;
+    time_t ldenytime;
 
 /*   static page=0; *//*
  * * Haohmaru.12.18 
@@ -490,8 +492,8 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             }
             /*---	add to check if undeny time reached.	by period 2000-09-11	---*/
             {
-                char *lptr;
-                time_t ldenytime;
+                /*char *lptr;
+                time_t ldenytime;*/
 
                 /*
                  * now the corresponding line in genbuf 
@@ -511,7 +513,7 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             move(1, 0);
             clrtoeol();
             if (uident[0] != '\0') {
-                if (deldeny(getCurrentUser(), currboard->filename, uident, 0, getSession())) {
+                if (deldeny(getCurrentUser(), currboard->filename, uident, 0, (ldenytime > now) ? 1 : 0, getSession())) {
                 }
             }
         } else if (count > 20 && isdigit(ans[0])) {
