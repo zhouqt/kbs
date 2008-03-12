@@ -47,9 +47,9 @@ function addBootFn(fn) {
 }
 
 
-function htmlize(s) {
+function htmlize(s,sp) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-	s = s.replace(/\x20\x20/g, " &nbsp;");
+	if (!sp) s = s.replace(/\x20\x20/g, " &nbsp;");
 	return s;
 }
 

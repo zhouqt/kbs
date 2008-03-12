@@ -409,7 +409,7 @@ replyForm.prototype.f = function() {
 	var nt = "";
 	if (this.reid) nt = (this.title.substr(0,4).toLowerCase() == "re: ") ? this.title : ("Re: " + this.title);
 	html += '标&nbsp;&nbsp;题: <input type="text" tabindex="1" name="title" size="40" maxlength="100" value="'
-		+ htmlize(nt) + '"' + (this.reid?'':focusEle) + '/><br/>';
+		+ htmlize(nt,1) + '"' + (this.reid?'':focusEle) + '/><br/>';
 	if (this.att) {
 		html += '附&nbsp;&nbsp;件: <input type="text" name="attachname" size="40" value="" disabled="disabled" />'
 			+ ' <a href="bbsupload.php" target="_blank">操作附件</a>(新窗口打开)<br/>';
