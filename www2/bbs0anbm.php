@@ -93,7 +93,7 @@ document.write('<tr><td align="center" colspan="7">该精华区目录没有文章。</td></
 	else foreach ($articles as $article) {
 		$title = htmljsformat($article['TITLE']);
         $title_enc = urlencode($article['TITLE']);
-		echo 'an.i(' . $article['FLAG'] . ',\'' . $title . '\',\'' . $title_enc . '\',\'' . trim($article['BM']) . '\',\'' . rawurlencode($article['FNAME']) . '\',\'' . date('Y-m-d',$article['TIME']) . '\');';
+		echo 'an.i(' . $article['FLAG'] . ',\'' . $title . ' \',\'' . $title_enc . ' \',\'' . trim($article['BM']) . '\',\'' . rawurlencode($article['FNAME']) . '\',\'' . date('Y-m-d',$article['TIME']) . '\');';
 	}
 ?>
 //-->
