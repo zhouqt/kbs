@@ -11,7 +11,7 @@ bbsd_SOURCES=bbs.c delete.c mail.c register.c \
 	   definekey.c calltime.c tmpl.c msg_manager.c\
 	   addr_manage.c personal_corp.c newread.c newhelp.c
 if SITETERM
-bbsd_SOURCES += site-term.c
+nodist_bbsd_SOURCES = $(top_builddir)/src/site-term.c
 endif
 noinst_HEADERS = ann.h bbs.h chat.h defines_t.h edit.h func.h \
            md5.h modes.h screen.h struct.h system.h comm_lists.h \

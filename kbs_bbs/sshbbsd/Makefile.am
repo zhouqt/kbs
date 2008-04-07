@@ -43,9 +43,6 @@ BBSD_SRCS = $(srcdir)/../src/bbs.c $(srcdir)/../src/delete.c $(srcdir)/../src/ma
            $(srcdir)/../src/newmain_single.c $(srcdir)/../src/newio.c $(srcdir)/../src/newterm.c \
            $(srcdir)/../src/definekey.c $(srcdir)/../src/calltime.c $(srcdir)/../src/tmpl.c $(srcdir)/../src/msg_manager.c\
            $(srcdir)/../src/addr_manage.c $(srcdir)/../src/personal_corp.c $(srcdir)/../src/newread.c $(srcdir)/../src/newhelp.c
-if SITETERM
-BBSD_SRCS += $(top_builddir)/../src/site-term.c
-endif
 
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
@@ -53,6 +50,9 @@ CC="@LIBTOOL@"
 CCLD="@CC@"
 AM_MAKEFLAGS="@MAKEFLAG@"
 sshbbsd_SOURCES = $(SSHD_SRCS) $(BBSD_SRCS)
+if SITETERM
+nodist_sshbbsd_SOURCES = $(top_builddir)/../src/site-term.c
+endif
 
 sshbbsd_LDADD = ../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
 #sshbbsd_DEPENDENCIES = @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
