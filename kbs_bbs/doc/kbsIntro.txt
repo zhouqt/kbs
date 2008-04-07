@@ -8,7 +8,7 @@ $Id$
 
 0.0 声明
 
-尽管 kbs 系统基础数据结构一般很少变化，但是本文档只针对 kbs CVS 主分支目前的代码，不保证对其它时间或其它分支代码的正确性，也不对可能造成的任何后果负责。本文可以在网络上自由转载，但请保留全文的完整性。
+尽管 kbs 系统基础数据结构一般很少变化，但是本文档只针对 kbs SVN 主分支目前的代码，不保证对其它时间或其它分支代码的正确性，也不对可能造成的任何后果负责。本文可以在网络上自由转载，但请保留全文的完整性。
 
 0.1 本文说明
 
@@ -79,6 +79,7 @@ typedef struct fileheader {
     unsigned char accessed[4];
         一些帖子的属性，前两个元素是 bitwise-OR 的属性，包括：
         accessed[0]: FILE_SIGN     (0x01) 版主设置的 # 标记
+                     FILE_PERCENT  (0x04) 版主设置的 % 标记
                      FILE_MARKED   (0x08) 被 m 的帖子
                      FILE_DIGEST   (0x10) 文摘区贴子（被 g 的帖子）
                      FILE_IMPORTED (0x80) 已被收录精华
@@ -87,7 +88,7 @@ typedef struct fileheader {
                      FILE_MAILBACK (0x04) 回帖抄送信箱
                      FILE_COMMEND  (0x08) 已被推荐文章
                      FILE_CENSOR   (0x20) FILTER 版面需审核文章
-                     FILE_TEX      (0x80) tex 方式发表帖子，仅用于 wForum
+                     FILE_TEX      (0x80) tex 方式发表帖子
         accessed[3]: 回收站的 .DIR 中这个字段为：
                      删除时间 timestamp / (3600 * 24) % 100
                      主要用于定时删除老的删帖。
@@ -110,7 +111,7 @@ typedef struct fileheader {
  C      12      10          11
  D      13      10          10
 
-其中，groupid 就是用来判断帖子同主题的，注意，帖子同主题和帖子标题无关。reid 用来产生回复树结构，目前只在 wForum 里面用到。
+其中，groupid 就是用来判断帖子同主题的，注意，帖子同主题和帖子标题无关。reid 用来产生回复树结构。
 
 
 1.4 附件结构
@@ -124,8 +125,7 @@ typedef struct fileheader {
    注意这个整数是网络字节序（big-endian）存储，也即 MSB 在先。
 *) 第四部分：二进制格式储存的这个附件，本部分长度由第三部分决定。
 另外，这个帖子在 .DIR 里面相应的那个 fileheader 结构的 attachment 字段应该设置为第一个附件段的起始偏移量（ftell）。参考：
-bbs2www/lib/bbslib.c post_article() 函数
-bbs2www/html/bbscon.php get_mimetype() 函数
+libBBS/article.c upload_post_append() 和 get_mimetype() 函数
 
 
 1.5 .BOARDS 文件，boardheader 结构
@@ -162,7 +162,7 @@ struct boardheader {
     int unused;
     char ann_path[128];
             精华区路径。实际精华区绝对路径是：
-            $BBSHOME/0Announce/groups/`ann_path`
+            $BBSHOME/0Announce/groups/<ann_path>
     int group;
             所属目录。
     char title_level;
@@ -773,10 +773,10 @@ struct BoardStatus {            /* use this to speed up board list */
 
 kbs 系统的核心代码按照目录解释如下：
 libsystem/  系统最底层的函数库，以下所有程序都基于它
-src/        telnet 服务器程序
-libBBS/     部分 telnet 服务器程序组成的库 libBBS.so
-daemon/     系统守护进程，应该启动服务时最先启动
-bbs2www/ 下的模块：
-    lib/    供 web 使用的基础函数库 libbbslib.so，基于 libBBS.so
-    phplib/ 输出供 PHP 页面使用的函数，基于 libbbslib.so 和 libBBS.so
+libBBS/     一些核心函数组成的库 libBBS.so
+src/        telnet 服务器程序，静态连接 libBBS.so
+sshbbsd/    ssh 服务器程序，其实就是 src/ 下的程序套了一个 ssh 的壳
+daemon/     系统守护进程，应该启动服务时最先启动，静态连接 libBBS.so
+php/        输出供 PHP 页面使用的函数，动态连接 libBBS.so
+local_utl/  各类小实用程序，动态连接 libBBS.so
 

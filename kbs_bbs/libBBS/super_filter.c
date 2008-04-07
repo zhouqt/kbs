@@ -121,6 +121,12 @@ static int sffn_del(struct super_filter_args *arg) {
 static int sffn_import(struct super_filter_args *arg) {
     return (arg->ptr->accessed[0]&FILE_IMPORTED);
 }
+static int sffn_replied(struct super_filter_args *arg) {
+    return (arg->ptr->accessed[0]&FILE_REPLIED);
+}
+static int sffn_forwarded(struct super_filter_args *arg) {
+    return (arg->ptr->accessed[0]&FILE_FORWARDED);
+}
 static int sffn_a(struct super_filter_args *arg) {
     return (arg->ptr->attachment);
 }
@@ -136,11 +142,13 @@ static char *sffn_fname(struct super_filter_args *arg) {
 static int sffn_my(struct super_filter_args *arg) {
     return (!strcmp(arg->ptr->owner,getCurrentUser()->userid));
 }
-#ifdef HAVE_BRC_CONTROL
 static int sffn_unread(struct super_filter_args *arg) {
-    return (brc_unread(arg->ptr->id, getSession()));
+    if (arg->inmail) {
+        return (!(arg->ptr->accessed[0] & FILE_READ));
+    } else {
+        return (brc_unread(arg->ptr->id, getSession()));
+    }
 }
-#endif
 static int sffn_ftime(struct super_filter_args *arg) {
     return (get_posttime(arg->ptr));
 }
@@ -172,11 +180,11 @@ const static struct super_filter_vars varnames[] = {
     SUPER_FILTER_PAIR(m),           {"保留", 0, sffn_m, NULL}, 
     SUPER_FILTER_PAIR(g),           {"文摘", 0, sffn_g, NULL},
     SUPER_FILTER_PAIR(b),
+    SUPER_FILTER_PAIR(replied),     {"已回复", 0, sffn_replied, NULL},
+    SUPER_FILTER_PAIR(forwarded),   {"已转发", 0, sffn_forwarded, NULL},
     SUPER_FILTER_PAIR(a),           {"attach", 0, sffn_a, NULL}, {"附件", 0, sffn_a, NULL},
     SUPER_FILTER_PAIR(my),          {"我的", 0, sffn_my, NULL}, 
-#ifdef HAVE_BRC_CONTROL
     SUPER_FILTER_PAIR(unread),      {"未读", 0, sffn_unread, NULL}, 
-#endif
     SUPER_FILTER_PAIR(ftime),       {"时间", 0, sffn_ftime, NULL}, 
     SUPER_FILTER_PAIR(effsize),     {"有效长度", 0, sffn_effsize, NULL}, 
     SUPER_FILTER_PAIR(asize),       {"总长度", 0, sffn_asize, NULL}, 

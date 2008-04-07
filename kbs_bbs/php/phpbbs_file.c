@@ -146,7 +146,7 @@ PHP_FUNCTION(bbs2_readfile_text)
     char *filename;
     int filename_len;
     long maxchar;
-    long escape_flag; /* 0(default) - escape <>&, 1 - double escape <>&, 2 - escape <>& and space */
+    long escape_flag; /* 0(default) - escape <>&\n, 1 - double escape <>&\n, 2 - escape <>&\n and space */
     char *output_buffer;
     int output_buffer_len, output_buffer_size, last_return = 0;
     char c;
