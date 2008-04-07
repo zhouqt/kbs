@@ -361,6 +361,7 @@ function generateQuotation(c, mailmode, replymode) {
 
 function showReplyForm(url) {
 	if (readParaCookie() & 0x2000) return true;
+	if (gIE5 || gKon) return true;
 	var o = getObj("divReplyForm");
 	o.style.padding = '0.5em';
 	o.innerHTML = "‘ÿ»Î÷–£¨«Î…‘∫Ú°≠°≠";
@@ -382,6 +383,7 @@ function changeQM(m) {
 function showReplyFormReal(rf) {
 	rf.pDiv.innerHTML = rf.f() + '</textarea>' + rf.t();
 	changeQM('s');
+	makeViewable("divReplyForm");
 }
 function replyForm(board,reid,title,att,signum,sig,ano,outgo,lsave) {
 	this.board = board;

@@ -4,7 +4,7 @@
 	
 	bbs_session_modify_user_mode(BBS_MODE_QUERY);
 	if (isset($_GET["userid"])){
-		$userid = $_GET["userid"];
+		$userid = trim($_GET["userid"]);
 
 		$lookupuser=array ();
 		if( $userid=="" || bbs_getuser($userid, $lookupuser) == 0 )

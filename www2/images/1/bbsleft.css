@@ -3,13 +3,6 @@ body {
 	background-image: url('leftbg.jpg');
 	FONT-SIZE: 12px; 
 	COLOR: #222222;
-	scrollbar-3dlight-color:#170708;
-	scrollbar-arrow-color:#000000;
-	scrollbar-base-color:#170708; 
-	scrollbar-darkshadow-color:#ffffff; 
-	scrollbar-face-color:#EEEAEB; 
-	scrollbar-highlight-color:#FBFDFC; 
-	scrollbar-shadow-color:#170708;
 	overflow-x:hidden;
 	margin: 0px;
 	padding: 0px;

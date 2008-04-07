@@ -8,14 +8,6 @@ body {
 	padding: 0 0.3em 1em 0;
 	margin: 0;
 	text-align: center;
-
-	scrollbar-3dlight-color: #170708;
-	scrollbar-arrow-color: #000000;
-	scrollbar-base-color: #170708;
-	scrollbar-darkshadow-color: #ffffff;
-	scrollbar-face-color: #EEEAEB;
-	scrollbar-highlight-color: #FBFDFC;
-	scrollbar-shadow-color: #170708;
 }
 
 
@@ -57,8 +49,8 @@ form {
 	margin: 0 auto;
 }
 
-input:focus {
-	background-color: #80FFFF;
+input[type="text"]:focus,input[type="password"]:focus,textarea:focus {
+	border: 1px solid black;
 }
 textarea, input[type="text"], input[type="password"] {
 	border: 1px solid #808080;

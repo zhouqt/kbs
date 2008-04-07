@@ -47,9 +47,13 @@ function addBootFn(fn) {
 }
 
 
-function htmlize(s,sp) {
+function htmlize(s,html_attrib) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-	if (!sp) s = s.replace(/\x20\x20/g, " &nbsp;");
+	if (html_attrib) {
+		s = s.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+	} else {
+		s = s.replace(/\x20\x20/g, " &nbsp;");
+	}
 	return s;
 }
 
@@ -299,6 +303,17 @@ function setCursorPosition(oInput,oStart,oEnd) {
 		range.select();
 	}
 }
+
+function makeViewable(n) {
+	var o = getObj(n), b = document.body;
+	if (!o) return;
+	var h1 = o.offsetTop, h2 = h1 + o.offsetHeight;
+	var v1 = b.scrollTop, v2 = v1 + b.clientHeight;
+	if (h1 >= v1 && h1 <= v2 && h2 >= v1 && h2 <= v2) return;
+	if (h2 - h1 < v2 - v1) b.scrollTop = h2-(v2-v1);
+	else b.scrollTop = h1;
+}
+
 
 /* refresh message frame */
 function alertmsg() {
