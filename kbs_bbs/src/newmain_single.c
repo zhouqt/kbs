@@ -634,7 +634,7 @@ void login_query()
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
                 /* fancy Apr 7 2008, 二站跟随主站改大小写 ... */
                 struct userec *user;
-                if (getuser(uid, &user)) {
+                if (getuser(uid, &user) && HAS_PERM(user, PERM_BOARDS)) {
                     if (frommain && strcmp(uid, user->userid) && !strcasecmp(uid, user->userid)) {
                         char cmd[STRLEN], oldid[IDLEN + 2], bmbuf[BM_LEN], *p, *q;
                         const char *delim = ",: ;|&()";
@@ -661,6 +661,29 @@ void login_query()
                                     while (uid[pos]) {
                                         newbh.BM[p - bmbuf + pos] = uid[pos];
                                         pos++;
+                                    }
+                                    if ((bh->filename[0] == 'P') && (bh->filename[1] == '.') && !strcmp(bh->filename + 2, oldid)) {
+                                        char src[PATHLEN], dst[PATHLEN];
+                                        unsigned int annstat;
+                                        int section;
+                                        sprintf(newbh.filename, "P.%s", uid);
+                                        annstat = check_ann(&newbh);
+                                        if ((annstat & ~0xFFFF) == 0x010000) {
+                                            section = annstat & 0xFFFF;
+                                            sprintf(newbh.ann_path, "%s/%s", groups[section], newbh.filename);
+                                        }
+                                        setbpath(src, bh->filename);
+                                        setbpath(dst, newbh.filename);                                        
+                                        if (dashd(dst))
+                                            my_f_rm(dst);
+                                        if (dashd(src))
+                                            rename(src, dst);
+                                        setvfile(src, bh->filename, "");
+                                        setvfile(dst, newbh.filename, "");
+                                        if (dashd(dst))
+                                            my_f_rm(dst);
+                                        if (dashd(src))
+                                            rename(src, dst);
                                     }
                                     edit_group(bh, &newbh);
                                     set_board(n + 1, &newbh, NULL);
