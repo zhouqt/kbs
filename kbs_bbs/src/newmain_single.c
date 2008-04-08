@@ -641,6 +641,18 @@ void login_query()
                         int n, pos;
                         const struct boardheader *bh;
                         struct boardheader newbh;
+
+                        /* show some hint, pig2532 */
+                        while(true) {
+                            getdata(0, 0, "\033[1;31m您在主站修改了帐号大小写，即将更新二站的帐号，会踢出所有登录，请确认继续\033[m[y/n] ", cmd, 2, DOECHO, NULL, true);
+                            if((cmd[0] == 'n') || (cmd[0] == 'N')) {
+                                getdata(0, 0, "取消登录，按 [RETURN] 返回主站。", cmd, 10, NOECHO, NULL, true);
+                                exit(1);
+                            }
+                            else if((cmd[0] == 'y') || (cmd[0] == 'Y'))
+                                break;
+                        }
+
                         kick_user_utmp(getSession()->currentuid, NULL, 0);
                         memcpy(oldid, user->userid, IDLEN + 2);
                         sprintf(cmd, "bin/MIC %s %s %s %s", user->userid, uid, passbuf, "ScoreClub");
