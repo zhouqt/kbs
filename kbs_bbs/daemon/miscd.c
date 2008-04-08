@@ -7,24 +7,41 @@
 
 #include "bbs.h"
 
-static void flushdata()
+char specfname[512];
+
+/* mode: 0-normal, 1-flush ucache to specific file */
+static void flushdata(int mode)
 {
     FILE *fp;
+    char tmptext[256];
 
-    flush_ucache();
-    flush_bcache();
+    switch(mode) {
+    
+    case 0:
+    
+        flush_ucache(NULL);
+        flush_bcache();
 
-    if (NULL != (fp = fopen("etc/maxuser", "w"))) {
-        fprintf(fp, "%d %d", publicshm->max_user,publicshm->max_wwwguest);
-        fclose(fp);
+        if (NULL != (fp = fopen("etc/maxuser", "w"))) {
+            fprintf(fp, "%d %d", publicshm->max_user,publicshm->max_wwwguest);
+            fclose(fp);
+        }
+
+        bbslog("4miscdaemon", "flush passwd file");
+        break;
+
+    case 1:
+        flush_ucache(specfname);
+        sprintf(tmptext, "flush passwd file into %s", specfname);
+        bbslog("4miscdaemon", tmptext);
+        break;
+
     }
-
-    bbslog("4miscdaemon", "flush passwd file");
 }
 
 void do_exit()
 {
-    flushdata();
+    flushdata(0);
 }
 
 void do_exit_sig(int sig)
@@ -484,7 +501,7 @@ void flushd()
 
     while (1) {
         sleep(24 * 60 * 60);
-        flushdata();
+        flushdata(0);
     };
 }
 
@@ -703,7 +720,15 @@ int main(int argc, char *argv[])
             if (resolve_ucache() != 0)
 	              return -1;
             resolve_boards();
-            flushdata();
+            flushdata(0);
+            return 0;
+        }
+        if (strcasecmp(argv[1], "flush-u") == 0) {
+            if (resolve_ucache() != 0)
+                return -1;
+            strcpy(specfname, argv[2]);
+            specfname[511] = 0;
+            flushdata(1);
             return 0;
         }
         return miscd_dodaemon(NULL, argv[1]);

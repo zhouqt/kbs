@@ -73,7 +73,7 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     int apply_uids(int(*func)(struct userec*,int,void*),void *arg);
     int getnewuserid(char *userid);
 
-    int flush_ucache(ARG_VOID);
+    int flush_ucache(char *fname);
     int load_ucache(ARG_VOID);
     int get_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]);
     int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]);

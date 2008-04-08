@@ -292,10 +292,13 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
 
 /*static void flush_user_title();*/
 
-int flush_ucache()
+int flush_ucache(char *fname)
 {
     int ret;
-    ret= substitute_record(PASSFILE, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
+    if(fname)
+        ret= substitute_record(fname, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
+    else
+        ret= substitute_record(PASSFILE, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
     /*flush_user_title();*/
     return ret;
 }
