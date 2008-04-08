@@ -545,7 +545,7 @@ void login_query()
 
 #ifdef SECONDSITE
 
-        if(fn=fopen("/home/bbs/LOCALCHECK","r")){
+        if((fn=fopen("/home/bbs/LOCALCHECK","r"))){
 			localcheck = 1;
 			fclose(fn);
 		}
@@ -641,6 +641,7 @@ void login_query()
                         int n, pos;
                         const struct boardheader *bh;
                         struct boardheader newbh;
+                        kick_user_utmp(getSession()->currentuid, NULL, 0);
                         memcpy(oldid, user->userid, IDLEN + 2);
                         sprintf(cmd, "bin/MIC %s %s %s %s", user->userid, uid, passbuf, "ScoreClub");
                         system(cmd);
