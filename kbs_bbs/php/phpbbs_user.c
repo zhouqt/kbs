@@ -102,6 +102,45 @@ PHP_FUNCTION(bbs_getuser)
     RETURN_LONG(v1);
 }
 
+PHP_FUNCTION(bbs_remote_auth)
+{
+    char *s;
+    int s_len;
+    char *pw;
+    int pw_len;
+    long ret;
+    int ac = ZEND_NUM_ARGS();
+    int unum = 0;
+    char permstr[33];
+    struct userec *user;
+
+#ifdef SECONDSITE
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+    }
+    if (s_len > IDLEN)
+        s[IDLEN] = 0;
+    if (pw_len > PASSLEN)
+        pw[PASSLEN] = 0;
+    if (s[0]=='\0' && pw[0] == '\0'){
+    	RETURN_LONG(1);
+    }
+
+    if(remote_auth(pw, s, permstr) <= 0){
+    	RETURN_LONG(2);
+    }
+    if(permstr[0]=='\0' || XPERMSTR[4]!=permstr[4]){
+    	RETURN_LONG(2);
+    }
+    if((unum=getuser(s, &user))==0){
+    	RETURN_LONG(2);
+    }
+    setcurrentuser(user, unum);
+    RETURN_LONG(0);
+#else
+    RETURN_LONG(1);
+#endif
+}
 
 
 

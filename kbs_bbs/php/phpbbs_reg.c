@@ -561,6 +561,10 @@ PHP_FUNCTION(bbs_createnewid)
 	if (bad_user_id(userid)) RETURN_LONG(3);
 	if (searchuser(userid)) RETURN_LONG(4);
 
+#ifdef SECONDSITE
+    RETURN_LONG(4);
+#endif
+    
 	//if(check_ban_IP(getSession()->fromhost,buf) < 0)RETURN_LONG(7);
 
 	lnow = time(NULL);

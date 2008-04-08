@@ -504,6 +504,7 @@ void setuserid(int num, const char *userid)
     return;
 }
 
+#ifndef SECONDSITE
 static int searchnewuser()
 {                               /* ÕÒcacheÖÐ ¿ÕÏÐµÄ user num */
     if (uidshm->hashhead[0])
@@ -512,6 +513,8 @@ static int searchnewuser()
         return uidshm->number + 1;
     return 0;
 }
+#endif /* SECONDSITE */
+
 int searchuser(const char *userid)
 {
     register int i;
@@ -636,6 +639,7 @@ set_safe_record()
 }
 */
 
+#ifndef SECONDSITE
 int getnewuserid3(char *userid)
 {
 
@@ -704,6 +708,7 @@ int getnewuserid2(char *userid)
         return result;
     return -1;
 }
+#endif /* SECONDSITE */
 
 struct userec *getuserbynum(int num)
 {
@@ -712,6 +717,7 @@ struct userec *getuserbynum(int num)
     return &uidshm->passwd[num - 1];
 }
 
+#ifndef SECONDSITE
 int getnewuserid(char *userid)
 {
     struct userec utmp;
@@ -749,6 +755,7 @@ int getnewuserid(char *userid)
     ucache_unlock(fd);
     return i;
 }
+#endif /* SECONDSITE */
 
 int update_user(struct userec *user, int num, int all)
 {

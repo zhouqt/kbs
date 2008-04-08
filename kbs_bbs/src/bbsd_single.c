@@ -416,6 +416,11 @@ int check_IP_lists(
 #endif /* ! HAVE_IPV6_SMTH */
     return ret;
 }
+
+#ifdef SECONDSITE
+int frommain=0;
+#endif
+
 static int bbs_main(char *argv){
 #define BBS_MAIN_EXIT(time)     do{local_Net_Sleep(time);shutdown(0,2);close(0);return -1;}while(0)
     FILE *fp;
@@ -472,6 +477,27 @@ static int bbs_main(char *argv){
         return -1;
     }
 #endif /* BBSRF_CHROOT */
+
+#ifdef SECONDSITE
+#define deg(x...)
+#ifdef CELESTIS
+   if(!strncmp(getSession()->fromhost, "127.", 4)){
+#else
+   if(!strncmp(getSession()->fromhost, "10.", 3)){
+#endif
+       char ipbuf[16];
+       int len=0;
+        while ((ipbuf[len] = igetkey()) != '\n') {
+           deg("%d:%d\n",getpid(), ipbuf[len] );
+           len++;
+           if(len >= 15) break;
+       }
+       ipbuf[len]='\0';
+       strcpy(getSession()->fromhost, ipbuf);
+       frommain=1;
+   }
+#endif /* SECONDSITE */
+    
     getSession()->fromhost[IPLEN-1]=0;
     if(check_ban_IP(getSession()->fromhost,buf)>0){
         local_prints("本站目前不欢迎来自 %s 访问!\r\n原因: %s\r\n\r\n",getSession()->fromhost,buf);

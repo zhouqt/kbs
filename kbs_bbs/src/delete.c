@@ -92,6 +92,7 @@ int d_board(void){
     return 0;
 }
 
+#ifndef SECONDSITE
 int suicide(void){
     char buf[STRLEN];
     FILE *fn;
@@ -169,6 +170,7 @@ int suicide(void){
     }
     return 0;
 }
+#endif /* SECONDSITE */
 
 int giveupnet(void){
 /*

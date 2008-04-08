@@ -87,14 +87,18 @@ KBS_COMM_LISTS_FUNC_V(search_ip);
 KBS_COMM_LISTS_FUNC_V(searchtrace);
 KBS_COMM_LISTS_FUNC_V(set_BM);
 KBS_COMM_LISTS_FUNC_V(set_clock);
+#ifndef SECONDSITE
 KBS_COMM_LISTS_FUNC_V(set_ip_acl);
+#endif
 KBS_COMM_LISTS_FUNC_V(set_rcmdbrd);
 KBS_COMM_LISTS_FUNC_V(setsystempasswd);
 KBS_COMM_LISTS_FUNC_V(show_allmsgs);
 KBS_COMM_LISTS_FUNC_V(shownotepad);
 KBS_COMM_LISTS_FUNC_V(ShowWeather);
 KBS_COMM_LISTS_FUNC_V(s_msg);
+#ifndef SECONDSITE
 KBS_COMM_LISTS_FUNC_V(suicide);
+#endif
 KBS_COMM_LISTS_FUNC_V(switch_code);
 KBS_COMM_LISTS_FUNC_V(t_friends);
 KBS_COMM_LISTS_FUNC_V(t_list);
@@ -126,6 +130,11 @@ KBS_COMM_LISTS_FUNC_V(x_results);
 KBS_COMM_LISTS_FUNC_V(x_userdefine);
 KBS_COMM_LISTS_FUNC_V(x_userdefine1);
 KBS_COMM_LISTS_FUNC_V(x_vote);
+
+#ifdef SECONDSITE
+KBS_COMM_LISTS_FUNC_V(x_mj);
+KBS_COMM_LISTS_FUNC_V(get_mainsite);
+#endif
 
 #ifdef HAVE_ACTIVATION
 KBS_COMM_LISTS_FUNC_V(x_manageactivation);

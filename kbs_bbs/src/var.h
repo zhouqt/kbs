@@ -113,6 +113,9 @@ typedef struct {
 
 	int utmpent;
     struct user_info *currentuinfo;
+#ifdef SECONDSITE
+    unsigned int anonyindex;
+#endif
 #ifdef NEWSMTH
     char passwd[40];
 #endif

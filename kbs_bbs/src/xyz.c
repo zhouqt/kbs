@@ -4,6 +4,10 @@
 */
 
 #include "bbs.h"
+
+#ifdef SECONDSITE
+void myexec_cmd(int umode,const char *cmdfile, const char *param);
+#endif
 extern int convcode;            /* KCN,99.09.05 */
 
 int modify_user_mode(int mode){
@@ -245,6 +249,16 @@ int confirm_delete_id(void){
     clear();
     return 0;
 }
+
+#ifdef SECONDSITE
+int x_mj(void){
+    myexec_cmd(BBSNET,"bin/qkmj",NULL);
+    clear();
+    pressreturn();
+    clear();
+    return 0;
+}
+#endif /* SECONDSITE */
 
 int x_level(void){
     unsigned int newlevel;
@@ -666,6 +680,71 @@ int get_favread(void){
 	return 0;
 }
 
+#ifdef SECONDSITE
+/*得到主站的收藏夹和未度标记*/
+int get_mainsite(void){
+	char passwd[PASSLEN+1];
+	char dpath[PATHLEN];
+	char mypath[PATHLEN];
+	char cmdtmp[256];
+	int count=0;
+	clear();
+	move(1,0);
+	prints("同步主站资料到本站本ID.\n会导致本站本ID被同步的原始资料丢失，慎用\n");
+	prints("\033[32m为了保证数据同步性，操作前请先退出本id其他登录\033[m\n");
+	prints("\033[31m本次操作会覆盖本id原好友名单/自定义键，无法恢复\033[m");
+	getdata(10,0,"确信要进行此操作吗? [y/N] ", passwd, 2, DOECHO, NULL, true);
+	if (passwd[0] != 'y' && passwd[0] != 'Y'){
+		clear();
+		return 0;
+	}
+    getdata(14,0,"同步好友名单? [Y]: ",passwd,2,DOECHO,NULL,true);
+    if(toupper(passwd[0])!='N'){
+        sprintf(dpath, "tmp/second.%s.friends", getCurrentUser()->userid);
+		unlink(dpath);
+		sprintf(cmdtmp, "/usr/sfw/bin/wget -O %s http://10.0.4.238:5257/home/%c/%s/friends", dpath, toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
+		system(cmdtmp);
+		if(!dashf(dpath)){
+			move(14,30);
+			prints("失败");
+			goto outfriend;
+		}
+        sethomefile(mypath,getCurrentUser()->userid,"friends");
+        f_cp(dpath,mypath,0);
+		unlink(dpath);
+        getfriendstr(getCurrentUser(),get_utmpent(getSession()->utmpent),getSession());
+        count++;
+    }
+outfriend:
+    getdata(16,0,"同步自定义按键? [Y]: ",passwd,2,DOECHO,NULL,true);
+    if(toupper(passwd[0])!='N'){
+        sprintf(dpath, "tmp/second.%s.definekey", getCurrentUser()->userid);
+		unlink(dpath);
+		sprintf(cmdtmp, "/usr/sfw/bin/wget -O %s http://10.0.4.238:5257/home/%c/%s/definekey", dpath, toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
+		system(cmdtmp);
+		if(!dashf(dpath)){
+			move(16,30);
+			prints("失败");
+			goto outkey;
+		}
+        sethomefile(mypath,getCurrentUser()->userid,"definekey");
+        f_cp(dpath,mypath,0);
+		unlink(dpath);
+		load_key(NULL);
+        count++;
+    }
+outkey:
+    if(count){
+	    move(20,0);
+	    prints("操作成功, 您无需重新登录即可使用新数据!");
+    }
+    pressanykey();
+	clear();
+	return 0;
+}
+#endif /* SECONDSITE */
+
+
 #ifdef SMS_SUPPORT
 int x_usersmsdef(void){
     unsigned int newlevel;
@@ -782,6 +861,125 @@ int x_userdefine(void){
     clear();
     return 0;
 }
+
+#ifdef SECONDSITE
+static time_t old=0;
+
+static void
+datapipefd(int fds, int fdn)
+{
+	fd_set rs;
+	int retv, max;
+	char buf[1024];
+	time_t now;
+
+	max = 1 + ((fdn > fds) ? fdn : fds);
+	FD_ZERO(&rs);
+	while (1) {
+		FD_SET(fds, &rs);
+		FD_SET(fdn, &rs);
+		retv = select(max, &rs, NULL, NULL, NULL);
+		if (retv < 0) {
+			if (errno != EINTR)
+				break;
+			continue;
+		}
+		if (FD_ISSET(fds, &rs)) {
+#ifdef SSHBBS
+			retv = ssh_read(fds, buf, sizeof (buf));
+#else
+			retv = read(fds, buf, sizeof (buf));
+#endif
+			if (retv > 0) {
+
+        	now = time(0);
+            uinfo.freshtime = now;
+            if (now - old > 60) {
+               UPDATE_UTMP(freshtime, uinfo);
+               old = now;
+            }
+
+				write(fdn, buf, retv);
+			} else if (retv == 0 || (retv < 0 && errno != EINTR))
+				break;
+			FD_CLR(fds, &rs);
+		}
+		if (FD_ISSET(fdn, &rs)) {
+			retv = read(fdn, buf, sizeof (buf));
+			if (retv > 0) {
+#ifdef SSHBBS
+				ssh_write(fds, buf, retv);
+#else
+				write(fds, buf, retv);
+#endif
+			} else if (retv == 0 || (retv < 0 && errno != EINTR))
+				break;
+			FD_CLR(fdn, &rs);
+        }
+    }
+}
+
+void myexec_cmd(int umode,const char *cmdfile,const char *param){
+	char param1[256];
+	int save_pager;
+	pid_t childpid;
+	int p[2];
+	param1[0] = 0;
+	if (param != NULL) {
+		char *avoid = "&;!`'\"|?~<>^()[]{}$\n\r\\", *ptr;
+		int n = strlen(avoid);
+		strncpy(param1, param, sizeof (param1));
+		param1[255]='\0';
+		while (n > 0) {
+			n--;
+			ptr = strchr(param1, avoid[n]);
+			if (ptr != NULL)
+				*ptr = 0;
+		}
+	}
+
+	if (!dashf(cmdfile)) {
+		move(2, 0);
+		prints("no %s\n", cmdfile);
+		pressreturn();
+		return;
+	}
+
+	if (socketpair(AF_UNIX, SOCK_STREAM, 0, p) < 0)
+		return;
+
+	modify_user_mode(umode);
+	clear();
+	signal(SIGALRM, SIG_IGN);
+	signal(SIGCHLD, SIG_DFL);
+	childpid = fork();
+	if (childpid == 0) {
+		close(p[0]);
+		if (p[1] != 0)
+			dup2(p[1], 0);
+		dup2(0, 1);
+		dup2(0, 2);
+		if (param1[0]) {
+			execl(cmdfile, cmdfile, param1, getCurrentUser()->userid, NULL);
+		} else {
+			execl(cmdfile, cmdfile, getCurrentUser()->userid, NULL);
+		}
+		exit(0);
+	} else if (childpid > 0) {
+		close(p[1]);
+		datapipefd(0, p[0]);
+		close(p[0]);
+		while (wait(NULL) != childpid)
+			sleep(1);
+	} else {
+		close(p[0]);
+		close(p[1]);
+	}
+	signal(SIGCHLD, SIG_IGN);
+
+	return;
+}
+#endif /* SECONDSITE */
 
 int x_cloak(void){
     modify_user_mode(GMENU);

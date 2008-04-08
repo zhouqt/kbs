@@ -40,8 +40,10 @@
 #define WAITTIME  150
 
 /* KCN add 1999.11.07 
-#undef LOGINASNEW 
 */
+#ifdef SECONDSITE
+#undef LOGINASNEW
+#endif
 
 
 extern struct screenline *big_picture;
@@ -462,6 +464,12 @@ static void get_zongze()
 #endif /* NEWSMTH */
 #endif /* SSHBBS */
 
+#ifdef SECONDSITE
+#ifndef SSHBBS
+extern int frommain;
+#endif
+#endif
+
 void login_query()
 {
 	const char *ptr;
@@ -474,6 +482,10 @@ void login_query()
     int attempts;
     char buf[256];
 #endif /* !defined(SSHBBS) */
+#ifdef SECONDSITE
+    int localcheck=0;
+    extern int remote_auth(const char *passwd, const char *userid, char *permstr);
+#endif
 
     curr_login_num = get_utmp_number();;
     if (curr_login_num >= MAXACTIVE) {
@@ -530,6 +542,142 @@ void login_query()
             convcode = 1;
             uid[strlen(uid) - 1] = 0;
         }
+
+#ifdef SECONDSITE
+
+        if(fn=fopen("/home/bbs/LOCALCHECK","r")){
+			localcheck = 1;
+			fclose(fn);
+		}
+
+        if (uid[strlen(uid) - 1] == '^') {
+            localcheck = 1;
+            uid[strlen(uid) - 1] = 0;
+        }
+        if (strcasecmp(uid, "new") == 0) {
+			continue;
+		}
+		/*
+        if (strcasecmp(uid, "guest") == 0) {
+			continue;
+		}
+		*/
+		if (uid[0]=='\0' || id_invalid(uid) ){
+			prints("用户不存在\n");
+			continue;
+		}
+		
+		if(frommain && attempts==1){
+			int len=0;
+        	while ((passbuf[len] = igetkey()) != '\n') {
+				len++;
+				if(len >= 39) break;
+			}
+			passbuf[len]='\0';
+		}else if (strcasecmp(uid, "guest") == 0) {
+			passbuf[0]='\0';
+		}else{
+        	getdata(0, 0, "\033[1m\033[37m"PASSWD_PROMPT": \033[m", passbuf, 39, NOECHO, NULL, true);
+		}
+		if(strcasecmp(uid, "guest") && !localcheck){
+			char permbuf[33];
+			if(!frommain || attempts > 1)
+				prints("正在验证密码，请稍候.................\n");
+			if(remote_auth(passbuf, uid, permbuf)<=0){
+                prints("\033[32m密码输入错误...\033[m\n");
+				continue;
+			}
+			if(permbuf[0]=='\0' || XPERMSTR[4]!=permbuf[4]){
+				prints("\033[32m您无权进入本站,请和主站管理员联系\033[m\n");
+				continue;
+			}
+		}
+
+        if (!dosearchuser(uid)) {
+            prints("\033[32m系统错误111\033[m\n");
+			continue;
+        }
+
+		if(localcheck && strcasecmp(uid, "guest") ){
+			if(!checkpasswd2(passbuf, getCurrentUser())){
+                    logattempt(getCurrentUser()->userid, getSession()->fromhost, "telnet");
+				prints("\033[32m密码输入错误...\033[m\n");
+				continue;
+			}
+		}
+
+        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && (curr_login_num >= MAXACTIVE + 10)) {
+            ansimore("etc/loginfull", false);
+            oflush();
+            sleep(1);
+            exit(1);
+        } else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
+            getCurrentUser()->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
+            getCurrentUser()->flags = PAGER_FLAG;
+            break;
+        } else {
+            if (!convcode)
+                convcode = !(DEFINE(getCurrentUser(), DEF_USEGB));      /* KCN,99.09.05 */
+
+                if (id_invalid(uid)) {
+                    prints("\033[31m抱歉!!\033[m\n");
+                    prints("\033[32m本帐号使用中文为代号，此帐号已经失效...\033[m\n");
+                    prints("\033[32m想保留任何签名档请跟站长联络 ，他(她)会为你服务。\033[m\n");
+                    getdata(0, 0, "按 [RETURN] 继续", genbuf, 10, NOECHO, NULL, true);
+                    oflush();
+                    sleep(1);
+                    exit(1);
+                }
+				if( frommain && attempts == 1){
+                    getdata(0, 0, "按 [RETURN] 继续", genbuf, 10, NOECHO, NULL, true);
+				}
+                /* passwd ok, covert to md5 --wwj 2001/5/7 */
+                /* fancy Apr 7 2008, 二站跟随主站改大小写 ... */
+                struct userec *user;
+                if (getuser(uid, &user)) {
+                    if (frommain && strcmp(uid, user->userid) && !strcasecmp(uid, user->userid)) {
+                        char cmd[STRLEN], oldid[IDLEN + 2], bmbuf[BM_LEN], *p, *q;
+                        const char *delim = ",: ;|&()";
+                        int n, pos;
+                        const struct boardheader *bh;
+                        struct boardheader newbh;
+                        memcpy(oldid, user->userid, IDLEN + 2);
+                        sprintf(cmd, "bin/MIC %s %s %s %s", user->userid, uid, passbuf, "ScoreClub");
+                        system(cmd);
+                        /* 遍历 .BOARDS 改版主字符串 */                        
+                        for (n = 0; n < get_boardcount(); n++) {
+                            if (!(bh = getboard(n + 1)) || !*(bh->filename))
+                                continue;
+                            memcpy(bmbuf, bh->BM, BM_LEN);
+                            q = bmbuf;
+                            for (;;) {
+                                if (!q)
+                                    break;
+                                p = strsep(&q, delim);
+                                if (!strcmp(p, oldid)) {
+                                    memcpy(&newbh, bh, sizeof(struct boardheader));
+                                    pos = 0;
+                                    while (uid[pos]) {
+                                        newbh.BM[p - bmbuf + pos] = uid[pos];
+                                        pos++;
+                                    }
+                                    edit_group(bh, &newbh);
+                                    set_board(n + 1, &newbh, NULL);
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                
+                break;
+        }
+
+
+#else /* SECONDSITE */
+       
+        
         if (strcasecmp(uid, "new") == 0) {
 #ifdef LOGINASNEW
             if (check_ban_IP(getSession()->fromhost, buf) <= 0) {
@@ -613,6 +761,8 @@ void login_query()
                 break;
             }
         }
+#endif /* SECONDSITE */
+
     }
 #else
     prints("\n%s 欢迎您使用ssh方式访问。", getCurrentUser()->userid);
@@ -699,6 +849,13 @@ void login_query()
 	mail_birth();
 #endif
 
+#ifdef SECONDSITE
+    srand(getpid()+time(NULL));
+    getSession()->anonyindex = rand();
+    if(getSession()->anonyindex < 65536)
+        getSession()->anonyindex += 65536;
+#endif
+    
     alarm(0);
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
     term_init();

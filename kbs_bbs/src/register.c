@@ -48,6 +48,14 @@ void new_register()
     char buf[STRLEN];
 
 /* temp !!!!!*/
+
+#ifdef SECONDSITE
+    prints("不接受新帐号注册！！！\n");
+    oflush();
+    sleep(2);
+    exit(-1);
+#else
+    
 /*    prints("Sorry, we don't accept newusers due to system problem, we'll fixit ASAP\n");
     oflush();
     sleep(2);
@@ -177,6 +185,7 @@ void new_register()
         exit(1);
     }
     bbslog("user","%s","new account");
+#endif /* SECONDSITE */
 }
 
 /*加入对 #TH 结尾的realemail的帐号自动通过注册的功能  by binxun

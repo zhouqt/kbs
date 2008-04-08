@@ -132,7 +132,11 @@ int uinfo_query(struct userec *u, int real, int unum)
 	read_userdata(u->userid, &ud);
 	read_user_memo(u->userid, &um);
 	//memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
+#ifndef SECONDSITE
     getdata(t_lines - 1, 0, real ? "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" : "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]", ans, 2, DOECHO, NULL, true);
+#else
+    getdata(t_lines - 1, 0, "请选择 (0)结束 (1)修改资料 ==> [0]", ans, 2, DOECHO, NULL, true);
+#endif
     clear();
     i = 3;
     move(i++, 0);
@@ -279,6 +283,7 @@ int uinfo_query(struct userec *u, int real, int unum)
                 newinfo.lastlogin = time(0);
         }
         break;
+#ifndef SECONDSITE
     case '3':
         if (!real) {
 			end_mmapfile(um, sizeof(struct usermemo), -1);
@@ -343,6 +348,7 @@ int uinfo_query(struct userec *u, int real, int unum)
                 strcpy(getSession()->passwd, buf);
 #endif
         break;
+#endif /* SECONDSITE */
     default:
         clear();
 		end_mmapfile(um, sizeof(struct usermemo), -1);
@@ -1247,8 +1253,12 @@ int modify_userinfo(int uid,int mode){
 #else /* NEWSMTH */
     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
+#ifdef SECONDSITE
+    snprintf(buf, MU_LENGTH, "请到水木社区主站查询积分");
+#else
     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
         "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+#endif
     MU_MENUFORM(17,N,"%s",buf);
 #endif /* ! NEWSMTH */
     MU_MENUFORM(18,N,"<%s>",gen_permstr(nuser.userlevel,buf));
@@ -1300,6 +1310,10 @@ int modify_userinfo(int uid,int mode){
 #define MU_TRIM_BREAK(s)                trimstr(s);if(!((s)[0]))break
                 case 0:
                     MU_SHOW_HINT(i);
+#ifdef SECONDSITE
+                    MU_PUT(MU_CURR_ROW,MU_MSG(C, "水木二站不允许修改用户名"));
+                    break;
+#endif
                     if(!strcmp(nuser.userid,getCurrentUser()->userid)){
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"无法修改当前登录的用户名..."));
                         break;
@@ -1316,6 +1330,10 @@ int modify_userinfo(int uid,int mode){
                         break;
                     }
                 case 1:
+#ifdef SECONDSITE
+                    MU_PUT(MU_CURR_ROW,MU_MSG(C, "请到水木社区主站修改密码"));
+                    break;
+#endif
                     if(!mode){
                         MU_GETPWD(MU_CURR_ROW,MU_MSG(Y,"请输入原密码: "),&buf[40],38);
                         if(!buf[40])
@@ -1586,6 +1604,10 @@ int modify_userinfo(int uid,int mode){
 #ifdef NEWSMTH
                 case 17:
                     MU_SHOW_HINT(i);
+#ifdef SECONDSITE
+                    MU_PUT(MU_CURR_ROW, MU_MSG(C, "请到水木社区主站修改积分"));
+                    break;
+#endif
                     MU_GET(MU_CURR_ROW, MU_MSG(Y, "请选择要修改的积分种类{U(用户)|M(管理)}: "), buf, 2);
                     if (!((k = (toupper(buf[0]) == 'U')) || (toupper(buf[0]) == 'M')))
                     {
@@ -1626,8 +1648,12 @@ int modify_userinfo(int uid,int mode){
                     }
                     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
                         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
+#ifdef SECONDSITE
+                    snprintf(buf, MU_LENGTH, "请到水木社区主站查询积分");
+#else
                     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
                         "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+#endif
                     MU_SET(i,user,score_user,val,"%s",buf);
                     if (change & (1 << i))
                         break;

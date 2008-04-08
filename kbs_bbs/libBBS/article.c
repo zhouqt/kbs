@@ -792,7 +792,15 @@ void write_header(FILE * fp, struct userec *user, int in_mail, const char *board
             fprintf(fp, "发信人: %s (%s), 信区: %s\n", "SYSOP", NAME_SYSOP, board);
         else
 #endif
+#ifdef SECONDSITE
+        {
+            char anonynick[40];
+            sprintf(anonynick, "%s-%d", NAME_ANONYMOUS, session->anonyindex);
+            fprintf(fp, "发信人: %s (%s), 信区: %s\n", (noname && Anony) ? "guest" : uid, (noname && Anony) ? anonynick : uname, board);
+        }
+#else /* SECONDSITE */
             fprintf(fp, "发信人: %s (%s), 信区: %s\n", (noname && Anony) ? board : uid, (noname && Anony) ? NAME_ANONYMOUS : uname, board);
+#endif /* SECONDSITE */
     }
 
     fprintf(fp, "标  题: %s\n", title);

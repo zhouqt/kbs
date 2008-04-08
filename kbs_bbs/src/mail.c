@@ -2423,15 +2423,19 @@ int doforward(char *direct, struct fileheader *fh)
         char data[3];
         int isbig5;
 
-#if defined(NEWSMTH) && !defined(SECONDSITE)
+#ifdef NEWSMTH
         char *ptr;
         ptr = strchr(receiver, '@');
+#ifdef SECONDSITE
+        if(strcasecmp(ptr, "@bbs.newsmth.net") == 0) {
+#else
         if(strcasecmp(ptr, "@2.newsmth.net") == 0) {
+#endif
             noansi = 0;
             isbig5 = 0;
         }
         else 
-#endif
+#endif /* NEWSMTH */
         {
             data[0] = 0;
             prints("若您要将信件转寄到台湾请输入 Y 或 y\n");

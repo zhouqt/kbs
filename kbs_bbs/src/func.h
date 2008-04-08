@@ -42,6 +42,9 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     int checkpasswd(const char *passwd, const char *test);
     int checkpasswd2(const char *passwd, const struct userec *user);
     int setpasswd(const char *passwd, struct userec *user);
+#ifdef SECONDSITE
+    int remote_auth(const char *passwd, const char *userid, char *permstr);
+#endif
 
 
     char *Cdate(time_t clock);  /* Ê±¼ä --> Ó¢ÎÄ */
@@ -55,7 +58,9 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
 
     void load_user_title(ARG_VOID);
     struct userec *getuserbynum(int num);
+#ifndef SECONDSITE
     int getnewuserid2(char *userid);
+#endif
     unsigned int ucache_hash(const char *userid);       /* hash function export for utmp usage */
 
     int resolve_ucache(ARG_VOID);
@@ -71,7 +76,9 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     int update_user(struct userec *user, int num, int all);
     int apply_users(int(*func)(struct userec*,void*),void *arg);
     int apply_uids(int(*func)(struct userec*,int,void*),void *arg);
+#ifndef SECONDSITE
     int getnewuserid(char *userid);
+#endif
 
     int flush_ucache(char *fname);
     int load_ucache(ARG_VOID);

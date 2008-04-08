@@ -1074,7 +1074,11 @@ static int admin_utils_board(struct newpostdata *data,struct favboard_proc_arg *
     typedef int (*FUNC_ADMIN)(struct newpostdata*,struct favboard_proc_arg*,void*);
     FUNC_ADMIN function;
     void *handle;
+#ifdef SECONDSITE
+    if(!HAS_PERM(getCurrentUser(),PERM_BOARDS)&&!(getCurrentUser()->title))
+#else
     if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+#endif
         return -1;
     if(!(function=(FUNC_ADMIN)dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
         return -1;

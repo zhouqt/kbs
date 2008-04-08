@@ -6,6 +6,7 @@
 PHP_FUNCTION(bbs_getuser);
 
 PHP_FUNCTION(bbs_checkpasswd);
+PHP_FUNCTION(bbs_remote_auth);
 PHP_FUNCTION(bbs_checkuserpasswd);
 PHP_FUNCTION(bbs_setuserpasswd);
 PHP_FUNCTION(bbs_setpassword);
@@ -29,6 +30,7 @@ PHP_FUNCTION(bbs_user_level_char);
 #define PHP_BBS_USER_EXPORT_FUNCTIONS \
     PHP_FE(bbs_getuser, NULL) \
     PHP_FE(bbs_checkpasswd, NULL) \
+    PHP_FE(bbs_remote_auth, NULL) \
     PHP_FE(bbs_checkuserpasswd, NULL) \
     PHP_FE(bbs_setuserpasswd, NULL) \
     PHP_FE(bbs_setpassword,NULL) \

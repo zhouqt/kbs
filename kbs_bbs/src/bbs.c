@@ -3134,7 +3134,11 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
      * strncpy(post_file.owner,(anonyboard&&Anony)?
      * "Anonymous":getCurrentUser()->userid,STRLEN) ;
      */
+#ifdef SECONDSITE
+    strncpy(post_file.owner, (anonyboard && Anony) ? ((strcmp(currboard->filename, "SecretSky") == 0) ? "guest" : currboard->filename) : getCurrentUser()->userid, OWNER_LEN);
+#else
     strncpy(post_file.owner, (anonyboard && Anony) ? currboard->filename : getCurrentUser()->userid, OWNER_LEN);
+#endif
     post_file.owner[OWNER_LEN - 1] = 0;
 
 	/* »Ø¸´µ½ÐÅÏä£¬stiger */
@@ -3649,7 +3653,11 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 
     if(!anonymousboard(currboard->filename))
 		return DONOTHING;
-	if(!HAS_PERM(getCurrentUser(), PERM_SYSOP))
+#ifdef SECONDSITE
+    if(strcmp(fileinfo->owner, "guest"))
+        return DONOTHING;
+#endif
+    if(!HAS_PERM(getCurrentUser(), PERM_SYSOP))
 		return DONOTHING;
 	clear();
 
@@ -4603,6 +4611,7 @@ int i_read_mail()
     return FULLUPDATE;
 }
 
+#ifndef SECONDSITE
 #define ACL_MAX 10
 
 #ifndef HAVE_IPV6_SMTH
@@ -4944,6 +4953,7 @@ int set_ip_acl(void){
     return 0;
 
 }
+#endif /* SECONDSITE */
 
 
 int b_results(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
@@ -5422,7 +5432,11 @@ static int admin_utils_article(struct _select_def *conf,struct fileheader *info,
     typedef int (*FUNC_ADMIN)(struct _select_def*,struct fileheader*,void*);
     FUNC_ADMIN function;
     void *handle;
+#ifdef SECONDSITE
+    if(!HAS_PERM(getCurrentUser(),PERM_BOARDS)&&!(getCurrentUser()->title))
+#else
     if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+#endif
         return DONOTHING;
     if(!(function=(FUNC_ADMIN)dl_function(AU_LIBRARY,AU_FUNCTION,&handle)))
         return DONOTHING;

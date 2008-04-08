@@ -67,14 +67,18 @@ static const CMD_LIST CMD[]={
     {"SelectBoard",         Select,                                 0},
     {"XBoardManager",       set_BM,                                 0},
     {"SetAlarm",            set_clock,                              0},
+#ifndef SECONDSITE
     {"SetACL",              set_ip_acl,                             0},
+#endif
     {"SetRcmdBrd",          set_rcmdbrd,                            0},
     {"Setsyspass",          setsystempasswd,                        0},
     {"ShowMsg",             show_allmsgs,                           0},
     {"Notepad",             shownotepad,                            0},
     {"ReadWeather",         ShowWeather,                            0},
     {"SendMsg",             s_msg,                                  0},
+#ifndef SECONDSITE
     {"OffLine",             suicide,                                0},
+#endif
     {"ConvCode",            switch_code,                            0},
     {"ShowFriends",         t_friends,                              0},
     {"ListLogins",          t_list,                                 0},
@@ -107,14 +111,21 @@ static const CMD_LIST CMD[]={
     {"UDefine",             x_userdefine1,                          0},
     {"DoVote",              x_vote,                                 0},
 
+#ifdef SECONDSITE
+    {"TongBu",              get_mainsite,                           0},
+    {"Mj",                  x_mj,                                   0},
+#endif
+
+#ifndef SECONDSITE
 #ifdef HAVE_ACTIVATION
     {"ManageActivation",    x_manageactivation,                     0},
     {"SendActivation",      x_sendactivation,                       0},
-#endif
+#endif /* HAVE_ACTIVATION */
 
 #if defined(NEWSMTH) && defined(HAVE_ACTIVATION)
     {"Invite",              invite,                                 0},
 #endif
+#endif /* !SECONDSITE */
 
 #ifdef NEWSMTH
     {"ReadBoard",           Select,                                 0},
@@ -240,7 +251,29 @@ int exec_mbem(const char *command){
     }
     while(0);
 #else /* ! (CYGWIN && SSHBBS) */
-    dll=dlopen(p,RTLD_NOW);
+    /* 黑手搞掉一个安全漏洞... 嗯... */
+    do{
+#define EM_TOKEN " /,:;()[]{}<>?*+=~!@#$%^&`'\"\t\n\r\\"
+        char so_name[PATHLEN],token_buffer[PATHLEN],*token,*record;
+        snprintf(token_buffer,PATHLEN,"%s/%s",BBSHOME,p);
+        record=so_name;
+        *record++='/';
+        for(token=strtok(token_buffer,EM_TOKEN);token;token=strtok(NULL,EM_TOKEN)){
+            if(token[0]=='.'&&token[1]=='.'&&!token[2]){
+                EM_QUIT("模块位置与当前安全原则不符, 操作终止...");
+            }
+            else{
+                while(*token){
+                    *record++=*token++;
+                }
+                *record++='/';
+            }
+        }
+        *--record=0;
+        dll=dlopen(so_name,RTLD_NOW);
+#undef EM_TOKEN
+    }
+    while(0);
 #endif /* CYGWIN && SSHBBS */
     if(!dll) {
 #ifdef SOLEE

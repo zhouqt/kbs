@@ -190,7 +190,11 @@ typedef int32 POINTDIFF;
 #define ip_cpy(x, y) ((uint32_t)x=(uint32_t)y)
 #endif /* HAVE_IPV6_SMTH */
 
+#ifdef CELESTIS
+#define PUBLIC_SHMKEY   4700
+#else
 #define PUBLIC_SHMKEY	3700
+#endif
 /*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要
 public shm,而attach shm又需要sysconf_eval,ft*/
 /* add by KCN ,disable perror */
