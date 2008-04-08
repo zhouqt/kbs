@@ -28,6 +28,9 @@ char useridbuf[255];
 int auth_password(const char *server_user, const char *password)
 {
     int sinlen;
+#ifdef SECONDSITE
+    char permstr[33];
+#endif
 #ifdef HAVE_IPV6_SMTH
     struct sockaddr_in6 sin;
     char host[IPLEN];
@@ -39,10 +42,18 @@ int auth_password(const char *server_user, const char *password)
     resolve_ucache();
     resolve_utmp();
     strcpy(useridbuf, server_user);
+
+#ifdef SECONDSITE
+    if (*server_user == '\0')
+        return 0;
+    if(password[0] == '\0')
+        return 0;
+#else /* SECONDSITE */
     if (*server_user == '\0' || !dosearchuser(useridbuf))
         return 0;
     if (password[0] == '\0')
         return (!strcasecmp(useridbuf,"guest"));
+#endif /* SECONDSITE */
 
 #ifdef HAVE_IPV6_SMTH
     sinlen = sizeof(struct sockaddr_in6);
@@ -59,6 +70,16 @@ int auth_password(const char *server_user, const char *password)
     getpeername(packet_get_connection_in(), (struct sockaddr *) &sin, (void *) &sinlen);
     host = (char *) inet_ntoa(sin.sin_addr);
 #endif /* IPV6 */
+
+#ifdef SECONDSITE
+    {
+        FILE *fp;
+
+        strncpy(getSession()->fromhost, host, IPLEN);
+        getSession()->fromhost[IPLEN-1] = 0;
+        
+        if(fp=fopen("/home/bbs/LOCALCHECK", "r")) {
+#endif /* SECONDSITE */
     if(check_ip_acl(getCurrentUser()->userid, host)) {
     	return 0;
     }
@@ -66,6 +87,22 @@ int auth_password(const char *server_user, const char *password)
         logattempt(getCurrentUser()->userid, (char *)get_canonical_hostname(), "ssh");
         return 0;
     }
+#ifdef SECONDSITE
+            fclose(fp);
+        } else {
+        
+            if(remote_auth(password, useridbuf, permstr) <= 0) {
+                return 0;
+            }
+            if(permstr[0] == '\0' || XPERMSTR[4] != permstr[4]) {
+                return 0;
+            }
+            if(!dosearchuser(useridbuf))
+                return 0;
+        }
+    }
+#endif /* SECONDSITE */
+
 #ifdef NEWSMTH
     strcpy(getSession()->passwd, password);
 #endif
