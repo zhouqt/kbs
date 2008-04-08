@@ -1311,8 +1311,7 @@ int modify_userinfo(int uid,int mode){
                 case 0:
                     MU_SHOW_HINT(i);
 #ifdef SECONDSITE
-                    MU_PUT(MU_CURR_ROW,MU_MSG(C, "水木二站不允许修改用户名"));
-                    break;
+                    MU_PUT(MU_CURR_ROW,MU_MSG(C, "一般不要在水木二站修改用户名"));
 #endif
                     if(!strcmp(nuser.userid,getCurrentUser()->userid)){
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"无法修改当前登录的用户名..."));
@@ -1331,8 +1330,12 @@ int modify_userinfo(int uid,int mode){
                     }
                 case 1:
 #ifdef SECONDSITE
-                    MU_PUT(MU_CURR_ROW,MU_MSG(C, "请到水木社区主站修改密码"));
-                    break;
+                    if(mode != 1) {
+                        MU_PUT(MU_CURR_ROW,MU_MSG(C, "请到水木社区主站修改密码"));
+                        break;
+                    }
+                    else
+                        MU_PUT(MU_CURR_ROW,MU_MSG(C, "一般不要在水木二站修改密码"));
 #endif
                     if(!mode){
                         MU_GETPWD(MU_CURR_ROW,MU_MSG(Y,"请输入原密码: "),&buf[40],38);
