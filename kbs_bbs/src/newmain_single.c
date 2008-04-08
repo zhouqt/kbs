@@ -596,6 +596,9 @@ void login_query()
                     sleep(1);
                     exit(1);
                 }
+#ifdef NEWSMTH
+                strcpy(getSession()->passwd, passbuf);
+#endif
                 if (simplepasswd(passbuf)) {
                     prints("\033[33m* 密码过于简单, 请选择一个以上的特殊字元.\033[m\n");
                     getdata(0, 0, "按 [RETURN] 继续", genbuf, 10, NOECHO, NULL, true);

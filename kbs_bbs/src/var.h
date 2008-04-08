@@ -113,6 +113,9 @@ typedef struct {
 
 	int utmpent;
     struct user_info *currentuinfo;
+#ifdef NEWSMTH
+    char passwd[40];
+#endif
 } session_t;
 
 #ifndef THREADSAFE

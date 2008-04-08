@@ -128,6 +128,9 @@ void new_register()
         }
 
         setpasswd(passbuf, &newuser);
+#ifdef NEWSMTH
+        strcpy(getSession()->passwd, passbuf);
+#endif
         break;
     }
 

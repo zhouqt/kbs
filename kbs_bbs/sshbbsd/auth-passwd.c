@@ -66,6 +66,9 @@ int auth_password(const char *server_user, const char *password)
         logattempt(getCurrentUser()->userid, (char *)get_canonical_hostname(), "ssh");
         return 0;
     }
+#ifdef NEWSMTH
+    strcpy(getSession()->passwd, password);
+#endif
     strcpy(useridbuf, server_user);
     return 1;
 }

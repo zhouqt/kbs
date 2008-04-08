@@ -338,6 +338,10 @@ int uinfo_query(struct userec *u, int real, int unum)
         
             /* end of this addin */ 
             setpasswd(buf, &newinfo);
+#ifdef NEWSMTH
+            if(!strcmp(getCurrentUser()->userid, newinfo.userid))
+                strcpy(getSession()->passwd, buf);
+#endif
         break;
     default:
         clear();
