@@ -1077,7 +1077,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
     conf_cross = (from_board && (*from_board));
     if (!getboardnum(to_board, NULL))
         return 1;
-    setbfile(buf, to_board, "");
+    setbpath(buf, to_board);
     if (GET_POSTFILENAME(fh.filename, buf))
         return 2;
     set_posttime(&fh);
