@@ -6,7 +6,7 @@ SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs service @BBSSUBDIRS@
 CLEANFILES=@EXTRA_CLEAN@
 AM_MAKEFLAGS=-s 
 dist-hook:
-	rm -rf `find $(distdir) -name CVS`
+	rm -rf `find $(distdir) -name .svn`
 	rm -rf `find $(distdir) -name config.status`
 	rm -rf `find $(distdir) -name .deps`
 #	cd $(distdir);find . -path "./sshbbsd/gmp-2.0.2-ssh-2" -prune -o \
