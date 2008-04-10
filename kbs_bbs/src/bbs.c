@@ -233,7 +233,7 @@ int get_a_boardname(char *bname, char *prompt)
     if (getbnum_safe(bname,getSession(), 1) <= 0)
         /*---	---*/
     {
-        move(1, 0);
+        move(1, 0); clrtoeol();
         prints("错误的讨论区名称\n");
         pressreturn();
         move(1, 0);
