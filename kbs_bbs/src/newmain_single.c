@@ -1280,7 +1280,7 @@ void user_login()
     started=2;
 
 #ifndef SSHBBS
-   if( (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_DISS) ) && (strcmp(getSession()->fromhost, "127.0.0.1") != 0) && (strcmp(getSession()->fromhost, "::1") != 0)){
+   if(!frommain && (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_DISS) ) && (strcmp(getSession()->fromhost, "127.0.0.1") != 0) && (strcmp(getSession()->fromhost, "::1") != 0)){
 	   char pip[64];
 	   if(check_proxy_IP(getSession()->fromhost, pip) > 0){
 		   clear();
