@@ -524,7 +524,7 @@ void login_query()
 #ifdef LOGINASNEW
     prints("\n\033[1m\033[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ×¢²áÇëÊäÈë`\033[36mnew\033[37m', add `\033[36m.\033[37m' after your ID for BIG5\033[m");
 #else
-    prints("\n\033[1m\033[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔÝÍ£×¢²áÐÂÕÊºÅ, add '\033[36m.\33[37m' after your ID for BIG5\033[m");
+    prints("\n\033[1m\033[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔÝÍ£×¢²áÐÂÕÊºÅ, add `\033[36m.\033[37m' after your ID for BIG5\033[m");
 #endif //LOGINASNEW
     while (1) {
         if (attempts++ >= 3) {
