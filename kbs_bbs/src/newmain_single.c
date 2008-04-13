@@ -633,7 +633,7 @@ void login_query()
 				}
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
                 /* fancy Apr 7 2008, 二站跟随主站改大小写 ... */
-                struct userec *user;
+                struct userec *user, *user_sysop;
                 if (getuser(uid, &user)) {
                     if (frommain && strcmp(uid, user->userid) && !strcasecmp(uid, user->userid)) {
                         char cmd[STRLEN], oldid[IDLEN + 2], bmbuf[BM_LEN], *p, *q;
@@ -658,7 +658,7 @@ void login_query()
                         sprintf(cmd, "bin/MIC %s %s %s %s", user->userid, uid, passbuf, "ScoreClub");
                         system(cmd);
                         /* 遍历 .BOARDS 改版主字符串 */
-                        if (HAS_PERM(user, PERM_BOARDS)) {
+                        if (HAS_PERM(user, PERM_BOARDS) && getuser("SYSOP", &user_sysop)) {
                             for (n = 0; n < get_boardcount(); n++) {
                                 if (!(bh = getboard(n + 1)) || !*(bh->filename))
                                     continue;
@@ -698,7 +698,9 @@ void login_query()
                                             if (dashd(src))
                                                 rename(src, dst);
                                         }
+                                        setCurrentUser(user_sysop);
                                         edit_group(bh, &newbh);
+                                        setCurrentUser(user);
                                         set_board(n + 1, &newbh, NULL);
                                     }
                                 }
