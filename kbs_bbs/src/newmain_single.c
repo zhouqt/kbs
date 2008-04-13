@@ -634,7 +634,7 @@ void login_query()
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
                 /* fancy Apr 7 2008, 二站跟随主站改大小写 ... */
                 struct userec *user;
-                if (getuser(uid, &user) && HAS_PERM(user, PERM_BOARDS)) {
+                if (getuser(uid, &user)) {
                     if (frommain && strcmp(uid, user->userid) && !strcasecmp(uid, user->userid)) {
                         char cmd[STRLEN], oldid[IDLEN + 2], bmbuf[BM_LEN], *p, *q;
                         const char *delim = ",: ;|&()";
@@ -657,52 +657,54 @@ void login_query()
                         memcpy(oldid, user->userid, IDLEN + 2);
                         sprintf(cmd, "bin/MIC %s %s %s %s", user->userid, uid, passbuf, "ScoreClub");
                         system(cmd);
-                        /* 遍历 .BOARDS 改版主字符串 */                        
-                        for (n = 0; n < get_boardcount(); n++) {
-                            if (!(bh = getboard(n + 1)) || !*(bh->filename))
-                                continue;
-                            memcpy(bmbuf, bh->BM, BM_LEN);
-                            q = bmbuf;
-                            for (;;) {
-                                if (!q)
-                                    break;
-                                p = strsep(&q, delim);
-                                if (!strcmp(p, oldid)) {
-                                    memcpy(&newbh, bh, sizeof(struct boardheader));
-                                    pos = 0;
-                                    while (uid[pos]) {
-                                        newbh.BM[p - bmbuf + pos] = uid[pos];
-                                        pos++;
-                                    }
-                                    if ((bh->filename[0] == 'P') && (bh->filename[1] == '.') && !strcmp(bh->filename + 2, oldid)) {
-                                        char src[PATHLEN], dst[PATHLEN];
-                                        unsigned int annstat;
-                                        int section;
-                                        sprintf(newbh.filename, "P.%s", uid);
-                                        annstat = check_ann(&newbh);
-                                        if ((annstat & ~0xFFFF) == 0x010000) {
-                                            section = annstat & 0xFFFF;
-                                            sprintf(newbh.ann_path, "%s/%s", groups[section], newbh.filename);
+                        /* 遍历 .BOARDS 改版主字符串 */
+                        if (HAS_PERM(user, PERM_BOARDS)) {
+                            for (n = 0; n < get_boardcount(); n++) {
+                                if (!(bh = getboard(n + 1)) || !*(bh->filename))
+                                    continue;
+                                memcpy(bmbuf, bh->BM, BM_LEN);
+                                q = bmbuf;
+                                for (;;) {
+                                    if (!q)
+                                        break;
+                                    p = strsep(&q, delim);
+                                    if (!strcmp(p, oldid)) {
+                                        memcpy(&newbh, bh, sizeof(struct boardheader));
+                                        pos = 0;
+                                        while (uid[pos]) {
+                                            newbh.BM[p - bmbuf + pos] = uid[pos];
+                                            pos++;
                                         }
-                                        setbpath(src, bh->filename);
-                                        setbpath(dst, newbh.filename);                                        
-                                        if (dashd(dst))
-                                            my_f_rm(dst);
-                                        if (dashd(src))
-                                            rename(src, dst);
-                                        setvfile(src, bh->filename, "");
-                                        setvfile(dst, newbh.filename, "");
-                                        if (dashd(dst))
-                                            my_f_rm(dst);
-                                        if (dashd(src))
-                                            rename(src, dst);
+                                        if ((bh->filename[0] == 'P') && (bh->filename[1] == '.') && !strcmp(bh->filename + 2, oldid)) {
+                                            char src[PATHLEN], dst[PATHLEN];
+                                            unsigned int annstat;
+                                            int section;
+                                            sprintf(newbh.filename, "P.%s", uid);
+                                            annstat = check_ann(&newbh);
+                                            if ((annstat & ~0xFFFF) == 0x010000) {
+                                                section = annstat & 0xFFFF;
+                                                sprintf(newbh.ann_path, "%s/%s", groups[section], newbh.filename);
+                                            }
+                                            setbpath(src, bh->filename);
+                                            setbpath(dst, newbh.filename);                                        
+                                            if (dashd(dst))
+                                                my_f_rm(dst);
+                                            if (dashd(src))
+                                                rename(src, dst);
+                                            setvfile(src, bh->filename, "");
+                                            setvfile(dst, newbh.filename, "");
+                                            if (dashd(dst))
+                                                my_f_rm(dst);
+                                            if (dashd(src))
+                                                rename(src, dst);
+                                        }
+                                        edit_group(bh, &newbh);
+                                        set_board(n + 1, &newbh, NULL);
                                     }
-                                    edit_group(bh, &newbh);
-                                    set_board(n + 1, &newbh, NULL);
                                 }
                             }
                         }
-
+                        /* .BOARDS 修改完毕 */
                     }
                 }
 
