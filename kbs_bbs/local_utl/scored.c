@@ -173,10 +173,10 @@ int main(int argc, char **argv)
     
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
-    sin.sin_port = htons(2124);
+    sin.sin_port = htons(1124);
     sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(sockfd < 0){
-		printf("error listen to port 2124\n");
+		printf("error listen to port 1124\n");
 		exit(0);
 	}
 
