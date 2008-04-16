@@ -702,7 +702,7 @@ int get_mainsite(void){
     if(toupper(passwd[0])!='N'){
         sprintf(dpath, "tmp/second.%s.friends", getCurrentUser()->userid);
 		unlink(dpath);
-		sprintf(cmdtmp, "/usr/sfw/bin/wget -O %s http://10.0.4.238:5257/home/%c/%s/friends", dpath, toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
+		sprintf(cmdtmp, "/usr/bin/wget -O %s http://10.0.4.238:5257/home/%c/%s/friends", dpath, toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
 		system(cmdtmp);
 		if(!dashf(dpath)){
 			move(14,30);
@@ -720,7 +720,7 @@ outfriend:
     if(toupper(passwd[0])!='N'){
         sprintf(dpath, "tmp/second.%s.definekey", getCurrentUser()->userid);
 		unlink(dpath);
-		sprintf(cmdtmp, "/usr/sfw/bin/wget -O %s http://10.0.4.238:5257/home/%c/%s/definekey", dpath, toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
+		sprintf(cmdtmp, "/usr/bin/wget -O %s http://10.0.4.238:5257/home/%c/%s/definekey", dpath, toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
 		system(cmdtmp);
 		if(!dashf(dpath)){
 			move(16,30);
