@@ -1,26 +1,9 @@
-#include "stdio.h"
-#include <sys/types.h>
 #include <sys/socket.h>
 #include "netinet/in.h"
 #include <arpa/inet.h>
-#include "unistd.h"
-#include "stdlib.h"
-#include "string.h"
+#include "bbs.h"
 
 #include "libauth.h"
-
-static int sock_readline(int socket, char *buf, unsigned int size){
-    unsigned int n=0;
-    while(1){
-        if(read(socket, buf+n, 1) <= 0){
-            return -1;
-        }
-        n++;
-        if(n >= size) { buf[n]='\0'; return n; }
-        if(buf[n-1]=='\r'){ n--; continue; }
-        if(buf[n-1]=='\n'){ buf[n-1]='\0'; return n-1; }
-    }   
-}       
 
 int bbs_auth(struct bbsauth *a, const char *userid, const char *passwd, char *fromip){
         int ret;

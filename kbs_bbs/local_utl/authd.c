@@ -5,19 +5,6 @@
 #include <arpa/inet.h>
 #include "pthread.h"
 
-static int sock_readline(int socket, char *buf, unsigned int size){
-    unsigned int n=0;
-    while(1){
-        if(read(socket, buf+n, 1) <= 0){
-            return -1;
-        }
-        n++;
-        if(n >= size) { buf[n]='\0'; return n; }
-        if(buf[n-1]=='\r'){ n--; continue; }
-        if(buf[n-1]=='\n'){ buf[n-1]='\0'; return n-1; }
-    }
-}
-
 int do_auth(int fd){
 	char buf[256];
 	char userid[16];

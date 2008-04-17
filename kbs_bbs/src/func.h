@@ -302,6 +302,8 @@ void unlock_sem_check(int lockid);
     /* etnlegend, 2006.11.17, 获取动态链接库中的函数指针... */
     void* dl_function(const char *s_library,const char *s_function,void **p_handle);
 
+int sock_readline(int socket, char *buf, unsigned int size);
+
 /* define in bcache.c */
 	void flush_bcache(); /* 同步bcache*/
     void board_setcurrentuser(int idx,int num); /*设置在线用户计数*/
