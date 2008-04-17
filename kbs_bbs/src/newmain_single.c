@@ -636,11 +636,12 @@ void login_query()
                 struct userec *user, *user_sysop;
                 if (getuser(uid, &user)) {
                     if (frommain && strcmp(uid, user->userid) && !strcasecmp(uid, user->userid)) {
-                        char cmd[STRLEN], oldid[IDLEN + 2], bmbuf[BM_LEN], *p, *q;
+                        char cmd[STRLEN], oldid[IDLEN + 2], bmbuf[BM_LEN], *p, *q, fname[PATHLEN], title[STRLEN];
                         const char *delim = ",: ;|&()";
                         int n, pos;
                         const struct boardheader *bh;
                         struct boardheader newbh;
+                        FILE *fp;
 
                         /* show some hint, pig2532 */
                         while(true) {
@@ -659,6 +660,9 @@ void login_query()
                         system(cmd);
                         /* 遍历 .BOARDS 改版主字符串 */
                         if (HAS_PERM(user, PERM_BOARDS) && getuser("SYSOP", &user_sysop)) {
+                            sprintf(fname, "tmp/autobm_%ld_%d", time(0), getpid());
+                            sprintf(title, "自动修改版面大小写记录 [%s]", user->userid);
+                            fp = fopen(fname, "w");
                             for (n = 0; n < get_boardcount(); n++) {
                                 if (!(bh = getboard(n + 1)) || !*(bh->filename))
                                     continue;
@@ -675,16 +679,37 @@ void login_query()
                                             newbh.BM[p - bmbuf + pos] = uid[pos];
                                             pos++;
                                         }
+                                        
+                                        if(fp) {
+                                            fprintf(fp, "\033[1;37m修改版主名单 \033[33m%s\033[m\n", bh->filename);
+                                            fprintf(fp, "\033[1;31m旧\033[m: %s\n", bh->BM);
+                                            fprintf(fp, "\033[1;32m新\033[m: %s\n\n", newbh.BM);
+                                        }
+                                                
                                         if ((bh->filename[0] == 'P') && (bh->filename[1] == '.') && !strcmp(bh->filename + 2, oldid)) {
                                             char src[PATHLEN], dst[PATHLEN];
                                             unsigned int annstat;
                                             int section;
+
+                                            if(fp) {
+                                                fprintf(fp, "\033[1;37m修改版面属性 \033[33m%s\033[m\n", newbh.filename);
+                                                fprintf(fp, "\033[1;32m版面名称\033[m: %s ", newbh.filename);
+                                            }
                                             sprintf(newbh.filename, "P.%s", uid);
+                                            if(fp)
+                                                fprintf(fp, "-> %s\n", newbh.filename);
+                                            
                                             annstat = check_ann(&newbh);
                                             if ((annstat & ~0xFFFF) == 0x010000) {
                                                 section = annstat & 0xFFFF;
+                                                if(fp)
+                                                    fprintf(fp, "\033[1;31m旧精华区位置\033[m: %s\n", newbh.ann_path);
                                                 sprintf(newbh.ann_path, "%s/%s", groups[section], newbh.filename);
+                                                if(fp)
+                                                    fprintf(fp, "\033[1;32m新精华区位置\033[m: %s\n", newbh.ann_path);
                                             }
+                                            if(fp)
+                                                fprintf(fp, "\n");
                                             setbpath(src, bh->filename);
                                             setbpath(dst, newbh.filename);                                        
                                             if (dashd(dst))
@@ -704,6 +729,14 @@ void login_query()
                                         set_board(n + 1, &newbh, NULL);
                                     }
                                 }
+                            }
+                            if(fp) {
+                                unsigned char accessed[2];
+                                fclose(fp);
+                                accessed[0] = 0;
+                                accessed[1] = 0;
+                                post_file_alt(fname, getCurrentUser(), title, "ScoreClub", NULL, 0x04, accessed);
+                                unlink(fname);
                             }
                         }
                         /* .BOARDS 修改完毕 */
