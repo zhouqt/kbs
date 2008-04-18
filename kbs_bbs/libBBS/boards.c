@@ -775,7 +775,7 @@ void init_brc_cache(const char* userid,bool replace,session_t* session) {
         setcachehomefile(dirfile, userid, -1, NULL);
         mkdir(dirfile, 0700);
         setcachehomefile(dirfile, userid, -1, "entry");
-        if(stat(dirfile, &st)<0) {
+        if(stat(dirfile, &st)<0 || st.st_size != BRC_CACHE_NUM * sizeof(struct _brc_cache_entry)) {
             char brc[BRC_CACHE_NUM*sizeof(struct _brc_cache_entry)];
             brcfdr = open(dirfile, O_RDWR|O_CREAT, 0600);
             memset(brc, 0, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
