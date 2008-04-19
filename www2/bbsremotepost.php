@@ -42,6 +42,10 @@
 		print("没有发表权限。");
 		exit;
 	}
+	if(bbs_deny_me($userid, $bname)) {
+		print("您被取消了发表权限。");
+		exit;
+	}
 
 	// check from
 	$fromsite = $_POST["site"];
