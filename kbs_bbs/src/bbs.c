@@ -678,13 +678,14 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
     in_do_sendmsg = 1;
 #endif
     move(1,0);
-    if(!(ret=get_a_boardname(board,"请输入要转载的讨论区名称: "))||!(bh=getbcache(board)))
-        return FULLUPDATE;
+    ret = get_a_boardname(board,"请输入要转载的讨论区名称: ");
 #ifdef REMOTE_CROSS
     in_do_sendmsg = 0;
     if(ret == '#')
         return do_remote_cross(info);
 #endif
+    if(!(bh=getbcache(board)))
+        return FULLUPDATE;
     /* 同版转载 */
     if(!inmail&&!strcmp(board,currboard->filename)){
         move(3,0);clrtobot();
