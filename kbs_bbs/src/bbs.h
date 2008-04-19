@@ -172,6 +172,10 @@ typedef int32 POINTDIFF;
 #include "site.h"
 #include "default.h"
 
+#ifdef REMOTE_CROSS
+#include <curl/curl.h>
+#endif
+
 #ifndef IPLEN
 #ifdef HAVE_IPV6_SMTH
 #define IPLEN   46

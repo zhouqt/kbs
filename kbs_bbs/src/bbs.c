@@ -43,6 +43,8 @@ unsigned int tmpuser = 0;
 char quote_title[120], quote_board[120];
 char quote_user[120];
 
+extern int in_do_sendmsg;
+
 #ifndef NOREPLY
 char replytitle[STRLEN];
 #endif
@@ -223,9 +225,12 @@ int get_a_boardname(char *bname, char *prompt)
     /*
      * struct boardheader fh; 
      */
+    int i;
 
     make_blist(0, 1);
-    namecomplete(prompt, bname);        /* 可以自动搜索 */
+    i = namecomplete(prompt, bname);        /* 可以自动搜索 */
+    if(i == '#')
+        return '#';
     if (*bname == '\0') {
         return 0;
     }
@@ -580,6 +585,78 @@ static inline int edit_cross_content(const char *name,char *new_file_name,unsign
     return 0;
 }
 
+#ifdef REMOTE_CROSS
+
+#define REMOTE_SITE_NAME "水木二站"
+
+struct rc_res {
+    char text[STRLEN];
+    int length;
+};
+
+static size_t simple_get_http_response(void* ptr, size_t size, size_t nmemb, void* data) {
+    size_t realsize, putsize;
+    struct rc_res *pres;
+    realsize = size * nmemb;
+    pres = (struct rc_res *)data;
+    putsize = realsize;
+    if(pres->length + realsize >= STRLEN - 1)
+        putsize = STRLEN - 1 - pres->length;
+    if(putsize > 0) {
+        memcpy(&(pres->text[pres->length]), ptr, putsize);
+        pres->length += putsize;
+    }
+    return putsize;
+}
+
+int do_remote_cross(struct fileheader* fh) {
+    char bname[STRLEN], rpid[STRLEN], title[STRLEN], fname[PATHLEN], buf[256];
+    struct curl_httppost *post=NULL, *last=NULL;
+    struct curl_slist *header=NULL;
+    struct rc_res res;
+    CURL *handle;
+   
+    clear();
+    move(3, 0);
+    prints("\033[1;37m转载文章到\033[32m%s\033[m", REMOTE_SITE_NAME);
+    getdata(4, 0, "请输入要转载到的版面名称: ", bname, STRLEN - 1, DOECHO, NULL, true);
+    if(bname[0] == '\0')
+        return FULLUPDATE;
+
+    sprintf(rpid, "%ld_%d", time(0), getpid());
+    snprintf(title, STRLEN - 1, "%s (转载)", fh->title);
+    setbfile(fname, currboard->filename, fh->filename);
+    handle = curl_easy_init();
+    curl_easy_setopt(handle, CURLOPT_URL, "http://127.0.0.1:10080/bbsremotepost.php");
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "rpid", CURLFORM_COPYCONTENTS, rpid, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "user", CURLFORM_COPYCONTENTS, getCurrentUser()->userid, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "board", CURLFORM_COPYCONTENTS, bname, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "site", CURLFORM_COPYCONTENTS, BBS_FULL_NAME, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "fromboard", CURLFORM_COPYCONTENTS, currboard->filename, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "title", CURLFORM_COPYCONTENTS, title, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "content", CURLFORM_FILECONTENT, fname, CURLFORM_END);
+    res.length = 0;
+    header = curl_slist_append(header, "User-Agent: kbsbbs-2.0");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, header);
+    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, simple_get_http_response);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void *)&res);
+    curl_easy_setopt(handle, CURLOPT_HTTPPOST, post);
+    curl_easy_perform(handle);
+    res.text[res.length] = 0;
+    curl_easy_cleanup(handle);
+    curl_formfree(post);
+    curl_slist_free_all(header);
+
+    sprintf(buf, "transferred '%s' on '%s' to '%s'@2", fh->title, currboard->filename, bname);
+    newbbslog(BBSLOG_USER, "%s", buf);
+    
+    move(6, 0);
+    prints("%s", res.text);
+    WAIT_RETURN;
+    return FULLUPDATE;
+}
+#endif /* REMOTE_CROSS */
+
 int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
     const struct boardheader *bh;
     char board[STRLEN],name[STRLEN],ans[4];
@@ -595,9 +672,19 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
     strcpy(quote_title,info->title);
     clear();move(4,0);
     prints("%s","\033[1;33m请注意: \033[1;31m本站站规规定, 同样内容的文章严禁在五个(含)以上讨论区内重复发表,\n\n        \033[1;33m对\033[1;31m违反上述规定者\033[1;33m, 管理人员将依据\033[1;31m本站帐号管理办法中相关条款\033[1;33m进行处理!\n\n        请大家共同维护良好的讨论秩序,节约系统资源, 谢谢合作!\033[m");
+#ifdef REMOTE_CROSS
+    move(2, 0);
+    prints("要转载到\033[1;32m%s\033[m请输入\033[1;33m#\033[m号", REMOTE_SITE_NAME);
+    in_do_sendmsg = 1;
+#endif
     move(1,0);
-    if(!get_a_boardname(board,"请输入要转载的讨论区名称: ")||!(bh=getbcache(board)))
+    if(!(ret=get_a_boardname(board,"请输入要转载的讨论区名称: "))||!(bh=getbcache(board)))
         return FULLUPDATE;
+#ifdef REMOTE_CROSS
+    in_do_sendmsg = 0;
+    if(ret == '#')
+        return do_remote_cross(info);
+#endif
     /* 同版转载 */
     if(!inmail&&!strcmp(board,currboard->filename)){
         move(3,0);clrtobot();
@@ -1839,8 +1926,6 @@ int super_select_board(char *bname)
 
 	return 0;
 }
-
-extern int in_do_sendmsg;
 
 int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
         /*

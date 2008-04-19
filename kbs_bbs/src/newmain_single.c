@@ -944,6 +944,10 @@ void login_query()
         }
     }
     temp_numposts = 0;          /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
+
+#ifdef REMOTE_CROSS
+    curl_global_init(CURL_GLOBAL_ALL);
+#endif
 }
 
 void write_defnotepad()
