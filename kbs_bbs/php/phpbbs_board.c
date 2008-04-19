@@ -1088,5 +1088,15 @@ PHP_FUNCTION(bbs_fav_boards)
             
         efree(columns);
     }
-    
 }
+
+PHP_FUNCTION(bbs_deny_me) {
+    int ac, userid_len, bname_len;
+    char *userid, *bname;
+    ac = ZEND_NUM_ARGS();
+    if((ac != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &bname, &bname_len) == FAILURE)) {
+        WRONG_PARAM_COUNT;
+    }
+    RETURN_LONG(deny_me(userid, bname));
+}
+

@@ -32,6 +32,7 @@ PHP_FUNCTION(bbs_get_father);
 PHP_FUNCTION(bbs_get_dirname);
 PHP_FUNCTION(bbs_del_favboarddir);
 
+PHP_FUNCTION(bbs_deny_me);
 
 #define PHP_BBS_BOARD_EXPORT_FUNCTIONS \
     PHP_FE(bbs_getboard, NULL) \
@@ -56,7 +57,8 @@ PHP_FUNCTION(bbs_del_favboarddir);
     PHP_FE(bbs_del_favboard,NULL) \
     PHP_FE(bbs_get_father,NULL) \
     PHP_FE(bbs_get_dirname,NULL) \
-    PHP_FE(bbs_del_favboarddir,NULL)
+    PHP_FE(bbs_del_favboarddir,NULL) \
+    PHP_FE(bbs_deny_me,NULL)
 
 #endif //PHP_BBS_BOARD_H
 
