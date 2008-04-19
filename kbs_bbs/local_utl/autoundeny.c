@@ -89,7 +89,7 @@ int undenyboard(struct boardheader *bh,void* arg)
                     buf[st.st_size] = 0;
                 }
                 if ((d_fd = open(denyfile, O_RDWR)) != -1) {
-                    flock(d_fd, LOCK_EX);
+                    writew_lock(d_fd, 0, SEEK_SET, 0);
                     if (read(d_fd, buf, st.st_size) == st.st_size) {
                         idx1 = 0;
                         idx2 = 0;
@@ -123,7 +123,7 @@ int undenyboard(struct boardheader *bh,void* arg)
                         write(d_fd, buf, idx1);
                         ftruncate(d_fd, idx1);
                     }
-                    flock(d_fd, LOCK_UN);
+                    un_lock(d_fd, 0, SEEK_SET, 0);
                     close(d_fd);
                 }
             }

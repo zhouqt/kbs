@@ -1922,11 +1922,11 @@ int num;
     }
 
     fd = fileno(in_fn);
-    flock(fd, LOCK_EX);
+    writew_lock(fd, 0, SEEK_SET, 0);
 
     if ((out_fn = fopen(fname, "w")) == NULL) {
         move(2, 0);
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         fclose(in_fn);
         prints("系统错误, 无法写临时注册资料档: %s\n", fname);
         pressreturn();
@@ -1953,7 +1953,7 @@ int num;
 
         if ((tmp_fn = fopen(fname2, "w")) == NULL) {
             prints("不能建立临时文件:%s\n", fname2);
-            flock(fd, LOCK_UN);
+            un_lock(fd, 0, SEEK_SET, 0);
             fclose(in_fn);
             pressreturn();
             return -1;
@@ -1966,7 +1966,7 @@ int num;
 
         }
 
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
 
         fclose(in_fn);
         fclose(tmp_fn);
@@ -1993,9 +1993,10 @@ int num;
 
     fd = fileno(out_fn);
 
-    flock(fd, LOCK_UN);
+    writew_lock(fd, 0, SEEK_SET, 0);
+    /*flock(fd, LOCK_UN);*/ /* 这里原来是有问题的, 加锁写成解锁了吧 ... */
     fprintf(out_fn, "%ld\n", pid);
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     fclose(out_fn);
 
     return (0);
@@ -2013,20 +2014,20 @@ int restore_reg(long pid)
 
     sprintf(buf, "register.%ld", pid);
 
-    if ((fn = fopen(buf, "r")) != NULL) {
+    if ((fn = fopen(buf, "r+")) != NULL) {
         fd1 = fileno(fn);
-        flock(fd1, LOCK_EX);
+        writew_lock(fd1, 0, SEEK_SET, 0);
 
         if ((freg = fopen(regfile, "a")) != NULL) {
             fd2 = fileno(freg);
-            flock(fd2, LOCK_EX);
+            writew_lock(fd2, 0, SEEK_SET, 0);
             while (fgets(genbuf, STRLEN, fn) != NULL)
                 fputs(genbuf, freg);
-            flock(fd2, LOCK_UN);
+            un_lock(fd2, 0, SEEK_SET, 0);
             fclose(freg);
 
         }
-        flock(fd1, LOCK_UN);
+        un_lock(fd1, 0, SEEK_SET, 0);
         fclose(fn);
 
         f_rm(buf);
@@ -2049,17 +2050,17 @@ int mod;
 
     strcpy(fname1, "reg.ctrl");
 
-    if ((fn1 = fopen(fname1, "r")) != NULL) {
+    if ((fn1 = fopen(fname1, "r+")) != NULL) {
 
         fd = fileno(fn1);
-        flock(fd, LOCK_EX);
+        writew_lock(fd, 0, SEEK_SET, 0);
 
 		gettmpfilename( fname2, "reg.c");
         //sprintf(fname2, "tmp/reg.c%ld", getpid());
 
         if ((fn2 = fopen(fname2, "w")) == NULL) {
             prints("不能建立临时文件:%s\n", fname2);
-            flock(fd, LOCK_UN);
+            un_lock(fd, 0, SEEK_SET, 0);
             fclose(fn1);
             pressreturn();
             return -1;
@@ -2094,7 +2095,7 @@ int mod;
             }
             fclose(fn2);
         }
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         fclose(fn1);
 
         if (flag == 1) {
@@ -2161,7 +2162,7 @@ char *logfile, *regfile;
 /*申请注册单 added by Bigman, 2002.5.31*/
 
 /*统计总的注册单数 Bigman, 2002.6.2 */
-    if ((fn = fopen(regfile, "r")) == NULL) {
+    if ((fn = fopen(regfile, "r+")) == NULL) {
         move(2, 0);
         prints("系统错误, 无法读取注册资料档: %s\n", fname);
         pressreturn();
@@ -2169,14 +2170,14 @@ char *logfile, *regfile;
     }
 
     fd = fileno(fn);
-    flock(fd, LOCK_EX);
+    writew_lock(fd, 0, SEEK_SET, 0);
 
     total_num = 0;
     while (fgets(genbuf, STRLEN, fn) != NULL) {
         if ((ptr = (char *) strstr(genbuf, "userid")) != NULL)
             total_num++;
     }
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     fclose(fn);
 
     apply_reg(regfile, fname, pid, 50);
@@ -2408,7 +2409,7 @@ if (ret==-2) {
             case 'q':
                 if ((freg = fopen(regfile, "a")) != NULL) {
                     fd = fileno(freg);
-                    flock(fd, LOCK_EX);
+                    writew_lock(fd, 0, SEEK_SET, 0);
 
                     for (n = 0; field[n] != NULL; n++)
                         fprintf(freg, "%s: %s\n", field[n], fdata[n]);
@@ -2416,7 +2417,7 @@ if (ret==-2) {
                     while (fgets(genbuf, STRLEN, fn) != NULL)
                         fputs(genbuf, freg);
 
-                    flock(fd, LOCK_UN);
+                    un_lock(fd, 0, SEEK_SET, 0);
                     fclose(freg);
                 }
 
@@ -2531,13 +2532,13 @@ if (ret==-2) {
             default:
                 if ((freg = fopen(regfile, "a")) != NULL) {
                     fd = fileno(freg);
-                    flock(fd, LOCK_EX);
+                    writew_lock(fd, 0, SEEK_SET, 0);
 
                     for (n = 0; field[n] != NULL; n++)
                         fprintf(freg, "%s: %s\n", field[n], fdata[n]);
                     fprintf(freg, "----\n");
 
-                    flock(fd, LOCK_UN);
+                    un_lock(fd, 0, SEEK_SET, 0);
                     fclose(freg);
                 }
             }

@@ -23,10 +23,10 @@ int main(int argc,char **argv){
         return __LINE__;
     if((fd=open(fn,O_RDONLY,0644))==-1)
         return __LINE__;
-    if(flock(fd,LOCK_SH)==-1)
+    if(readw_lock(fd, 0, SEEK_SET, 0)==-1)
         return __LINE__;
     ptr=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
-    flock(fd,LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
     if(ptr==MAP_FAILED)
         return __LINE__;
@@ -35,7 +35,7 @@ int main(int argc,char **argv){
         munmap(ptr,st.st_size);
         return __LINE__;
     }
-    if(flock(fd,LOCK_EX)==-1){
+    if(writew_lock(fd, 0, SEEK_SET, 0)==-1){
         close(fd);
         munmap(ptr,st.st_size);
         return __LINE__;
@@ -58,7 +58,7 @@ int main(int argc,char **argv){
             j++;
         }
     }
-    flock(fd,LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
     munmap(ptr,st.st_size);
     printf("Rebuild: %-32.32s <%d>!\n",board,j);

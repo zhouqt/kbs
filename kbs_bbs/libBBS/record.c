@@ -90,11 +90,11 @@ int size, pos;
         return 0;
     if ((fd = open(filename, O_WRONLY)) == -1)
         return -1;
-    flock(fd, LOCK_EX);
+    writew_lock(fd, 0, SEEK_SET, 0);
     lseek(fd, (pos - numtowrite - 1) * size, SEEK_SET);
     safewrite(fd, bigbuf, numtowrite * size);
     bbslog("user", "%s", "post bug poison set out!");
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     bigbuf[0] = '\0';
     close(fd);
 }
@@ -228,11 +228,11 @@ int size;
 #endif
         return -1;
     }
-    flock(fd, LOCK_EX);
+    writew_lock(fd, 0, SEEK_SET, 0);
     lseek(fd, 0, SEEK_END);
     if (safewrite(fd, record, size) == -1)
         bbslog("user", "%s", "apprec write err!");
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
 #ifdef POSTBUG
     if (size == sizeof(struct fileheader) && numrecs && (numrecs % 4 == 0))

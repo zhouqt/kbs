@@ -464,11 +464,11 @@ int d_user(cid)
 
         dtime = time(0);
         sprintf(thtime, "%lu", dtime);
-        flock(fd, LOCK_EX);
+        writew_lock(fd, 0, SEEK_SET, 0);
         lseek(fd, 0, SEEK_END);
         sprintf(buf, "%-12.12s %-66.66s\n", lookupuser->userid, thtime);
         write(fd, buf, strlen(buf));
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         close(fd);
     } else {
         printf("¥ÌŒÛ£¨«Î±®∏ÊSYSOP");

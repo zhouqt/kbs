@@ -35,7 +35,7 @@ int utmp_lock()
     }
     signal(SIGALRM, longlock);
     alarm(10);
-    if (flock(utmpfd, LOCK_EX) == -1) {
+    if (writew_lock(utmpfd, 0, SEEK_SET, 0) == -1) {
         exit(-1);
     }
     signal(SIGALRM, SIG_IGN);
@@ -44,7 +44,7 @@ int utmp_lock()
 
 void utmp_unlock(int fd)
 {
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
 }
 #else

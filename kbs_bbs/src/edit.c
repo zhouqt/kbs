@@ -817,16 +817,16 @@ static long edit_attach(char *fn){
         WAIT_RETURN;clear();
         return -3;
     }
-    flock(fd,LOCK_EX);
+    writew_lock(fd, 0, SEEK_SET, 0);
     if((fd_origin=open(fn,O_RDWR,0644))==-1){
         close(fd);unlink(fn_tmp);
         move(3,0);prints("\033[1;31m打开文件时发生错误...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();
         return -4;
     }
-    flock(fd_origin,LOCK_SH);                       //共享锁定
+    readw_lock(fd_origin, 0, SEEK_SET, 0);          //共享锁定
     ret=ea_dump(fd_origin,fd,0);                    //复制文件
-    flock(fd_origin,LOCK_UN);                       //解除锁定
+    un_lock(fd_origin, 0, SEEK_SET, 0);             //解除锁定
     if(ret==-1){                                    //发生错误
         close(fd);close(fd_origin);unlink(fn_tmp);
         move(3,0);prints("\033[1;31m复制文件时发生错误...\033[1;37m<Enter>\033[m");
@@ -998,7 +998,7 @@ static long edit_attach(char *fn){
         }
     }
     if(changed){
-        flock(fd_origin,LOCK_EX);                   //独享锁定
+        writew_lock(fd_origin, 0, SEEK_SET, 0);     //独享锁定
         ret=ea_dump(fd,fd_origin,0);                //回写
         if(ret==-1){
             close(fd);close(fd_origin);unlink(fn_tmp);

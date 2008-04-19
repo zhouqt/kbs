@@ -15,12 +15,12 @@ static int bcache_lock()
         return -1;
     }
     bcache_setreadonly(0);
-    flock(lockfd, LOCK_EX);
+    writew_lock(lockfd, 0, SEEK_SET, 0);
     return lockfd;
 }
 static void bcache_unlock(int fd)
 {
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     bcache_setreadonly(1);
     close(fd);
 }

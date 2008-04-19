@@ -67,23 +67,23 @@ int killdir(char *basedir, char *filename)
     fd = open(genbuf1, O_RDWR);
     if (fd < 0)
         return 0;
-    if (flock(fd, LOCK_EX) < 0) {
+    if (writew_lock(fd, 0, SEEK_SET, 0) < 0) {
         close(fd);
         return 0;
     }
     if (fstat(fd, &st) < 0) {
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         close(fd);
         return 0;
     }
     if ((files = (struct fileheader *) malloc(st.st_size)) == NULL) {
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         close(fd);
         return 0;
     }
     if (read(fd, files, st.st_size) < 0) {
         free(files);
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         close(fd);
         return 0;
     }
@@ -104,7 +104,8 @@ int killdir(char *basedir, char *filename)
         }
     }
     ftruncate(fd, count);
-    flock(fd, LOCK_EX);
+    /*flock(fd, LOCK_EX);*/ /* ÓÖÐ´´íÁË .. ? */
+    un_lock(fd, 0, SEEK_SET, 0);
     free(files);
     close(fd);
     return deleted;

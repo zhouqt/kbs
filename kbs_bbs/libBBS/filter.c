@@ -15,12 +15,12 @@ static int build_badwordimage()
     void* pattern_buf;
     size_t pattern_imagesize;
     struct stat st;
-    fp = open("etc/badword", O_RDONLY);
+    fp = open("etc/badword", O_RDWR);
     if (fp==-1)
     	return -1;
-    flock(fp,LOCK_EX);
+    writew_lock(fp, 0, SEEK_SET, 0);
     if (dashf(BADWORD_IMG_FILE)) {
-    	flock(fp,LOCK_UN);
+        un_lock(fp, 0, SEEK_SET, 0);
     	close(fp);
     	return 0;
     }
@@ -35,7 +35,7 @@ static int build_badwordimage()
     stat(BADWORD_IMG_FILE,&st);
     badimg_time=st.st_mtime;
     close(imgfp);
-    flock(fp,LOCK_UN);
+    un_lock(fp, 0, SEEK_SET, 0);
     close(fp);
     releasepf(pattern_buf);
     return 0;

@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 	resolve_utmp();
 
     now = time(NULL);
-	if((fin = fopen("pre_register","r")) == NULL)
+	if((fin = fopen("pre_register","r+")) == NULL)
 	{
 	    printf("open pre_register file failed.\n");
 	    return 0;
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	    return 0;
 	}
 
-	flock(fileno(fin),LOCK_EX);
+    writew_lock(fileno(fin), 0, SEEK_SET, 0);
 	while(!exit){
 	    for(i = 0; i < 8;i++)
 		{
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 //    ftruncate(fileno(fin),0);
 //    while(fgets(genbuf[0],256,fout1))
 //    	fputs(genbuf[0],fin);
-    flock(fileno(fin),LOCK_UN);
+    un_lock(fileno(fin), 0, SEEK_SET, 0);
     fclose(fin);
     fclose(fout1);
     fclose(fout2);

@@ -849,7 +849,7 @@ int vote_flag(char *bname, char val, int mode)
         bbslog("user","%s",buf);
         return -1;
     }
-    flock(fd, LOCK_EX);
+    writew_lock(fd, 0, SEEK_SET, 0);
     size = (int) lseek(fd, 0, SEEK_END);
     memset(buf, 0, sizeof(buf));
     while (size <= num) {
@@ -862,7 +862,7 @@ int vote_flag(char *bname, char val, int mode)
         lseek(fd, num, SEEK_SET);
         write(fd, &val, 1);
     }
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
     return flag;
 }

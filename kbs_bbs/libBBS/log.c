@@ -86,7 +86,7 @@ static void writelog(logconfig * pconf, const char *from, int prio, const char *
         }
     }
 
-    flock(pconf->fd, LOCK_SH);
+    readw_lock(pconf->fd, 0, SEEK_SET, 0);
     lseek(pconf->fd, 0, SEEK_END);
 
     if (pconf->buf && pconf->bufptr) {
@@ -98,7 +98,7 @@ static void writelog(logconfig * pconf, const char *from, int prio, const char *
         write(pconf->fd, buf, strlen(buf));
         write(pconf->fd, "\r\n", 2);
     }
-    flock(pconf->fd, LOCK_UN);
+    un_lock(pconf->fd, 0, SEEK_SET, 0);
 }
 
 static void logatexit()
@@ -162,9 +162,9 @@ int bbslog(const char *from, const char *fmt, ...)
                 if (pconf->fd <= 0) {   /* init it! */
                     if (!pconf->file)
                         return 0;       /* discard it */
-                    pconf->fd = open(pconf->file, O_WRONLY);
-                    if (pconf->fd < 0)
-                        pconf->fd = creat(pconf->file, 0644);
+                    pconf->fd = open(pconf->file, O_RDWR | O_CREAT, 0644);
+                    /*if (pconf->fd < 0)
+                        pconf->fd = creat(pconf->file, 0644);*/
                     if (pconf->fd < 0)
                         return -1;
 

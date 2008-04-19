@@ -32,13 +32,13 @@ static int ucache_lock()
         bbslog("3system", "CACHE:lock ucache:%s", strerror_r(errno, errbuf, STRLEN));
         return -1;
     }
-    flock(lockfd, LOCK_EX);
+    writew_lock(lockfd, 0, SEEK_SET, 0);
     return lockfd;
 }
 
 static void ucache_unlock(int fd)
 {
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
 }
 #else
@@ -1154,7 +1154,7 @@ int www_guest_lock()
     }
     signal(SIGALRM, longlock);
     alarm(10);
-    if (flock(fd, LOCK_EX) == -1) {
+    if (writew_lock(fd, 0, SEEK_SET, 0) == -1) {
         return -1;
     }
     signal(SIGALRM, SIG_IGN);
@@ -1163,7 +1163,7 @@ int www_guest_lock()
 
 void www_guest_unlock(int fd)
 {
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
 }
 

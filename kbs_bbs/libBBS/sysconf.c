@@ -297,7 +297,7 @@ void build_sysconf(const char *configfile,const char *imgfile)
         imgfilename = imgfile;
     if ((fh = open(imgfilename, O_WRONLY | O_CREAT, 0644)) > 0) {
         ftruncate(fh, 0);
-        flock(fh, LOCK_EX);
+        writew_lock(fh, 0, SEEK_SET, 0);
         shead.buf = sysconf_buf;
         shead.menu = sysconf_menu;
         shead.key = sysconf_key;
@@ -306,7 +306,7 @@ void build_sysconf(const char *configfile,const char *imgfile)
         write(fh, menuitem, sysconf_menu * sizeof(struct smenuitem));
         write(fh, sysvar, sysconf_key * sizeof(struct sdefine));
         write(fh, sysconf_buf, sysconf_len);
-        flock(fh, LOCK_UN);
+        un_lock(fh, 0, SEEK_SET, 0);
         close(fh);
     }
     free(menuitem);

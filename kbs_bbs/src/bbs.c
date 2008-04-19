@@ -2166,7 +2166,7 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
     do{                                                         \
         if(cptr!=MAP_FAILED){                                   \
             if(filedes!=-1){                                    \
-                flock(filedes,LOCK_UN);                         \
+                un_lock(filedes, 0, SEEK_SET, 0);               \
                 close(filedes);                                 \
             }                                                   \
             end_mmapfile(cptr,size,-1);                         \
@@ -2204,15 +2204,16 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
         if(!safe_mmapfile(dir,O_RDONLY,PROT_READ,MAP_SHARED,&cptr,&size,NULL))
             SM_QUIT("目前没有自删文章, 按 <Enter> 键继续...");
         setbdir(DIR_MODE_SELF,dir,currboard->filename);
-        if((filedes=open(dir,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1||flock(filedes,LOCK_EX)==-1)
+        if((filedes=open(dir,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1||/*flock(filedes,LOCK_EX)==-1*/writew_lock(filedes, 0, SEEK_SET, 0))
             SM_QUIT("打开文件时发生错误, 按 <Enter> 键继续...");
         ptr=(const struct fileheader*)cptr;
         count=size/sizeof(struct fileheader);
         for(selected=0,i=0;i<count;i++){
             /* fancyrabbit Sep 14 2007, case insensitive ba ... */
-            if(getCurrentUser()->firstlogin
+            if (isowner(getCurrentUser(), &ptr[i])) {
+            /*if(getCurrentUser()->firstlogin
                 &&(get_posttime(&ptr[i])>getCurrentUser()->firstlogin)
-                &&!strcasecmp(ptr[i].owner,getCurrentUser()->userid)){
+                &&!strcasecmp(ptr[i].owner,getCurrentUser()->userid)){*/
                 info=ptr[i];
                 strnzhcpy(info.title,ptr[i].title,34);
                 for(p=&info.title[32];p>info.title&&*p==' ';p--)
@@ -4244,14 +4245,14 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
             dirarg.filename=arg->direct;
             dirarg.ent = i;
             dirarg.needlock=false;
-            flock(arg->fd,LOCK_EX);
+            writew_lock(arg->fd, 0, SEEK_SET, 0);
             malloc_write_dir_arg(&dirarg);
             change_post_flag(&dirarg, 
                 arg->mode,
                 currboard, 
                 dirarg.fileptr+(i-1), 
                 fflag, &data, true,getSession());
-            flock(arg->fd,LOCK_UN);
+            un_lock(arg->fd, 0, SEEK_SET, 0);
             free_write_dir_arg(&dirarg);
         }
     }
@@ -5318,7 +5319,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     arg->writearg=&dirarg;
 
     o_gid = fh->groupid;
-    flock(arg->fd,LOCK_EX);
+    writew_lock(arg->fd, 0, SEEK_SET, 0);
     if (fromfirst) {
         /*走到第一篇*/
         conf->new_pos=0; /* atppp 20051019 */
@@ -5327,7 +5328,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
             conf->pos=conf->new_pos;
     }
     apply_thread(conf,fh,BM_thread_func,true,true,(void*)&func_arg);
-    flock(arg->fd,LOCK_UN);
+    un_lock(arg->fd, 0, SEEK_SET, 0);
     free_write_dir_arg(&dirarg);
     arg->writearg=NULL;
     
@@ -5442,9 +5443,9 @@ int split_thread(struct _select_def* conf, struct fileheader* fh, void* extraarg
     dirarg.needlock=false;
     arg->writearg=&dirarg;
 
-    flock(arg->fd,LOCK_EX);
+    writew_lock(arg->fd, 0, SEEK_SET, 0);
     apply_thread(conf,fh,split_thread_me,true,true,(void*)&func_arg);
-    flock(arg->fd,LOCK_UN);
+    un_lock(arg->fd, 0, SEEK_SET, 0);
     free_write_dir_arg(&dirarg);
     arg->writearg=NULL;
     conf->pos=ent; /*恢复原来的ent*/

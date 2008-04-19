@@ -142,7 +142,7 @@ void free_write_dir_arg(struct write_dir_arg *filearg)
 /*
  * 写dir文件之前把文件定位到正确的位置，lock住，并返回相应的数据
  * 这里边并不调用free_write_dir_arg来释放资源。需要上层自己来
- * 调用此函数如果成功，记得及时flock(filearg->fd,LOCK_UN)
+ * 调用此函数如果成功，记得及时un_lock(filearg->fd,0,SEEK_SET,0)
  * @param filearg 传入的结构。如果filearg->fd不为-1，说明需要打开dirarg->direct文件
  *                        否则使用filearg->fd作为文件句柄。
  *                        filearg->ent为预计的位置，ent>=1
@@ -165,7 +165,7 @@ int prepare_write_dir(struct write_dir_arg *filearg, struct fileheader *fileinfo
             BBS_RETURN(-1);
         count = filearg->size / sizeof(struct fileheader);
         if (filearg->needlock)
-            flock(filearg->fd, LOCK_EX);
+            writew_lock(filearg->fd, 0, SEEK_SET, 0);
         if (fileinfo) {         //定位一下
             if ((filearg->ent > count) || (filearg->ent <= 0))
                 needrelocation = true;
@@ -215,7 +215,7 @@ int prepare_write_dir(struct write_dir_arg *filearg, struct fileheader *fileinfo
     }
     BBS_END;
     if (ret != 0)
-        flock(filearg->fd, LOCK_UN);
+        un_lock(filearg->fd, 0, SEEK_SET, 0);
     return ret;
 }
 
@@ -253,7 +253,7 @@ int del_origin(const char *board, struct fileheader *fileinfo)
     dirarg.size -= sizeof(struct fileheader);
     ftruncate(dirarg.fd, dirarg.size);
     if (dirarg.needlock)
-        flock(dirarg.fd, LOCK_UN);
+        un_lock(dirarg.fd, 0, SEEK_SET, 0);
     close(dirarg.fd);
 
     return 0;
@@ -347,7 +347,7 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     }
     BBS_END;
     if (dirarg->needlock)
-        flock(dirarg->fd, LOCK_UN);     /*这个是需要赶紧做的 */
+        un_lock(dirarg->fd, 0, SEEK_SET, 0);     /*这个是需要赶紧做的 */
 
     if (fh.id == fh.groupid) {
         del_origin(board, &fh);
@@ -530,14 +530,14 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
     sprintf(buf, "boards/%s/.DIR", boardname);
     if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
         if ((UFile.id == 0) || mmap_search_apply(fd, &UFile, insert_func) == 0) {
-            flock(fd, LOCK_EX);
+            writew_lock(fd, 0, SEEK_SET, 0);
             UFile.id = get_nextid(boardname);
             UFile.groupid = UFile.id;
             UFile.reid = UFile.id;
             lseek(fd, 0, SEEK_END);
             if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
                 bbslog("user", "%s", "apprec write err!");
-            flock(fd, LOCK_UN);
+            un_lock(fd, 0, SEEK_SET, 0);
         }
         close(fd);
     }
@@ -550,14 +550,14 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
             sprintf(buf, "boards/%s/.ORIGIN", boardname);
             if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
                 if ((UFile.id == 0) || mmap_search_apply(fd, &UFile, insert_func) == 0) {
-                    flock(fd, LOCK_EX);
+                    writew_lock(fd, 0, SEEK_SET, 0);
                     UFile.id = get_nextid(boardname);
                     UFile.groupid = UFile.id;
                     UFile.reid = UFile.id;
                     lseek(fd, 0, SEEK_END);
                     if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
                         bbslog("user", "%s", "apprec origin write err!");
-                    flock(fd, LOCK_UN);
+                    un_lock(fd, 0, SEEK_SET, 0);
                 }
                 close(fd);
             }
@@ -934,7 +934,7 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
     }
 
     if (!err) {
-        flock(fd, LOCK_EX);
+        writew_lock(fd, 0, SEEK_SET, 0);
         nowid = get_nextid(COMMEND_ARTICLE);
         postfile.id = nowid;
         postfile.groupid = postfile.id;
@@ -945,7 +945,7 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
             bbslog("user", "%s", "apprec write err!");
             err = 1;
         }
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         close(fd);
     }
     if (err) {
@@ -1140,13 +1140,13 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
 #endif
         return 5;
     }
-    lock_reg(fd, F_SETLKW, F_WRLCK, 0, SEEK_SET, 0);
+    writew_lock(fd, 0, SEEK_SET, 0);
     fh.id = get_nextid(to_board);
     fh.groupid = fh.id;
     fh.reid = fh.id;
     lseek(fd, 0, SEEK_END);
-    if (safewrite(fd, &fh, sizeof(struct fileheader)) == -1){
-        lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+    if (safewrite(fd, &fh, sizeof(struct fileheader)) == -1) {
+        un_lock(fd, 0, SEEK_SET, 0);
         close(fd);
 #ifdef HAVE_BRC_CONTROL
         getSession() -> brc_currcache = brc_save;
@@ -1155,7 +1155,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
         unlink(buf);
         return 6;
     }
-    lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
     updatelastpost(to_board);
     if (setboardorigin(to_board, -1))
@@ -1163,11 +1163,11 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
     else
     {
         setbdir(DIR_MODE_ORIGIN, buf, to_board);
-        if(!((fd = open(buf, O_WRONLY|O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) < 0)){
-            lock_reg(fd, F_SETLKW, F_WRLCK, 0, SEEK_SET, 0);
+        if(!((fd = open(buf, O_WRONLY|O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) < 0)) {
+            writew_lock(fd, 0, SEEK_SET, 0);
             lseek(fd, 0, SEEK_END);
             safewrite(fd, &fh, sizeof(struct fileheader));
-            lock_reg(fd, F_SETLKW, F_UNLCK, 0, SEEK_SET, 0);
+            un_lock(fd, 0, SEEK_SET, 0);
             close(fd);
         }
     }
@@ -1268,7 +1268,7 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
     }
     process_control_chars(fh->title,NULL);
     if (!err) {
-        flock(fd, LOCK_EX);
+        writew_lock(fd, 0, SEEK_SET, 0);
         nowid = get_nextid(boardname);
         fh->id = nowid;
         if (re == NULL) {
@@ -1284,7 +1284,7 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
             bbslog("user", "%s", "apprec write err!");
             err = 1;
         }
-        flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
         close(fd);
     }
     if (err) {
@@ -1342,10 +1342,10 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
 			strcpy(tmpf.owner, session->currentuser->userid);
 
 		    if ((fd = open(anonybuf, O_WRONLY | O_CREAT, 0664)) != -1) {
-		        flock(fd, LOCK_EX);
+                writew_lock(fd, 0, SEEK_SET, 0);
 		        lseek(fd, 0, SEEK_END);
 		        safewrite(fd, &tmpf, sizeof(fileheader));
-		        flock(fd, LOCK_UN);
+                un_lock(fd, 0, SEEK_SET, 0);
 		        close(fd);
 		    }
 		}
@@ -1367,12 +1367,12 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
         } else {
             setbdir(DIR_MODE_ORIGIN, buf, boardname);
             if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) >= 0) {
-                flock(fd, LOCK_EX);
+                writew_lock(fd, 0, SEEK_SET, 0);
                 lseek(fd, 0, SEEK_END);
                 if (safewrite(fd, fh, sizeof(fileheader)) == -1) {
                     bbslog("user", "%s", "apprec origin write err!");
                 }
-                flock(fd, LOCK_UN);
+                un_lock(fd, 0, SEEK_SET, 0);
                 close(fd);
             }
         }
@@ -1408,11 +1408,11 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     int low, high;
     int ret = 0;
 
-    if (flock(fd, LOCK_EX) == -1)
+    if (writew_lock(fd, 0, SEEK_SET, 0) == -1)
         return 0;
     BBS_TRY {
         if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &datac, &filesize) == 0) {
-            flock(fd, LOCK_UN);
+            un_lock(fd, 0, SEEK_SET, 0);
             BBS_RETURN(0);
         }
         dataf = (struct fileheader*)datac;
@@ -1427,7 +1427,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
             if (comp == 0) {
                 ret = (*func) (fd, dataf, mid + 1, total, buf, true);
                 end_mmapfile(datac, filesize, -1);
-                flock(fd, LOCK_UN);
+                
                 BBS_RETURN(ret);
             } else if (comp < 0)
                 high = mid - 1;
@@ -1441,7 +1441,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     BBS_END;
     end_mmapfile((void *) datac, filesize, -1);
 
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     return ret;
 }
 
@@ -1455,11 +1455,11 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     int mid, comp;
     int ret = 0;
 
-    if (flock(fd, LOCK_EX) == -1)
+    if (writew_lock(fd, 0, SEEK_SET, 0) == -1)
         return 0;
     BBS_TRY {
         if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &datac, &filesize) == 0) {
-            flock(fd, LOCK_UN);
+            un_lock(fd, 0, SEEK_SET, 0);
             BBS_RETURN(0);
         }
         dataf = (struct fileheader*)datac;
@@ -1472,7 +1472,7 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
             if (comp == 0) {
                 ret = (*func) (fd, dataf, mid + 1, total, true, arg);
                 end_mmapfile(datac, filesize, -1);
-                flock(fd, LOCK_UN);
+                un_lock(fd, 0, SEEK_SET, 0);
                 BBS_RETURN(ret);
             } else if (comp < 0)
                 high = mid - 1;
@@ -1486,7 +1486,7 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     BBS_END;
     end_mmapfile((void *) datac, filesize, -1);
 
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
 
     return ret;
 }
@@ -2361,7 +2361,7 @@ static int pass_filter(struct fileheader *fileinfo, const struct boardheader *bo
                 return -1;
             }
             newfh = *fileinfo;
-            flock(filedes, LOCK_EX);
+            writew_lock(filedes, 0, SEEK_SET, 0);
             nowid = get_nextid_bid(fileinfo->o_bid);
             newfh.id = nowid;
             if (fileinfo->o_id == fileinfo->o_groupid)
@@ -2374,7 +2374,7 @@ static int pass_filter(struct fileheader *fileinfo, const struct boardheader *bo
             if (safewrite(filedes, &newfh, sizeof(fileheader)) == -1) {
                 bbslog("user", "apprec write err! %s", newfh.filename);
             }
-            flock(filedes, LOCK_UN);
+            un_lock(filedes, 0, SEEK_SET, 0);
             close(filedes);
 
             updatelastpost(getboard(fileinfo->o_bid)->filename);
@@ -2634,7 +2634,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, const struct bo
         free_write_dir_arg(&dotdirarg);
     }
     if (dirarg->needlock)
-        flock(dirarg->fd, LOCK_UN);
+        un_lock(dirarg->fd, 0, SEEK_SET, 0);
     return ret;
 }
 
@@ -2776,7 +2776,7 @@ static long ea_append_helper(int fd,struct ea_attach_info *ai,const char *fn,con
         return -1;
     if((fd_recv=open(fn,O_RDONLY,0644))==-1)
         return -1;
-    flock(fd_recv,LOCK_SH);
+    readw_lock(fd_recv, 0, SEEK_SET, 0);
 
 
     pos1 = strrchr(original_filename, '\\');
@@ -2813,6 +2813,7 @@ static long ea_append_helper(int fd,struct ea_attach_info *ai,const char *fn,con
                 ret=write(fd,p,len);
     }
     len=lseek(fd_recv,0,SEEK_CUR);
+    un_lock(fd_recv, 0, SEEK_SET, 0);
     close(fd_recv);
     if(ret==-1||len!=end){
         bzero(&ai[count],sizeof(struct ea_attach_info));

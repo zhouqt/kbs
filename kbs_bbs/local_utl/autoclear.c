@@ -59,7 +59,7 @@ life *brd;
     sprintf(lockfile, "%s.lock", index);
     if ((fd = open(lockfile, O_RDWR | O_CREAT | O_APPEND, 0644)) == -1)
         return;
-    flock(fd, LOCK_EX);
+    writew_lock(fd, 0, SEEK_SET, 0);
 
     strcpy(fpath, index);
     fname = (char *) strrchr(fpath, '.');
@@ -106,7 +106,7 @@ life *brd;
         if (rename(index, bakfile) != -1)
             rename(tmpfile, index);
     }
-    flock(fd, LOCK_UN);
+    un_lock(fd, 0, SEEK_SET, 0);
     close(fd);
     updatelastpost(brd->bname);
 }

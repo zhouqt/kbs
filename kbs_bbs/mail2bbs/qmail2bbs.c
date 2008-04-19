@@ -82,7 +82,7 @@ int my_after_post(struct fileheader *fh, char *boardname)
 	}
 
 	if (!err) {
-		flock(fd, LOCK_EX);
+        writew_lock(fd, 0, SEEK_SET, 0);
 		nowid = get_nextid(boardname);
 		fh->id = nowid;
 		fh->groupid = fh->id;
@@ -95,7 +95,7 @@ int my_after_post(struct fileheader *fh, char *boardname)
 		if (safewrite(fd, fh, sizeof(fileheader)) == -1) {
 			err = 1;
 		}
-		flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
 		close(fd);
 	}
 	if (err) {

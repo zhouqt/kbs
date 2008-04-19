@@ -1723,7 +1723,7 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
     	memcpy(originFh, fh, sizeof(struct fileheader));
 
     	if (dirarg.needlock)
-        	flock(dirarg.fd, LOCK_UN);
+            un_lock(dirarg.fd, 0, SEEK_SET, 0);
 
     	free_write_dir_arg(&dirarg);
         prints("新的参数设定完成...\n\n");

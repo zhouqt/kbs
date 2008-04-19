@@ -98,7 +98,7 @@ int main() {
 			printf("cannot open %s.\n", buf);
 			break;
 		}
-		flock(fd, LOCK_EX);
+        writew_lock(fd, 0, SEEK_SET, 0);
 		
 		sprintf(stmt, "SELECT post.postid, post.threadid, post.parentid, post.username, post.userid,  thread.title, post.title, post.dateline, post.pagetext, post.ipaddress, post.attach FROM `post`, thread WHERE post.threadid=thread.threadid and thread.forumid=%d ORDER BY post.dateline", forumid[a]);
 		mysql_query(mysql, stmt);
@@ -236,7 +236,7 @@ int main() {
 		printf("%d posts processed.\n", cnt);
 		mysql_free_result(results);
 		CHECK;
-		flock(fd, LOCK_UN);
+        un_lock(fd, 0, SEEK_SET, 0);
 		close(fd);
 		//updatelastpost(boardname[a]);
 		//setboardtitle(boardname[a], 1);

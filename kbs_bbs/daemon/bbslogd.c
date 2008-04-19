@@ -99,9 +99,10 @@ static void openbbslog(int first)
 		if (!first && !strcmp(logconfig[i].filename,"boardusage.log") && logconfig[i].fd )
 			continue;
         if (logconfig[i].filename) {
-            logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
+            /*logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
             if (logconfig[i].fd < 0)
-                logconfig[i].fd = creat(logconfig[i].filename, 0644);
+                logconfig[i].fd = creat(logconfig[i].filename, 0644);*/
+            logconfig[i].fd = open(logconfig[i].filename, O_RDWR | O_CREAT, 0644);
             if (logconfig[i].fd < 0)
                 bbslog("3error","can't open log file:%s.%s",logconfig[i].filename,strerror(errno));
         }
@@ -217,14 +218,14 @@ static void writelog(struct bbs_msgbuf *msg)
     	}
 
 /*目前log还是分散的，就先lock,seek吧*/
-    	flock(pconf->fd, LOCK_SH);
+        readw_lock(pconf->fd, 0, SEEK_SET, 0);
     	lseek(pconf->fd, 0, SEEK_END);
 
     	if (pconf->buf && pconf->bufptr) {
         	write(pconf->fd, pconf->buf, pconf->bufptr);
         	pconf->bufptr = 0;
     	}
-    	flock(pconf->fd, LOCK_UN);
+        un_lock(pconf->fd, 0, SEEK_SET, 0);
 
 		return;
 	}
@@ -250,14 +251,14 @@ static void writelog(struct bbs_msgbuf *msg)
     }
 
 /*目前log还是分散的，就先lock,seek吧*/
-    flock(pconf->fd, LOCK_SH);
+    readw_lock(pconf->fd, 0, SEEK_SET, 0);
     lseek(pconf->fd, 0, SEEK_END);
 
     if (pconf->buf && pconf->bufptr) {
         write(pconf->fd, pconf->buf, pconf->bufptr);
         pconf->bufptr = 0;
     }
-    flock(pconf->fd, LOCK_UN);
+    un_lock(pconf->fd, 0, SEEK_SET, 0);
 }
 
 static void flushlog(int signo)
@@ -268,11 +269,11 @@ static void flushlog(int signo)
 
         pconf = &logconfig[i];
         if (pconf->fd>=0 && pconf->buf && pconf->bufptr) {
-            flock(pconf->fd, LOCK_SH);
+            readw_lock(pconf->fd, 0, SEEK_SET, 0);
             lseek(pconf->fd, 0, SEEK_END);
             write(pconf->fd, pconf->buf, pconf->bufptr);
             pconf->bufptr = 0;
-            flock(pconf->fd, LOCK_UN);
+            un_lock(pconf->fd, 0, SEEK_SET, 0);
         }
         if (signo!=-1)
             close(pconf->fd);
@@ -332,9 +333,10 @@ static void truncboardlog(int signo)
         	f_mv(logconfig[i].filename,"boardusage.log.0");
         }
         if (logconfig[i].filename) {
-            logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
+            /*logconfig[i].fd = open(logconfig[i].filename, O_WRONLY);
             if (logconfig[i].fd < 0)
-                logconfig[i].fd = creat(logconfig[i].filename, 0644);
+                logconfig[i].fd = creat(logconfig[i].filename, 0644);*/
+            logconfig[i].fd = open(logconfig[i].filename, O_RDWR | O_CREAT, 0644);
             if (logconfig[i].fd < 0)
                 bbslog("3error","can't open log file:%s.%s",logconfig[i].filename,strerror(errno));
         }

@@ -372,7 +372,7 @@ PHP_FUNCTION(bbs_createregform)
 
     if (fn) {
         now = time(NULL);
-        flock(fileno(fn),LOCK_EX);
+        writew_lock(fileno(fn), 0, SEEK_SET, 0);
         fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));
         fprintf(fn, "userid: %s\n", userid);
         fprintf(fn, "realname: %s\n", realname);
@@ -381,7 +381,7 @@ PHP_FUNCTION(bbs_createregform)
         fprintf(fn, "phone: %s\n", phone);
         fprintf(fn, "birth: %s\n", genbuf);
         fprintf(fn, "----\n");
-        flock(fileno(fn),LOCK_UN);
+        un_lock(fileno(fn), 0, SEEK_SET, 0);
         fclose(fn);
         RETURN_LONG(0);
     }

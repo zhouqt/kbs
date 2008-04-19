@@ -941,9 +941,9 @@ char filename[STRLEN], str[STRLEN];
 
     if ((fp = fopen(filename, "a")) == NULL)
         return -1;
-    flock(fileno(fp), LOCK_EX);
+    writew_lock(fileno(fp), 0, SEEK_SET, 0);
     rc = fprintf(fp, "%s\n", str);
-    flock(fileno(fp), LOCK_UN);
+    un_lock(fileno(fp), 0, SEEK_SET, 0);
     fclose(fp);
     return (rc == EOF ? -1 : 1);
 }
@@ -1115,12 +1115,12 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
     char fnnew[256 /*STRLEN*/];
     char buf[256 /*STRLEN*/];
 
-    if ((fp = fopen(filename, "r")) == NULL)
+    if ((fp = fopen(filename, "r+")) == NULL)
         return -1;
-    flock(fileno(fp), LOCK_EX);
+    writew_lock(fileno(fp), 0, SEEK_SET, 0);
     sprintf(fnnew, "%s.%d", filename, (int)getpid());
     if ((nfp = fopen(fnnew, "w")) == NULL) {
-        flock(fileno(fp), LOCK_UN);
+        un_lock(fileno(fp), 0, SEEK_SET, 0);
         fclose(fp);
         return -1;
     }
@@ -1131,7 +1131,7 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
         else if (*buf > ' ')
             fputs(buf, nfp);
     }
-    flock(fileno(fp), LOCK_UN);
+    un_lock(fileno(fp), 0, SEEK_SET, 0);
     fclose(fp);
     fclose(nfp);
     if (!deleted){
