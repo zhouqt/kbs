@@ -1128,6 +1128,31 @@ PHP_FUNCTION(bbs_docommend)
 }
 
 
+PHP_FUNCTION(bbs_post_file_alt) {
+    int ac, fname_len, userid_len, title_len, to_board_len, from_board_len, ret;
+    char *fname, *userid, *title, *to_board, *from_board;
+    long mode, accessed0, accessed1;
+    struct userec *user;
+    unsigned char accessed[2];
+    
+    ac = ZEND_NUM_ARGS();
+    if (ac != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssssslll", &fname, &fname_len, &userid, &userid_len, &title, &title_len, &to_board, &to_board_len, &from_board, &from_board_len, &mode, &accessed0, &accessed1) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if(userid == NULL)
+        user = NULL;
+    else {
+        if(getuser(userid, &user) == 0) {
+            RETURN_LONG(-1);
+        }
+    }
+    accessed[0] = (unsigned char)accessed0;
+    accessed[1] = (unsigned char)accessed1;
+    ret = post_file_alt(fname, user, title, to_board, from_board, (unsigned char)mode, accessed);
+    RETURN_LONG(ret);
+}
+
+
 
 
 

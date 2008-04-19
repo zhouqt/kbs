@@ -22,6 +22,7 @@ PHP_FUNCTION(bbs_edittitle);
 PHP_FUNCTION(bbs_doforward);
 PHP_FUNCTION(bbs_docross);
 PHP_FUNCTION(bbs_docommend);
+PHP_FUNCTION(bbs_post_file_alt);
 
 PHP_FUNCTION(bbs_brcaddread);
 PHP_FUNCTION(bbs_brcclear);
@@ -47,6 +48,7 @@ PHP_FUNCTION(bbs2_brcsync);
     PHP_FE(bbs_doforward, NULL) \
     PHP_FE(bbs_docross,NULL) \
     PHP_FE(bbs_docommend,NULL) \
+    PHP_FE(bbs_post_file_alt,NULL) \
     PHP_FE(bbs_brcaddread, NULL) \
     PHP_FE(bbs_brcclear, NULL) \
     PHP_FE(bbs2_brcdump, NULL) \
