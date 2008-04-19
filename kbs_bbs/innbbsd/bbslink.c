@@ -297,10 +297,10 @@ void save_outgoing(soverview_t *sover,const char *filename,const char *userid,co
                 }
             }
             if (nl->feedfp != NULL) {
-                flock(fileno(nl->feedfp), LOCK_EX);
+                writew_lock(fileno(nl->feedfp), 0, SEEK_SET, 0);
                 fprintf(nl->feedfp, "%s\t%s\t%s\t%ld\t%s\t%s\n", sover->board, filename, group, mtime, FROM, sover->subject);
                 fflush(nl->feedfp);
-                flock(fileno(nl->feedfp), LOCK_UN);
+                un_lock(fileno(nl->feedfp), 0, SEEK_SET, 0);
             }
         }
         if (savech == '\0')
@@ -649,10 +649,10 @@ char *textline;
 {
     openfeed(node);
     if (node->feedfp != NULL) {
-        flock(fileno(node->feedfp), LOCK_EX);
+        writew_lock(fileno(node->feedfp), 0, SEEK_SET, 0);
         fprintf(node->feedfp, "%s", textline);
         fflush(node->feedfp);
-        flock(fileno(node->feedfp), LOCK_UN);
+        un_lock(fileno(node->feedfp), 0, SEEK_SET, 0);
     }
 }
 
@@ -1007,12 +1007,12 @@ char *overview;
     /*
      * if (node->feedfp == NULL) return 0; 
      */
-    flock(fileno(node->feedfp), LOCK_EX);
+    writew_lock(fileno(node->feedfp), 0, SEEK_SET, 0);
     while (fgets(buffer, sizeof buffer, POSTS) != NULL) {
         fputs(buffer, node->feedfp);
         fflush(node->feedfp);
     }
-    flock(fileno(node->feedfp), LOCK_UN);
+    un_lock(fileno(node->feedfp), 0, SEEK_SET, 0);
     fclose(POSTS);
     if (Verbose)
         printf("<Unlinking> %s\n", overview);

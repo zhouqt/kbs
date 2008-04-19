@@ -413,7 +413,7 @@ BOOL myHISwrite(datum *key, char *remain)
     if (val.dptr != NULL) {
         return FALSE;
     }
-    flock(fileno(HISwritefp), LOCK_EX);
+    writew_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
     offset = ftell(HISwritefp);
     i = fprintf(HISwritefp, "%s%c%s", key->dptr, HIS_FIELDSEP, remain);
     if (i == EOF || fflush(HISwritefp) == EOF) {
@@ -422,7 +422,7 @@ BOOL myHISwrite(datum *key, char *remain)
          */
         IOError("history");
         syslog(LOG_ERR, "%s cant write history %m", LogName);
-        flock(fileno(HISwritefp), LOCK_UN);
+        un_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
         return FALSE;
     }
     /*
@@ -433,12 +433,12 @@ BOOL myHISwrite(datum *key, char *remain)
     if (dbzstore(*key, val) < 0) {
         IOError("my history database");
         syslog(LOG_ERR, "%s cant dbzstore %m", LogName);
-        flock(fileno(HISwritefp), LOCK_UN);
+        un_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
         return FALSE;
     }
     if (++HISdirty >= ICD_SYNC_COUNT)
         HISsync();
-    flock(fileno(HISwritefp), LOCK_UN);
+    un_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
     return TRUE;
 }
 
@@ -451,7 +451,7 @@ BOOL HISwrite(datum *key, long date, const char *paths)
     datum val;
     int i;
 
-    flock(fileno(HISwritefp), LOCK_EX);
+    writew_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
     offset = ftell(HISwritefp);
     i = fprintf(HISwritefp, "%s%c%ld%c%s\n", key->dptr, HIS_FIELDSEP, (long) date, HIS_FIELDSEP, paths);
     if (i == EOF || fflush(HISwritefp) == EOF) {
@@ -460,7 +460,7 @@ BOOL HISwrite(datum *key, long date, const char *paths)
          */
         IOError("history");
         syslog(LOG_ERR, "%s cant write history %m", LogName);
-        flock(fileno(HISwritefp), LOCK_UN);
+        un_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
         return FALSE;
     }
     /*
@@ -471,11 +471,11 @@ BOOL HISwrite(datum *key, long date, const char *paths)
     if (dbzstore(*key, val) < 0) {
         IOError("history database");
         syslog(LOG_ERR, "%s cant dbzstore %m", LogName);
-        flock(fileno(HISwritefp), LOCK_UN);
+        un_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
         return FALSE;
     }
     if (++HISdirty >= ICD_SYNC_COUNT)
         HISsync();
-    flock(fileno(HISwritefp), LOCK_UN);
+    un_lock(fileno(HISwritefp), 0, SEEK_SET, 0);
     return TRUE;
 }
