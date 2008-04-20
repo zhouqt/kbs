@@ -104,6 +104,7 @@ PHP_FUNCTION(bbs_getuser)
 
 PHP_FUNCTION(bbs_remote_auth)
 {
+#ifdef SECONDSITE
     char *s;
     int s_len;
     char *pw;
@@ -114,7 +115,6 @@ PHP_FUNCTION(bbs_remote_auth)
     char permstr[33];
     struct userec *user;
 
-#ifdef SECONDSITE
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
