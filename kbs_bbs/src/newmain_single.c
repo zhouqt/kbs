@@ -642,6 +642,7 @@ void login_query()
                         const struct boardheader *bh;
                         struct boardheader newbh;
                         FILE *fp;
+                        pid_t pid;
 
                         /* show some hint, pig2532 */
                         while(true) {
@@ -656,8 +657,25 @@ void login_query()
 
                         kick_user_utmp(getSession()->currentuid, NULL, 0);
                         memcpy(oldid, user->userid, IDLEN + 2);
-                        sprintf(cmd, "bin/MIC %s %s %s %s", user->userid, uid, passbuf, "ScoreClub");
-                        system(cmd);
+                        switch (pid = fork()) {
+                            case -1:
+                                getdata(0, 0, "系统错误, 操作中断!", cmd, 10, NOECHO, NULL, true);
+                                exit(1);
+                                break;
+                            case 0: /* child */
+                                signal(SIGTERM, SIG_DFL);
+                                signal(SIGHUP, SIG_IGN);
+                                signal(SIGPIPE, SIG_IGN);
+                                signal(SIGQUIT, SIG_IGN);
+                                signal(SIGUSR1, SIG_IGN);
+                                signal(SIGUSR2, SIG_IGN);
+                                execl("bin/MIC", "MIC", user->userid, uid, passbuf, "ScoreClub", (char *)0);
+                                _exit(127);
+                                break;
+                            default: /* parent */
+                                waitpid(pid, NULL, 0);
+                                break;
+                        }
                         /* 遍历 .BOARDS 改版主字符串 */
                         if (HAS_PERM(user, PERM_BOARDS) && getuser("SYSOP", &user_sysop)) {
                             sprintf(fname, "tmp/autobm_%ld_%d", time(0), getpid());
