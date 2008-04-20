@@ -19,7 +19,7 @@ php >= 4.3.0           可选      选择 web 界面支持才需要
 libxml2                可选      选择 web 界面支持才需要
 libiconv               可选      选择 web 界面支持才需要
 zlib                   可选      选择 web 界面支持才需要
-openssl		       可选      选择 pop3d 支持 pop3s 才需要
+openssl                可选      选择 pop3d 支持 pop3s 才需要
 gmp-4.1.2              可选      选择 ssh 方式支持才需要
 
 注意：其中 libesmtp 和 gmp 在 cygwin 的安装包并不包含，而且在 cygwin 上的
