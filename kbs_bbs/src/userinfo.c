@@ -490,16 +490,15 @@ int x_info(void){
     return 0;
 }
 
-    void getfield(line, info, desc, buf, len)  int line, len;
+void getfield(line, info, desc, buf, len)
+    int line, len;
     char *info, *desc, *buf;
-
-
 {
     char prompt[STRLEN];
 
     
-        /*    sprintf( genbuf, "  原先设定: %-46.46s (%s)", buf, info ); */ 
-        sprintf(genbuf, "  原先设定: %-20.20s (%s)", buf, info);
+    /*    sprintf( genbuf, "  原先设定: %-46.46s (%s)", buf, info ); */ 
+    sprintf(genbuf, "  原先设定: %-20.20s %s", buf, info);
     move(line, 0);
     prints(genbuf);
     sprintf(prompt, "  %s: ", desc);
@@ -589,19 +588,23 @@ int x_fillform(void){
         prints("%s 您好, 请据实填写以下的资料(请使用中文):\n", getCurrentUser()->userid);
         genbuf[0] = '\0';      /*Haohmaru.99.09.17.以下内容不得过短 */
         while (strlen(genbuf) < 3) {
-            getfield(6, "请用中文,不能输入的汉字请用拼音", "真实姓名", rname, NAMELEN);
+            getfield(6, "(请用中文,不能输入的汉字请用拼音)", "真实姓名", rname, NAMELEN);
         }
         genbuf[0] = '\0';
         while (strlen(genbuf) < 2) {
-            getfield(8, "学校系级或单位全称及所属部门", "服务单位", career, STRLEN);
+            getfield(8, "(学校系级或单位全称及所属部门)", "服务单位", career, STRLEN);
         }
         genbuf[0] = '\0';
         while (strlen(genbuf) < 6) {
-            getfield(10, "请具体到寝室或门牌号码", "目前住址", addr, STRLEN);
+            getfield(10, "(请具体到寝室或门牌号码)", "目前住址", addr, STRLEN);
         }
         genbuf[0] = '\0';
         while (strlen(genbuf) < 2) {
-            getfield(12, "包括可连络时间,若无可用呼机或Email地址代替", "连络电话", phone, STRLEN);
+#ifdef NEWSMTH
+            getfield(12, "", "联络电话", phone, STRLEN);
+#else
+            getfield(12, "(包括可联络时间,若无可用呼机或Email地址代替)", "联络电话", phone, STRLEN);
+#endif
         }
 #ifndef HAVE_BIRTHDAY
         getfield(14, "年.月.日(公元)", "出生年月", birth, STRLEN);

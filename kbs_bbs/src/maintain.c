@@ -2114,7 +2114,7 @@ static const char *field[] = { "usernum", "userid", "realname", "career",
 };
 static const char *reason[] = {
     "请输入真实姓名(国外可用拼音).", "请详填学校科系或工作单位.",
-    "请填写完整的住址资料.", "请详填连络电话(若无可用呼机或Email地址代替).",
+    "请填写完整的住址资料.", "请详填联络电话.",
     "请确实而详细的填写注册申请表.", "请用中文填写申请单.",
     "不允许从穿梭注册", "同一个用户注册了过多ID",
     NULL
@@ -2127,7 +2127,7 @@ int scan_register_form(logfile, regfile)
 char *logfile, *regfile;
 {
     static const char *finfo[] = { "帐号位置", "申请代号", "真实姓名", "服务单位",
-        "目前住址", "连络电话", "生    日", NULL
+        "目前住址", "联络电话", "生    日", NULL
     };
     struct userec uinfo;
     FILE *fn, *fout, *freg;
