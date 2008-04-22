@@ -703,7 +703,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
     if(ret == '#')
         return do_remote_cross(info);
 #endif
-    if(!(bh=getbcache(board)))
+    if(!ret||!(bh=getbcache(board)))
         return FULLUPDATE;
     /* Í¬°æ×ªÔØ */
     if(!inmail&&!strcmp(board,currboard->filename)){
