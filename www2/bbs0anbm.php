@@ -82,7 +82,7 @@ function bbs_ann_bm_display_articles($articles, $isBoard) {
 	$pathstr = substr($path, 9, strlen($path) - 9);
 ?>
 <script type="text/javascript"><!--
-var an = new annWriter('<?php echo rawurlencode($pathstr); ?>',<?php echo $has_perm_boards?"1":"0"; ?>,'<?php echo $text; ?>','<?php echo $title; ?>');
+var an = new annWriter('<?php echo rawurlencode($pathstr); ?>',<?php echo $has_perm_boards?"1":"0"; ?>,'<?php echo $text; ?>','<?php echo addslashes($title); ?>');
 <?php
 	if($show_none)
 	{
