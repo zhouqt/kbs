@@ -587,7 +587,7 @@ static inline int edit_cross_content(const char *name,char *new_file_name,unsign
 
 #ifdef REMOTE_CROSS
 
-#define REMOTE_SITE_NAME "Solee"
+#define REMOTE_SITE_NAME "Ë®Ä¾¶þÕ¾"
 
 struct rc_res {
     char text[STRLEN];
