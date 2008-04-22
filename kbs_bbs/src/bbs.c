@@ -587,7 +587,7 @@ static inline int edit_cross_content(const char *name,char *new_file_name,unsign
 
 #ifdef REMOTE_CROSS
 
-#define REMOTE_SITE_NAME "Ë®Ä¾¶þÕ¾"
+#define REMOTE_SITE_NAME "Solee"
 
 struct rc_res {
     char text[STRLEN];
@@ -3241,7 +3241,13 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
      * "Anonymous":getCurrentUser()->userid,STRLEN) ;
      */
 #ifdef SECONDSITE
-    strncpy(post_file.owner, (anonyboard && Anony) ? ((strcmp(currboard->filename, "SecretSky") == 0) ? "guest" : currboard->filename) : getCurrentUser()->userid, OWNER_LEN);
+    strncpy(post_file.owner, getCurrentUser()->userid, OWNER_LEN);
+    if(anonyboard && Anony) {
+        if((strcmp(currboard->filename, "SecretSky") == 0)
+          || (strcmp(currboard->filename, "Sex") == 0))
+            strcpy(post_file.owner, "guest");
+    }
+    //strncpy(post_file.owner, (anonyboard && Anony) ? ((strcmp(currboard->filename, "SecretSky") == 0) ? "guest" : currboard->filename) : getCurrentUser()->userid, OWNER_LEN);
 #else
     strncpy(post_file.owner, (anonyboard && Anony) ? currboard->filename : getCurrentUser()->userid, OWNER_LEN);
 #endif

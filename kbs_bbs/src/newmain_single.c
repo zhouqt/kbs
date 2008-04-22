@@ -760,7 +760,6 @@ void login_query()
                         /* .BOARDS ÐÞ¸ÄÍê±Ï */
                     }
                 }
-
                 
                 break;
         }

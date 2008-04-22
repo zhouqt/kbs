@@ -408,6 +408,7 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
 
         strncpy(getSession()->fromhost, (*y)->from, IPLEN);
         getSession()->fromhost[IPLEN] = '\0';
+        getSession()->anonyindex = ((*y)->utmpkey + (*y)->logintime ) % 65536;
     } else {
         /*
          * guest用户处理 

@@ -1256,12 +1256,8 @@ int modify_userinfo(int uid,int mode){
 #else /* NEWSMTH */
     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
-#ifdef SECONDSITE
-    snprintf(buf, MU_LENGTH, "请到水木社区主站查询积分");
-#else
     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
-        "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
-#endif
+        "用户: %u   管理: %u"),nuser.score_user,nuser.score_manager);
     MU_MENUFORM(17,N,"%s",buf);
 #endif /* ! NEWSMTH */
     MU_MENUFORM(18,N,"<%s>",gen_permstr(nuser.userlevel,buf));
@@ -1610,10 +1606,6 @@ int modify_userinfo(int uid,int mode){
 #ifdef NEWSMTH
                 case 17:
                     MU_SHOW_HINT(i);
-#ifdef SECONDSITE
-                    MU_PUT(MU_CURR_ROW, MU_MSG(C, "请到水木社区主站修改积分"));
-                    break;
-#endif
                     MU_GET(MU_CURR_ROW, MU_MSG(Y, "请选择要修改的积分种类{U(用户)|M(管理)}: "), buf, 2);
                     if (!((k = (toupper(buf[0]) == 'U')) || (toupper(buf[0]) == 'M')))
                     {
