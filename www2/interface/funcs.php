@@ -8,7 +8,7 @@
 define("PAGE_SIZE", 20);
 define("THREAD_PAGE_SIZE", 20);
 define("WWW2ROOT", "/home/www/htdocs/");
-
+exit;
 /*$clientip = $_SERVER["REMOTE_ADDR"];
 if(($clientip != "127.0.0.1") && ($clientip != "192.168.1.100"))
     exit;*/
