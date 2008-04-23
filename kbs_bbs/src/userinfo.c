@@ -81,7 +81,7 @@ void disply_userinfo(struct userec *u, int real)
         }
 #endif
         prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);
-#ifdef NEWSMTH
+#if defined(NEWSMTH) && !defined(SECONDSITE)
     if(u->score_user>publicshm->us_sample[1])
         sprintf(genbuf,"%d -- RANKING %.2lf%%",u->score_user,100*us_ranking(u->score_user));
     else
@@ -1257,7 +1257,7 @@ int modify_userinfo(int uid,int mode){
     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
 #ifdef SECONDSITE
-    snprintf(buf,MU_LENGTH,("用户: %u  管理: %u",nuser.score_user,nuser.score_manager);
+    snprintf(buf,MU_LENGTH,"用户: %u  管理: %u",nuser.score_user,nuser.score_manager);
 #else /* SECONDSITE */
     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
         "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
