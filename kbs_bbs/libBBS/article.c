@@ -1317,7 +1317,7 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
                     if ((false != canIsend2(session->currentuser, re->owner)) && (check_mail_perm(NULL, lookupuser) == 0)) {
                         setbfile(buf, boardname, fh->filename);
                         snprintf(newtitle, ARTICLE_TITLE_LEN, "[»ØÎÄ×ª¼Ä]%s", fh->title);
-                        mail_file(session->currentuser->userid, buf, re->owner, newtitle, 0, fh);
+                        mail_file(/*session->currentuser->userid*/fh->owner, buf, re->owner, newtitle, 0, fh);
                     }
                 }
             }
