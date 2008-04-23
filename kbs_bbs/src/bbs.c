@@ -3186,6 +3186,9 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 			}*/
 		} else if (ooo == 'B') {
 			/* if( replymode == 0 ) */
+            if(anonyboard)
+                mailback = 0;
+            else
 				mailback = mailback ? 0 : 1;
         } else if (ooo == ANONY_KEY) {
             Anony = (Anony == 1) ? 0 : 1;
