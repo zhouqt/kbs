@@ -25,11 +25,11 @@ int main(int argc, char*argv[])
 	if(ret=='p') {
 		passwd = getpass("Input a password:");
 		setpasswd(passwd,&uinfo);
-		printf("SYSOP'S Password restored.\n");
+		printf("SYSOP's password is restored.\n");
 	}
 	if((ret==-1 && argc<2) || ret=='p'){
 		uinfo.userlevel=0xDAFFDFFF;//»Ö¸´SYSOPÄ¬ÈÏÈ¨ÏÞ
-		printf("SYSOP'S PERM restored.\n");
+		printf("SYSOP's PERM is restored.\n");
 		update_user(&uinfo, unum, 1);
 	}else if(ret==-1 && argc>1){
 		p_help();
@@ -40,6 +40,6 @@ int main(int argc, char*argv[])
 
 void p_help()
 {
-	printf("SYSOP Password and PERM restore tool.\n\nusage:fix_sysop [option]\n-h	Print this message.\n-p	restore PERM and Passwd.\n Default action is PERM restore.\n");
+	printf("SYSOP's password and PERM restoration tool.\n\nusage:fix_sysop [option]\n-h	Print this message.\n-p	restore PERM and password.\n Default action is PERM restoration.\n");
         return;
 }
