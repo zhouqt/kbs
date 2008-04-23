@@ -1,6 +1,6 @@
 #include "bbs.h"
 
-main()
+int main()
 {
     int n;
     struct boardheader * bptr;
@@ -14,5 +14,6 @@ main()
             continue;
         board_update_toptitle(n + 1, 1);
     }
+    return 0;
 }
 
