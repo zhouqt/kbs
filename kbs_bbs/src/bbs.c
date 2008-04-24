@@ -3190,12 +3190,13 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 			}*/
 		} else if (ooo == 'B') {
 			/* if( replymode == 0 ) */
-            if(anonyboard)
+            /*if(anonyboard)
                 mailback = 0;
-            else
-				mailback = mailback ? 0 : 1;
+            else*/
+                if (Anony == 0) mailback = mailback ? 0 : 1;
         } else if (ooo == ANONY_KEY) {
             Anony = (Anony == 1) ? 0 : 1;
+            if (Anony == 1) mailback = 0;
         } else if (ooo == RAND_SIG_KEY) {
             getCurrentUser()->signature = -1;
 		} else if (ooo == 'Q') {
