@@ -609,7 +609,7 @@ static size_t simple_get_http_response(void* ptr, size_t size, size_t nmemb, voi
     return putsize;
 }
 
-int do_remote_cross(struct fileheader* fh) {
+int do_remote_cross(struct fileheader* fh, int inmail) {
     char bname[STRLEN], rpid[STRLEN], title[STRLEN], fname[PATHLEN], buf[1025];
     struct curl_httppost *post=NULL, *last=NULL;
     struct curl_slist *header=NULL;
@@ -626,12 +626,16 @@ int do_remote_cross(struct fileheader* fh) {
 
     sprintf(rpid, "%ld_%d", time(0), getpid());
     snprintf(title, STRLEN - 1, "%s (зЊди)", fh->title);
-    setbfile(fname, currboard->filename, fh->filename);
+    if(inmail)
+        setmailfile(fname, getCurrentUser()->userid, fh->filename);
+    else
+        setbfile(fname, currboard->filename, fh->filename);
     handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, "http://127.0.0.1:10080/bbsremotepost.php");
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "rpid", CURLFORM_COPYCONTENTS, rpid, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "user", CURLFORM_COPYCONTENTS, getCurrentUser()->userid, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "board", CURLFORM_COPYCONTENTS, bname, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "inmail", CURLFORM_COPYCONTENTS, inmail ? "1" : "0", CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "site", CURLFORM_COPYCONTENTS, BBS_FULL_NAME, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "fromboard", CURLFORM_COPYCONTENTS, currboard->filename, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "title", CURLFORM_COPYCONTENTS, title, CURLFORM_END);
@@ -701,7 +705,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
 #ifdef REMOTE_CROSS
     in_do_sendmsg = 0;
     if(ret == '#')
-        return do_remote_cross(info);
+        return do_remote_cross(info, inmail);
 #endif
     if(!ret||!(bh=getbcache(board)))
         return FULLUPDATE;
