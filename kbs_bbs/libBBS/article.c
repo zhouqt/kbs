@@ -52,6 +52,8 @@ int get_postfilename(char *filename, char *direct, int use_subdir)
 int isowner(const struct userec *user, const struct fileheader *fileinfo)
 {
     time_t posttime;
+    if (!strcmp(user->userid, "guest"))
+        return 0;
     /* fancyrabbit Sep 14 2007, 这里改成 case insensitive 的吧 ... */
     if (strcasecmp(fileinfo->owner, user->userid))
         return 0;
