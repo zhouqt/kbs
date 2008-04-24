@@ -70,7 +70,11 @@
 		print("无法写入文件。");
 		exit;
 	}
-	fwrite($fp, "【 以下文字转载自 {$fromsite} 的 {$fromboard} 讨论区 】\n");
+    $inmail = $_POST["inmail"];
+    if($inmail)
+        fwrite($fp, "\033[1;37m【 以下文字转载自 {$fromsite}\033[32m {$userid} \033[37m的信箱 】\033[m\n");
+    else
+	    fwrite($fp, "【 以下文字转载自 {$fromsite} 的 {$fromboard} 讨论区 】\n");
 	fwrite($fp, $content);
 	fclose($fp);
 	$ret = bbs_post_file_alt($fname, $userid, $title, $bname, NULL, 0x04, 0, 0);
