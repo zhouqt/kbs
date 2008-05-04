@@ -1253,7 +1253,9 @@ brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, 
 	var brdlink, ret = '<tr class="' + (this.index%2?"even":"odd") + '"><td class="center">' + this.index + '</td>';
 	if (group) {
 		ret += '<td>' + putImageCode('groupgroup.gif','alt="＋" title="版面组"') + '</td>';
-		brdlink = 'bbsboa.php?group=' + this.father + '&group2=' + bid;
+		//brdlink = 'bbsboa.php?group=' + this.father + '&group2=' + bid;
+        /* pig2532: 版面组也用bbsdoc，让它自己去跳转好了，上面这个group参数是不对的。 */
+        brdlink = 'bbsdoc.php?board=' + escape(name);
 	} else {
 		var unread_tag = (unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'u"';
 		var read_tag = (!unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'r"';
