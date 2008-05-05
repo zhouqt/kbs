@@ -488,6 +488,8 @@ while($board = array_shift($boards))
     <td width="80" class="header" align="center"><a href="bbsxmlbrd.php?flag=0">推荐版面</a></td>
     <td width="81" class="header" align="center"><a href="bbsxmlbrd.php?flag=1">人气排名</a></td>
     <td width="79" class="header" align="center"><a href="#todaybless">本日祝福</a></td>
+	<td width="79" class="header" align="center"><a href="bbsnotice.php?file=hotinfo">近期热点</a></td>
+	<td width="79" class="header" align="center"><a href="bbsnotice.php?file=systeminfo">系统热点</a></td>
     <td width="79" class="header" align="center">
 <?php
 	if(defined("BBS_HAVE_BLOG"))
