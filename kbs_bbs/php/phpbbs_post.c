@@ -479,7 +479,7 @@ PHP_FUNCTION(bbs_postarticle)
     /*
      * 在boards版版主发文自动添加文章标记 Bigman:2000.8.12 
      */
-    if (!strcmp(board, "Board") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
+    if (!strcmp(board, "BM_Apply") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
         && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
