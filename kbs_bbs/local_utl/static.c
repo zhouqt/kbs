@@ -55,15 +55,15 @@ int main(int argc,char* argv[])
 
     now = time(0);
     date_tm = localtime(&now);
-    sprintf(date, "%02u/%02u", date_tm->tm_mon + 1, date_tm->tm_mday);
+    sprintf(date, "%d-%02u-%02u", date_tm->tm_year + 1900, date_tm->tm_mon + 1, date_tm->tm_mday);
 
     while (fgets(buf, 256, fp)) {
-        hour = atoi(buf + 7);
+        hour = atoi(buf + 12);
         if (hour < 0 || hour > 23) {
             printf("%s", buf);
             continue;
         }
-        if (strncmp(buf + 1, date, 5))
+        if (strncmp(buf + 1, date, 10))
             continue;
         if (strstr(buf, "ENTER")) {
             st.no[hour]++;
