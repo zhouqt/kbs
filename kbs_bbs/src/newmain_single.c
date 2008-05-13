@@ -180,8 +180,10 @@ void u_enter()
     strncpy(uinfo.username, getCurrentUser()->username, 40);
     getSession()->utmpent = getnewutmpent(&uinfo, 0);
     if (getSession()->utmpent == -1) {
-        prints("人数已满,无法分配用户条目!\n");
-        oflush();
+        //prints("人数已满,无法分配用户条目!\n");
+        //oflush();
+        prints("系统已达到最大登录用户负荷，请稍后再访问本站。\n");
+        refresh();
         Net_Sleep(20);
         exit(-1);
     }
