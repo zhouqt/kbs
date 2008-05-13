@@ -196,6 +196,9 @@
 /* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
     make the number of session char from 3 to 4
     */
+#ifndef SYSOP_EXTRA_USHM
+#define SYSOP_EXTRA_USTHM 10
+#endif
 
 #ifndef MAX_GUEST_NUM
 #define MAX_GUEST_NUM		800
