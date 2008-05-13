@@ -197,7 +197,7 @@
     make the number of session char from 3 to 4
     */
 #ifndef SYSOP_EXTRA_USHM
-#define SYSOP_EXTRA_USTHM 10
+#define SYSOP_EXTRA_USHM 10
 #endif
 
 #ifndef MAX_GUEST_NUM
