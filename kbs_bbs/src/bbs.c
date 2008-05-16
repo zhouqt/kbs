@@ -1125,7 +1125,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     titlelen = scr_cols > 80 ? scr_cols - 80 + 45 : 45;
     if (isreply) titlelen += 3;
     if (titlelen > ARTICLE_TITLE_LEN) {
-        titlelen = ARTICLE_TITLE_LEN - 1;
+        titlelen = ARTICLE_TITLE_LEN;
     }
     if (! DEFINE(getCurrentUser(), DEF_SHOWSIZE) && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK){
 		char sizebuf[30];
@@ -3137,7 +3137,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             move(t_lines - 1, 0);
             clrtoeol();
             strcpy(buf4, buf);
-            gdataret = getdata(t_lines - 1, 0, "标题: ", buf4, 79, DOECHO, NULL, false);
+            gdataret = getdata(t_lines - 1, 0, "标题: ", buf4, ARTICLE_TITLE_LEN, DOECHO, NULL, false);
 			if(gdataret == -1) return FULLUPDATE;
             if ((buf4[0] == '\0' || buf4[0] == '\n')) {
                 if (buf[0] != '\0') {
