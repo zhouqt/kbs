@@ -71,4 +71,49 @@ void to64frombits(unsigned char *out,const unsigned char *in,int inlen);
 #define un_lock(fd,offset,whence,len)\
 	lock_reg(fd,F_SETLKW,F_UNLCK,offset,whence,len)
 
+/* fancy May 17 2008, atomic integer type definitions and operations
+ * 注意, gcc 有可能将变量 *v 放入寄存器中进行蹂躏, 无法取得其真实地址
+ * 因此如果要求准确度高的话, 需要避免此类情况
+ * 比如将 v 放入结构等等 ...
+ */
+#ifdef ASM_ATOMIC
+
+static inline void atomic_add(int i, int *v)
+{
+    asm volatile(
+            "lock addl %1,%0"
+            :"=m" (v)
+            :"ir" (i), "m" (v)
+            );
+}
+
+static inline void atomic_sub(int i, int *v)
+{
+    asm volatile(
+            "lock subl %1,%0"
+            :"=m" (v)
+            :"ir" (i), "m" (v)
+            );
+}
+
+static inline void atomic_inc(int *v)
+{
+    asm volatile(
+            "lock incl %0"
+            :"=m" (v)
+            :"m" (v)
+            );
+}
+
+static inline void atomic_dec(int *v)
+{
+    asm volatile(
+            "lock decl %0"
+            :"=m" (v)
+            :"m" (v)
+            );
+}
+
+#endif /* ASM_ATOMIC */
+
 #endif

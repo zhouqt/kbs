@@ -525,11 +525,19 @@ void board_setcurrentuser(int idx,int num)
 {
     if (idx<=0) return;
     if (num > 0)
+#ifdef ASM_ATOMIC
+        atomic_inc(&(brdshm->bstatus[idx - 1].currentusers));
+#else
         brdshm->bstatus[idx - 1].currentusers++;
-    else  if (num < 0) {
-      brdshm->bstatus[idx - 1].currentusers--;
-      if (brdshm->bstatus[idx - 1].currentusers<0)
-          brdshm->bstatus[idx - 1].currentusers=0;
+#endif
+    else if (num < 0) {
+#ifdef ASM_ATOMIC
+        atomic_dec(&(brdshm->bstatus[idx - 1].currentusers));
+#else
+        brdshm->bstatus[idx - 1].currentusers--;
+#endif
+        if (brdshm->bstatus[idx - 1].currentusers<0)
+            brdshm->bstatus[idx - 1].currentusers=0;
     }
     else
         brdshm->bstatus[idx - 1].currentusers=0;
