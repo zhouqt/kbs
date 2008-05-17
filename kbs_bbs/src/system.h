@@ -82,8 +82,8 @@ static inline void atomic_add(int i, int *v)
 {
     asm volatile(
             "lock addl %1,%0"
-            :"=m" (v)
-            :"ir" (i), "m" (v)
+            :"=m" (*v)
+            :"ir" (i), "m" (*v)
             );
 }
 
@@ -91,8 +91,8 @@ static inline void atomic_sub(int i, int *v)
 {
     asm volatile(
             "lock subl %1,%0"
-            :"=m" (v)
-            :"ir" (i), "m" (v)
+            :"=m" (*v)
+            :"ir" (i), "m" (*v)
             );
 }
 
@@ -100,8 +100,8 @@ static inline void atomic_inc(int *v)
 {
     asm volatile(
             "lock incl %0"
-            :"=m" (v)
-            :"m" (v)
+            :"=m" (*v)
+            :"m" (*v)
             );
 }
 
@@ -109,8 +109,8 @@ static inline void atomic_dec(int *v)
 {
     asm volatile(
             "lock decl %0"
-            :"=m" (v)
-            :"m" (v)
+            :"=m" (*v)
+            :"m" (*v)
             );
 }
 
