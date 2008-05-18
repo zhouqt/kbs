@@ -43,7 +43,8 @@ if ($errno==UPLOAD_ERR_OK) {
 		$tok = strtok("/\\");
 	}
 	$act_attachname=strtr($act_attachname,$filename_trans);
-	$act_attachname=substr($act_attachname,-60);
+	if (strlen($act_attachname)>60)
+		$act_attachname=substr($act_attachname,-60);
 	if ($act_attachname!="") {
 		if ($_FILES['upfile']['size']>ATTACHMAXSIZE) 
 			$errno=UPLOAD_ERR_FORM_SIZE;
