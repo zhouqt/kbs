@@ -521,21 +521,49 @@ int board_setreadonly(const char *board, int readonly)
     return 0;
 }
 
+static inline int currentusers_lock(void)
+{
+    int fd;
+    char errbuf[STRLEN];
+    if ((fd = creat("currentusers.lock", 0600)) == -1) {
+        bbslog("3system", "Can't lock currentusers: %s", strerror_r(errno, errbuf, STRLEN));
+        return -1;
+    }
+    writew_lock(fd, 0, SEEK_SET, 0);
+    return fd;
+}
+
+static inline void currentusers_unlock(int fd)
+{
+    if (fd != -1) {
+        un_lock(fd, 0, SEEK_SET, 0);
+        close(fd);
+    }
+    return;
+}
+
+
 void board_setcurrentuser(int idx,int num)
 {
     if (idx<=0) return;
-    if (num > 0)
+    if (num > 0) {
 #ifdef ASM_ATOMIC
         atomic_inc(&(brdshm->bstatus[idx - 1].currentusers));
 #else
+        int fd = currentusers_lock();
         brdshm->bstatus[idx - 1].currentusers++;
+        currentusers_unlock(fd);
 #endif
+    }
     else if (num < 0) {
 #ifdef ASM_ATOMIC
         atomic_dec(&(brdshm->bstatus[idx - 1].currentusers));
 #else
+        int fd = currentusers_lock();
         brdshm->bstatus[idx - 1].currentusers--;
+        currentusers_unlock(fd);
 #endif
+        /* 2 lines below just make a remedial step, I didn't pay attention to its atomicity, fancy May 22 2008 */
         if (brdshm->bstatus[idx - 1].currentusers<0)
             brdshm->bstatus[idx - 1].currentusers=0;
     }
