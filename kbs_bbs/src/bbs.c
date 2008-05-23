@@ -2473,11 +2473,12 @@ int set_board_rule(struct boardheader *bh, int flag)
 static int select_top(void);
 #endif /* USE_PRIMORDIAL_TOP10 */
 
-int read_hot_info()
+int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char ans[4];
 	char prompt[STRLEN];
-	int gdataret;
+	int gdataret, addfav=0;
+    if( extraarg ) addfav = * ( (int *) extraarg ) ;
     move(t_lines - 1, 0);
     clrtoeol();
     snprintf(prompt,STRLEN,"选择: 1)十大话题 "
@@ -2486,11 +2487,11 @@ int read_hot_info()
 #else
         "2)十大祝福 "
 #endif
-        "3)近期热点 4)系统热点 5)日历日记 %s[1]: ",
+        "3)近期热点 4)系统热点 5)日历日记 %s%s[1]: ",
 #ifdef NEWSMTH
-        ((uinfo.mode==READING)?"6)治版方针 ":"")
+        addfav ? "6)百大版面 " : "", ((uinfo.mode==READING)?"7)治版方针 ":"")
 #else
-        ""
+        "", ""
 #endif
         );
     gdataret = getdata(t_lines - 1, 0, prompt, ans, 3, DOECHO, NULL, true);
@@ -2512,7 +2513,22 @@ int read_hot_info()
             exec_mbem("@mod:service/libcalendar.so#calendar_main");
         break;
 #ifdef NEWSMTH
-	case '6':
+    case '6':
+    	if(addfav){
+            int bid;
+    		bid = EnameInFav("HotBoards",getSession());
+    
+    		if(bid){
+    			*((int *)extraarg) = bid;
+        		board_setcurrentuser(uinfo.currentboard, -1);
+        		uinfo.currentboard = 0;
+        		UPDATE_UTMP(currentboard,uinfo);
+        		return CHANGEMODE;
+    		}else
+    			*((int *)extraarg) = 0;
+    	}
+        break;
+	case '7':
 	{
 		char fpath[256];
 		struct stat st;
@@ -5596,7 +5612,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
     {'G', (READ_KEY_FUNC)range_flag,(void*)FILE_TITLE_FLAG},
         
-    {'H', (READ_KEY_FUNC)read_callfunc0, (void *)read_hot_info},   /* flyriver: 2002.12.21 增加热门信息显示 */
+    {'H', (READ_KEY_FUNC)read_hot_info, NULL},   /* flyriver: 2002.12.21 增加热门信息显示 */
         
     {Ctrl('G'), (READ_KEY_FUNC)change_mode,(void*)0},   /* bad : 2002.8.8 add marked mode */
     {'`', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 Ctrl+G 1 进入文摘区"},

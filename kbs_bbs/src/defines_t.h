@@ -116,7 +116,8 @@ void docmdtitle(const char *title,const char *prompt);
 int switch_code(void);
 
 /* bbs.c*/
-int read_hot_info();
+//int read_hot_info();
+int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int board_query();
 #ifdef NEWSMTH
 int set_board_rule(struct boardheader *bh, int flag);

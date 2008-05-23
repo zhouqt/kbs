@@ -1186,10 +1186,34 @@ static int fav_key(struct _select_def *conf, int command)
 	/*add by stiger */
 
     case 'H':
-		if(read_hot_info()==CHANGEMODE)
-            ReadBoard();
-    	return SHOW_REFRESH;
+	{
+		int tmp=1;
 
+        if (read_hot_info(0, NULL, &tmp) == CHANGEMODE) {
+			if (tmp>0){
+				arg->select_group = 0 - tmp;
+				return SHOW_SELECT;
+			}
+            if (!(currboard->flag&BOARD_GROUP)) {
+                while (1) {
+                    int returnmode;
+                    returnmode=Read();
+                    if (returnmode==CHANGEMODE) { //select another board
+                        if (currboard->flag&BOARD_GROUP) {
+                            arg->select_group=1;
+                            return SHOW_SELECT;
+                        }
+                    } else break;
+                }
+            }
+            else {
+				arg->select_group=1;
+                return SHOW_SELECT;
+            }
+        }
+        modify_user_mode(arg->newflag ? READNEW : READBRD);
+        return SHOW_REFRESH;
+	}
 	/* add end */
     case '!':
         Goodbye();
