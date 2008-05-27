@@ -71,9 +71,6 @@ function preprocess(){
 		if ($articles[1]["FLAGS"][2] == 'y') {
 			foundErr("该文不可回复!");
 		}
-		if ($articles[0]["FLAGS"][2] == 'y') {
-			foundErr("该文不可回复!");
-		}
 	}
 	$reArticles=$articles;
 
