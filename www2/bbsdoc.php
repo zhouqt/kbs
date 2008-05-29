@@ -17,7 +17,8 @@ $bbsman_modes = array(
 	"ANNOUNCE" => 10,
 	"ANNOUNCEADD" => 11,
 	"IMPORT_I" => 12,
-	"IMPORT_J" => 13
+	"IMPORT_J" => 13,
+	"CENSOR" => 14
 );
 
 function do_manage_function($board) {

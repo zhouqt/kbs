@@ -928,7 +928,7 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 10, "ANNOUNCEADD": 11, "IMPORT_I": 12, "IMPORT_J": 13};
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 10, "ANNOUNCEADD": 11, "IMPORT_I": 12, "IMPORT_J": 13, "CENSOR": 14};
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])
 		{ /* TODO: 这段似乎可以简化一点... */
