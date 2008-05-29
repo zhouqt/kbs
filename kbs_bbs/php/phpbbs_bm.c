@@ -59,6 +59,7 @@ PHP_FUNCTION(bbs_is_bm)
  *        11: add article to announce clipboard         ::    on 2006-03-04   ::
  *        12: import
  *        13: import without head and qmd
+ *        14: censor
  * return 0 : success;
  *        -1: board is NOT exist
  *        -2: do NOT have permission
@@ -216,6 +217,9 @@ PHP_FUNCTION(bbs_bmmanage)
         else if (mode == 13) {    /* import without head and qmd */
             a_SeSave(NULL, bh->filename, &f, true, NULL, 0, 0, getCurrentUser()->userid);
             ret = 0;
+        }
+        else if (mode == 14) {
+            flag = FILE_CENSOR_FLAG;
         }
         else
                 RETURN_LONG(-3);
