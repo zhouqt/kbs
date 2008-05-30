@@ -179,6 +179,9 @@ static int get_initialized()
 
 static int initialize_ext()
 {
+    char old_cwd[256];
+    getcwd(old_cwd, sizeof(old_cwd));
+	
     chdir(BBSHOME);
     get_publicshm();
     resolve_ucache();
@@ -188,6 +191,7 @@ static int initialize_ext()
     www_data_init();
     ext_init = 1;
 
+	chdir(old_cwd);
 	return ext_init;
 }
 
