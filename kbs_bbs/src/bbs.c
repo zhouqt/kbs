@@ -2604,6 +2604,8 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
             uinfo.currentboard=currboardent;
             UPDATE_UTMP(currentboard,uinfo);
             board_setcurrentuser(uinfo.currentboard,1);
+            if(extraarg)
+                *((int *)extraarg) = 0;
             return CHANGEMODE;
         }
         while(0);
