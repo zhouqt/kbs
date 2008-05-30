@@ -2,9 +2,6 @@
 require("www2-funcs.php");
 require("www2-board.php");
 
-if (!bbs_ext_initialized())
-	bbs_init_ext();
-	
 login_init();
 bbs_session_modify_user_mode(BBS_MODE_MMENU);
 

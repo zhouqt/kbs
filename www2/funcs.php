@@ -11,9 +11,10 @@ if (!isset($topdir))
 if (!defined("BUILD_PHP_EXTENSION") || BUILD_PHP_EXTENSION==0)
 	@dl("libphpbbslib.so");
 
-chdir(BBS_HOME);
 if (!bbs_ext_initialized())
 	bbs_init_ext();
+chdir(BBS_HOME);
+
 global $SQUID_ACCL;
 global $BBS_PERM_POSTMASK;
 global $BBS_PERM_NOZAP;
