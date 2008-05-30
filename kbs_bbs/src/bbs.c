@@ -2489,7 +2489,7 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
 #endif
         "3)近期热点 4)系统热点 5)日历日记 %s%s[1]: ",
 #ifdef NEWSMTH
-        addfav ? "6)百大版面 " : "", ((uinfo.mode==READING)?"7)治版方针 ":"")
+        addfav ? "6)百大版面 " : "", ((uinfo.mode==READING)?"6)治版方针 ":"")
 #else
         "", ""
 #endif
@@ -2514,7 +2514,7 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
         break;
 #ifdef NEWSMTH
     case '6':
-    	if(addfav){
+    	if(addfav){ /* 百大版面 */
             int bid;
     		bid = EnameInFav("HotBoards",getSession());
     
@@ -2526,58 +2526,56 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
         		return CHANGEMODE;
     		}else
     			*((int *)extraarg) = 0;
-    	}
+    	} else if (uinfo.mode == READING) { /* 治版方针 */
+            char fpath[256];
+            struct stat st;
+       		if (!(currboard->flag & BOARD_RULES) && !HAS_PERM(getCurrentUser(), PERM_SYSOP) && (getCurrentUser()->title == 0)
+                    && !chk_currBM(currBM, getCurrentUser())) {
+                clear();
+                move(3, 0);
+                prints("%s版尚未有通过审核的治版方针\n", currboard->filename);
+                pressanykey();
+                break;
+		    }
+		    setvfile(fpath, currboard->filename, "rules");
+        	if(stat(fpath, &st) == -1) {
+    			clear();
+	    		move(3,0);
+		    	prints("版主尚未提交治版方针\n");
+			    pressanykey();
+           		break;
+	    	}
+            if (!(currboard->flag & BOARD_RULES)) {
+    			clear();
+	    		move(3, 0);
+		    	prints("%s版治版方针尚未通过审核, 批号: %d\n", currboard->filename, st.st_mtime);
+			    pressanykey();
+    		}
+	    	show_help(fpath);
+            if (!(currboard->flag & BOARD_RULES) && HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+    			char ans[4];
+	    		clear();
+		    	move(3, 0);
+    			prints("%s版治版方针尚未通过审核, 批号: %d\n", currboard->filename, st.st_mtime);
+            	getdata(t_lines - 1, 0, "您要通过该版的治版方针吗 (Yes/No/Del)? [N] ", ans, 3, DOECHO, NULL, true);
+	    		if(ans[0] == 'y' || ans[0] == 'Y') {
+    				int ret;
+	    			ret = set_board_rule(currboard, 1);
+		    		move(6, 0);
+    				prints("通过%s:%d\n",(ret==0)?"成功":"失败",ret);
+	    			pressreturn();
+		    	} else if (ans[0] == 'd' || ans[0] == 'D') {
+                    int ret;
+                    ret = set_board_rule(currboard, 2);
+                    move(6, 0);
+                    prints("删除%s!\n", (!ret) ? "成功" : "失败");
+                    pressreturn();
+                }
+            }
+        }
         break;
 	case '7':
 	{
-		char fpath[256];
-		struct stat st;
-		if(uinfo.mode!=READING)
-			break;
-		if(!(currboard->flag & BOARD_RULES) && !HAS_PERM(getCurrentUser(),PERM_SYSOP) && (getCurrentUser()->title==0) && !chk_currBM(currBM, getCurrentUser()) ){
-			clear();
-			move(3,0);
-			prints("%s版尚未有通过审核的治版方针\n", currboard->filename);
-			pressanykey();
-			break;
-		}
-		setvfile(fpath, currboard->filename, "rules");
-    	if(stat(fpath, &st)==-1){
-			clear();
-			move(3,0);
-			prints("版主尚未提交治版方针\n");
-			pressanykey();
-       		break;
-		}
-		if(!(currboard->flag & BOARD_RULES)){
-			clear();
-			move(3,0);
-			prints("%s版治版方针尚未通过审核,批号:%d\n", currboard->filename, st.st_mtime);
-			pressanykey();
-		}
-		show_help(fpath);
-		if(!(currboard->flag & BOARD_RULES) && HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
-			char ans[4];
-			clear();
-			move(3,0);
-			prints("%s版治版方针尚未通过审核,批号:%d\n", currboard->filename, st.st_mtime);
-        	getdata(t_lines - 1, 0, "您要通过该版的治版方针吗 (Yes/No/Del)? [N] ", ans, 3, DOECHO, NULL, true);
-			if(ans[0]=='y' || ans[0]=='Y'){
-				int ret;
-				ret = set_board_rule(currboard, 1);
-				move(6,0);
-				prints("通过%s:%d\n",(ret==0)?"成功":"失败",ret);
-				pressreturn();
-			}
-			else if (ans[0] == 'd' || ans[0] == 'D')
-			{
-			    int ret;
-			    ret = set_board_rule(currboard, 2);
-			    move(6, 0);
-			    prints("删除%s!\n", (!ret) ? "成功" : "失败");
-			    pressreturn();
-			}
-		}
 		break;
 	}
 #endif
