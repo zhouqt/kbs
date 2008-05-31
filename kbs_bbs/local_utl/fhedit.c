@@ -276,6 +276,7 @@ int closebdir() {
     ldata.l_start = 0;
     ldata.l_len = 0;
     fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
     return 1;
 }
 
