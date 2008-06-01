@@ -376,8 +376,10 @@ int main()
     setreuid(BBSUID, BBSUID);
     setgid(BBSGID);
     setregid(BBSGID, BBSGID);
-    dodaemon("bbslogd", true, true);
-
+    if (dodaemon("bbslogd", true, true)) {
+        bbslog("3error", "bbslogd had already been started!");
+        return 0;
+    }
     atexit(flushBBSlog_exit);
     bzero(&act, sizeof(act));
     act.sa_handler = flushlog;
