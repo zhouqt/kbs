@@ -89,9 +89,9 @@ int killdir(char *basedir, char *filename)
     }
     lseek(fd, 0, 0);
     for (i = 0, afile = files; i < st.st_size / sizeof(struct fileheader); i++, afile++) {
-	int delta;
-	delta=now-afile->accessed[sizeof(afile->accessed) - 1];
-	if (delta<0) delta+=100;
+    int delta;
+    delta=now-afile->accessed[sizeof(afile->accessed) - 1];
+    if (delta<0) delta+=100;
         if (delta > DAY_DELETED_CLEAN) {
             strcpy(genbuf1, basedir);
             strcat(genbuf1, "/");
@@ -375,9 +375,9 @@ void userd()
 #ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
 #elif defined HAVE_INET_PTON
-	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+    inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
 #else
-	/* Is it OK? */
+    /* Is it OK? */
     my_inet_aton("127.0.0.1", &sin.sin_addr);
 #endif
 #endif /* IPV6 */
@@ -398,11 +398,11 @@ void userd()
             id = getnewuserid(username);
         else
 #endif
-		if (!strcmp(cmd, "SET")) {
+        if (!strcmp(cmd, "SET")) {
             setuserid2(num, username);
             id = 0;
         }
-		else if (!strcmp(cmd, "DEL")) {
+        else if (!strcmp(cmd, "DEL")) {
             setuserid2(num, "");
             id = 0;
         } else
@@ -429,16 +429,16 @@ void utmpd()
     memset(&sin, 0, sinlen);
     sin.sin_family = AF_INET;
 #ifdef CELESTIS
-	sin.sin_port = htons(61002);
+    sin.sin_port = htons(61002);
 #else
     sin.sin_port = htons(60002);
 #endif
 #ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
 #elif defined HAVE_INET_PTON
-	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+    inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
 #else
-	/* Is it OK? */
+    /* Is it OK? */
     my_inet_aton("127.0.0.1", &sin.sin_addr);
 #endif
     if (0 != bind(m_socket, (struct sockaddr *) &sin, sizeof(sin))) {
@@ -502,6 +502,17 @@ void utmpd()
 
 void flushd()
 {
+    char line[20];
+    const char *path = "var/flushd.pid";
+    int pidfd = open(path, O_RDWR | O_CREAT, 0660);
+    if (write_lock(pidfd, 0, SEEK_SET, 0) < 0) {
+        bbslog("3error", "flushd had already been started!");
+        exit(-1);
+    }
+    snprintf(line, sizeof(line), "%ld\n", (long)getpid());
+    ftruncate(pidfd, 0);
+    write(pidfd, line, strlen(line));
+
     struct sigaction act;
 
     atexit(do_exit);
@@ -524,6 +535,16 @@ static void reaper()
 
 void timed()
 {
+    char line[20];
+    const char *path = "var/timed.pid";
+    int pidfd = open(path, O_RDWR | O_CREAT, 0660);
+    if (write_lock(pidfd, 0, SEEK_SET, 0) < 0) {
+        bbslog("3error", "timed had already been started!");
+        exit(-1);
+    }
+    snprintf(line, sizeof(line), "%ld\n", (long)getpid());
+    ftruncate(pidfd, 0);
+    write(pidfd, line, strlen(line));
 #ifndef CYGWIN
     setpublicshmreadonly(0);
 #endif
@@ -537,27 +558,27 @@ void timed()
 
 static int check_file_writable(const char *filename)
 {
-	struct stat st;
-	int val;
+    struct stat st;
+    int val;
 
-	val = stat(filename, &st);
-	if (val < 0 && errno == ENOENT) /* 文件不存在，认为可写 */
-		return 1;
-	else if (val == 0)
-	{
-		/* 只检查文件 owner */
-		if (st.st_uid == getuid() 
-				&& ((st.st_mode & (S_IRUSR | S_IWUSR)) == (S_IRUSR | S_IWUSR)))
-			return 1;
-		/*
-		else if (st.st_gid == getgid() 
-				&& (st.st_mode & (S_IRGRP | S_IWGRP) == (S_IRGRP | S_IWGRP)))
-			return 1;
-		else if (st.st_mode & (S_IROTH | S_IWOTH) == (S_IROTH | S_IWOTH))
-			return 1;
-		*/
-	}
-	return 0;
+    val = stat(filename, &st);
+    if (val < 0 && errno == ENOENT) /* 文件不存在，认为可写 */
+        return 1;
+    else if (val == 0)
+    {
+        /* 只检查文件 owner */
+        if (st.st_uid == getuid() 
+                && ((st.st_mode & (S_IRUSR | S_IWUSR)) == (S_IRUSR | S_IWUSR)))
+            return 1;
+        /*
+        else if (st.st_gid == getgid() 
+                && (st.st_mode & (S_IRGRP | S_IWGRP) == (S_IRGRP | S_IWGRP)))
+            return 1;
+        else if (st.st_mode & (S_IROTH | S_IWOTH) == (S_IROTH | S_IWOTH))
+            return 1;
+        */
+    }
+    return 0;
 }
 
 static int miscd_dodaemon(char *argv1, char *daemon)
@@ -567,17 +588,17 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     char commbuf[10];
     char ch;
 
-	if (!check_file_writable(PASSFILE))
-	{
-		fprintf(stderr, "Error! File %s is not writable.\n", PASSFILE);
-		exit(-1);
-	}
-	if (!check_file_writable(BOARDS))
-	{
-		fprintf(stderr, "Error! File %s is not writable.\n", BOARDS);
-		exit(-1);
-	}
-	truncate(BOARDS, MAXBOARD * sizeof(struct boardheader));
+    if (!check_file_writable(PASSFILE))
+    {
+        fprintf(stderr, "Error! File %s is not writable.\n", PASSFILE);
+        exit(-1);
+    }
+    if (!check_file_writable(BOARDS))
+    {
+        fprintf(stderr, "Error! File %s is not writable.\n", BOARDS);
+        exit(-1);
+    }
+    truncate(BOARDS, MAXBOARD * sizeof(struct boardheader));
 
     if (load_ucache() != 0) {
         printf("ft,load ucache error!");
@@ -638,6 +659,17 @@ static int miscd_dodaemon(char *argv1, char *daemon)
 
     if (((daemon == NULL) || (!strcmp(daemon, "killd"))) && ((argv1 == NULL) || fork())) {
         strcpy(commandline, "killd");
+        char line[20];
+        const char *path = "var/killd.pid";
+        int pidfd = open(path, O_RDWR | O_CREAT, 0660);
+        if (write_lock(pidfd, 0, SEEK_SET, 0) < 0) {
+            bbslog("3error", "killd had already been started!");
+            exit(-1);
+        }
+        snprintf(line, sizeof(line), "%ld\n", (long)getpid());
+        ftruncate(pidfd, 0);
+        write(pidfd, line, strlen(line));
+
         while (1) {
             time_t ft;
 
@@ -730,7 +762,7 @@ int main(int argc, char *argv[])
             return dokilldir(argv[2]);
         if (strcasecmp(argv[1], "flush") == 0) {
             if (resolve_ucache() != 0)
-	              return -1;
+                return -1;
             resolve_boards();
             flushdata(0);
             return 0;
@@ -751,6 +783,7 @@ int main(int argc, char *argv[])
     printf("        %s killdir <BOARDNAME>: to delete old file in <BOARDNAME>\n", argv[0]);
     printf("        %s allboards: to delete old files in all boards\n", argv[0]);
     printf("        %s flush: to synchronize .PASSWDS and .BOARDS to disk\n", argv[0]);
+    printf("        %s flush-u <FILENAME>: to write ucache in shm to <FILENAME>\n", argv[0]);
     printf("That's all, folks. See doc/README.SYSOP for more details\n");
 
     return 0;
