@@ -774,6 +774,105 @@ int m_editbrd(void){
     }
     return modify_board(pos);
 }
+
+static inline int mb_generate_level(const int line, const int col, unsigned *level)
+{
+    int i, j, k;
+    unsigned mask, perm;
+    perm = *level;
+    move(line, col); clrtoeol();
+    prints("\033[1;37m[\033[m");
+    for (i = 0, mask = 0x01; i < NUMPERMS; i++, mask <<= 1) {
+        if (perm & mask)
+            prints(((perm ^ (*level)) & mask) ? "\033[1;32m%c\033[m" : "\033[1;33m%c\033[m", XPERMSTR[i]);
+        else
+            prints(((perm ^ (*level)) & mask) ? "\033[1;31m%c\033[m" : "\033[1;34m%c\033[m", XPERMSTR[i]);
+    }
+    prints("\033[1;37m]\033[m");
+    move(line, 2);
+    for (i = 0, j = 0;;) {
+        mask = 1 << i;
+        move(line, col + i + 1);
+        if (perm & mask)
+            prints(((perm ^ (*level)) & mask) ? "\033[1;4;32m%c\033[m" : "\033[1;4;33m%c\033[m", XPERMSTR[i]);
+        else
+            prints(((perm ^ (*level)) & mask) ? "\033[1;4;31m%c\033[m" : "\033[1;4;34m%c\033[m", XPERMSTR[i]);
+        move(line, col + 1 + NUMPERMS + 2); clrtoeol();
+        prints("\033[1;36m%s\033[m", permstrings[i]);
+        move(line, 2);
+        j = i;
+        for(;;) {
+            switch (k = igetkey()) {
+                case KEY_ESC:
+                    return -1;
+                    break;
+                case '\n':
+                case '\r':
+                    *level = perm;
+                    move(t_lines - 1, 0); clrtoeol();
+                    return 0;
+                    break;
+                case ' ':
+                    if (perm & mask)
+                        perm &= ~mask;
+                    else
+                        perm |= mask;
+                    break;
+                case KEY_LEFT:
+                    if (i)
+                        i--;
+                    else
+                        i = NUMPERMS - 1;
+                    break;
+                case KEY_RIGHT:
+                    if (i != NUMPERMS - 1)
+                        i++;
+                    else
+                        i = 0;
+                    break;
+                case KEY_HOME:
+                    if (i)
+                        i = 0;
+                    else
+                        continue;
+                    break;
+                case KEY_END:
+                    if (i != NUMPERMS - 1)
+                        i = NUMPERMS - 1;
+                    else
+                        continue;
+                    break;
+                default:
+                    for (i = NUMPERMS - 1; i > -1; i--)
+                        if (k == XPERMSTR[i])
+                            break;
+                    if (i == -1 && isalpha(k)) {
+                        for (i = NUMPERMS - 1; i > -1; i--)
+                            if (toupper(k) == XPERMSTR[i])
+                                break;
+                    }
+                    if (i == -1) {
+                        i = j;
+                        continue;
+                    }
+                    else if (i == j)
+                        continue;
+                    break;
+            }
+            break;
+        }
+        if (j != i) {
+            move(line, col + 1 + j);
+            if (perm & mask)
+                prints(((perm ^ (*level)) & mask) ? "\033[1;32m%c\033[m" : "\033[1;33m%c\033[m", XPERMSTR[j]);
+            else
+                prints(((perm ^ (*level)) & mask) ? "\033[1;31m%c\033[m" : "\033[1;34m%c\033[m", XPERMSTR[j]);
+            move(line, 2);
+        }
+    }
+    return 0;
+}
+
 int modify_board(int bid){
 #define MB_ITEMS 24
     FILE *fp;
@@ -1500,9 +1599,15 @@ int modify_board(int bid){
                 /*取消修改*/
                 if(i)
                     break;
+                /*
                 move(1,0);clrtobot();
                 move(2,0);prints("设定%s权限",newbh.level&PERM_POSTMASK?"发表":"读取");
                 newbh.level=setperms(newbh.level,0,"权限",NUMPERMS,showperminfo,NULL);
+                */
+                move(16, 0); clrtoeol();
+                prints("◆%-15s", menuldr[20]);
+                if (mb_generate_level(16, 17, &(newbh.level)) == -1)
+                    break;
                 /*标记修改状态*/
                 if(bh.level!=newbh.level){
                     sprintf(menustr[20],"%-15s\033[1;32m%s\033[m <%s>",menuldr[20],
