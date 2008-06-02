@@ -255,6 +255,65 @@ int fh_remove(int num, int count) {
     return 1;
 }
 
+int fh_recovertitle(char* bname, int num, int count) {
+    off_t filesize;
+    int total, i, j;
+    char *ptr, tmptitle[ARTICLE_TITLE_LEN], *ch, fname[PATHLEN], buf[1024];
+    struct fileheader *pfh;
+    FILE *fp;
+    if(num <= 0) {
+        printf("number must be specified.\n");
+        exit(0);
+    }
+    BBS_TRY {
+        if(safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &ptr, &filesize) == 0) {
+            BBS_RETURN(0);
+        }
+        total = filesize / sizeof(struct fileheader);
+        pfh = (struct fileheader *)ptr;
+        for(i=num-1; i<num+count-1; i++) {
+            if(i >= total)
+                break;
+            strcpy(tmptitle, pfh[i].title);
+            if((ch = strrchr(tmptitle, '-')) != NULL) {
+                *ch = 0;
+                for(j=strlen(tmptitle)-1; j>=0; j--) {
+                    if(tmptitle[j] != ' ')
+                        break;
+                    else
+                        tmptitle[j] = 0;
+                }
+            }
+            setbfile(fname, bname, pfh[i].filename);
+            fp = fopen(fname, "r");
+            if(!fp)
+                continue;
+            j = 0;
+            while((!feof(fp)) && (j < 2)) {
+                skip_attach_fgets(buf, 1024, fp);
+                if(feof(fp))
+                    break;
+                if(strstr(buf, "发信人: ") && strstr(buf, "), 信区: ")) {
+                    j++;
+                } else if (strstr(buf, "标  题: ")) {
+                    j++;
+                    strncpy(tmptitle, buf + 8, sizeof(tmptitle));
+                    tmptitle[sizeof(tmptitle)-1] = '\0';
+                    if ((ch = strchr(tmptitle, '\n')) != NULL)
+                        *ch = 0;
+                }
+            }
+            fclose(fp);
+            strcpy(pfh[i].title, tmptitle);
+        }
+    }
+    BBS_CATCH {
+    }
+    BBS_END;
+    munmap(ptr, filesize);
+    return 1;
+}
+
 int openbdir(char* dirfile, int flags, int locktype) {
     struct flock ldata;
     fd = open(dirfile, flags);
@@ -291,6 +350,7 @@ int main(int argc, char* argv[]) {
         {"append", no_argument, &operate, 5},
         {"insert", no_argument, &operate, 6},
         {"remove", no_argument, &operate, 7},
+        {"recovertitle", no_argument, &operate, 8},
         {"board", required_argument, 0, 'b'},
         {"indexfile", required_argument, 0, 'e'},
         {"number", required_argument, 0, 'n'},
@@ -443,6 +503,7 @@ int main(int argc, char* argv[]) {
         printf("  --insert          insert records to board under binary mode, or insert\n");
         printf("                    one new record of article under non-binary mode.\n");
         printf("  --remove          remove records from board.\n");
+        printf("  --recovertitle    recover the original article title as undo-delete.\n");
         printf("\nParameters:\n");
         printf("  --board           specify the board name.\n");
         printf("  --indexfile       specify index file, default is .DIR\n");
@@ -506,6 +567,10 @@ int main(int argc, char* argv[]) {
         fh_remove(num, count);
         closebdir();
         break;
+    case 8:
+        openbdir(dirfile, O_RDWR, F_WRLCK);
+        fh_recovertitle(board, num, count);
+        closebdir();
     }
     
     return 1;
