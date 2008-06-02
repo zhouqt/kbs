@@ -884,7 +884,7 @@ static inline int mu_show_online(int uid,int mode){
     return 2;
 }
 
-static inline int mu_generate_level(int row,int col,unsigned int *level,unsigned int init){
+int mu_generate_level(int row,int col,unsigned int *level,unsigned int init){
 #define MU_GL_N                         "\033[1;33m%c\033[m"
 #define MU_GL_A                         "\033[1;32m%c\033[m"
 #define MU_GL_D                         "\033[1;31m%c\033[m"

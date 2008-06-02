@@ -262,6 +262,7 @@ int countlogouts(char filename[STRLEN]);
 void disply_userinfo(struct userec *u, int real);
 int uinfo_query(struct userec *u, int real, int unum);
 int modify_userinfo(int uid,int mode);  /* etnlegend, 2006.09.21, 修改用户资料接口... */
+int mu_generate_level(int row,int col,unsigned int *level,unsigned int init); /* 准通用版九天算尺接口 */
 
 /* register.c */
 void check_register_info();
