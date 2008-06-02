@@ -780,6 +780,8 @@ static inline int mb_generate_level(const int line, const int col, unsigned *lev
     int i, j, k;
     unsigned mask, perm;
     perm = *level;
+    move(t_lines - 1, 0); clrtoeol();
+    prints(" 取消[\033[1;32mESC\033[m] 完成[\033[1;32mEnter\033[m] 切换[\033[1;32mSpace\033[m] 移动[\033[1;32m光标键/Home/End\033[m] 快速跳转[\033[1;32m对应权限符号\033[m]");
     move(line, col); clrtoeol();
     prints("\033[1;37m[\033[m");
     for (i = 0, mask = 0x01; i < NUMPERMS; i++, mask <<= 1) {
