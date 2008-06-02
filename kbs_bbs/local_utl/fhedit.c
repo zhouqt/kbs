@@ -1,14 +1,97 @@
 
+#include <stdlib.h>
+#include <getopt.h>
 #include "bbs.h"
-#include "stdlib.h"
-#include "getopt.h"
 
 int fd;
 char *optarg = NULL;
 static int binary = 0;
 static int operate = 0;
+static int accessed9 = 0;
 struct fileheader fhopt, fhbool;
 char indexfile[STRLEN] = ".DIR";
+
+int ruler(char* accessed) {
+    int aid, bid, i, j, flag, show;
+    char newa[4], key;
+    char atext[4][8][20] = {
+        {"#标记", "OWND标记", "%标记", "m标记", "g标记", "信件R标记", "信件F标记", "绿豆糕"},
+        {";标记", "X标记", "回文转寄", "已推荐", "_标记", "@标记", "", "TeX标记"},
+        {"", "", "", "", "", "", "", ""},
+        {"", "", "", "", "", "", "", ""}
+    };
+    aid = 0;
+    bid = 7;
+    memcpy(newa, accessed, 4);
+    flag = 1;
+    show = 1;
+    while(flag) {
+        if(show) {
+            printf("A                 B                 C                 D                      SPACE:switch  Q:exit\n");
+            printf("7 6 5 4 3 2 1 0   7 6 5 4 3 2 1 0   7 6 5 4 3 2 1 0   7 6 5 4 3 2 1 0     %s\n", atext[aid][bid]);
+            for(i=0; i<4; i++) {
+                for(j=7; j>=0; j--) {
+                    if((i == aid) && (j == bid))
+                        printf("\033[42m");
+                    if((newa[i] & (1 << j)) != (accessed[i] & (1 << j)))
+                        printf("\033[33m");
+                    if(newa[i] & (1 << j))
+                        printf("1 ");
+                    else
+                        printf("0 ");
+                    printf("\033[m");
+                }
+                printf("  ");
+            }
+            printf("\n");
+        }
+        key = getchar();
+        show = 1;
+        switch(key) {
+        case 'a':
+        case 'A':
+            aid = 0;
+            break;
+        case 'b':
+        case 'B':
+            aid = 1;
+            break;
+        case 'c':
+        case 'C':
+            aid = 2;
+            break;
+        case 'd':
+        case 'D':
+            aid = 3;
+            break;
+        case ' ':
+            if(newa[aid] & (1 << bid))
+                newa[aid] &= ~(1 << bid);
+            else
+                newa[aid] |= 1 << bid;
+            break;
+        case 10:
+            show = 0;
+            break;
+        case 'q':
+        case 'Q':
+            flag = 0;
+            break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+            bid = key - '0';
+            break;
+        }
+    }
+    memcpy(accessed, newa, 4);
+    return 1;
+}
 
 int fh_count(char* dirfile) {
     struct stat st;
@@ -160,14 +243,18 @@ int fh_modify(int num) {
             fh.attachment = fhopt.attachment;
         if(fhbool.title[0])
             strncpy(fh.title, fhopt.title, ARTICLE_TITLE_LEN);
-        if(fhbool.accessed[0])
-            fh.accessed[0] = fhopt.accessed[0];
-        if(fhbool.accessed[1])
-            fh.accessed[1] = fhopt.accessed[1];
-        if(fhbool.accessed[2])
-            fh.accessed[2] = fhopt.accessed[2];
-        if(fhbool.accessed[3])
-            fh.accessed[3] = fhopt.accessed[3];
+        if(accessed9)
+            ruler((char *)fh.accessed);
+        else {
+            if(fhbool.accessed[0])
+                fh.accessed[0] = fhopt.accessed[0];
+            if(fhbool.accessed[1])
+                fh.accessed[1] = fhopt.accessed[1];
+            if(fhbool.accessed[2])
+                fh.accessed[2] = fhopt.accessed[2];
+            if(fhbool.accessed[3])
+                fh.accessed[3] = fhopt.accessed[3];
+        }
         write(fd, &fh, sizeof(struct fileheader));
     }
     return 1;
@@ -372,6 +459,7 @@ int main(int argc, char* argv[]) {
         {"accessed1", required_argument, 0, '1'},
         {"accessed2", required_argument, 0, '2'},
         {"accessed3", required_argument, 0, '3'},
+        {"accessed9", no_argument, &accessed9, 1},
         {0, 0, 0, 0}
     };
     int c, iopt;
@@ -525,6 +613,7 @@ int main(int argc, char* argv[]) {
         printf("  --title           specify title to search for or modify to.\n");
         printf("  --accessedN       specify accessed to search for or modify to, N shall\n");
         printf("                    be replaced by a number between 0 and 3.\n");
+        printf("  --accessed9       use 九天算尺 to modify accessed.\n");
         return 1;
     }
     if(board[0] == 0)
