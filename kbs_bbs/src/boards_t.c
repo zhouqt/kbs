@@ -548,7 +548,7 @@ int query_bm_core(const char *userid,int limited){
     for(line=3,count=0,n=0;n<get_boardcount();n++){
         if(!(bh=getboard(n+1))||!*(bh->filename))
             continue;
-        if(limited&&!check_read_perm(getCurrentUser(),bh))
+        if(limited&&!check_see_perm(getCurrentUser(),bh))
             continue;
         if(chk_BM_instr(bh->BM,buf)){
             count++;
