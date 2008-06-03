@@ -35,3 +35,13 @@ BBSHOME=/home/bbs
 #45 5 * * * /home/bbs/bin/buildAnnIDX.sh
 # 每隔 1 分钟转信一次		czz	2001-10-30
 * * * * * ~bbs/innd/bbslink ~bbs > ~bbs/tmp/portnum 2>&1
+
+#######backup#######
+### Monday for mail
+01 2 * * 1 ${BBSHOME}/bin/backup.sh mail
+### Tuesday for user home
+01 2 * * 2 ${BBSHOME}/bin/backup.sh home
+### Saturday for boards
+01 2 * * 6 ${BBSHOME}/bin/backup.sh boards
+### Sunday for 0Annouce
+01 2 * * 0 ${BBSHOME}/bin/backup.sh 0Announce
