@@ -302,15 +302,10 @@ int show_boardinfo(const char *bname)
     /* END -- etnlegend, 查询版面限制属性显示 ... */
 
     move(t_lines - 1, 0);
-    if (check_read_perm(getCurrentUser(), bp))
-        prints("\033[m\033[44m        添加到个人定制区[\033[1;32ma\033[m\033[44m]");
-    else
-        prints("\033[m\033[44m ");
+    prints("\033[m\033[44m        添加到个人定制区[\033[1;32ma\033[m\033[44m]");
     clrtoeol();
     resetcolor();
     ch = igetkey();
-    if (!check_read_perm(getCurrentUser(), bp))
-        return 1;
     switch(toupper(ch)) {
     case 'A':
 	{
@@ -1416,7 +1411,7 @@ static int fav_key(struct _select_def *conf, int command)
             	prints("输入讨论区英文名 (大小写皆可，按空白键或Tab键自动搜寻): ");
             	clrtoeol();
 
-            	make_blist(0, 1);
+            	make_blist(0, 2);
             	in_do_sendmsg=1;
             	if(namecomplete(NULL,bname)=='#')
                 	super_select_board(bname);
@@ -1424,7 +1419,7 @@ static int fav_key(struct _select_def *conf, int command)
 
             	CreateNameList();   /*  free list memory. */
             	if (*bname)
-                	i = getbnum_safe(bname,getSession(), 1);
+                	i = getbnum_safe(bname,getSession(), 2);
             	if (i==0)
 					return SHOW_REFRESH;
 
