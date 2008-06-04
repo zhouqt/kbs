@@ -636,8 +636,6 @@ int main(int argc, char* argv[]) {
         printf("no index file is given.\n");
         return 0;
     }
-
-    printf("%s\n", dirfile);
     
     chdir(BBSHOME);
     init_all();
