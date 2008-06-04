@@ -439,6 +439,7 @@ int main(int argc, char* argv[]) {
         {"remove", no_argument, &operate, 7},
         {"recovertitle", no_argument, &operate, 8},
         {"board", required_argument, 0, 'b'},
+        {"user", required_argument, 0, 'u'},
         {"indexfile", required_argument, 0, 'e'},
         {"number", required_argument, 0, 'n'},
         {"count", required_argument, 0, 'c'},
@@ -464,7 +465,7 @@ int main(int argc, char* argv[]) {
     };
     int c, iopt;
 
-    char board[STRLEN] = "";
+    char board[STRLEN] = "", userid[IDLEN+1] = "";
     int num = 0;
     int count = 1;
     char dirfile[PATHLEN];
@@ -495,6 +496,9 @@ int main(int argc, char* argv[]) {
         switch(c) {
         case 'b':
             strncpy(board, optarg, STRLEN - 1);
+            break;
+        case 'u':
+            strncpy(userid, optarg, IDLEN);
             break;
         case 'e':
             strncpy(indexfile, optarg, STRLEN - 1);
@@ -593,7 +597,8 @@ int main(int argc, char* argv[]) {
         printf("  --remove          remove records from board.\n");
         printf("  --recovertitle    recover the original article title as undo-delete.\n");
         printf("\nParameters:\n");
-        printf("  --board           specify the board name.\n");
+        printf("  --board           specify the board name in order to modify board dir.\n");
+        printf( " --user            specify user id in order to modify mail dir.\n");
         printf("  --indexfile       specify index file, default is .DIR\n");
         printf("  --number          specify the starting article number.\n");
         printf("  --count           specify the number of articles to deal with, default\n");
@@ -616,12 +621,27 @@ int main(int argc, char* argv[]) {
         printf("  --accessed9       use æ≈ÃÏÀ„≥ﬂ to modify accessed.\n");
         return 1;
     }
-    if(board[0] == 0)
-        return 1;
+    
+    if(board[0])
+        sprintf(dirfile, "boards/%s/%s", board, indexfile);
+    else if(userid[0]) {
+        if(isalpha(userid[0]))
+            sprintf(dirfile, "mail/%c/%s/%s", toupper(userid[0]), userid, indexfile);
+        else {
+            printf("invalid user id.\n");
+            return 0;
+        }
+    }
+    else {
+        printf("no index file is given.\n");
+        return 0;
+    }
+
+    printf("%s\n", dirfile);
+    
     chdir(BBSHOME);
     init_all();
-    sprintf(dirfile, "boards/%s/%s", board, indexfile); 
-    
+
     switch(operate) {
     case 1:
         fh_count(dirfile);
