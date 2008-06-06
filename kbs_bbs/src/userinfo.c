@@ -1646,8 +1646,16 @@ int modify_userinfo(int uid,int mode){
                         else
                             nuser.score_manager=atoi(buf+1);
                     }
-                    else
-                        MU_PUT(MU_CURR_ROW, MU_MSG(C, "输入的数字形式不合法..."));
+                    else {
+                        if(!mu_digit_string(buf)) {
+                            MU_PUT(MU_CURR_ROW, MU_MSG(C, "输入的数字形式不合法..."));
+                            break;
+                        }
+                        if (k)
+                            nuser.score_user = atoi(buf);
+                        else
+                            nuser.score_manager=atoi(buf);
+                    }
                     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
                         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
                     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
