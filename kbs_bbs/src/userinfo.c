@@ -1257,10 +1257,10 @@ int modify_userinfo(int uid,int mode){
     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
 #ifdef SECONDSITE
-    snprintf(buf,MU_LENGTH,"用户: %u  管理: %u",nuser.score_user,nuser.score_manager);
+    snprintf(buf,MU_LENGTH,"用户: %d  管理: %d",nuser.score_user,nuser.score_manager);
 #else /* SECONDSITE */
-    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
-        "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
+        "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
 #endif
     MU_MENUFORM(17,N,"%s",buf);
 #endif /* ! NEWSMTH */
@@ -1617,9 +1617,9 @@ int modify_userinfo(int uid,int mode){
                         break;
                     }
                     if (k)
-                        MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户积分数量{<N>|<+N>|<-N>}: "),buf,9);
+                        MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户积分数量{<=N>|<+N>|<-N>}: "),buf,9);
                     else
-                        MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的管理积分数量{<N>|<+N>|<-N>}: "),buf,9);
+                        MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的管理积分数量{<=N>|<+N>|<-N>}: "),buf,9);
                     MU_TRIM_BREAK(buf);
                     if(buf[0]=='+'||buf[0]=='-'){
                         if(!mu_digit_string(&buf[1])){
@@ -1627,9 +1627,11 @@ int modify_userinfo(int uid,int mode){
                             break;
                         }
                         j=atoi(buf);
+#ifndef NEGATIVE_SCORE
                         /* fancyrabbit Aug 30 2007, 积分不能给扣负了 ... */
                         /*if((nuser.score_user+j)<0)
                             nuser.score_user=0;*/
+#endif /* NEGATIVE_SCORE */
                         if (k)
                         {
                             if ((nuser.score_user += j) > INT_MAX)
@@ -1638,20 +1640,18 @@ int modify_userinfo(int uid,int mode){
                         else if ((nuser.score_manager += j) > INT_MAX)
                             nuser.score_manager = 0;
                     }
-                    else{
-                        if(!mu_digit_string(buf)){
-                            MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
-                            break;
-                        }
+                    else if(buf[0] == '='){
                         if (k)
-                            nuser.score_user = atoi(buf);
+                            nuser.score_user = atoi(buf+1);
                         else
-                            nuser.score_manager=atoi(buf);
+                            nuser.score_manager=atoi(buf+1);
                     }
+                    else
+                        MU_PUT(MU_CURR_ROW, MU_MSG(C, "输入的数字形式不合法..."));
                     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
                         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
-                    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %u <RANKING %.2lf%%>  管理: %u":
-                        "用户: %u <RANKING %.1lf%%>  管理: %u"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+                    snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
+                        "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
                     MU_SET(i,user,score_user,val,"%s",buf);
                     if (change & (1 << i))
                         break;
