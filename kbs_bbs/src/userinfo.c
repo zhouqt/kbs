@@ -1664,8 +1664,12 @@ int modify_userinfo(int uid,int mode){
                     }
                     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
                         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
+#ifdef SECONDSITE
+                    snprintf(buf,MU_LENGTH,"用户: %d  管理: %d",nuser.score_user,nuser.score_manager);
+#else
                     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
                         "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+#endif
                     MU_SET(i,user,score_user,val,"%s",buf);
                     if (change & (1 << i))
                         break;
