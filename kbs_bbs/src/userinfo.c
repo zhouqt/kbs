@@ -1641,10 +1641,16 @@ int modify_userinfo(int uid,int mode){
                             nuser.score_manager = 0;
                     }
                     else if(buf[0] == '='){
-                        if (k)
+                        if (k) {
                             nuser.score_user = atoi(buf+1);
-                        else
+                            if(nuser.score_user > INT_MAX)
+                                nuser.score_user = 0;
+                        }
+                        else {
                             nuser.score_manager=atoi(buf+1);
+                            if(nuser.score_manager > INT_MAX)
+                                nuser.score_manager = 0;
+                        }
                     }
                     else {
                         if(!mu_digit_string(buf)) {
