@@ -8,7 +8,7 @@ bin_PROGRAMS = poststat static usage Xhtml Bhtml listonline \
 	gennewboard outdaybm process_invalid_mail bmerge rebuild_digest \
 	post_brdlog post_buse newpoststat genbplot sync_mailsize \
 	refresh_reply fix_sysop userexist fix_nowid scored fhedit \
-    postfilealt
+	postfilealt
 
 EXTRA_DIST = urlencode.c
 EXTRA_PROGRAMS = 
