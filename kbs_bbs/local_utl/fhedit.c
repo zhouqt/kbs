@@ -6,6 +6,7 @@
 int fd;
 char *optarg = NULL;
 static int binary = 0;
+static int simple = 0;
 static int operate = 0;
 static int accessed9 = 0;
 struct fileheader fhopt, fhbool;
@@ -164,10 +165,14 @@ int fh_list(int num, int count) {
                 fwrite(&fh, sizeof(struct fileheader), 1, stdout);
             }
             else {
-                posttime = get_posttime(&fh);
-                ctime_r((time_t *)&posttime, timetext);
-                timetext[strlen(timetext)-1] = 0;
-                printf("%7d %-14s %-25.25s %s\n", num + i, fh.owner, timetext, fh.title);
+                if(simple)
+                    printf("%d\n", num + i);
+                else {
+                    posttime = get_posttime(&fh);
+                    ctime_r((time_t *)&posttime, timetext);
+                    timetext[strlen(timetext)-1] = 0;
+                    printf("%7d %-14s %-25.25s %s\n", num + i, fh.owner, timetext, fh.title);
+                }
             }
         }
     }
@@ -430,6 +435,7 @@ int main(int argc, char* argv[]) {
     static struct option opts[] = {
         {"help", no_argument, &operate, 0},
         {"binary", no_argument, &binary, 1},
+        {"simple", no_argument, &simple, 1},
         {"size", no_argument, &operate, 1},
         {"list", no_argument, &operate, 2},
         {"view", no_argument, &operate, 3},
@@ -584,6 +590,7 @@ int main(int argc, char* argv[]) {
         printf("Usage: %s [OPTION]\n", argv[0]);
         printf("\nOptions:\n");
         printf("  --binary          read binary data from stdin or write data to stdout.\n");
+        printf("  --simple          display only numbers when listing.\n");
         printf("\nOperations:\n");
         printf("  --size            display article numbers.\n");
         printf("  --list            display brief list of articles.\n");
