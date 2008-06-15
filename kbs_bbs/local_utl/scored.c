@@ -47,11 +47,11 @@ static void log_score(char* userid, char* oid, int type, int mode, int old, int 
 }
 
 static int operate_score(struct userec *user, char* oid, char* opt) {
+#ifdef NEWSMTH
     int type, mode, value, score;
     char *ptr;
     if(!user)
         return 0;
-
     if((opt[0] == 'u') || (opt[0] == 'U'))
         type = 0;
     else if((opt[0] == 'm') || (opt[0] == 'M'))
@@ -95,6 +95,7 @@ static int operate_score(struct userec *user, char* oid, char* opt) {
         user->score_user = score;
     else
         user->score_manager = score;
+#endif /* NEWSMTH */
     return 0;
 }
 
