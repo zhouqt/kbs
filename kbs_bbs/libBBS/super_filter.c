@@ -159,6 +159,8 @@ static int sffn_effsize(struct super_filter_args *arg) {
 static int sffn_asize(struct super_filter_args *arg) {
     char ffn[PATHLEN];
     struct stat st;
+    if(arg->ptr->filename[0] == '\0')
+        return 0;
     if(arg->inmail)
         setmailfile(ffn, arg->boardname, arg->ptr->filename);
     else
