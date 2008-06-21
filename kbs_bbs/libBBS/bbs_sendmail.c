@@ -540,7 +540,7 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
 
 /*	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", session->getCurrentUser()->userid, email_domain());
 */
-        sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"%s\"\r\nFrom: %s\r\nTo: %s\r\n\r\n",pmo->boundary, pmo->from,pmo->to);
+        sprintf(pout, "MIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\t    boundary=\"%s\"\r\nFrom: %s\r\nTo: %s\r\n\r\n",pmo->boundary, pmo->from,pmo->to);
         pout = *buf + strlen(*buf);
         pmo->bfirst = 0;
     }
@@ -754,7 +754,7 @@ static int encode_imail_file(
     fprintf(fp2,"Reply-To: <%s@%s>\n", fromid, fromhost);
     fprintf(fp2,"Subject: %s\n", title);
     fprintf(fp2,"MIME-Version: 1.0\n");
-    fprintf(fp2,"Content-Type: multipart/mixed;\n\tboundary=\"%s\"\n\n", boundary);
+    fprintf(fp2,"Content-Type: multipart/mixed;\n\t    boundary=\"%s\"\n\n", boundary);
 
     write_imail_file(fp2, oldfile, boundary, isbig5);
     
