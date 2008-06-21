@@ -4,21 +4,23 @@
          xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.9"
                    em:version="0.9.9"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBABF3fDg435dWa97tQGVUYTTbE+YCp6yKMRt1xklNpGTBniiTDBSt9BBem2kUNTB9YkbH4aBO6YS9F+lKtxX/k9b3Wakbycx6E+U2CmHd0R/q1W/P9QxNDXPXkF3gNMuIzIj+++KMfjwTaDYLHbX8mZES1CxOzDe2tiQv5DEY61e8">
-    <em:targetApplication RDF:resource="rdf:#$.RYuV"/>
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAK2KdaToSJbIQkM2lGcASm31tzlUxxR+q4kt3PLU+WVaZ09bt3sGMGSFU0jql1+iafyvtnnBRrYgzZbXyn77Fk8CEd1/9gbBxpHUHRp5KxSmXMJQUtPkLBTKe/X9n4Ic/ZqD+ZjofqLK1iIXKgYF+Q9HeSUgq6AlZcV61OxfuwAD">
+    <em:targetApplication RDF:resource="rdf:#$8FpFR2"/>
   </RDF:Description>
-  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
-                   em:version="0.9.9"
-                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAE8P70qyeXV2CoPWAU87uX6OWnUxMQ8S4ateTzU+CxHdRVY/8kMI3BfrKHN7A9DR5Dgquodb/ETM1tpbZ3f2MrlddMRCgYXn8Xi5WwhZ2F4oO0HRpKYqm62watp9NLMreAcBrCN6hzn6JGEaMmhXjGvzdBZ6KHPUroWP68EsVREj">
-    <em:updates RDF:resource="rdf:#$VRYuV"/>
-  </RDF:Description>
-  <RDF:Seq RDF:about="rdf:#$VRYuV">
+  <RDF:Seq RDF:about="rdf:#$2FpFR2">
     <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.9"/>
   </RDF:Seq>
-  <Description RDF:about="rdf:#$.RYuV"
+  <Description RDF:about="rdf:#$8FpFR2"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.0"
                    em:maxVersion="3.1"
-                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi" />
+                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
+                   em:updateHash="sha1:dabe6924c291200fbc7b8e65988ffc848fef92cb" />
+  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
+                   em:version="0.9.9"
+                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
+                   em:updateHash="sha1:dabe6924c291200fbc7b8e65988ffc848fef92cb"
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAFlnDQbieeIjowSObO3Qk7GifGZUkfxTEDkhc55DKNZcI2RrLhCNzYQD9Jf6O+9F/r9jSMQzKG5HN9jrUBs+RC+Y8q2HbYqVX/iQ8UKpooWth30j+xbaMuF3AiGJ1UhKJC26XODz50eyl+DqvWkhk17mowm3HRELLW1IqBOYar0A">
+    <em:updates RDF:resource="rdf:#$2FpFR2"/>
+  </RDF:Description>
 </RDF:RDF>
