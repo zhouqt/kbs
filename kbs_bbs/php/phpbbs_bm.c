@@ -924,6 +924,7 @@ PHP_FUNCTION(bbs_threads_bmfunc)
         }
         if(ret > 0)
         {
+            unsigned char accessed[2];
             strcpy(title, "[ºÏ¼¯] ");
             if(strncmp(articles[0].title, "Re: ", 4) == 0)
                 ptr = articles[0].title + 4;
@@ -932,7 +933,9 @@ PHP_FUNCTION(bbs_threads_bmfunc)
             strncpy(title + 7, ptr, STRLEN - 7);
             title[STRLEN - 1] = '\0';
             sprintf(tmpf, "tmp/bm.%s", getCurrentUser()->userid);
-            if(post_file(getCurrentUser(), "", tmpf, bp->filename, title, 0, 2, getSession()) < 0)
+            accessed[0] = 0;
+            accessed[1] = FILE_READ;
+            if(post_file_alt(tmpf, getCurrentUser(), title, bp->filename, NULL, 0x04, accessed))
             {
                 unlink(tmpf);
                 sprintf(tmpf, "tmp/se.%s", getCurrentUser()->userid);
