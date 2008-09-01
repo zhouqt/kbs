@@ -694,7 +694,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg){
         setmailfile(name,getCurrentUser()->userid,info->filename);
     strcpy(quote_title,info->title);
     clear();move(4,0);
-    prints("%s","\033[1;33m请注意: \033[1;31m本站站规规定, 同样内容的文章严禁在五个(含)以上讨论区内重复发表,\n\n        \033[1;33m对\033[1;31m违反上述规定者\033[1;33m, 管理人员将依据\033[1;31m本站帐号管理办法中相关条款\033[1;33m进行处理!\n\n        请大家共同维护良好的讨论秩序,节约系统资源, 谢谢合作!\033[m");
+    prints("%s","\033[1;33m请注意: \033[1;31m本站站规规定, 同样内容的文章严禁在五个(含)以上讨论区内重复发表，\n\n        \033[1;33m对\033[1;31m违反上述规定者\033[1;33m, 管理人员将依据\033[1;31m本站帐号管理办法中相关条款\033[1;33m进行处理!\n\n        请大家共同维护良好的讨论秩序，节约系统资源, 谢谢合作！\033[m");
 #ifdef REMOTE_CROSS
     move(2, 0);
     prints("要转载到\033[1;32m%s\033[m请输入\033[1;33m#\033[m号", REMOTE_SITE_NAME);
@@ -1634,14 +1634,14 @@ reget:
             clear();
             move(3, 0);
             clrtobot();
-            prints("\n\n                    很抱歉，该版仅能发表文章,不能回文章...\n");
+            prints("\n\n                    很抱歉，该版仅能发表文章，不能回文章...\n");
             pressreturn();
             break;              /*Haohmaru.98.12.19,不能回文章的版 */
         }
         if (fileinfo->accessed[1] & FILE_READ && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {        /*Haohmaru.99.01.01.文章不可re */
             clear();
             move(3, 0);
-            prints("\n\n            很抱歉，本文已经设置为不可re模式,请不要试图讨论本文...\n");
+            prints("\n\n            很抱歉，本文已经设置为不可re模式，请不要试图讨论本文...\n");
             pressreturn();
             break;
         }
@@ -3038,10 +3038,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             ||(cmdmode==DIR_MODE_AUTHOR)
             ||(cmdmode==DIR_MODE_TITLE)
             ||(cmdmode==DIR_MODE_SUPERFITER))
-            prints("\n\n\t%s\n\t%s","\033[1;37m当前模式为文摘, 原作或搜索模式, 无法发表文章!",
+            prints("\n\n\t%s\n\t%s","\033[1;37m当前模式为文摘, 原作或搜索模式, 无法发表文章！",
                 "按回车键后使用 \033[1;32m<q>\033[1;37m 键可返回文章列表对应的位置...\033[m");
         else
-            prints("\n\n\t%s","\033[1;37m当前模式下无法发表文章!");
+            prints("\n\n\t%s","\033[1;37m当前模式下无法发表文章！");
         move(t_lines-1,0);
         prints("\033[1;34;47m\t%s\033[K\033[m","按回车键继续...");
         WAIT_RETURN;
@@ -3051,8 +3051,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     if (!haspostperm(getCurrentUser(), currboard->filename)) { /* POST权限检查 */
         move(3, 0);
         clrtobot();
-            prints("\n\n        此讨论区是唯读的, 或是您尚无权限在此发表文章.\n");
-            prints("        如果您尚未注册，请在个人工具箱内详细注册身份\n");
+            prints("\n\n        此讨论区是唯读的, 或是您尚无权限在此发表文章。\n");
+            prints("        如果您尚未注册，请在个人工具箱内详细注册身份。\n");
             prints("        未通过身份注册认证的用户，没有发表文章的权限。\n");
             prints("        谢谢合作！ :-) \n");
         pressreturn();
@@ -3078,7 +3078,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         	return FULLUPDATE;
 		}else{
 			clear();
-            getdata(3,0,"您已被取消在当前版面的发文权限, 是否强制发文? [y/N]: ",buf,2,DOECHO,NULL,true);
+            getdata(3,0,"您已被取消在当前版面的发文权限, 是否强制发文？[y/N]: ",buf,2,DOECHO,NULL,true);
 			if( buf[0]!='y' && buf[0]!='Y' ){
 				clear();
 				return FULLUPDATE;

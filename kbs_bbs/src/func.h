@@ -702,6 +702,7 @@ int pc_logs(struct pc_logs *pn);
     void conv_init(session_t* session);
     char *gb2big(char *s, int *plen, int inst, session_t* session);
     char *big2gb( char *s, int *plen, int inst, session_t* session);
+    char* encodestring(const char* string,char* encode);
 
 /* libann.c */
 #ifdef FB2KPC

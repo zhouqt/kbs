@@ -973,7 +973,9 @@ void Retr()
     outs(genbuf);
     sprintf(genbuf, "%s: %s%s", selfTag, getCurrentUser()->userid, mail_domain);
     outs(genbuf);
-    sprintf(genbuf, "Subject: %s", fcache[num].title);
+    ptr = encodestring(fcache[num].title, "GB2312");
+    sprintf(genbuf, "Subject: %s", ptr);
+    free(ptr);
     outs(genbuf);
     outs("");
     sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, fcache[num].filename);

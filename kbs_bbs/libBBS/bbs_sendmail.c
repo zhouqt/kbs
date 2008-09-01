@@ -384,7 +384,7 @@ const char *email_domain()
 }
 
 
-static char* encodestring(const char* string,char* encode)
+char* encodestring(const char* string,char* encode)
 {
     char* encodestr;
 	int len;

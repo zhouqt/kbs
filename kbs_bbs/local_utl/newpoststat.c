@@ -112,8 +112,10 @@ static char * get_file_title(char *boardname, int threadid, char *title, char *u
 
 #ifdef NEWSMTH
             // pig2532 Feb 2008: ignore topic with FEN flag in top10
-            if(fh.accessed[1] & FILE_FEN)
+            if(fh.accessed[1] & FILE_FEN) {
+                printf("skip:%s/%d/%s/%s\n", boardname, fh.id, fh.owner, fh.title);
                 return NULL;
+            }
 #endif /* NEWSMTH */
 
 			strncpy(title, fh.title, 80);
