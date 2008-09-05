@@ -1072,9 +1072,33 @@ static int mu_menu_on_change(struct _select_def *conf,int new_pos){
 }
 
 int modify_userinfo(int uid,int mode){
-#define MU_ACCESS_USER                  0x000921FE
-#define MU_ACCESS_ADMIN                 0x000FFFFF
-#define MU_ACCESS_READ                  0x00092000
+/* add defines by jiangjun, 2008-09-01 */
+#define MOD_USERID      0  
+#define MOD_PASSWD      1  
+#define MOD_USERNAME    2  
+#define MOD_REALNAME    3  
+#define MOD_GENDER      4  
+#define MOD_BIRTHDAY    5  
+#define MOD_ADDRESS     6  
+#define MOD_EMAIL       7  
+#define MOD_TELEPHONE   8  
+#define MOD_TITLE       9  
+#define MOD_REALEMAIL   10 
+#define MOD_FIRSTLOGIN  11 
+#define MOD_LASTLOGIN   12 
+#define MOD_LASTHOST    13 
+#define MOD_NUMLOGINS   14 
+#define MOD_NUMPOSTS    15 
+#define MOD_STAY        16 
+#define MOD_SCORE       17 
+#define MOD_USERLEVEL   18 
+#define MOD_EXIT        19 
+
+#define MU_ACCESS_USER                  (1<<MOD_PASSWD)   | (1<<MOD_USERNAME) | (1<<MOD_REALNAME) | (1<<MOD_GENDER)    |  \
+                                        (1<<MOD_BIRTHDAY) | (1<<MOD_ADDRESS)  | (1<<MOD_EMAIL)    | (1<<MOD_TELEPHONE) |  \
+                                        (1<<MOD_LASTHOST) | (1<<MOD_STAY)     | (1<<MOD_EXIT)
+#define MU_ACCESS_ADMIN                 0x00FFFFFF
+#define MU_ACCESS_READ                  (1<<MOD_LASTHOST) | (1<<MOD_STAY)     | (1<<MOD_EXIT)
 #define MU_ACCESS(d)                    (access&(1<<(d)))
 #define MU_SIZE(t,f)                    (sizeof(((const struct t*)0)->f))
 #define MU_SIZE_user(f)                 MU_SIZE(userec,f)
@@ -1180,10 +1204,10 @@ int modify_userinfo(int uid,int mode){
             return -2;
     }
 #ifndef HAVE_BIRTHDAY
-    access&=(~0x00000030);
+    access&=(~((1<<MOD_GENDER) | (1<<MOD_BIRTHDAY)));
 #endif /* ! HAVE_BIRTHDAY */
 #ifndef NEWSMTH
-    access&=(~0x00020000);
+    access&=(~(1<<MOD_SCORE));
 #endif /* ! NEWSMTH */
     modify_user_mode(!mode?GMENU:ADMIN);
     clear();
@@ -1220,39 +1244,39 @@ int modify_userinfo(int uid,int mode){
     item[i].access=0;
     item[i].prefix=NULL;
     item[i].menu=NULL;
-    MU_MENUFORM(0,N,"%s",nuser.userid);
-    MU_MENUFORM(1,N,"%s",md5_mask);
-    MU_MENUFORM(2,N,"%s",nuser.username);
-    MU_MENUFORM(3,N,"%s",ndata.realname);
+    MU_MENUFORM(MOD_USERID,N,"%s",nuser.userid);
+    MU_MENUFORM(MOD_PASSWD,N,"%s",md5_mask);
+    MU_MENUFORM(MOD_USERNAME,N,"%s",nuser.username);
+    MU_MENUFORM(MOD_REALNAME,N,"%s",ndata.realname);
 #ifndef HAVE_BIRTHDAY
-    MU_MENUFORM(4,N,"%s",invalid);
-    MU_MENUFORM(5,N,"%s",invalid);
+    MU_MENUFORM(MOD_GENDER,N,"%s",invalid);
+    MU_MENUFORM(MOD_BIRTHDAY,N,"%s",invalid);
 #else /* HAVE_BIRTHDAY */
-    MU_MENUFORM(4,N,"%s",(ndata.gender=='M'?"男":"女"));
+    MU_MENUFORM(MOD_GENDER,N,"%s",(ndata.gender=='M'?"男":"女"));
     snprintf(buf,MU_LENGTH,"%04d 年 %02d 月 %02d 日",(ndata.birthyear+1900),
         ndata.birthmonth,ndata.birthday);
-    MU_MENUFORM(5,N,"%s",buf);
+    MU_MENUFORM(MOD_BIRTHDAY,N,"%s",buf);
 #endif /* ! HAVE_BIRTHDAY */
-    MU_MENUFORM(6,N,"%-.64s",ndata.address);
-    MU_MENUFORM(7,N,"%-.64s",ndata.email);
-    MU_MENUFORM(8,N,"%-.64s",ndata.telephone);
+    MU_MENUFORM(MOD_ADDRESS,N,"%-.64s",ndata.address);
+    MU_MENUFORM(MOD_EMAIL,N,"%-.64s",ndata.email);
+    MU_MENUFORM(MOD_TELEPHONE,N,"%-.64s",ndata.telephone);
     snprintf(buf,MU_LENGTH,"[%s] <%u>",(nuser.title?get_user_title(nuser.title):"无"),nuser.title);
-    MU_MENUFORM(9,N,"%s",buf);
-    MU_MENUFORM(10,N,"%-.64s",ndata.realemail);
+    MU_MENUFORM(MOD_TITLE,N,"%s",buf);
+    MU_MENUFORM(MOD_REALEMAIL,N,"%-.64s",ndata.realemail);
     MU_GET_TIME(nuser.firstlogin);
-    MU_MENUFORM(11,N,"%s",buf);
+    MU_MENUFORM(MOD_FIRSTLOGIN,N,"%s",buf);
     MU_GET_TIME(nuser.lastlogin);
-    MU_MENUFORM(12,N,"%s",buf);
-    MU_MENUFORM(13,N,"%s",nuser.lasthost);
-    MU_MENUFORM(14,N,"%u",nuser.numlogins);
-    MU_MENUFORM(15,N,"%u",nuser.numposts);
+    MU_MENUFORM(MOD_LASTLOGIN,N,"%s",buf);
+    MU_MENUFORM(MOD_LASTHOST,N,"%s",nuser.lasthost);
+    MU_MENUFORM(MOD_NUMLOGINS,N,"%u",nuser.numlogins);
+    MU_MENUFORM(MOD_NUMPOSTS,N,"%u",nuser.numposts);
     if(nuser.stay>3600)
         snprintf(buf,MU_LENGTH,"%ld 小时 %2ld 分钟",(nuser.stay/3600),((nuser.stay%3600)/60));
     else
         snprintf(buf,MU_LENGTH,"%ld 分钟",(nuser.stay/60));
-    MU_MENUFORM(16,N,"%s",buf);
+    MU_MENUFORM(MOD_STAY,N,"%s",buf);
 #ifndef NEWSMTH
-    MU_MENUFORM(17,N,"%s",invalid);
+    MU_MENUFORM(MOD_SCORE,N,"%s",invalid);
 #else /* NEWSMTH */
     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
@@ -1262,9 +1286,9 @@ int modify_userinfo(int uid,int mode){
     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
         "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
 #endif
-    MU_MENUFORM(17,N,"%s",buf);
+    MU_MENUFORM(MOD_SCORE,N,"%s",buf);
 #endif /* ! NEWSMTH */
-    MU_MENUFORM(18,N,"<%s>",gen_permstr(nuser.userlevel,buf));
+    MU_MENUFORM(MOD_USERLEVEL,N,"<%s>",gen_permstr(nuser.userlevel,buf));
     memcpy(omenu,menu,(MU_ITEM*MU_LENGTH*sizeof(char)));
     arg.type=MU_MENU_INIT;
     arg.access=&access;
@@ -1311,7 +1335,7 @@ int modify_userinfo(int uid,int mode){
 #define MU_CURR_ROW                     (i+2)
 #define MU_BREAK_TRIM(s)                if(!((s)[0]))break;trimstr(s)
 #define MU_TRIM_BREAK(s)                trimstr(s);if(!((s)[0]))break
-                case 0:
+                case MOD_USERID:
                     MU_SHOW_HINT(i);
 #ifdef SECONDSITE
                     MU_PUT(MU_CURR_ROW,MU_MSG(C, "一般不要在水木二站修改用户名"));
@@ -1331,7 +1355,7 @@ int modify_userinfo(int uid,int mode){
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的用户名已经存在..."));
                         break;
                     }
-                case 1:
+                case MOD_PASSWD:
 #ifdef SECONDSITE
                     if(mode != 1) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C, "请到水木社区主站修改密码"));
@@ -1377,19 +1401,19 @@ int modify_userinfo(int uid,int mode){
                         snprintf(nuser.userid,(IDLEN+2),"%s",buf);
                         snprintf(ndata.userid,(IDLEN+2),"%s",buf);
                         snprintf(buf,80,"%s \033[0;33m[将会踢出该用户全部登录]\033[m",nuser.userid);
-                        MU_SET(0,user,userid,str,"%s",buf);
+                        MU_SET(MOD_USERID,user,userid,str,"%s",buf);
                     }
                     setpasswd(&buf[80],&nuser);
                     snprintf(buf,MU_LENGTH,"%s",md5_mask);
-                    MU_SET(1,user,md5passwd,str,"%s",buf);
+                    MU_SET(MOD_PASSWD,user,md5passwd,str,"%s",buf);
                     if (!i && strcasecmp(nuser.userid, ouser.userid))
                     {
                         nuser.firstlogin = time(NULL);
                         MU_GET_TIME(nuser.firstlogin);
-                        MU_SET(11, user, firstlogin, val, "%s", buf);
+                        MU_SET(MOD_FIRSTLOGIN, user, firstlogin, val, "%s", buf);
                     }
                     break;
-                case 2:
+                case MOD_USERNAME:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的昵称: "),buf,(NAMELEN-1));
                     if(!buf[0])
@@ -1397,7 +1421,7 @@ int modify_userinfo(int uid,int mode){
                     snprintf(nuser.username,NAMELEN,"%s",buf);
                     MU_SET(i,user,username,str,"%s",0);
                     break;
-                case 3:
+                case MOD_REALNAME:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的真实姓名: "),buf,(NAMELEN-1));
                     MU_BREAK_TRIM(buf);
@@ -1405,12 +1429,12 @@ int modify_userinfo(int uid,int mode){
                     MU_SET(i,data,realname,str,"%s",0);
                     break;
 #ifdef HAVE_BIRTHDAY
-                case 4:
+                case MOD_GENDER:
                     ndata.gender=(ndata.gender=='M'?'F':'M');
                     snprintf(buf,MU_LENGTH,"%s",(ndata.gender=='M'?"男":"女"));
                     MU_SET(i,data,gender,val,"%s",buf);
                     break;
-                case 5:
+                case MOD_BIRTHDAY:
                     /* 就这里事多! 等我有空非把这三个 birth 捏一起不可... */
 #define MU_PARSE2(p)                    ((((p)[0]*10)+((p)[1]*1))-('0'*11))
 #define MU_PARSE4(p)                    ((MU_PARSE2(p)*100)+(MU_PARSE2(&(p)[2])*1))
@@ -1437,10 +1461,10 @@ int modify_userinfo(int uid,int mode){
                     snprintf(buf,MU_LENGTH,"%04d 年 %02d 月 %02d 日",(ndata.birthyear+1900),
                         ndata.birthmonth,ndata.birthday);
                     MU_SET(i,data,birthyear,val,"%s",buf);
-                    if(change&(1<<5))
+                    if(change&(1<<MOD_BIRTHDAY))
                         break;
                     MU_SET(i,data,birthmonth,val,"%s",buf);
-                    if(change&(1<<5))
+                    if(change&(1<<MOD_BIRTHDAY))
                         break;
                     MU_SET(i,data,birthday,val,"%s",buf);
 #undef MU_PARSE2
@@ -1449,7 +1473,7 @@ int modify_userinfo(int uid,int mode){
 #undef MU_FEB_CORR
                     break;
 #endif /* HAVE_BIRTHDAY */
-                case 6:
+                case MOD_ADDRESS:
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的通信地址..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,64);
@@ -1457,7 +1481,7 @@ int modify_userinfo(int uid,int mode){
                     snprintf(ndata.address,STRLEN,"%s",buf);
                     MU_SET(i,data,address,str,"%s",0);
                     break;
-                case 7:
+                case MOD_EMAIL:
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的电子邮件地址..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,64);
@@ -1465,7 +1489,7 @@ int modify_userinfo(int uid,int mode){
                     snprintf(ndata.email,STRLEN,"%s",buf);
                     MU_SET(i,data,email,str,"%s",0);
                     break;
-                case 8:
+                case MOD_TELEPHONE:
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的联系电话..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,64);
@@ -1473,7 +1497,7 @@ int modify_userinfo(int uid,int mode){
                     snprintf(ndata.telephone,STRLEN,"%s",buf);
                     MU_SET(i,data,telephone,str,"%s",0);
                     break;
-                case 9:
+                case MOD_TITLE:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的职务{<名称>|<#序号>|<@>}: "),buf,(USER_TITLE_LEN-1));
                     MU_TRIM_BREAK(buf);
@@ -1509,7 +1533,7 @@ int modify_userinfo(int uid,int mode){
                     snprintf(buf,MU_LENGTH,"[%s] <%u>",(nuser.title?get_user_title(nuser.title):"无"),nuser.title);
                     MU_SET(i,user,title,val,"%s",buf);
                     break;
-                case 10:
+                case MOD_REALEMAIL:
                     MU_SHOW_HINT(i);
                     MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的原始注册资料..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,60);
@@ -1517,7 +1541,7 @@ int modify_userinfo(int uid,int mode){
                     snprintf(ndata.realemail,(STRLEN-16),"%s",buf);
                     MU_SET(i,data,realemail,str,"%s",0);
                     break;
-                case 11:
+                case MOD_FIRSTLOGIN:
                     MU_SHOW_HINT(i);
                     current=time(NULL);
                     if(!(nuser.firstlogin)){
@@ -1538,7 +1562,7 @@ int modify_userinfo(int uid,int mode){
                     MU_GET_TIME(nuser.firstlogin);
                     MU_SET(i,user,firstlogin,val,"%s",buf);
                     break;
-                case 12:
+                case MOD_LASTLOGIN:
                     MU_SHOW_HINT(i);
                     current=time(NULL);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"是否重新设置该用户的最近访问时间? [N]: "),buf,1);
@@ -1548,10 +1572,10 @@ int modify_userinfo(int uid,int mode){
                     MU_GET_TIME(nuser.lastlogin);
                     MU_SET(i,user,lastlogin,val,"%s",buf);
                     break;
-                case 13:
+                case MOD_LASTHOST:
                     mu_show_online(uid,mode);
                     break;
-                case 14:
+                case MOD_NUMLOGINS:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的登录数量{<N>|<+N>|<-N>}: "),buf,9);
                     MU_TRIM_BREAK(buf);
@@ -1574,7 +1598,7 @@ int modify_userinfo(int uid,int mode){
                     }
                     MU_SET(i,user,numlogins,val,"%u",0);
                     break;
-                case 15:
+                case MOD_NUMPOSTS:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的文章数量{<N>|<+N>|<-N>}: "),buf,9);
                     MU_TRIM_BREAK(buf);
@@ -1597,7 +1621,7 @@ int modify_userinfo(int uid,int mode){
                     }
                     MU_SET(i,user,numposts,val,"%u",0);
                     break;
-                case 16:
+                case MOD_STAY:
                     current=time(NULL);
                     j=(int)((((double)nuser.stay)/((double)(current-nuser.firstlogin)))*1440);
                     if(j<60)
@@ -1608,7 +1632,7 @@ int modify_userinfo(int uid,int mode){
                     MU_PUT(MU_CURR_ROW,buf);
                     break;
 #ifdef NEWSMTH
-                case 17:
+                case MOD_SCORE:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW, MU_MSG(Y, "请选择要修改的积分种类{U(用户)|M(管理)}: "), buf, 2);
                     if (!((k = (toupper(buf[0]) == 'U')) || (toupper(buf[0]) == 'M')))
@@ -1676,7 +1700,7 @@ int modify_userinfo(int uid,int mode){
                     MU_SET(i, user, score_manager, val, "%s", buf);
                     break;
 #endif /* NEWSMTH */
-                case 18:
+                case MOD_USERLEVEL:
                     MU_SHOW_HINT(i);
                     if(mu_generate_level(MU_CURR_ROW,15,&level,nuser.userlevel)==-1)
                         break;
@@ -1705,76 +1729,76 @@ int modify_userinfo(int uid,int mode){
         }
         else if(arg.type==MU_MENU_RESET){
             switch((i=(pos-1))){
-                case 0:
-                case 1:
+                case MOD_USERID:
+                case MOD_PASSWD:
                     /* fancyrabbit Sep 17 2007, should reset these values together, somewhat a dirty fix ...*/
-                    if (change & 0x01)
-                        MU_RESET(11, user, firstlogin);
-                    MU_RESET(0, user, userid);
-                    MU_RESET(1, user, md5passwd);
+                    if (change & (1<<MOD_USERID))
+                        MU_RESET(MOD_FIRSTLOGIN, user, firstlogin);
+                    MU_RESET(MOD_USERID, user, userid);
+                    MU_RESET(MOD_PASSWD, user, md5passwd);
                     break;
-                case 2:
+                case MOD_USERNAME:
                     MU_RESET(i,user,username);
                     break;
-                case 3:
+                case MOD_REALNAME:
                     MU_RESET(i,data,realname);
                     break;
 #ifdef HAVE_BIRTHDAY
-                case 4:
+                case MOD_GENDER:
                     MU_RESET(i,data,gender);
-                case 5:
+                case MOD_BIRTHDAY:
                     MU_RESET(i,data,birthyear);
                     MU_RESET(i,data,birthmonth);
                     MU_RESET(i,data,birthday);
                     break;
 #endif /* HAVE_BIRTHDAY */
-                case 6:
+                case MOD_ADDRESS:
                     MU_RESET(i,data,address);
                     break;
-                case 7:
+                case MOD_EMAIL:
                     MU_RESET(i,data,email);
                     break;
-                case 8:
+                case MOD_TELEPHONE:
                     MU_RESET(i,data,telephone);
                     break;
-                case 9:
+                case MOD_TITLE:
                     MU_RESET(i,user,title);
                     break;
-                case 10:
+                case MOD_REALEMAIL:
                     MU_RESET(i,data,realemail);
                     break;
-                case 11:
+                case MOD_FIRSTLOGIN:
                     MU_RESET(i,user,firstlogin);
-                    if (change & 0x01)
+                    if (change & (1<<MOD_USERID))
                     {
-                        MU_RESET(0, user, userid);
-                        MU_RESET(1, user, md5passwd);
+                        MU_RESET(MOD_USERID, user, userid);
+                        MU_RESET(MOD_PASSWD, user, md5passwd);
                     }
                     break;
-                case 12:
+                case MOD_LASTLOGIN:
                     MU_RESET(i,user,lastlogin);
                     break;
-                case 13:
+                case MOD_LASTHOST:
                     MU_RESET(i,user,lasthost);
                     break;
-                case 14:
+                case MOD_NUMLOGINS:
                     MU_RESET(i,user,numlogins);
                     break;
-                case 15:
+                case MOD_NUMPOSTS:
                     MU_RESET(i,user,numposts);
                     break;
-                case 16:
+                case MOD_STAY:
                     MU_RESET(i,user,stay);
                     break;
 #ifdef NEWSMTH
-                case 17:
+                case MOD_SCORE:
                     MU_RESET(i,user,score_user);
                     /* dirty fix here */
                     change |= (1 << i);
                     MU_RESET(i,user,score_manager);
                     break;
 #endif /* NEWSMTH */
-                case 18:
+                case MOD_USERLEVEL:
                     MU_RESET(i,user,userlevel);
                     break;
                 case (MU_ITEM-1):
@@ -1799,82 +1823,82 @@ int modify_userinfo(int uid,int mode){
         return -6;
     }
     verify=0;
-    MU_VERIFY(0,user,userid,str);
-    MU_VERIFY(1,user,md5passwd,str);
-    MU_VERIFY(2,user,username,str);
-    MU_VERIFY(3,data,realname,str);
+    MU_VERIFY(MOD_USERID,user,userid,str);
+    MU_VERIFY(MOD_PASSWD,user,md5passwd,str);
+    MU_VERIFY(MOD_USERNAME,user,username,str);
+    MU_VERIFY(MOD_REALNAME,data,realname,str);
 #ifdef HAVE_BIRTHDAY
-    MU_VERIFY(4,data,gender,val);
-    MU_VERIFY(5,data,birthyear,val);
-    MU_VERIFY(5,data,birthmonth,val);
-    MU_VERIFY(5,data,birthday,val);
+    MU_VERIFY(MOD_GENDER,data,gender,val);
+    MU_VERIFY(MOD_BIRTHDAY,data,birthyear,val);
+    MU_VERIFY(MOD_BIRTHDAY,data,birthmonth,val);
+    MU_VERIFY(MOD_BIRTHDAY,data,birthday,val);
 #endif /* HAVE_BIRTHDAY */
-    MU_VERIFY(6,data,address,str);
-    MU_VERIFY(7,data,email,str);
-    MU_VERIFY(8,data,telephone,str);
-    MU_VERIFY(9,user,title,val);
-    MU_VERIFY(10,data,realemail,str);
-    MU_VERIFY(11,user,firstlogin,val);
-    MU_VERIFY(12,user,lastlogin,val);
-    MU_VERIFY(13,user,lasthost,str);
-    MU_VERIFY(14,user,numlogins,val);
-    MU_VERIFY(15,user,numposts,val);
-    MU_VERIFY(16,user,stay,val);
+    MU_VERIFY(MOD_ADDRESS,data,address,str);
+    MU_VERIFY(MOD_EMAIL,data,email,str);
+    MU_VERIFY(MOD_TELEPHONE,data,telephone,str);
+    MU_VERIFY(MOD_TITLE,user,title,val);
+    MU_VERIFY(MOD_REALEMAIL,data,realemail,str);
+    MU_VERIFY(MOD_FIRSTLOGIN,user,firstlogin,val);
+    MU_VERIFY(MOD_LASTLOGIN,user,lastlogin,val);
+    MU_VERIFY(MOD_LASTHOST,user,lasthost,str);
+    MU_VERIFY(MOD_NUMLOGINS,user,numlogins,val);
+    MU_VERIFY(MOD_NUMPOSTS,user,numposts,val);
+    MU_VERIFY(MOD_STAY,user,stay,val);
 #ifdef NEWSMTH
-    MU_VERIFY(17,user,score_user,val);
-    MU_VERIFY(17,user,score_manager,val);
+    MU_VERIFY(MOD_SCORE,user,score_user,val);
+    MU_VERIFY(MOD_SCORE,user,score_manager,val);
 #endif /* NEWSMTH */
-    MU_VERIFY(18,user,userlevel,val);
+    MU_VERIFY(MOD_USERLEVEL,user,userlevel,val);
     if(verify){
         MU_GET((MU_ITEM+2),MU_MSG(Y,"部分用户数据已经发生变化, 是否强制修改? [N]: "),buf,1);
         if(toupper(buf[0])!='Y'){
             MU_PUT((MU_ITEM+2),MU_MSG(Y,"取消修改操作..."));
             return -7;
         }
-        if(verify&0x01)
-            change&=(~0x803);
+        if(verify&(1<<MOD_USERID))
+            change&=(~(1<<MOD_USERID|1<<MOD_PASSWD|1<<MOD_FIRSTLOGIN));  //0x803
     }
     memcpy(&vuser,urec,sizeof(struct userec));
     if(read_userdata(urec->userid,&vdata)==-1){
         MU_PUT((MU_ITEM+2),MU_MSG(R,"修改用户数据时发生致命错误..."));
         return -8;
     }
-    MU_EXEC(3,data,realname);
+    MU_EXEC(MOD_REALNAME,data,realname);
 #ifdef HAVE_BIRTHDAY
-    MU_EXEC(4,data,gender);
-    MU_EXEC(5,data,birthyear);
-    MU_EXEC(5,data,birthmonth);
-    MU_EXEC(5,data,birthday);
+    MU_EXEC(MOD_GENDER,data,gender);
+    MU_EXEC(MOD_BIRTHDAY,data,birthyear);
+    MU_EXEC(MOD_BIRTHDAY,data,birthmonth);
+    MU_EXEC(MOD_BIRTHDAY,data,birthday);
 #endif /* HAVE_BIRTHDAY */
-    MU_EXEC(6,data,address);
-    MU_EXEC(7,data,email);
-    MU_EXEC(8,data,telephone);
-    MU_EXEC(9,user,title);
-    MU_EXEC(10,data,realemail);
+    MU_EXEC(MOD_ADDRESS,data,address);
+    MU_EXEC(MOD_EMAIL,data,email);
+    MU_EXEC(MOD_TELEPHONE,data,telephone);
+    MU_EXEC(MOD_TITLE,user,title);
+    MU_EXEC(MOD_REALEMAIL,data,realemail);
     /* 挪下边去 ... */
     /*MU_EXEC(11,user,firstlogin);*/
-    MU_EXEC(12,user,lastlogin);
-    MU_EXEC(13,user,lasthost);
-    MU_EXEC(14,user,numlogins);
-    MU_EXEC(15,user,numposts);
-    MU_EXEC(16,user,stay);
+    MU_EXEC(MOD_LASTLOGIN,user,lastlogin);
+    MU_EXEC(MOD_LASTHOST,user,lasthost);
+    MU_EXEC(MOD_NUMLOGINS,user,numlogins);
+    MU_EXEC(MOD_NUMPOSTS,user,numposts);
+    MU_EXEC(MOD_STAY,user,stay);
 #ifdef NEWSMTH
-    MU_EXEC(17,user,score_user);
-    MU_EXEC(17,user,score_manager);
+    MU_EXEC(MOD_SCORE,user,score_user);
+    MU_EXEC(MOD_SCORE,user,score_manager);
 #endif /* NEWSMTH */
-    MU_EXEC(18,user,userlevel);
-    if(change&0x04){
+    MU_EXEC(MOD_USERLEVEL,user,userlevel);
+    if(change&(1<<MOD_USERNAME)){
         if(mode)
             update_username(urec->userid,NULL,nuser.username);
         else{
             update_username(urec->userid,vuser.username,nuser.username);
             strncpy(uinfo.username,nuser.username,NAMELEN);
         }
-        MU_EXEC(2,user,username);
+        MU_EXEC(MOD_USERNAME,user,username);
     }
-    i=(verify&0x01);
+    i=(verify&(1<<MOD_USERID));
     do{
-        if(change&0x01){
+        if(change&(1<<MOD_USERID)){
             if(strcasecmp(vuser.userid,nuser.userid)&&searchuser(nuser.userid)){
                 i=2;
                 break;
@@ -1892,21 +1916,21 @@ int modify_userinfo(int uid,int mode){
                 i=4;
                 break;
             }
-            MU_EXEC(0,user,userid);
-            MU_EXEC(0,data,userid);
+            MU_EXEC(MOD_USERID,user,userid);
+            MU_EXEC(MOD_USERID,data,userid);
         }
     }
     while(0);
     if(!i)
     {
-        MU_EXEC(1,user,md5passwd);
+        MU_EXEC(MOD_PASSWD,user,md5passwd);
 #ifdef CONV_PASS
-        MU_EXEC(1, user, passwd);
+        MU_EXEC(MOD_PASSWD, user, passwd);
 #endif
     }
     else
-        change&=(~0x803);
-    MU_EXEC(11,user,firstlogin);
+        change&=(~(1<<MOD_USERID|1<<MOD_PASSWD|1<<MOD_FIRSTLOGIN)); //0x803
+    MU_EXEC(MOD_FIRSTLOGIN,user,firstlogin);
     memcpy(urec,&vuser,sizeof(struct userec));
     if(write_userdata(urec->userid,&vdata)==-1){
         MU_PUT((MU_ITEM+2),MU_MSG(R,"回写用户数据时发生致命错误..."));
@@ -1923,7 +1947,7 @@ int modify_userinfo(int uid,int mode){
         sethomefile(buf,urec->userid,"usermemo");
         unlink(buf);
     }
-    if(mail&&(change&(1<<18))){
+    if(mail&&(change&(1<<MOD_USERLEVEL))){
         snprintf(name,MU_LENGTH,"tmp/modify_userinfo_%lu_%d.mail",time(NULL),(int)getpid());
         if((fp=fopen(name,"w"))){
             write_header(fp,getCurrentUser(),1,NULL,"[系统] 用户权限修改通知",0,0,getSession());
@@ -2000,6 +2024,27 @@ int modify_userinfo(int uid,int mode){
 #undef MU_GET_TIME
 #undef MU_VERIFY
 #undef MU_EXEC
+
+#undef MOD_USERID
+#undef MOD_PASSWD
+#undef MOD_USERNAME
+#undef MOD_REALNAME
+#undef MOD_SEX
+#undef MOD_BIRTHDAY
+#undef MOD_ADDRESS
+#undef MOD_EMAIL
+#undef MOD_TELEPHONE
+#undef MOD_TITLE
+#undef MOD_REALEMAIL
+#undef MOD_FIRSTLOGIN
+#undef MOD_LASTLOGIN
+#undef MOD_LASTHOST
+#undef MOD_NUMLOGINS
+#undef MOD_NUMPOSTS
+#undef MOD_STAY
+#undef MOD_SCORE
+#undef MOD_USERLEVEL
+#undef MOD_EXIT
 }
 
 int modify_userinfo_current(void){
