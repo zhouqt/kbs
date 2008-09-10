@@ -1754,6 +1754,8 @@ static int get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, boo
                 break;
             case 10:
             case 11:
+                /* do not add import flag when making total, pig2532 */
+                break;
             case 12:
             case 13:
                 fh->accessed[0] |= FILE_IMPORTED;
