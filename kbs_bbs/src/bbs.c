@@ -5196,7 +5196,8 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
                 ent,
                 !func_arg->saveorigin,
                 getCurrentUser()->userid);
-            fh->accessed[0]|=FILE_IMPORTED;
+            /* do not add imported flag when making total, pig2532 */
+            //fh->accessed[0]|=FILE_IMPORTED;
             break;
     }
     return ret;
