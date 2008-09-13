@@ -1218,6 +1218,15 @@ int check_board_delete_read_perm(const struct userec *user,const struct boardhea
          || (jury && isJury(user, board)));
 }
 
+int check_board_junk_read_perm(const struct userec *user, const struct boardheader *bh)
+{
+    return (HAS_PERM(user, PERM_SYSOP)
+#ifdef NEWSMTH
+            || isJury(user, bh)
+#endif
+            );
+}
+
 
 int deldeny(struct userec *user, char *board, char *uident, int notice_only, int dobmlog, session_t* session)
 {                               /* É¾³ı ½ûÖ¹POSTÓÃ»§ */

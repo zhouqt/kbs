@@ -2242,7 +2242,7 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
 
 int junk_mode(struct _select_def *conf,struct fileheader *fh,void *varg){
     struct read_arg *arg=(struct read_arg*)conf->arg;
-    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+    if(!check_board_junk_read_perm(getCurrentUser(),currboard))
         return self_mode(conf,fh,varg);
     if(arg->mode==DIR_MODE_JUNK){
         arg->newmode=DIR_MODE_NORMAL;
