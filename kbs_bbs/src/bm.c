@@ -701,6 +701,13 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 WAIT_RETURN;
                 continue;
             }
+#ifdef SECONDSITE
+            if(!canIsend2(getCurrentUser(),user->userid)){
+                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","该用户已拒绝你的授权操作...");
+                WAIT_RETURN;
+                continue;
+            }
+#endif
             prints("\033[1;37m增加俱乐部授权用户: \033[1;32m%s\033[m",user->userid);
             sprintf(genbuf,"\033[1;37m附加说明 [\033[1;36m%s\033[1;37m]: \033[m",comment);
             getdata(2,0,genbuf,buf,64,DOECHO,NULL,true);
@@ -855,6 +862,10 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         }
                         if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,currboard,write_perm))
                             continue;
+#ifdef SECONDSITE
+                        if(!canIsend2(getCurrentUser(),user->userid))
+                            continue;
+#endif
                         if(!set_user_club_perm(user,currboard,write_perm)){
                             club_maintain_send_mail(user->userid, sp_com ? sp_com : comment,0,write_perm,currboard,getSession());
                             i++;
