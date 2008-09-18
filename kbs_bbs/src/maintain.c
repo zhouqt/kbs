@@ -2273,15 +2273,14 @@ if (ret==-2) {
                  */
                  clrtoeol();
 #ifdef AUTO_CHECK_REGISTER_FORM
-		 if (strstr(finfo[n],"真实姓名")) continue;
-#else
-                if (n == 1) {
-                    if (useproxy > 0)
-                        prints("%s     : %s \033[33m%s\033[m\n", finfo[n], fdata[n], buf);
-                    else
-                        prints("%s     : %s\n", finfo[n], fdata[n]);
-                } else
+                 if (strstr(finfo[n],"真实姓名")) continue;
 #endif
+                 if (n == 1) {
+                     if (useproxy > 0)
+                         prints("%s     : %s \033[33m%s\033[m\n", finfo[n], fdata[n], buf);
+                     else
+                         prints("%s     : %s\n", finfo[n], fdata[n]);
+                 } else
                     prints("%s     : %s\n", finfo[n], fdata[n]);
             }
             /*
