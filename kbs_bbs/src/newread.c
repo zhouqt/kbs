@@ -982,7 +982,13 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     }else{
         q_arg.boardname = currboard->filename;
         setbdir(DIR_MODE_SUPERFITER, newdirect, currboard->filename);
-        q_arg.isbm = chk_currBM(currBM, getCurrentUser());
+        q_arg.isbm = 
+#ifdef NEWSMTH
+            check_board_delete_read_perm(getCurrentUser(), currboard, 0)
+#else
+            chk_currBM(currBM, getCurrentUser())
+#endif
+            ;
     }
 
     if (curfh == NULL) {
