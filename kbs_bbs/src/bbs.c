@@ -1035,11 +1035,17 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 	char threadprefix1[20];
 	char threadsufix[20];
 
-   /* typesufix = typeprefix = "";*/
-   typesufix = ""; 
-   typeprefix[0]='\0';
+    /* typesufix = typeprefix = "";*/
+    typesufix = ""; 
+    typeprefix[0]='\0';
 
-    manager = chk_currBM(currBM, getCurrentUser());
+    manager = 
+#ifdef NEWSMTH
+        check_board_delete_read_perm(getCurrentUser(), currboard, 0)
+#else
+        chk_currBM(currBM, getCurrentUser())
+#endif
+        ;
 
     type = get_article_flag(ent, getCurrentUser(), currboard->filename, manager, NULL, getSession());
     if (manager && (ent->accessed[0] & FILE_IMPORTED)) {        /* 文件已经被收入精华区 */
@@ -1395,7 +1401,13 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     board_attach_link(slink,255,NULL,-1,-1,&bali);
     prints("全文链接：\n\033[4m%s\033[m\n",slink);
 
-    isbm=chk_currBM(currboard->BM, getCurrentUser());
+    isbm=
+#ifdef NEWSMTH
+        check_board_delete_read_perm(getCurrentUser(), currboard, 0)
+#else
+        chk_currBM(currboard->BM, getCurrentUser())
+#endif
+        ;
     unread_mark = (DEFINE(getCurrentUser(), DEF_UNREADMARK) ? UNREAD_SIGN : 'N');
     move(6,0);
     prints("文章标记: %c%c%c%c%c%c%c%s%c",
