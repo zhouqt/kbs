@@ -1097,7 +1097,7 @@ int modify_userinfo(int uid,int mode){
 #define MU_ACCESS_USER                  (1<<MOD_PASSWD)   | (1<<MOD_USERNAME) | (1<<MOD_REALNAME) | (1<<MOD_GENDER)    |  \
                                         (1<<MOD_BIRTHDAY) | (1<<MOD_ADDRESS)  | (1<<MOD_EMAIL)    | (1<<MOD_TELEPHONE) |  \
                                         (1<<MOD_LASTHOST) | (1<<MOD_STAY)     | (1<<MOD_EXIT)
-#define MU_ACCESS_ADMIN                 0x00FFFFFF
+#define MU_ACCESS_ADMIN                 0x000FFFFF
 #define MU_ACCESS_READ                  (1<<MOD_LASTHOST) | (1<<MOD_STAY)     | (1<<MOD_EXIT)
 #define MU_ACCESS(d)                    (access&(1<<(d)))
 #define MU_SIZE(t,f)                    (sizeof(((const struct t*)0)->f))
