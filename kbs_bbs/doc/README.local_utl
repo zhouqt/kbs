@@ -34,4 +34,21 @@ statkiller.c    杀手游戏的排行榜，可惜我执行的时候Segmentation fault :(
 fixdir.c        修复.DIR文件的错误
 showipdeny.c    查看因为短时间重复上站被封ID IP记录，修改里面的"surrender"为任
                 意已有的版名就可以用了
+authd.c         远程用户认证的服务端，在水木社区用于提供水木二站的登录认证。
+blogstat.c      统计blog用户数据用于排名。
+bonlinelog.c    记录版面在线用户信息到日志文件，以便日后统计。
+dayuserlog.c    记录在线用户信息，以便日后统计和绘制曲线图等。
+dump_user_title.c
+                统计各自定义身份的名单。
+fhedit.c        直接修改版面索引.DIR等文件的工具。
+fix_nowid.c     修正版面最新文章序号。
+fix_sysop.c     修正SYSOP的权限，或者重置SYSOP的密码。
+
+gen_title.c     全部重新设置版面文章id号。
+postfilealt.c   直接从shell上发表文章的工具。
+refresh_reply.c 对于开启了文章回复数统计的站点，重新统计所有文章的回复数。
+scored.c        对于开启了积分功能的站点，远程积分操作服务端，水木社区中暂时用
+                于向二站传送积分。
+sync_mailsize.c 修正用户信箱的使用量。
+userexist.c     判断某用户是否存在。可用于编写脚本来删除不存在的用户的文件。
 

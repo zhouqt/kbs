@@ -232,3 +232,5 @@ bbsd (23端口)，sshbbsd (22端口)，apachectl (80端口) 需要用 root 身份来启动。
     转信支持请参考 doc/INSTALL.innbbsd 文档。
 
     bbs 用户还需要一个 crontab 以便完成一些日常事务，请参考 doc/README.SYSOP。
+
+    其它问题请到 水木社区(newsmth.net) 的 BBSMan_Dev 版面讨论。

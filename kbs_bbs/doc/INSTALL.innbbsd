@@ -119,9 +119,9 @@ cn.bbs.* 的部分自动统计程序就不能正确给出你站点的统计信息。
     如果申请通过的话就可以使用被动转信，请修改 nodelist.bbs，将 cnnews 对应
 行改成:
 
-     cnnews     166.111.160.80  IHAVE(119)       cn.bbs.*新闻组
+     cnnews     59.66.172.79  IHAVE(119)       cn.bbs.*新闻组
 
-    其中 166.111.160.80 将根据具体情况进行分配，具体 IP 请参考转信配置提示。
+    其中 59.66.172.79 将根据具体情况进行分配，具体 IP 请参考转信配置提示。
 重新运行 innbbsd （或者reload一次），就可以了。bbslink 设置不变。同时别忘了从
 crontab 中删掉 bbsnnrp，bbsnnrp 和 cnnews.active 已经可以不再使用了。
 

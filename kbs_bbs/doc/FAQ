@@ -80,7 +80,7 @@ $Id$
   b) 检查 /etc/passwd 和 /etc/group 文件，看看 bbs 用户的 uid 和 gid 是否
      与代码中定义的 BBSUID 和 BBSGID 宏一致(在 site.h 文件中)。
 
-2.7. 我从 cvs 下载的代码，用 autogen.sh 命令生成了 configure，但 make 时
+2.7. 我从 svn 下载的代码，用 autogen.sh 命令生成了 configure，但 make 时
      却出错，提示：
     “./../depcomp: ./../depcomp: No such file or directory”
 [答复]
