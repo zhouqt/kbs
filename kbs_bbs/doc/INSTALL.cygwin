@@ -82,6 +82,8 @@ Windows 二进制安装包。
 2.6 安装 kbs
     同样切换到 $(SRCDIR) 目录，进入 kbs 的源代码目录。编辑 site/fb2k-v2.h
 文件，填上自己的站点名称等信息，然后执行下面的一系列命令：
+        ./autogen.sh
+        cd sshbbsd; ./autogen.sh; cd ..
         ./configure --enable-site=fb2k-v2 --with-php=/home/bbs/php \
             --enable-ssh --enable-innbbsd \
             && make && make install
