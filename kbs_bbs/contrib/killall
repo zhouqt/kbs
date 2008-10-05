@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ $# -eq 1 ]; then
+  KILL_PROG=$1
+  KILL_OPTS=
+elif [ $# -eq 2 ]; then
+  KILL_PROG=$1
+  KILL_OPTS=$2
+else
+  echo Usage: $0 prog_name [kill_opt]
+  exit
+fi
+
+for i in `ps aux | grep $KILL_PROG | sed -e 's/ \+\([0-9]\+\).*/\1/g'`; do
+  kill $KILL_OPTS $i
+done
