@@ -646,7 +646,8 @@ int setpublicshmreadonly(int readonly)
 {
     int iscreate;
 
-    shmdt((void *)publicshm);
+    if (publicshm != NULL)
+        shmdt((void *)publicshm);
     if (readonly)
         publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, publicshm);
 

@@ -27,7 +27,7 @@ case "${host}" in
         ;;  
   *-*-cygwin*)        
         OSTYPE="CYGWIN"
-	LIBS="$LIBS -lcygipc"
+	LIBS="$LIBS"
         ;;  
   *)        
         OSTYPE="GENERIC"

@@ -624,10 +624,12 @@ static int start_daemon(int inetd,int port,const char *addr){
             SD_EXIT(1);
 #undef SD_EXIT
     }
+#ifndef CYGWIN
     if(setgid(BBSGID)==-1)
         exit(8);
     if(setuid(BBSUID)==-1)
         exit(8);
+#endif
     return 0;
 }
 static int bbs_inet_main(char* argv){

@@ -328,7 +328,7 @@ Making a local copy of prot.h and patching it.])
     ;;
   *-*-cygwin*)
     CFLAGS="$CFLAGS -DCYGWIN"
-	LIBS="$LIBS -lcygipc"
+	LIBS="$LIBS"
 	;;
   *)
     ;;
