@@ -10,7 +10,7 @@ $Id$
   flyriver v1.0  初始版本
 
 1. 需要的软件
-cygwin > 1.5.3         必须
+cygwin >= 1.5.25       必须
 libesmtp > 0.8         必须      编译时必须加上 --disable-pthreads 选项
 autoconf-2.57          可选
 automake-1.6.X         可选
