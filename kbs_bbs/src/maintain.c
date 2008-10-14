@@ -2679,7 +2679,7 @@ int m_unregister(void)
         WAIT_RETURN;
         return -1;
     }
-    uinfo.userlevel = PERM_BASIC;
+    uinfo.userlevel &= PERM_BASIC;
     if (update_user(&uinfo, uid, 0) == -1)
     {
         move(t_lines - 1, 0); prints("回写用户信息时发生错误 ...\033[0;33m<Enter>\033[m");
