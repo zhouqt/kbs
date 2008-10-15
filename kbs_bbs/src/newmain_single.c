@@ -1182,6 +1182,11 @@ static void check_activation()
     }
     for (re=0;re<9;re++) {
         move(12,0); clrtobot();
+        if (check_proxy_IP(getSession()->fromhost, NULL)) {
+            prints("本站不允许穿梭激活，请直接连接本站输入激活码。\n");
+            pressreturn();
+            return;
+        }
         prints("请输入您收到的激活码。进站后您也可以在个人工具箱内选择激活码操作来输入激活码。\n");
         prints("如果您已经激活帐号或想通过信箱内链接激活帐号，可以直接按回车继续。\n");
         getdata(14, 0, "> ", buf, ACTIVATIONLEN+1, DOECHO, NULL, true);
