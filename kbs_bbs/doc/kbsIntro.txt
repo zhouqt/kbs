@@ -79,6 +79,7 @@ typedef struct fileheader {
     unsigned char accessed[4];
         一些帖子的属性，前两个元素是 bitwise-OR 的属性，包括：
         accessed[0]: FILE_SIGN     (0x01) 版主设置的 # 标记
+                     FILE_TOTAL    (0x02) 已被制作合集
                      FILE_PERCENT  (0x04) 版主设置的 % 标记
                      FILE_MARKED   (0x08) 被 m 的帖子
                      FILE_DIGEST   (0x10) 文摘区贴子（被 g 的帖子）
