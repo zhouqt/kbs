@@ -1617,7 +1617,27 @@ static int get_tex(struct fileheader *fh)
 		return 0;
 }
 
-#define FH_SELECT_NUM 4
+static int perm_total(struct fileheader *fh)
+{
+    return chk_currBM(currboard->BM,getCurrentUser());
+}
+static int set_total(struct fileheader *fh, int i)
+{
+	if(i==0){
+		fh->accessed[0] &= ~FILE_TOTAL;
+	}else{
+		fh->accessed[0] |= FILE_TOTAL;
+	}
+	return 1;
+}
+static int get_total(struct fileheader *fh)
+{
+	if(fh->accessed[0] & FILE_TOTAL)
+		return 1;
+	else
+		return 0;
+}
+#define FH_SELECT_NUM 5
 static struct _fh_select
 {
 	char *desc;
@@ -1629,7 +1649,8 @@ static struct _fh_select
 	{"回文转寄到信箱", perm_mailback, set_mailback, get_mailback},
 	{"转信发表", perm_innflag, set_innflag, get_innflag},
 	{"收精华标记", perm_cancelo, set_cancelo, get_cancelo},
-    {"TEX标记", perm_tex, set_tex, get_tex}
+    {"TeX标记", perm_tex, set_tex, get_tex},
+    {"已做合集标记", perm_total, set_total, get_total}
 };
 
 int show_fhselect(struct _select_def *conf, int i)

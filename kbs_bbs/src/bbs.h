@@ -279,7 +279,7 @@ extern long ti;
 #define COUNT           0x2         /* count record */
 
 #define FILE_SIGN       0x1         /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
-#define FILE_OWND       0x2         /* accessed array */
+#define FILE_TOTAL      0x2         /* accessed array */
 #define FILE_PERCENT    0x4         /* %±ê¼Ç */
 #define FILE_MARKED     0x8
 #define FILE_DIGEST     0x10        /* Digest Mode*/  /*For SmallPig Digest Mode */

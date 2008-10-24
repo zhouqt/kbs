@@ -1057,10 +1057,15 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             typesufix = "\x1b[m";
         }
     }
-#ifdef NEWSMTH
-	if(HAS_PERM(getCurrentUser(), PERM_OBOARDS) && (ent->accessed[1] & FILE_FEN)) {
+	if(manager && (ent->accessed[0] & FILE_TOTAL)) {
 		strcat(typeprefix , "\x1b[4m");
         typesufix = "\x1b[m";
+	}
+#ifdef NEWSMTH
+	if(HAS_PERM(getCurrentUser(), PERM_OBOARDS) && (ent->accessed[1] & FILE_FEN)) {
+		strcat(typeprefix , "\x1b[1;31m");
+        typesufix = "\x1b[m";
+        type = '+';
 	}
 #endif /* NEWSMTH */
     filetime = get_posttime(ent);
@@ -5208,8 +5213,8 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
                 ent,
                 !func_arg->saveorigin,
                 getCurrentUser()->userid);
-            /* do not add imported flag when making total, pig2532 */
-            //fh->accessed[0]|=FILE_IMPORTED;
+            /* add 'total made' flag, pig2532 */
+            fh->accessed[0]|=FILE_TOTAL;
             break;
     }
     return ret;
