@@ -1415,7 +1415,7 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         ;
     unread_mark = (DEFINE(getCurrentUser(), DEF_UNREADMARK) ? UNREAD_SIGN : 'N');
     move(6,0);
-    prints("文章标记: %c%c%c%c%c%c%c%s%c",
+    prints("文章标记: %c%c%c%c%c%c%c%s%c%c",
         (strcmp(getCurrentUser()->userid, "guest") && brc_unread(fileinfo->id, getSession())) ? unread_mark : ' ',
         (fileinfo->accessed[0] & FILE_DIGEST) ? 'g' : ' ',
         (fileinfo->accessed[0] & FILE_MARKED) ? 'm' : ' ',
@@ -1424,7 +1424,8 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         (isbm && (fileinfo->accessed[0] & FILE_PERCENT)) ? '%' : ' ',
         (isbm && (fileinfo->accessed[1] & FILE_DEL)) ? 'X' : ' ',
         (isbm && (fileinfo->accessed[0] & FILE_IMPORTED)) ? "\x1b[42m \x1b[0m" : " ",
-        (isbm && (fileinfo->accessed[1] & FILE_CENSOR)) ? '@' : ' '
+        (isbm && (fileinfo->accessed[1] & FILE_CENSOR)) ? '@' : ' ',
+        (isbm && (fileinfo->accessed[0] & FILE_TOTAL)) ? '_' : ' '
         );
     
     if(HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
