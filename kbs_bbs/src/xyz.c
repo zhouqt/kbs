@@ -1575,7 +1575,8 @@ static int get_innflag(struct fileheader *fh){
 
 static int perm_cancelo(struct fileheader *fh)
 {
-	if(!(fh->accessed[0] & FILE_IMPORTED)) return 0;
+    //fancy Oct 24 2008
+    //if(!(fh->accessed[0] & FILE_IMPORTED)) return 0;
     return chk_currBM(currboard->BM,getCurrentUser());
 }
 static int set_cancelo(struct fileheader *fh, int i)
