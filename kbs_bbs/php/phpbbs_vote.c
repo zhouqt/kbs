@@ -436,7 +436,7 @@ PHP_FUNCTION(bbs_start_vote)
 	append_record(buf, &vlimit, sizeof(vlimit));
 
 	sprintf(buf,"tmp/votetmp.%d",getpid());
-	if((fp=fopen(buf,"w"))==NULL){
+	if((fp=fopen(buf,"w"))!=NULL){
 		sprintf(buff,"[通知] %s 举办投票: %s",bp->filename,ball.title);
 		fprintf(fp,"%s",buff);
 		fclose(fp);
