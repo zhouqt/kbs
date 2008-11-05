@@ -529,7 +529,7 @@ void login_query()
     prints("\n\033[1m\033[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔÝÍ£×¢²áÐÂÕÊºÅ, add `\033[36m.\033[37m' after your ID for BIG5\033[m");
 #endif //LOGINASNEW
     while (1) {
-        if (attempts++ >= 3) {
+        if (attempts++ >= (frommain ? 1 : 3)) {
             ansimore("etc/goodbye", false);
             oflush();
             sleep(1);
