@@ -529,7 +529,7 @@ void login_query()
     prints("\n\033[1m\033[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔÝÍ£×¢²áÐÂÕÊºÅ, add `\033[36m.\033[37m' after your ID for BIG5\033[m");
 #endif //LOGINASNEW
     while (1) {
-        if (attempts++ >= (frommain ? 1 : 3)) {
+        if (attempts++ >= 3) {
             ansimore("etc/goodbye", false);
             oflush();
             sleep(1);
@@ -637,7 +637,7 @@ void login_query()
                 /* fancy Apr 7 2008, ¶þÕ¾¸úËæÖ÷Õ¾¸Ä´óÐ¡Ð´ ... */
                 struct userec *user, *user_sysop;
                 if (getuser(uid, &user)) {
-                    if (frommain && strcmp(uid, user->userid) && !strcasecmp(uid, user->userid)) {
+                    if (frommain && (attempts == 1) && strcmp(uid, user->userid) && !strcasecmp(uid, user->userid)) {
                         char cmd[STRLEN], oldid[IDLEN + 2], bmbuf[BM_LEN], *p, *q, fname[PATHLEN], title[STRLEN];
                         const char *delim = ",: ;|&()";
                         int n, pos;
