@@ -605,7 +605,7 @@ int main(int argc, char* argv[]) {
         printf("  --recovertitle    recover the original article title as undo-delete.\n");
         printf("\nParameters:\n");
         printf("  --board           specify the board name in order to modify board dir.\n");
-        printf( " --user            specify user id in order to modify mail dir.\n");
+        printf("  --user            specify user id in order to modify mail dir.\n");
         printf("  --indexfile       specify index file, default is .DIR\n");
         printf("  --number          specify the starting article number.\n");
         printf("  --count           specify the number of articles to deal with, default\n");
