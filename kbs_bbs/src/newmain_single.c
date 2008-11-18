@@ -772,9 +772,9 @@ void login_query()
         
         if (strcasecmp(uid, "new") == 0) {
 #ifdef LOGINASNEW
-            if (check_ban_IP(getSession()->fromhost, buf) <= 0) {
 #ifdef NEWSMTH
-                get_zongze();
+                if (!check_proxy_IP(getSession()->fromhost, NULL)) {
+                    get_zongze();
 #endif
                 new_register();
                 sethomepath(tmpstr, getCurrentUser()->userid);
@@ -788,8 +788,10 @@ void login_query()
                 mail_file(DELIVER,"etc/tonewuser",getCurrentUser()->userid,"致新注册用户的信",0,NULL);
                 #endif
                 break;
-            }
-            prints("本系统因为 %s 的原因禁止您所在网段注册新用户\n", buf);
+#ifdef NEWSMTH
+                }
+                prints("本站不允许穿梭注册，请直接连接本站注册新用户。\n");
+#endif
 #else
             prints("\033[37m本系统目前无法以 new 注册, 请用 guest 进入.\033[m\n");
 #endif
