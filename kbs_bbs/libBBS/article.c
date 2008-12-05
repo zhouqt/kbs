@@ -417,12 +417,12 @@ int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, sessio
     }
     else
     {
-		char buf[PATHLEN],fn_old[PATHLEN],fn_new[PATHLEN];
-		struct fileheader postfile;
+        char buf[PATHLEN],fn_old[PATHLEN],fn_new[PATHLEN];
+        struct fileheader postfile;
 
         memcpy(&postfile, fh, sizeof(postfile));
-    	snprintf(postfile.title, ARTICLE_TITLE_LEN, "%-32.32s - %s", fh->title, session->currentuser->userid);
-    	postfile.accessed[sizeof(postfile.accessed) - 1] = time(0) / (3600 * 24) % 100;
+        snprintf(postfile.title, ARTICLE_TITLE_LEN, "%-32.32s - %s", fh->title, session->currentuser->userid);
+        postfile.accessed[sizeof(postfile.accessed) - 1] = time(0) / (3600 * 24) % 100;
 
         setbfile(fn_old,boardname,postfile.filename);
         postfile.filename[(postfile.filename[1]=='/')?2:0]='Y';
@@ -456,16 +456,16 @@ int insert_func(int fd, struct fileheader *start, int ent, int total, struct fil
 }
 
 /* do undel an article to board
-	modified from original UndeleteArticle by pig2532 on 2005.12.18
-	parameters:
-		boardname: the board's name to undelete at
-		dirfname: index file name, usually boards/(boardname)/.DELETED
-		fileheader: the file header of which article to be undeleted
-		title: to RETURN the original article title
-	return:
-		-1: file not exists
-		0: unable to open file
-		1: success
+    modified from original UndeleteArticle by pig2532 on 2005.12.18
+    parameters:
+        boardname: the board's name to undelete at
+        dirfname: index file name, usually boards/(boardname)/.DELETED
+        fileheader: the file header of which article to be undeleted
+        title: to RETURN the original article title
+    return:
+        -1: file not exists
+        0: unable to open file
+        1: success
 */
 /* undelete 一篇文章 Leeward 98.05.18 */
 /* modified by ylsdd */
@@ -579,10 +579,10 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
         modify_reply_count(boardname, fileinfo->groupid, 1, 0, NULL);
 #endif /* HAVE_REPLY_COUNT */
 
-	if(title != NULL)
-	{
-		sprintf(title, "%s", UFile.title);
-	}
+    if(title != NULL)
+    {
+        sprintf(title, "%s", UFile.title);
+    }
 
     bmlog(session->currentuser->userid, boardname, 9, 1);
 
@@ -1334,31 +1334,31 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
 #endif
 
 #ifdef DENYANONY
-		if (user && !poststat){
-			char anonybuf[256];
-			struct fileheader tmpf;
+        if (user && !poststat){
+            char anonybuf[256];
+            struct fileheader tmpf;
 
-			setbfile(anonybuf, boardname, ".ANONYDIR");
-			memcpy(&tmpf, fh, sizeof(tmpf));
+            setbfile(anonybuf, boardname, ".ANONYDIR");
+            memcpy(&tmpf, fh, sizeof(tmpf));
 
-			strcpy(tmpf.owner, session->currentuser->userid);
+            strcpy(tmpf.owner, session->currentuser->userid);
 
-		    if ((fd = open(anonybuf, O_WRONLY | O_CREAT, 0664)) != -1) {
+            if ((fd = open(anonybuf, O_WRONLY | O_CREAT, 0664)) != -1) {
                 writew_lock(fd, 0, SEEK_SET, 0);
-		        lseek(fd, 0, SEEK_END);
-		        safewrite(fd, &tmpf, sizeof(fileheader));
+                lseek(fd, 0, SEEK_END);
+                safewrite(fd, &tmpf, sizeof(fileheader));
                 un_lock(fd, 0, SEEK_SET, 0);
-		        close(fd);
-		    }
-		}
+                close(fd);
+            }
+        }
 #endif
 
 #ifdef FILTER
     }
 #endif
 #ifdef NEWPOSTLOG
-	if(user)
-		newpostlog(user->userid, boardname, fh->title, fh->groupid);
+    if(user)
+        newpostlog(user->userid, boardname, fh->title, fh->groupid);
 #else
     newbbslog(BBSLOG_USER, "%s", buf);
 #endif
@@ -1547,7 +1547,7 @@ int get_ent_from_id_ext(int mode, int id, const char *bname, fileheader_t *fh)
 {
     char dir[PATHLEN];
     int fd, index;
-	setbdir(mode, dir, bname);
+    setbdir(mode, dir, bname);
     
     fd = open(dir, O_RDWR, 0644);
     if(fd < 0)
@@ -1557,7 +1557,7 @@ int get_ent_from_id_ext(int mode, int id, const char *bname, fileheader_t *fh)
     if(!get_records_from_id(fd, id, fh, 1, &index))
     {
         close(fd);
-	    return(-2);
+        return(-2);
     }
     close(fd);
     return(index);
@@ -1565,28 +1565,28 @@ int get_ent_from_id_ext(int mode, int id, const char *bname, fileheader_t *fh)
 
 static int get_ent_id(int fd, fileheader_t * base, int ent, int total, bool match, void *arg)
 {
-	if(match){
-		return ent;
-	}else
-		return 0;
+    if(match){
+        return ent;
+    }else
+        return 0;
 }
 
 int get_ent_from_id(int mode, int id, const char *bname)
 {
-	char direct[PATHLEN];
-	int fd;
-	int ret=0;
-	fileheader_t key;
+    char direct[PATHLEN];
+    int fd;
+    int ret=0;
+    fileheader_t key;
 
     setbdir(mode, direct, bname);
-	if ((fd = open(direct, O_RDWR, 0)) == -1){
-		return 0;
-	}
+    if ((fd = open(direct, O_RDWR, 0)) == -1){
+        return 0;
+    }
 
-	key.id = id;
+    key.id = id;
     ret = mmap_dir_search(fd, &key, get_ent_id, NULL);
 
-	close(fd);
+    close(fd);
     return ret;
 }
 
@@ -1894,7 +1894,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, const char *b
         }
     }
 #ifdef FREE
-	if (0)
+    if (0)
 #elif defined(OPEN_NOREPLY)
     if (ent->accessed[1] & FILE_READ)
 #else
@@ -2015,47 +2015,47 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
 }
 
 const char *get_mime_type_from_ext(const char *ext) {
-	if (ext == NULL)
-		return "text/plain";
-	if (strcasecmp(ext, ".jpg") == 0 || strcasecmp(ext, ".jpeg") == 0)
-		return "image/jpeg";
-	if (strcasecmp(ext, ".gif") == 0)
-		return "image/gif";
-	if (strcasecmp(ext, ".png") == 0)
-		return "image/png";
-	if (strcasecmp(ext, ".pcx") == 0)
-		return "image/pcx";
-	if (strcasecmp(ext, ".au") == 0)
-		return "audio/basic";
-	if (strcasecmp(ext, ".wav") == 0)
-		return "audio/wav";
-	if (strcasecmp(ext, ".avi") == 0)
-		return "video/x-msvideo";
-	if (strcasecmp(ext, ".mov") == 0 || strcasecmp(ext, ".qt") == 0)
-		return "video/quicktime";
-	if (strcasecmp(ext, ".mpeg") == 0 || strcasecmp(ext, ".mpe") == 0)
-		return "video/mpeg";
-	if (strcasecmp(ext, ".vrml") == 0 || strcasecmp(ext, ".wrl") == 0)
-		return "model/vrml";
-	if (strcasecmp(ext, ".midi") == 0 || strcasecmp(ext, ".mid") == 0)
-		return "audio/midi";
-	if (strcasecmp(ext, ".mp3") == 0)
-		return "audio/mpeg";
-	if (strcasecmp(ext, ".txt") == 0)
-		return "text/plain";
-	if (strcasecmp(ext, ".xht") == 0 || strcasecmp(ext, ".xhtml") == 0)
-		return "application/xhtml+xml";
-	if (strcasecmp(ext, ".xml") == 0)
-		return "text/xml";
-	if (strcasecmp(ext, ".swf") == 0)
-		return "application/x-shockwave-flash";
-	if (strcasecmp(ext, ".pdf") == 0)
-		return "application/pdf";
-	if (strcasecmp(ext, ".html") == 0 || strcasecmp(ext, ".htm") == 0)
-		return "text/html";
-	if (strcasecmp(ext, ".css") == 0)
-		return "text/css";
-	return "application/octet-stream";
+    if (ext == NULL)
+        return "text/plain";
+    if (strcasecmp(ext, ".jpg") == 0 || strcasecmp(ext, ".jpeg") == 0)
+        return "image/jpeg";
+    if (strcasecmp(ext, ".gif") == 0)
+        return "image/gif";
+    if (strcasecmp(ext, ".png") == 0)
+        return "image/png";
+    if (strcasecmp(ext, ".pcx") == 0)
+        return "image/pcx";
+    if (strcasecmp(ext, ".au") == 0)
+        return "audio/basic";
+    if (strcasecmp(ext, ".wav") == 0)
+        return "audio/wav";
+    if (strcasecmp(ext, ".avi") == 0)
+        return "video/x-msvideo";
+    if (strcasecmp(ext, ".mov") == 0 || strcasecmp(ext, ".qt") == 0)
+        return "video/quicktime";
+    if (strcasecmp(ext, ".mpeg") == 0 || strcasecmp(ext, ".mpe") == 0)
+        return "video/mpeg";
+    if (strcasecmp(ext, ".vrml") == 0 || strcasecmp(ext, ".wrl") == 0)
+        return "model/vrml";
+    if (strcasecmp(ext, ".midi") == 0 || strcasecmp(ext, ".mid") == 0)
+        return "audio/midi";
+    if (strcasecmp(ext, ".mp3") == 0)
+        return "audio/mpeg";
+    if (strcasecmp(ext, ".txt") == 0)
+        return "text/plain";
+    if (strcasecmp(ext, ".xht") == 0 || strcasecmp(ext, ".xhtml") == 0)
+        return "application/xhtml+xml";
+    if (strcasecmp(ext, ".xml") == 0)
+        return "text/xml";
+    if (strcasecmp(ext, ".swf") == 0)
+        return "application/x-shockwave-flash";
+    if (strcasecmp(ext, ".pdf") == 0)
+        return "application/pdf";
+    if (strcasecmp(ext, ".html") == 0 || strcasecmp(ext, ".htm") == 0)
+        return "text/html";
+    if (strcasecmp(ext, ".css") == 0)
+        return "text/css";
+    return "application/octet-stream";
 }
 const char *get_mime_type(const char *filename) {
     char *dot = strrchr(filename, '.');
@@ -2876,7 +2876,7 @@ int getattachtmppath(char *buf, size_t buf_len, session_t *session)
 #if ! defined(FREE)
     /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
     snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(session->currentuser->userid[0]),
-			session->currentuser->userid, session->utmpent);
+            session->currentuser->userid, session->utmpent);
 #else
     snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,session->currentuser->userid,  session->utmpent);
 #endif
@@ -2939,7 +2939,7 @@ int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *sessio
 
             close(fd);
         }
-		fclose(fp2);
+        fclose(fp2);
     }
     f_rm(attachdir);
     return n;
@@ -2981,7 +2981,7 @@ int upload_read_fileinfo(struct ea_attach_info *ai, session_t *session) {
             n++;
             if (n >= MAXATTACHMENTCOUNT) break;
         }
-		fclose(fp2);
+        fclose(fp2);
     }
     return n;
 
@@ -3024,7 +3024,7 @@ int upload_del_file(const char *original_file, session_t *session) {
         ret = 0;
         unlink(buf);
     }
-	fclose(fp2);
+    fclose(fp2);
     fclose(fp);
     f_mv(attachfile2, attachfile);
     return ret;
@@ -3534,12 +3534,12 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
     int fd;
     struct fileheader fh;
     struct modify_reply_arg arg;
-	
+
     setbdir(DIR_MODE_NORMAL, dirpath, bname);
     fd = open(dirpath, O_RDWR, 0644);
     if(fd < 0)
         return 0;
-	
+
     fh.id = gid;
     arg.value = value;
     arg.mode = mode;
@@ -3551,10 +3551,10 @@ int modify_reply_count(const char* bname, int gid, int value, int mode, struct f
     fd = open(dirpath, O_RDWR, 0644);
     if(fd < 0)
         return 0;
-	
+
     mmap_dir_search(fd, &fh, update_reply_count, &arg);
     close(fd);
-    	
+
     return 0;
 }
 
@@ -3586,7 +3586,7 @@ int refresh_reply_count(const char* bname, int gid) {
             }
             ptr++;
         }
-	}
+    }
     BBS_CATCH {
     }
     BBS_END;
