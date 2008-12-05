@@ -1211,34 +1211,154 @@ void logattempt(char *uid, char *frm, char *action)
     }
 }
 
+/* 新的 IP 匹配系统, Nov 30 2008, skybluee@free
+ * TODO: 用到 proxyIP 那边去
+ */
+static unsigned long long get_ullip(const char *ip){
+        /*
+	 *从ip字符串获得ulonglong的数
+         */
+	char ip2[80];
+	strcpy(ip2, ip);
+	unsigned long long ull_ip = 0;
+	const char *token = ".";
+	/*char *p = strtok(ip2, token);
+	ull_ip += atoi(p);
+	while((p = strtok(NULL, token))){
+		ull_ip <<= 8;
+		ull_ip += atoi(p);
+	}*/
+    char *p, *q;
+    for (q = ip2; q; p = strsep(&q, token), ull_ip <<= 8, ull_ip += atoi(p));
+	return ull_ip;
+}
+
+static unsigned int get_pattern(const char *pattern, unsigned long long *ull_pattern){
+        /*
+	 *从格式字符串获得匹配ip及其匹配掩码
+	 *匹配ip通过第二个参数传回，掩码通过返回值传回
+         */
+	char *p_slash = strstr(pattern, "/");
+	char *p;
+	int i = 0;
+	char ip2[80];
+	if(p_slash){
+                /*
+		 *带'/'字样的匹配方式，比如:
+		 *59.66.122.1/23 或 59.66.122.1/255.255.254.0
+                 */
+		strncpy(ip2, pattern, p_slash-pattern);
+		*ull_pattern = get_ullip(ip2);
+		if(strstr(p_slash+1, ".")){
+			/*对应于 59.66.122.1/255.255.254.0 这样的*/
+			unsigned long long tmp = get_ullip(p_slash + 1);
+			int mask = 0;
+			while(((tmp << mask) & 0x00000000FFFFFFFF) >> 31)
+				mask++;
+			return mask;
+		} else
+			/*对应于 59.66.122.1/23 这样的*/
+			return atoi(p_slash+1);
+	} else {
+                /*
+		 *不带'/'字样的匹配方式，比如:
+		 *'*' 或者 '59.66.*' 或者 '59.66.122.*' 或者 '59.66.122.1'
+                 */
+		if((p = strstr(pattern, "*")) != NULL){
+			/*带'*'的*/
+			i = 0;
+			*ull_pattern = 0;
+			if(p == pattern)
+				return 0;
+			strncpy(ip2, pattern, p-pattern-1);
+			*(ip2 + (p - pattern) - 1) = '\0';
+			/*if((p = strtok(ip2, "."))){
+				*ull_pattern += atoi(p);
+				i++;
+				while((p = strtok(NULL, "."))){
+					i++;
+					*ull_pattern <<= 8;
+					*ull_pattern += atoi(p);
+				}
+				*ull_pattern <<= (4-i)*8;
+				return (i*8);
+			}*/
+            char *q = ip2;
+            if ((p = strsep(&q, "."))) {
+                *ull_pattern += atoi(p);
+                i++;
+                while (q) {
+                    p = strsep(&q, ".");
+                    i++;
+                    *ull_pattern <<= 8;
+                    *ull_pattern += atoi(p);
+                }
+                *ull_pattern <<= (4-i)*8;
+                return (i*8);
+            }
+		} else {
+			*ull_pattern = get_ullip(pattern);
+			return 32;
+		}
+	}
+	return 0xFF;
+}
+
+static inline int IPmatch(const char *ip, const char *pattern){
+	unsigned long long ull_ip = get_ullip(ip);
+	unsigned long long ull_pattern = 0;
+	unsigned int mask = get_pattern(pattern, &ull_pattern);
+	return (ull_ip >> (32 - mask)) == (ull_pattern >> (32 - mask));
+}
+
+/* Leeward 98.07.31
+ * RETURN:
+ * - 1: No any banned IP is defined now
+ * 0: The checked IP is not banned
+ * other value over 0: The checked IP is banned, the reason is put in buf
+ */
+/* .badIP 文件格式: 每一行为 # 开头的注释或者
+ * +IP Reason 形式, 中间以一个空格隔开
+ * 如果去掉行首加号, 则无效
+ *
+ * 支持的IP格式有
+59.66.122.1
+59.66.122.0/24
+59.66.122.0/255.255.255.0
+59.66.122.*
+59.66.*
+59.66.*.*
+*
+# 注意上头那行单纯一个 * 会导致匹配所有 IP
+*/
+
 int check_ban_IP(char *IP, char *buf)
-{                               /* Leeward 98.07.31
-                                 * RETURN:
-                                 * - 1: No any banned IP is defined now
-                                 * 0: The checked IP is not banned
-                                 * other value over 0: The checked IP is banned, the reason is put in buf
-                                 */
+{
     FILE *Ban;
-    char IPBan[64];
+    char IPBan[STRLEN];
     int IPX = -1;
     char *ptr;
 
     Ban = fopen(".badIP", "r");
     if (!Ban)
         return IPX;
-
     else
         IPX++;
-    while (fgets(IPBan, 64, Ban)) {
+
+    while (fgets(IPBan, STRLEN, Ban)) {
+        if (!*IPBan || (*IPBan == '#')) // comment
+            continue;
         if ((ptr = strchr(IPBan, '\n')) != NULL)
             *ptr = 0;
         if ((ptr = strchr(IPBan, ' ')) != NULL) {
             *ptr++ = 0;
             strcpy(buf, ptr);
         }
+        else
+            *buf = 0; // 防止 buf 飞了
         IPX = strlen(IPBan);
         if (*IPBan == '+')
-            if (!strncmp(IP, IPBan + 1, IPX - 1))
+            if (IPmatch(IP, IPBan + 1))
                 break;
         IPX = 0;
     }
