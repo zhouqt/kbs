@@ -161,6 +161,10 @@ static const CMD_LIST CMD[]={
     {"SMSdef",              x_usersmsdef,                           0},
 #endif /* SMS_SUPPORT */
 
+#ifdef DDD_ACTIVE
+    {"DDD",                 ddd_entry,                              0},
+#endif
+
     {NULL,                  NULL,                                  -1}
 };
 

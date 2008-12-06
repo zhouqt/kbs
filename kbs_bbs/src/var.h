@@ -1,6 +1,10 @@
 #ifndef GLOBAL_VAR_H
 #define GLOBAL_VAR_H
 
+#ifdef DDD_ACTIVE
+#include "ddd.h"
+#endif
+
 struct UTMPHEAD {
     int next[USHM_SIZE];
     int hashhead[UTMP_HASHSIZE + 1];    /* use UCACHE_HASHSIZE/32 */
@@ -118,6 +122,9 @@ typedef struct {
 #endif
 #ifdef NEWSMTH
     char passwd[40];
+#endif
+#ifdef DDD_ACTIVE
+    struct ddd_global_status gs_curr, gs_new;
 #endif
 } session_t;
 
