@@ -9,6 +9,7 @@ struct ddd_global_status {
     int favid;
     int bid;
     int mode;
+    int pos;
     int filter;
 };
 
@@ -29,7 +30,8 @@ int ddd_gs_init(struct ddd_global_status* gs);
 int ddd_entry();
 int ddd_read_loop();
 int ddd_header();
-int ddd_unknown();
+int ddd_read_all();
+int ddd_read_unknown();
 
 #endif /* DDD_ACTIVE */
 
