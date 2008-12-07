@@ -21,7 +21,8 @@
  *       +: Failed for file write error
  *
 */
-static int f_append_file(const char *src,const char *dst,int mode){
+static int f_append_file(const char *src,const char *dst,int mode)
+{
 #ifndef BUFFER_IN_STACK
     char *buf;
 #else
@@ -30,27 +31,27 @@ static int f_append_file(const char *src,const char *dst,int mode){
     int sfd,dfd,len,ret;
     const void *p;
 #ifndef BUFFER_IN_STACK
-    if(!(buf=(char*)malloc(READ_BUFFER_SIZE*sizeof(char)))){
+    if (!(buf=(char*)malloc(READ_BUFFER_SIZE*sizeof(char)))) {
         return -8;
     }
 #endif
-    if((sfd=open(src,O_RDONLY,FMASK))==-1){
+    if ((sfd=open(src,O_RDONLY,FMASK))==-1) {
 #ifndef BUFFER_IN_STACK
         free(buf);
 #endif
         return -2;
     }
-    if((dfd=open(dst,O_WRONLY|mode,FMASK))==-1){
+    if ((dfd=open(dst,O_WRONLY|mode,FMASK))==-1) {
 #ifndef BUFFER_IN_STACK
         free(buf);
 #endif
         close(sfd);
         return -4;
     }
-    while((len=read(sfd,buf,READ_BUFFER_SIZE))>0){
-        for(p=buf,ret=0;len>0&&ret!=-1;vpm(p,ret),len-=ret)
+    while ((len=read(sfd,buf,READ_BUFFER_SIZE))>0) {
+        for (p=buf,ret=0;len>0&&ret!=-1;vpm(p,ret),len-=ret)
             ret=write(dfd,p,len);
-        if(len)
+        if (len)
             break;
     }
 #ifndef BUFFER_IN_STACK
@@ -71,39 +72,40 @@ static int f_append_file(const char *src,const char *dst,int mode){
  *   Other: Failed
  *
 */
-static int rm_dir(const char *path){
+static int rm_dir(const char *path)
+{
     DIR *dp;
     struct dirent *de;
     struct stat st;
     char buf[512],*p,*q,*r,*s;
-    if(!(dp=opendir(path)))
+    if (!(dp=opendir(path)))
         return -1;
-    if(!(s=(p=strdup(path)))){
+    if (!(s=(p=strdup(path)))) {
         closedir(dp);
         return -2;
     }
     q=buf;
-    if(*path=='/')
+    if (*path=='/')
         *q++='/';
-    while(!!(r=strsep(&p,"/"))){
-        if(!*r)
+    while (!!(r=strsep(&p,"/"))) {
+        if (!*r)
             continue;
-        while(*r)
+        while (*r)
             *q++=*r++;
         *q++='/';
     }
     free(s);
-    while(!!(de=readdir(dp))){
-        if(!*(de->d_name))
+    while (!!(de=readdir(dp))) {
+        if (!*(de->d_name))
             continue;
-        if(!strcmp(de->d_name,"."))
+        if (!strcmp(de->d_name,"."))
             continue;
-        if(!strcmp(de->d_name,".."))
+        if (!strcmp(de->d_name,".."))
             continue;
         sprintf(q,"%s",de->d_name);
-        if(lstat(buf,&st))
+        if (lstat(buf,&st))
             continue;
-        if(!S_ISDIR(st.st_mode))
+        if (!S_ISDIR(st.st_mode))
             unlink(buf);
         else
             rm_dir(buf);
@@ -128,12 +130,13 @@ static int rm_dir(const char *path){
  *       +: Failed for file write error
  *
 */
-int f_cat(const char *file,const char *str){
+int f_cat(const char *file,const char *str)
+{
     int fd,len,ret;
     const void *p;
-    if((fd=open(file,O_WRONLY|O_CREAT|O_APPEND,FMASK))==-1)
+    if ((fd=open(file,O_WRONLY|O_CREAT|O_APPEND,FMASK))==-1)
         return -1;
-    for(p=str,len=strlen(str),ret=0;len>0&&ret!=-1;vpm(p,ret),len-=ret)
+    for (p=str,len=strlen(str),ret=0;len>0&&ret!=-1;vpm(p,ret),len-=ret)
         ret=write(fd,p,len);
     close(fd);
     return len;
@@ -154,7 +157,8 @@ int f_cat(const char *file,const char *str){
  *       +: Failed for file write error
  *
 */
-int f_catfile(const char *src,const char *dst){
+int f_catfile(const char *src,const char *dst)
+{
     return f_append_file(src,dst,(O_CREAT|O_APPEND));
 }
 
@@ -177,7 +181,8 @@ int f_catfile(const char *src,const char *dst){
  *       +: Failed for file write error
  *
 */
-int f_cp(const char *src,const char *dst,int mode){
+int f_cp(const char *src,const char *dst,int mode)
+{
     return f_append_file(src,dst,(O_CREAT|O_TRUNC|mode));
 }
 
@@ -200,8 +205,9 @@ int f_cp(const char *src,const char *dst,int mode){
  *       +: Failed for file write error
  *
 */
-int f_ln(const char *src,const char *dst){
-    if(!link(src,dst))
+int f_ln(const char *src,const char *dst)
+{
+    if (!link(src,dst))
         return 0;
     return ((errno==EMLINK||errno==EXDEV)?f_cp(src,dst,0):-16);
 }
@@ -224,7 +230,8 @@ int f_ln(const char *src,const char *dst){
  *   Other: Success
  *
 */
-int lock_reg(int fd,int cmd,int type,off_t offset,int whence,off_t len){
+int lock_reg(int fd,int cmd,int type,off_t offset,int whence,off_t len)
+{
     struct flock lock;
     lock.l_type=type;
     lock.l_start=offset;
@@ -245,10 +252,11 @@ int lock_reg(int fd,int cmd,int type,off_t offset,int whence,off_t len){
  *   Other: Success
  *
 */
-int flock(int fd,int op){
+int flock(int fd,int op)
+{
     int cmd,ret;
     cmd=((op&LOCK_NB)?F_SETLK:F_SETLKW);
-    switch(op&~LOCK_NB){
+    switch (op&~LOCK_NB) {
         case LOCK_SH:
             ret=lock_reg(fd,cmd,F_RDLCK,0,SEEK_SET,0);
             break;
@@ -262,7 +270,7 @@ int flock(int fd,int op){
             errno=EINVAL;
             return -1;
     }
-    if(ret==-1&&(errno==EAGAIN||errno==EACCES))
+    if (ret==-1&&(errno==EAGAIN||errno==EACCES))
         errno=EWOULDBLOCK;
     return ret;
 }
@@ -282,10 +290,11 @@ int flock(int fd,int op){
  *   Other: Failed
  *
 */
-int f_mv(const char *src,const char *dst){
-    if(!rename(src,dst))
+int f_mv(const char *src,const char *dst)
+{
+    if (!rename(src,dst))
         return 0;
-    if(!f_cp(src,dst,0)){
+    if (!f_cp(src,dst,0)) {
         unlink(src);
         return 0;
     }
@@ -305,9 +314,10 @@ int f_mv(const char *src,const char *dst){
  *   Other: Failed
  *
 */
-int f_rm(const char *path){
+int f_rm(const char *path)
+{
     struct stat st;
-    if(lstat(path,&st))
+    if (lstat(path,&st))
         return -1;
     return (!S_ISDIR(st.st_mode)?unlink(path):rm_dir(path));
 }
@@ -325,9 +335,10 @@ int f_rm(const char *path){
  *   Other: Failed
  *
 */
-int f_touch(const char *file){
+int f_touch(const char *file)
+{
     int fd;
-    if((fd=open(file,O_WRONLY|O_CREAT|O_NONBLOCK|O_NOCTTY|O_LARGEFILE,FMASK))==-1)
+    if ((fd=open(file,O_WRONLY|O_CREAT|O_NONBLOCK|O_NOCTTY|O_LARGEFILE,FMASK))==-1)
         return -1;
     close(fd);
     return utime(file,NULL);

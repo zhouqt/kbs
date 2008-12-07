@@ -22,7 +22,7 @@ void uuencode(const char *inbuf, int size, const char *filename, OUTC_FUNC fn)
 
     sprintf(buf, "begin 644 %s\n", filename);
     for (n = 0; n < strlen(buf); n++)
-        (*fn) (buf[n]);
+        (*fn)(buf[n]);
 
     left = size;
     ptr = inbuf;
@@ -32,28 +32,28 @@ void uuencode(const char *inbuf, int size, const char *filename, OUTC_FUNC fn)
             break;
         n = left > 45 ? 45 : left;
         left -= n;
-        if ((*fn) (ENCODE(n)) == EOF)
+        if ((*fn)(ENCODE(n)) == EOF)
             break;
         for (p = ptr, ptr+=n; n > 2; n -= 3, p += 3) {
             ch = *p >> 2;
             ch = ENCODE(ch);
-            if ((*fn) (ch) == EOF)
+            if ((*fn)(ch) == EOF)
                 break;
             ch = ENCODE(((*p << 4) & 060) | ((p[1] >> 4) & 017));
-            if ((*fn) (ch) == EOF)
+            if ((*fn)(ch) == EOF)
                 break;
             ch = ENCODE(((p[1] << 2) & 074) | ((p[2] >> 6) & 03));
-            if ((*fn) (ch) == EOF)
+            if ((*fn)(ch) == EOF)
                 break;
             ch = ENCODE((p[2] & 077));
-            if ((*fn) (ch) == EOF)
+            if ((*fn)(ch) == EOF)
                 break;
         }
 
         if (n != 0)
             break;
 
-        if ((*fn) ('\n') == EOF)
+        if ((*fn)('\n') == EOF)
             break;
     }
 
@@ -62,11 +62,11 @@ void uuencode(const char *inbuf, int size, const char *filename, OUTC_FUNC fn)
         char ch2 = (n == 1) ? 0 : p[1];
 
         ch = ENCODE(ch1 >> 2);
-        if ((*fn) (ch) == EOF)
+        if ((*fn)(ch) == EOF)
             break;
 
         ch = ENCODE(((ch1 << 4) & 060) | ((ch2 >> 4) & 017));
-        if ((*fn) (ch) == EOF)
+        if ((*fn)(ch) == EOF)
             break;
 
         if (n == 1)
@@ -74,19 +74,19 @@ void uuencode(const char *inbuf, int size, const char *filename, OUTC_FUNC fn)
         else {
             ch = ENCODE((ch2 << 2) & 074);
         }
-        if ((*fn) (ch) == EOF)
+        if ((*fn)(ch) == EOF)
             break;
         ch = ENCODE('\0');
-        if ((*fn) (ch) == EOF)
+        if ((*fn)(ch) == EOF)
             break;
-        (*fn) ('\n');
+        (*fn)('\n');
         break;
     }
-    (*fn) (ENCODE('\0'));
-    (*fn) ('\n');
-    (*fn) ('e');
-    (*fn) ('n');
-    (*fn) ('d');
-    (*fn) ('\n');
+    (*fn)(ENCODE('\0'));
+    (*fn)('\n');
+    (*fn)('e');
+    (*fn)('n');
+    (*fn)('d');
+    (*fn)('\n');
     return;
 }
