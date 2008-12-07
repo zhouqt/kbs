@@ -11,6 +11,7 @@ struct ddd_global_status {
     int mode;
     int pos;
     int filter;
+    int recur;
 };
 
 

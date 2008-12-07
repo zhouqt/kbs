@@ -14,6 +14,7 @@ int ddd_gs_init(struct ddd_global_status* gs) {
     gs->mode = DIR_MODE_NORMAL;
     gs->pos = 0;
     gs->filter = 0;
+    gs->recur = 0;
     return 0;
 }
 
@@ -74,8 +75,14 @@ int ddd_read_loop() {
             ddd_read_unknown();
             break;
         }
-
-        memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
+        if(DDD_GS_NEW.recur) {
+            memcpy(&gs_this_level, &DDD_GS_CURR, sizeof(struct ddd_global_status));
+            memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
+            ddd_read_loop();
+            memcpy(&DDD_GS_CURR, &gs_this_level, sizeof(struct ddd_global_status));
+        }
+        else
+            memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
         if(DDD_GS_CURR.type == GS_NONE)
             break;
     }
@@ -199,6 +206,24 @@ static int ddd_read_all_getdata(struct _select_def* conf, int pos, int len) {
 }
 
 static int ddd_read_all_onselect(struct _select_def* conf) {
+    struct ddd_read_all_arg *arg;
+    struct newpostdata *ptr;
+
+    arg = (struct ddd_read_all_arg *)(conf->arg); 
+    ptr = &(arg->boardlist[conf->pos - conf->page_pos]);
+    if(ptr->flag & BOARD_GROUP) {
+        DDD_GS_NEW.type = GS_GROUP;
+        DDD_GS_NEW.bid = getboardnum(ptr->name, NULL);
+        DDD_GS_NEW.recur = 1;
+    }
+    else {
+        DDD_GS_NEW.type = GS_BOARD;
+        DDD_GS_NEW.bid = getboardnum(ptr->name, NULL);
+        DDD_GS_NEW.mode = DIR_MODE_NORMAL;
+        DDD_GS_NEW.pos = 1;
+        DDD_GS_NEW.recur = 1;
+    }
+
     return SHOW_SELECT;
 }
 
@@ -245,7 +270,6 @@ static int ddd_read_all_prekeycommand(struct _select_def* conf, int* command) {
 }
 
 static int ddd_read_all_keycommand(struct _select_def* conf, int command) {
-    
     return SHOW_CONTINUE;
 }
 
@@ -308,9 +332,13 @@ int ddd_read_all() {
 
 int ddd_read_unknown() {
     clear();
+    ddd_header();
     move(3, 3);
     prints("Î´ÖªÔÄ¶Á×´Ì¬¡£");
+    update_endline();
     WAIT_RETURN;
+    DDD_GS_NEW.type = GS_NONE;
+    DDD_GS_NEW.recur = 0;
     return 0;
 }
 
