@@ -31,7 +31,7 @@
 
 /*extern char *getenv();*/
 static const char *const invalid[] = {
-   /* "unknown@",*/
+    /* "unknown@",*/
     "root@",
     "gopher@",
     "bbs@",
@@ -47,11 +47,10 @@ int my_system(const char *cmdstring)
     if (!cmdstring)
         return 1;
     switch (pid = fork()) {
-    case -1:
-        status = -1;
-        break;
-    case 0:
-        {
+        case -1:
+            status = -1;
+            break;
+        case 0: {
             int fd = open("/dev/zero", O_RDWR);
 
             dup2(fd, 2);
@@ -61,13 +60,13 @@ int my_system(const char *cmdstring)
             execl("/bin/sh", "sh", "-c", cmdstring, NULL);
             _exit(127);
         }
-    default:
-        while (waitpid(pid, &status, 0) < 0)
-            if (errno != EINTR) {
-                status = -1;
-                break;
-            }
-        break;
+        default:
+            while (waitpid(pid, &status, 0) < 0)
+                if (errno != EINTR) {
+                    status = -1;
+                    break;
+                }
+            break;
     }
     return status;
 }
@@ -77,8 +76,8 @@ char *idle_str(char* hh_mm_ss,struct user_info *uent)
 {
     time_t now, diff;
     int hh, mm;
-/*    char hh_mm_ss[8];
-*/
+    /*    char hh_mm_ss[8];
+    */
 
     now = time(0);
     diff = now - uent->freshtime;
@@ -87,7 +86,7 @@ char *idle_str(char* hh_mm_ss,struct user_info *uent)
 
     /*
      * the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
-     * kicking out all users 
+     * kicking out all users
      */
     if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5))
         kill(uent->pid, SIGHUP);
@@ -111,7 +110,7 @@ char *modestring(char* modestr,int mode, int towho, int complete, char *chatid)
     struct userec urec;
 
     /*
-     * Leeward: 97.12.18: Below removing ' characters for more display width 
+     * Leeward: 97.12.18: Below removing ' characters for more display width
      */
     if (chatid) {
         if (complete)
@@ -124,7 +123,7 @@ char *modestring(char* modestr,int mode, int towho, int complete, char *chatid)
     if (mode != TALK && mode != PAGE && mode != QUERY)
         return ((char *) ModeType(mode));
 
-    /*---	modified by period	2000-10-20	---*
+    /*--- modified by period 2000-10-20 ---*
         if (get_record(PASSFILE, &urec, sizeof(urec), towho) == -1)
             return (ModeType(mode));
     ---*/
@@ -170,10 +169,10 @@ char *Cdate(time_t clock)
 {                               /* 时间 --> 英文 */
 
     /*
-     * Leeward 2000.01.01 Adjust year display for 20** 
+     * Leeward 2000.01.01 Adjust year display for 20**
      */
     struct tm mytm;
-	struct tm * dtm= localtime_r(&clock,&mytm);
+    struct tm * dtm= localtime_r(&clock,&mytm);
 
     strftime(getSession()->strbuf, 24 /*22 */ , "%Y-%m-%d %T %a" /*"%D %T %a" */ , dtm);
     return (getSession()->strbuf);
@@ -262,7 +261,8 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
             attach_err(shmkey, "shmat 2");
             exit(0);
         }
-    } return shmptr;
+    }
+    return shmptr;
 }
 
 void remove_shm(char *shmstr, int defaultkey, int shmsize)
@@ -343,18 +343,19 @@ int countperf(struct userec *udata)
     if (!strcmp(udata->userid, "guest"))
         return -9999;
     reg_days = (time(0) - udata->firstlogin) / 86400 + 1;
-    perf = ((float) (udata->numposts /*+post_in_tin( udata->userid ) */ ) / (float) udata->numlogins +
+    perf = ((float)(udata->numposts /*+post_in_tin( udata->userid ) */) / (float) udata->numlogins +
             (float) udata->numlogins / (float) reg_days) * 10;
     return perf > 0 ? perf : 0;
 }
 
 /*
- * 根据阅读模式 取某版 目录路径 
+ * 根据阅读模式 取某版 目录路径
  */
-char* setbdir(enum BBS_DIR_MODE mode,char *buf,const char *boardname){
+char* setbdir(enum BBS_DIR_MODE mode,char *buf,const char *boardname)
+{
     const char *prefix;
     int type;
-    switch(mode){
+    switch (mode) {
         case DIR_MODE_NORMAL:
             type=0;
             prefix=DOT_DIR;
@@ -416,7 +417,7 @@ char* setbdir(enum BBS_DIR_MODE mode,char *buf,const char *boardname){
             newbbslog(BBSLOG_DEBUG,"Unexpected DIR_MODE <%d> in setbdir()",mode);
             break;
     }
-    if(!type)
+    if (!type)
         sprintf(buf,"boards/%s/%s",boardname,prefix);
     else
         sprintf(buf,"boards/%s/%s.%s",boardname,prefix,getCurrentUser()->userid);
@@ -503,10 +504,11 @@ int id_invalid(const char *userid)
         return 1;
     for (s = userid; *s != '\0'; s++) {
 #if defined(FREE)
-        if (*s < 1 || !isalpha(*s)) {
+        if (*s < 1 || !isalpha(*s))
 #else
-        if (*s < 1 || !isalnum(*s)) {
+        if (*s < 1 || !isalnum(*s))
 #endif
+        {
             return 1;
         }
     }
@@ -523,8 +525,7 @@ int seek_in_file(const char* filename, const char* seekstr)
     while (fgets(buf, STRLEN, fp) != NULL) {
         if ((p = strpbrk(buf, ": \n\r\t")))
             *p = 0;
-        if (!strcasecmp(buf, seekstr))
-        {
+        if (!strcasecmp(buf, seekstr)) {
             fclose(fp);
             return 1;
         }
@@ -533,8 +534,7 @@ int seek_in_file(const char* filename, const char* seekstr)
     return 0;
 }
 
-struct public_data *get_publicshm()
-{
+struct public_data *get_publicshm() {
     int iscreate;
 
     if (publicshm == NULL) {
@@ -565,47 +565,49 @@ void save_maxuser()
 }
 
 #ifdef FLOWBANNER
-char * banner_filter(char * text) { //filter text, no cur-cmds allowed, text should be \0 ended
-	char * r, * w, *t;
-	r = text;
-	w = text;
-	while (*r) {
-		if (*r=='\033') {
-			t = r;
-			do {
-				t++;
-			} while (!((*t=='\0')||((*t>='A')&&(*t<='Z'))||((*t>='a')&&(*t<='z'))));
-			if (*t=='m') {
-				while (r<=t) {
-				*w = *r;
-				w++; r++;
-				}
-			} else {r=t;r++;}	
-		} else {
-			if (*r!='\n') { *w=*r; w++; }
-			r++;
-		}
-	}
-	*w=0;
-	return text;
+char * banner_filter(char * text)   //filter text, no cur-cmds allowed, text should be \0 ended
+{
+    char * r, * w, *t;
+    r = text;
+    w = text;
+    while (*r) {
+        if (*r=='\033') {
+            t = r;
+            do {
+                t++;
+            } while (!((*t=='\0')||((*t>='A')&&(*t<='Z'))||((*t>='a')&&(*t<='z'))));
+            if (*t=='m') {
+                while (r<=t) {
+                    *w = *r;
+                    w++; r++;
+                }
+            } else {r=t;r++;}
+        } else {
+            if (*r!='\n') { *w=*r; w++; }
+            r++;
+        }
+    }
+    *w=0;
+    return text;
 }
 
-void load_site_banner(int init)  {
+void load_site_banner(int init)
+{
     int i;
-	FILE *fp;
-	char buf[512];
- 	i = 0;
+    FILE *fp;
+    char buf[512];
+    i = 0;
     if (NULL != (fp = fopen("etc/banner", "r"))) {
-		if (!init) setpublicshmreadonly(0);
-		while ((!feof(fp))&&(i<MAXBANNER)) {
-			fgets(buf, 512, fp);
-			buf[BANNERSIZE-1] = 0;
-			strcpy(publicshm->banners[i], buf);
-			if (*banner_filter(publicshm->banners[i])) i++;
-		}
-		publicshm->bannercount = i;
-		if (!init) setpublicshmreadonly(1);
-		fclose(fp);
+        if (!init) setpublicshmreadonly(0);
+        while ((!feof(fp))&&(i<MAXBANNER)) {
+            fgets(buf, 512, fp);
+            buf[BANNERSIZE-1] = 0;
+            strcpy(publicshm->banners[i], buf);
+            if (*banner_filter(publicshm->banners[i])) i++;
+        }
+        publicshm->bannercount = i;
+        if (!init) setpublicshmreadonly(1);
+        fclose(fp);
     }
 }
 #endif
@@ -619,19 +621,19 @@ void bbssettime(time_t now)
         if (iscreate) {
             FILE *fp;
 
-			memset(publicshm, 0, sizeof(struct public_data));
+            memset(publicshm, 0, sizeof(struct public_data));
             if (NULL != (fp = fopen("etc/maxuser", "r"))) {
                 fscanf(fp, "%d %d", &publicshm->max_user,&publicshm->max_wwwguest);
                 fclose(fp);
             }
             /*
-             * 初始化public共享内存区 
+             * 初始化public共享内存区
              */
 #ifdef FLOWBANNER
-			load_site_banner(1);
+            load_site_banner(1);
 #endif
             /*
-             * 开始的sysconf.img版本号为0 
+             * 开始的sysconf.img版本号为0
              */
             unlink("sysconf.img.0");
             publicshm->sysconfimg_version = 0;
@@ -693,13 +695,12 @@ int bad_user_id(const char *userid)
         return 1;
     if ((fp = fopen(".badname", "r")) != NULL) {
         while (fgets(buf, STRLEN, fp) != NULL) {
-            if ((ptr = strpbrk(buf, " \n\t\r")))
-            {
+            if ((ptr = strpbrk(buf, " \n\t\r"))) {
                 *ptr = 0;
                 ptr = buf;
                 if (*ptr != '#') {
-                    if (*ptr == '*'){
-                        if(strcasestr(userid, ptr+1)){
+                    if (*ptr == '*') {
+                        if (strcasestr(userid, ptr+1)) {
                             fclose(fp);
                             return 1;
                         }
@@ -759,8 +760,7 @@ int _t_search(struct user_info *uentp, struct _tag_t_search *data, int pos)
     UNUSED_ARG(pos);
     return 0;
 }
-struct user_info *t_search(const char *sid, int pid)
-{
+struct user_info *t_search(const char *sid, int pid) {
     struct _tag_t_search data;
 
     data.pid = pid;
@@ -783,7 +783,7 @@ int cmpfileinfoname(const char *filename, const struct fileheader *fi)
 }
 int cmpfileid(const int *id, const struct fileheader *fi)
 {
-	return (*id==fi->id);
+    return (*id==fi->id);
 }
 
 int canIsend2(struct userec *src, const char *userid)
@@ -800,7 +800,7 @@ int canIsend2(struct userec *src, const char *userid)
      * sethomefile(path, userid, "/bads");
      * if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, session->getCurrentUser()->userid))
      * return false;
-     * 
+     *
      * else
      */
     return true;
@@ -821,13 +821,13 @@ int canIsend2(struct userec *src, const char *userid)
              used,  mmap  will fail.  If MAP_FIXED is speci
              fied, start must be a multiple of the pagesize.
              Use of this option is discouraged.
-  
+
   MAP_SHARED Share  this  mapping  with  all other processes
              that map this object.  Storing to the region is
              equivalent  to  writing  to the file.  The file
              may not actually be updated until  msync(2)  or
              munmap(2) are called.
-  
+
   MAP_PRIVATE
              Create a private copy-on-write mapping.  Stores
              to the region do not affect the original  file.
@@ -958,7 +958,7 @@ time_t get_exit_time(const struct userec *lookupuser, char *exittime)
     //time_t now = 1;             /* if fopen failed return 1 -- Leeward */
 
     /*
-     * Leeward 98.10.26 add return value: time_t 
+     * Leeward 98.10.26 add return value: time_t
      */
 
 #if 0
@@ -974,13 +974,12 @@ time_t get_exit_time(const struct userec *lookupuser, char *exittime)
             fclose(fp);
             strcpy(exittime, ctime(&now));
         }
-    }
-    else
+    } else
 #endif
 //    {
-        char timebuf[STRLEN];    
-        strcpy(exittime, ctime_r(&lookupuser->exittime, timebuf));
-        return (lookupuser->exittime);
+        char timebuf[STRLEN];
+    strcpy(exittime, ctime_r(&lookupuser->exittime, timebuf));
+    return (lookupuser->exittime);
 //    }
 //    return now;
 }
@@ -1028,65 +1027,65 @@ int write_userdata(const char *userid, struct userdata *ud)
 int calc_numofsig(char *userid)
 {
     int sigln=0;
-	int sign;
+    int sign;
     char signame[STRLEN];
-	FILE *fp;
-	char buf[512];
+    FILE *fp;
+    char buf[512];
 
     sethomefile(signame, userid, "signatures");
-	if((fp=fopen(signame, "r"))==NULL)
-		return 0;
-	while(fgets(buf,512,fp))
-		sigln++;
-	fclose(fp);
+    if ((fp=fopen(signame, "r"))==NULL)
+        return 0;
+    while (fgets(buf,512,fp))
+        sigln++;
+    fclose(fp);
     sign = sigln / 6;
     if ((sigln % 6) != 0)
         sign += 1;
 
-	return sign;
+    return sign;
 }
 
-int read_user_memo( char *userid, struct usermemo ** ppum )
+int read_user_memo(char *userid, struct usermemo ** ppum)
 {
-	struct usermemo um;
-	int logincount;
-	off_t size;
-	char fn[STRLEN];
-	FILE *fp;
+    struct usermemo um;
+    int logincount;
+    off_t size;
+    char fn[STRLEN];
+    FILE *fp;
     struct stat st;
 
-	bzero(&um, sizeof(um));
-	sethomefile(fn, userid, "usermemo");
+    bzero(&um, sizeof(um));
+    sethomefile(fn, userid, "usermemo");
 
     logincount = apply_utmp(NULL, 0, userid, 0);
 
-	if( logincount <= 0 || stat(fn, &st) == -1) { 
-		struct userdata ud;
+    if (logincount <= 0 || stat(fn, &st) == -1) {
+        struct userdata ud;
 
-		if((fp=fopen(fn,"w"))==NULL)
-			return -1;
+        if ((fp=fopen(fn,"w"))==NULL)
+            return -1;
 
-    	read_userdata(userid, &ud);
-		memcpy(&(um.ud), & ud, sizeof(struct userdata));
-		fwrite(&um, sizeof(um), 1, fp);
-		fclose(fp);
-	}
+        read_userdata(userid, &ud);
+        memcpy(&(um.ud), & ud, sizeof(struct userdata));
+        fwrite(&um, sizeof(um), 1, fp);
+        fclose(fp);
+    }
 
     if ((fp = fopen(fn, "r+b")) == NULL) {
-		return -2;
-	}
+        return -2;
+    }
 
-	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (char **)ppum , & size) == 1) {
-		fclose(fp);
+    if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (char **)ppum , & size) == 1) {
+        fclose(fp);
 
-		if(size < sizeof(struct usermemo) ){
-			return 0;
-		}
-		return (int)size;
-	}
+        if (size < sizeof(struct usermemo)) {
+            return 0;
+        }
+        return (int)size;
+    }
 
-	fclose(fp);
-	return -3;
+    fclose(fp);
+    return -3;
 
 }
 
@@ -1135,25 +1134,25 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
     un_lock(fileno(fp), 0, SEEK_SET, 0);
     fclose(fp);
     fclose(nfp);
-    if (!deleted){
-		my_unlink(fnnew);
+    if (!deleted) {
+        my_unlink(fnnew);
         return -1;
-	}
+    }
     return (f_mv(fnnew, filename));
 }
 
 sigjmp_buf* push_sigbus()
 {
-  struct _sigjmp_stack* jumpbuf;
-  jumpbuf=(struct _sigjmp_stack*) malloc(sizeof(struct _sigjmp_stack));
-  if (getSession()->sigjmp_stack==NULL) {
-    getSession()->sigjmp_stack=jumpbuf;
-    jumpbuf->next=NULL;
-  } else {
-    jumpbuf->next=getSession()->sigjmp_stack;
-    getSession()->sigjmp_stack=jumpbuf;
-  }
-  return &(jumpbuf->bus_jump);
+    struct _sigjmp_stack* jumpbuf;
+    jumpbuf=(struct _sigjmp_stack*) malloc(sizeof(struct _sigjmp_stack));
+    if (getSession()->sigjmp_stack==NULL) {
+        getSession()->sigjmp_stack=jumpbuf;
+        jumpbuf->next=NULL;
+    } else {
+        jumpbuf->next=getSession()->sigjmp_stack;
+        getSession()->sigjmp_stack=jumpbuf;
+    }
+    return &(jumpbuf->bus_jump);
 }
 
 void popup_sigbus()
@@ -1214,75 +1213,77 @@ void logattempt(char *uid, char *frm, char *action)
 /* 新的 IP 匹配系统, Nov 30 2008, skybluee@free
  * TODO: 用到 proxyIP 那边去
  */
-static unsigned long long get_ullip(const char *ip){
-        /*
-	 *从ip字符串获得ulonglong的数
-         */
-	char ip2[80];
-	strcpy(ip2, ip);
-	unsigned long long ull_ip = 0;
-	const char *token = ".";
-	/*char *p = strtok(ip2, token);
-	ull_ip += atoi(p);
-	while((p = strtok(NULL, token))){
-		ull_ip <<= 8;
-		ull_ip += atoi(p);
-	}*/
+static unsigned long long get_ullip(const char *ip)
+{
+    /*
+    *从ip字符串获得ulonglong的数
+     */
+    char ip2[80];
+    strcpy(ip2, ip);
+    unsigned long long ull_ip = 0;
+    const char *token = ".";
+    /*char *p = strtok(ip2, token);
+    ull_ip += atoi(p);
+    while((p = strtok(NULL, token))){
+     ull_ip <<= 8;
+     ull_ip += atoi(p);
+    }*/
     char *p, *q;
     for (q = ip2; q; p = strsep(&q, token), ull_ip <<= 8, ull_ip += atoi(p));
-	return ull_ip;
+    return ull_ip;
 }
 
-static unsigned int get_pattern(const char *pattern, unsigned long long *ull_pattern){
+static unsigned int get_pattern(const char *pattern, unsigned long long *ull_pattern)
+{
+    /*
+    *从格式字符串获得匹配ip及其匹配掩码
+    *匹配ip通过第二个参数传回，掩码通过返回值传回
+     */
+    char *p_slash = strstr(pattern, "/");
+    char *p;
+    int i = 0;
+    char ip2[80];
+    if (p_slash) {
         /*
-	 *从格式字符串获得匹配ip及其匹配掩码
-	 *匹配ip通过第二个参数传回，掩码通过返回值传回
+        *带'/'字样的匹配方式，比如:
+        *59.66.122.1/23 或 59.66.122.1/255.255.254.0
          */
-	char *p_slash = strstr(pattern, "/");
-	char *p;
-	int i = 0;
-	char ip2[80];
-	if(p_slash){
-                /*
-		 *带'/'字样的匹配方式，比如:
-		 *59.66.122.1/23 或 59.66.122.1/255.255.254.0
-                 */
-		strncpy(ip2, pattern, p_slash-pattern);
-		*ull_pattern = get_ullip(ip2);
-		if(strstr(p_slash+1, ".")){
-			/*对应于 59.66.122.1/255.255.254.0 这样的*/
-			unsigned long long tmp = get_ullip(p_slash + 1);
-			int mask = 0;
-			while(((tmp << mask) & 0x00000000FFFFFFFF) >> 31)
-				mask++;
-			return mask;
-		} else
-			/*对应于 59.66.122.1/23 这样的*/
-			return atoi(p_slash+1);
-	} else {
-                /*
-		 *不带'/'字样的匹配方式，比如:
-		 *'*' 或者 '59.66.*' 或者 '59.66.122.*' 或者 '59.66.122.1'
-                 */
-		if((p = strstr(pattern, "*")) != NULL){
-			/*带'*'的*/
-			i = 0;
-			*ull_pattern = 0;
-			if(p == pattern)
-				return 0;
-			strncpy(ip2, pattern, p-pattern-1);
-			*(ip2 + (p - pattern) - 1) = '\0';
-			/*if((p = strtok(ip2, "."))){
-				*ull_pattern += atoi(p);
-				i++;
-				while((p = strtok(NULL, "."))){
-					i++;
-					*ull_pattern <<= 8;
-					*ull_pattern += atoi(p);
-				}
-				*ull_pattern <<= (4-i)*8;
-				return (i*8);
-			}*/
+        strncpy(ip2, pattern, p_slash-pattern);
+        *ull_pattern = get_ullip(ip2);
+        if (strstr(p_slash+1, ".")) {
+            /*对应于 59.66.122.1/255.255.254.0 这样的*/
+            unsigned long long tmp = get_ullip(p_slash + 1);
+            int mask = 0;
+            while (((tmp << mask) & 0x00000000FFFFFFFF) >> 31)
+                mask++;
+            return mask;
+        } else
+            /*对应于 59.66.122.1/23 这样的*/
+            return atoi(p_slash+1);
+    } else {
+        /*
+        *不带'/'字样的匹配方式，比如:
+        *'*' 或者 '59.66.*' 或者 '59.66.122.*' 或者 '59.66.122.1'
+         */
+        if ((p = strstr(pattern, "*")) != NULL) {
+            /*带'*'的*/
+            i = 0;
+            *ull_pattern = 0;
+            if (p == pattern)
+                return 0;
+            strncpy(ip2, pattern, p-pattern-1);
+            *(ip2 + (p - pattern) - 1) = '\0';
+            /*if((p = strtok(ip2, "."))){
+             *ull_pattern += atoi(p);
+             i++;
+             while((p = strtok(NULL, "."))){
+              i++;
+              *ull_pattern <<= 8;
+              *ull_pattern += atoi(p);
+             }
+             *ull_pattern <<= (4-i)*8;
+             return (i*8);
+            }*/
             char *q = ip2;
             if ((p = strsep(&q, "."))) {
                 *ull_pattern += atoi(p);
@@ -1296,19 +1297,20 @@ static unsigned int get_pattern(const char *pattern, unsigned long long *ull_pat
                 *ull_pattern <<= (4-i)*8;
                 return (i*8);
             }
-		} else {
-			*ull_pattern = get_ullip(pattern);
-			return 32;
-		}
-	}
-	return 0xFF;
+        } else {
+            *ull_pattern = get_ullip(pattern);
+            return 32;
+        }
+    }
+    return 0xFF;
 }
 
-static inline int IPmatch(const char *ip, const char *pattern){
-	unsigned long long ull_ip = get_ullip(ip);
-	unsigned long long ull_pattern = 0;
-	unsigned int mask = get_pattern(pattern, &ull_pattern);
-	return (ull_ip >> (32 - mask)) == (ull_pattern >> (32 - mask));
+static inline int IPmatch(const char *ip, const char *pattern)
+{
+    unsigned long long ull_ip = get_ullip(ip);
+    unsigned long long ull_pattern = 0;
+    unsigned int mask = get_pattern(pattern, &ull_pattern);
+    return (ull_ip >> (32 - mask)) == (ull_pattern >> (32 - mask));
 }
 
 /* Leeward 98.07.31
@@ -1353,8 +1355,7 @@ int check_ban_IP(char *IP, char *buf)
         if ((ptr = strchr(IPBan, ' ')) != NULL) {
             *ptr++ = 0;
             strcpy(buf, ptr);
-        }
-        else
+        } else
             *buf = 0; // 防止 buf 飞了
         IPX = strlen(IPBan);
         if (*IPBan == '+')
@@ -1404,45 +1405,45 @@ int is_valid_date(int year, int month, int day)
     int feb;
 
     /*
-     * 首先检查月份 
+     * 首先检查月份
      */
     switch (month) {
-    case 1:
-    case 3:
-    case 5:
-    case 7:
-    case 8:
-    case 10:
-    case 12:
-        /*
-         * 大月 
-         */
-        if (day >= 1 && day <= 31)
-            return 1;
-        else
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+            /*
+             * 大月
+             */
+            if (day >= 1 && day <= 31)
+                return 1;
+            else
+                return 0;
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+            /*
+             * 小月
+             */
+            if (day >= 1 && day <= 30)
+                return 1;
+            else
+                return 0;
+        case 2:
+            /*
+             * 是否闰年
+             */
+            feb = 28 + ((year % 100 == 0) ? (year % 400 == 0) : (year % 4 == 0));
+            if (day >= 1 && day <= feb)
+                return 1;
+            else
+                return 0;
+        default:
             return 0;
-    case 4:
-    case 6:
-    case 9:
-    case 11:
-        /*
-         * 小月 
-         */
-        if (day >= 1 && day <= 30)
-            return 1;
-        else
-            return 0;
-    case 2:
-        /*
-         * 是否闰年 
-         */
-        feb = 28 + ((year % 100 == 0) ? (year % 400 == 0) : (year % 4 == 0));
-        if (day >= 1 && day <= feb)
-            return 1;
-        else
-            return 0;
-    default:
-        return 0;
     }
 }
 
@@ -1840,7 +1841,8 @@ int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user)
     return 0;
 }
 
-char* gettmpfilename(char *name,const char *format,...){
+char* gettmpfilename(char *name,const char *format,...)
+{
     struct stat st;
     char buf[STRLEN],file[STRLEN],*p;
     va_list ap;
@@ -1848,23 +1850,22 @@ char* gettmpfilename(char *name,const char *format,...){
     vsnprintf(file,STRLEN,format,ap);
     va_end(ap);
     snprintf(buf,STRLEN,"tmp/%d/%s/%s",(int)getpid(),getCurrentUser()->userid,file);
-    for(p=&buf[4];*p;p++){
-        if(*p=='/'){
+    for (p=&buf[4];*p;p++) {
+        if (*p=='/') {
             *p=0;
-            if(!stat(buf,&st)){
-                if(!S_ISDIR(st.st_mode))
+            if (!stat(buf,&st)) {
+                if (!S_ISDIR(st.st_mode))
+                    return NULL;
+            } else {
+                if (mkdir(buf,0755)==-1)
                     return NULL;
             }
-            else{
-                if(mkdir(buf,0755)==-1)
-                    return NULL;
-            }
-            if(chmod(buf,0755)==-1)
+            if (chmod(buf,0755)==-1)
                 return NULL;
             *p='/';
         }
     }
-    if(!stat(buf,&st)&&(!S_ISREG(st.st_mode)||chmod(buf,0644)==-1))
+    if (!stat(buf,&st)&&(!S_ISREG(st.st_mode)||chmod(buf,0644)==-1))
         return NULL;
     strcpy(name,buf);
     return name;
@@ -1872,16 +1873,16 @@ char* gettmpfilename(char *name,const char *format,...){
 
 int setutmpmailcheck(struct user_info *uentp, char *arg, int count)
 {
-	uentp->mailcheck &= ~CHECK_MAIL;
+    uentp->mailcheck &= ~CHECK_MAIL;
     return 0;
 }
 
 int setmailcheck(char *userid)
 {
-	return apply_utmp( (APPLY_UTMP_FUNC) setutmpmailcheck, 0, userid, 0 );
+    return apply_utmp((APPLY_UTMP_FUNC) setutmpmailcheck, 0, userid, 0);
 }
 
-int gen_title(const char *boardname )
+int gen_title(const char *boardname)
 {
     struct fileheader mkpost, *ptr1, *ptr2;
     struct flock ldata, ldata2;
@@ -2010,7 +2011,7 @@ int gen_title(const char *boardname )
                 count++;
                 j = next[i];
                 while (j != 0) {
-                    ptr2 = (struct fileheader *) (ptr + j * size);
+                    ptr2 = (struct fileheader *)(ptr + j * size);
                     memcpy(&mkpost, ptr2, sizeof(mkpost));
                     t = ptr2->title;
                     if (!strncmp(t, "Re: ", 4))
@@ -2060,13 +2061,15 @@ int gen_title(const char *boardname )
     return 0;
 }
 
-unsigned int byte2long(byte arg[4]) {
+unsigned int byte2long(byte arg[4])
+{
     unsigned int tmp;
     tmp=((long)arg[0]<<24)+((long)arg[1]<<16)+((long)arg[2]<<8)+(long)arg[3];
     return tmp;
 }
 
-void long2byte(unsigned int num, byte* arg) {
+void long2byte(unsigned int num, byte* arg)
+{
     (arg)[0]=num>>24;
     (arg)[1]=(num<<8)>>24;
     (arg)[2]=(num<<16)>>24;
@@ -2076,52 +2079,52 @@ void long2byte(unsigned int num, byte* arg) {
 #ifdef MYUNLINK_BACKUPDIR
 static int backup_mv(char *fname)
 {
-	char *buf;
-	char *cmd;
-	char *c;
+    char *buf;
+    char *cmd;
+    char *c;
     struct stat st;
 
-	if(fname==NULL) return -1;
-	if (strstr(fname, "..") || strchr(fname, ' ') || strchr(fname, ';') || strchr(fname, '&') )
-		return -1;
+    if (fname==NULL) return -1;
+    if (strstr(fname, "..") || strchr(fname, ' ') || strchr(fname, ';') || strchr(fname, '&'))
+        return -1;
 
     if (stat(fname, &st))
         return -1;
 
-	buf=(char *)malloc(strlen(fname) + strlen(MYUNLINK_BACKUPDIR) + 15);
-	if(buf==NULL)
-		return -1;
+    buf=(char *)malloc(strlen(fname) + strlen(MYUNLINK_BACKUPDIR) + 15);
+    if (buf==NULL)
+        return -1;
 
-	cmd=(char *)malloc(2* strlen(fname) + strlen(MYUNLINK_BACKUPDIR) + 50);
-	if(cmd==NULL){
-		free(buf);
-		return -1;
-	}
+    cmd=(char *)malloc(2* strlen(fname) + strlen(MYUNLINK_BACKUPDIR) + 50);
+    if (cmd==NULL) {
+        free(buf);
+        return -1;
+    }
 
-	sprintf(buf, "%s/%s", MYUNLINK_BACKUPDIR, fname);
-	if( buf[strlen(buf)-1] == '/' )
-		buf[strlen(buf)-1] = 0;
+    sprintf(buf, "%s/%s", MYUNLINK_BACKUPDIR, fname);
+    if (buf[strlen(buf)-1] == '/')
+        buf[strlen(buf)-1] = 0;
 
-	if((c=strrchr(buf, '/'))!=NULL){
-		*c=0;
-		if( ! dashd(buf) ){
-			sprintf(cmd, "mkdir -p %s",buf);
-			system(cmd);
-		}
-	}
+    if ((c=strrchr(buf, '/'))!=NULL) {
+        *c=0;
+        if (! dashd(buf)) {
+            sprintf(cmd, "mkdir -p %s",buf);
+            system(cmd);
+        }
+    }
 
-	sprintf(cmd, "%s/%s", MYUNLINK_BACKUPDIR, fname);
-	if( cmd[strlen(cmd)-1] == '/' )
-		cmd[strlen(cmd)-1] = 0;
-	sprintf(buf, "%s_%ld", cmd, (long)time(0));
+    sprintf(cmd, "%s/%s", MYUNLINK_BACKUPDIR, fname);
+    if (cmd[strlen(cmd)-1] == '/')
+        cmd[strlen(cmd)-1] = 0;
+    sprintf(buf, "%s_%ld", cmd, (long)time(0));
 
-	sprintf(cmd, "mv -f %s %s", fname, buf);
-	system(cmd);
+    sprintf(cmd, "mv -f %s %s", fname, buf);
+    system(cmd);
 
-	free(buf);
-	free(cmd);
+    free(buf);
+    free(cmd);
 
-	return 0;
+    return 0;
 }
 #endif
 
@@ -2130,7 +2133,7 @@ int my_f_rm(char *fname)
 #ifndef MYUNLINK_BACKUPDIR
     return f_rm(fname);
 #else
-	return backup_mv(fname);
+    return backup_mv(fname);
 #endif
 }
 
@@ -2141,9 +2144,9 @@ int my_unlink(char *fname)
 #else
 
 #ifdef SMTH
-	return unlink(fname);
+    return unlink(fname);
 #else
-	return backup_mv(fname);
+    return backup_mv(fname);
 #endif //SMTH
 
 #endif //MYUNLINK_BACKUPDIR
@@ -2155,205 +2158,206 @@ static int sem_lock[SEMLOCK_COUNT];
 /* get or create public semset */
 static int get_locksemid(int semnum)
 {
-	int i;
-	static int locksemid = -1;
+    int i;
+    static int locksemid = -1;
     char errbuf[STRLEN];
-	key_t semkey;
-	if (locksemid < 0) {
-		for (i=0;i<SEMLOCK_COUNT;i++)
-			sem_lock[i]=0;
+    key_t semkey;
+    if (locksemid < 0) {
+        for (i=0;i<SEMLOCK_COUNT;i++)
+            sem_lock[i]=0;
         semkey = sysconf_eval("PUBLIC_SEMID", 0x54188);
-		locksemid =semget(semkey,SEMLOCK_COUNT,0); 
-		if (locksemid < 0) {
-			struct sembuf buf;
-			 locksemid = semget(semkey,SEMLOCK_COUNT,IPC_CREAT|IPC_EXCL|0700);
-			 if (locksemid <0) {
-			 	bbslog("3system","semget create error, key = %d", semkey);
-			 	exit(-1); 
-			 }
-			 buf.sem_op = 1;
-			 buf.sem_flg = 0;
-			for (i = 0; i< SEMLOCK_COUNT; i++) {
-				buf.sem_num = i;
-				if (semop(locksemid,&buf,1) <0) {
-					bbslog("3system","semop +1 error with semid %d, semnum %d:%s",locksemid, i, strerror_r(errno, errbuf, STRLEN));
-					exit(-1);
-				}
-			}	
-			return locksemid;
-		}
-	} 
-	/* TODO: wait until the requested sem initialized */
-	/* semnum is used for wait on the requested sem */
-	/* this is little chance to cause an error , you know */
-	return locksemid;
+        locksemid =semget(semkey,SEMLOCK_COUNT,0);
+        if (locksemid < 0) {
+            struct sembuf buf;
+            locksemid = semget(semkey,SEMLOCK_COUNT,IPC_CREAT|IPC_EXCL|0700);
+            if (locksemid <0) {
+                bbslog("3system","semget create error, key = %d", semkey);
+                exit(-1);
+            }
+            buf.sem_op = 1;
+            buf.sem_flg = 0;
+            for (i = 0; i< SEMLOCK_COUNT; i++) {
+                buf.sem_num = i;
+                if (semop(locksemid,&buf,1) <0) {
+                    bbslog("3system","semop +1 error with semid %d, semnum %d:%s",locksemid, i, strerror_r(errno, errbuf, STRLEN));
+                    exit(-1);
+                }
+            }
+            return locksemid;
+        }
+    }
+    /* TODO: wait until the requested sem initialized */
+    /* semnum is used for wait on the requested sem */
+    /* this is little chance to cause an error , you know */
+    return locksemid;
 }
 
 void lock_sem(int lockid)
 {
-	struct sembuf buf;
-	int semid;
+    struct sembuf buf;
+    int semid;
     char errbuf[STRLEN];
-	semid = get_locksemid(lockid);
-	if (sem_lock[lockid]!=0) {
-		bbslog("3system","lock a sem already be locked",semid, lockid);
-		return;
-	}
-	sem_lock[lockid]=1;
-	buf.sem_num =lockid;
-	buf.sem_op = -1;
-	buf.sem_flg = SEM_UNDO;
-	if (semop(semid,&buf,1) <0) {
-		bbslog("3system","semop -1 error with semid %d, semnum %d:%s",semid, lockid, strerror_r(errno, errbuf, STRLEN));
-		exit(-1);
-	}
+    semid = get_locksemid(lockid);
+    if (sem_lock[lockid]!=0) {
+        bbslog("3system","lock a sem already be locked",semid, lockid);
+        return;
+    }
+    sem_lock[lockid]=1;
+    buf.sem_num =lockid;
+    buf.sem_op = -1;
+    buf.sem_flg = SEM_UNDO;
+    if (semop(semid,&buf,1) <0) {
+        bbslog("3system","semop -1 error with semid %d, semnum %d:%s",semid, lockid, strerror_r(errno, errbuf, STRLEN));
+        exit(-1);
+    }
 }
 
 void unlock_sem(int lockid)
 {
-	struct sembuf buf;
-	int semid;
+    struct sembuf buf;
+    int semid;
     char errbuf[STRLEN];
-	semid = get_locksemid(lockid);
-	if (sem_lock[lockid]==0) {
-		bbslog("3system","unlock a sem already be unlocked",semid, lockid);
-		return;
-	}
-	sem_lock[lockid]=0;
-	buf.sem_num =lockid;
-	buf.sem_op = 1;
-	buf.sem_flg = SEM_UNDO;
-	if (semop(semid,&buf,1) <0) {
-		bbslog("3system","semop +1 error with semid %d, semnum %d:%s",semid, lockid, strerror_r(errno, errbuf, STRLEN));
-		exit(-1);
-	}
+    semid = get_locksemid(lockid);
+    if (sem_lock[lockid]==0) {
+        bbslog("3system","unlock a sem already be unlocked",semid, lockid);
+        return;
+    }
+    sem_lock[lockid]=0;
+    buf.sem_num =lockid;
+    buf.sem_op = 1;
+    buf.sem_flg = SEM_UNDO;
+    if (semop(semid,&buf,1) <0) {
+        bbslog("3system","semop +1 error with semid %d, semnum %d:%s",semid, lockid, strerror_r(errno, errbuf, STRLEN));
+        exit(-1);
+    }
 }
 
 void unlock_sem_check(int lockid)
 {
-	int semid = get_locksemid(lockid);
-	struct sembuf buf;
+    int semid = get_locksemid(lockid);
+    struct sembuf buf;
     char errbuf[STRLEN];
-	if (sem_lock[lockid]==0) {
-		bbslog("3system","unlock a sem already be unlocked",semid, lockid);
-		return;
-	}
-	sem_lock[lockid]=0;
-	buf.sem_num =lockid;
-	buf.sem_op = 1;
-	buf.sem_flg = SEM_UNDO;
-	if (semctl(semid,lockid,GETVAL) != 0) {
-	    bbslog("3system","check lock %d error",lockid);
-	    return;
-	}
-	if (semop(semid,&buf,1) <0) {
-		bbslog("3system","semop +1 error with semid %d, semnum %d:%s",semid, lockid, strerror_r(errno, errbuf, STRLEN));
-		exit(-1);
-	}
+    if (sem_lock[lockid]==0) {
+        bbslog("3system","unlock a sem already be unlocked",semid, lockid);
+        return;
+    }
+    sem_lock[lockid]=0;
+    buf.sem_num =lockid;
+    buf.sem_op = 1;
+    buf.sem_flg = SEM_UNDO;
+    if (semctl(semid,lockid,GETVAL) != 0) {
+        bbslog("3system","check lock %d error",lockid);
+        return;
+    }
+    if (semop(semid,&buf,1) <0) {
+        bbslog("3system","semop +1 error with semid %d, semnum %d:%s",semid, lockid, strerror_r(errno, errbuf, STRLEN));
+        exit(-1);
+    }
 }
 
 #if HAVE_MYSQL_SMTH == 1
 
-void mysql_report_error(MYSQL *s) {
+void mysql_report_error(MYSQL *s)
+{
 #if 0
-		clear();
-		prints("%s\n",mysql_error(s));
-		pressanykey();
+    clear();
+    prints("%s\n",mysql_error(s));
+    pressanykey();
 #endif
     bbslog("3system", "mysql error: %s", mysql_error(s));
 }
 
 #ifdef BMSLOG
 
-int bms_add(char *userid, char *boardname, time_t in, int out, char *memo )
+int bms_add(char *userid, char *boardname, time_t in, int out, char *memo)
 {
-	MYSQL s;
-	char sql[700];
-	char newmemo[512];
-	char newts[20];
+    MYSQL s;
+    char sql[700];
+    char newmemo[512];
+    char newts[20];
 
-	newmemo[0]=0;
+    newmemo[0]=0;
 
-	mysql_init(&s);
+    mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+    if (! my_connect_mysql(&s)) {
         mysql_report_error(&s);
-		return 0;
-	}
+        return 0;
+    }
 
-	if(memo && memo[0])
-		mysql_escape_string(newmemo, memo, strlen(memo));
+    if (memo && memo[0])
+        mysql_escape_string(newmemo, memo, strlen(memo));
 
-	sprintf(sql,"INSERT INTO bms VALUES ( NULL, '%s', '%s','%d' ,'%s', '%s', '%s');", boardname, tt2timestamp(in,newts), out, getCurrentUser()->userid, newmemo, userid);
-//		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
-	
+    sprintf(sql,"INSERT INTO bms VALUES ( NULL, '%s', '%s','%d' ,'%s', '%s', '%s');", boardname, tt2timestamp(in,newts), out, getCurrentUser()->userid, newmemo, userid);
+//  sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 
-	if( mysql_real_query( &s, sql, strlen(sql) )){
+
+    if (mysql_real_query(&s, sql, strlen(sql))) {
         mysql_report_error(&s);
-		mysql_close(&s);
-		return 0;
-	}
-	
-	mysql_close(&s);
+        mysql_close(&s);
+        return 0;
+    }
 
-	return 1;
+    mysql_close(&s);
+
+    return 1;
 }
 
-int bms_update(char *userid, char *boardname, time_t in, int out, char *memo )
+int bms_update(char *userid, char *boardname, time_t in, int out, char *memo)
 {
-	MYSQL s;
-	char sql[700];
-	char newmemo[512];
-	char newts[20];
+    MYSQL s;
+    char sql[700];
+    char newmemo[512];
+    char newts[20];
 
-	newmemo[0]=0;
+    newmemo[0]=0;
 
-	mysql_init(&s);
+    mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+    if (! my_connect_mysql(&s)) {
         mysql_report_error(&s);
-		return 0;
-	}
+        return 0;
+    }
 
-	if(memo[0])
-		mysql_escape_string(newmemo, memo, strlen(memo));
+    if (memo[0])
+        mysql_escape_string(newmemo, memo, strlen(memo));
 
-	sprintf(sql,"UPDATE bms SET in='%s', out='%d', memo='%s' WHERE userid='%s' AND board='%s' ;", tt2timestamp(in,newts), out , newmemo, userid, boardname);
-	
-	if( mysql_real_query( &s, sql, strlen(sql) )){
+    sprintf(sql,"UPDATE bms SET in='%s', out='%d', memo='%s' WHERE userid='%s' AND board='%s' ;", tt2timestamp(in,newts), out , newmemo, userid, boardname);
+
+    if (mysql_real_query(&s, sql, strlen(sql))) {
         mysql_report_error(&s);
-		mysql_close(&s);
-		return 0;
-	}
-	
-	mysql_close(&s);
+        mysql_close(&s);
+        return 0;
+    }
 
-	return 1;
+    mysql_close(&s);
+
+    return 1;
 }
 
 int bms_del(char *userid, char *boardname)
 {
-	MYSQL s;
-	char sql[200];
+    MYSQL s;
+    char sql[200];
 
-	mysql_init(&s);
+    mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+    if (! my_connect_mysql(&s)) {
         mysql_report_error(&s);
-		return 0;
-	}
+        return 0;
+    }
 
-	sprintf(sql,"DELETE FROM bms WHERE userid='%s' AND board='%s' ;", userid, boardname);
-	
-	if( mysql_real_query( &s, sql, strlen(sql) )){
+    sprintf(sql,"DELETE FROM bms WHERE userid='%s' AND board='%s' ;", userid, boardname);
+
+    if (mysql_real_query(&s, sql, strlen(sql))) {
         mysql_report_error(&s);
-		mysql_close(&s);
-		return 0;
-	}
-	
-	mysql_close(&s);
+        mysql_close(&s);
+        return 0;
+    }
 
-	return 1;
+    mysql_close(&s);
+
+    return 1;
 }
 
 #endif //BMSLOG
@@ -2363,29 +2367,29 @@ int bms_del(char *userid, char *boardname)
 
 int mail_birth()
 {
-	time_t now;
-	struct tm t;
-	int i;
-	char filename[256];
+    time_t now;
+    struct tm t;
+    int i;
+    char filename[256];
     char title[STRLEN];
 
-	now = time(0);
-	localtime_r(&now,&t);
+    now = time(0);
+    localtime_r(&now,&t);
 
-	if (now - getCurrentUser()->lastlogin < t.tm_hour * 3600 + t.tm_min * 60 + t.tm_sec )
-		return 0;
+    if (now - getCurrentUser()->lastlogin < t.tm_hour * 3600 + t.tm_min * 60 + t.tm_sec)
+        return 0;
 
-	if (t.tm_mon+1!=getSession()->currentmemo->ud.birthmonth || t.tm_mday!=getSession()->currentmemo->ud.birthday)
-		return 0;
+    if (t.tm_mon+1!=getSession()->currentmemo->ud.birthmonth || t.tm_mday!=getSession()->currentmemo->ud.birthday)
+        return 0;
 
-	i=rand() % BIRTHFILENUM;
+    i=rand() % BIRTHFILENUM;
 
-	sprintf(filename, "%s/%d", BIRTHFILEPATH, i);
+    sprintf(filename, "%s/%d", BIRTHFILEPATH, i);
 
     snprintf(title, sizeof(title), "%s%s", NAME_BBS_CHINESE, "恭祝您生日快乐");
     mail_file("SYSOP", filename, getCurrentUser()->userid, title, BBSPOST_LINK, NULL);
 
-	return 1;
+    return 1;
 }
 
 #endif
@@ -2402,22 +2406,22 @@ int check_ID_lists(char * id)
     char fn[80];
     int found=0,min=0,ret=0;
     time_t now;
-    struct id_struct{
+    struct id_struct {
         char id[IDLEN+2];
         time_t first,last;
         int t;
     } ids[MAXLIST];
 
     sprintf(fn, ".IDlists");
-    if(stat(fn,&st)==-1) {
+    if (stat(fn,&st)==-1) {
         memset(ids, 0, sizeof(struct id_struct)*MAXLIST);
         fd=open(fn, O_WRONLY|O_CREAT, 0600);
         write(fd, ids, sizeof(struct id_struct)*MAXLIST);
         close(fd);
     }
     now = time(0);
-    if(id[0]==0) return 0;
-    if(!strcmp(id, "guest")) return 0;
+    if (id[0]==0) return 0;
+    if (!strcmp(id, "guest")) return 0;
 
     fd = open(fn, O_RDWR, 0600);
     ldata.l_type = F_WRLCK;
@@ -2431,38 +2435,38 @@ int check_ID_lists(char * id)
     }
     read(fd, ids, sizeof(struct id_struct)*MAXLIST);
 
-    for(i=0;i<MAXLIST;i++) {
-        if((double)(now-ids[i].last)>60*60) {
+    for (i=0;i<MAXLIST;i++) {
+        if ((double)(now-ids[i].last)>60*60) {
             ids[i].id[0]=0;
         }
-        if(!strncmp(ids[i].id, id, IDLEN)){
-            if((double)(now-ids[i].last)<=ID_CONNECT_CON_THRESHOLD2) {
+        if (!strncmp(ids[i].id, id, IDLEN)) {
+            if ((double)(now-ids[i].last)<=ID_CONNECT_CON_THRESHOLD2) {
                 fp=fopen(".IDdenys", "a");
-                if(fp){
+                if (fp) {
                     fprintf(fp, "0 %ld %s %d\n", now, id, ids[i].t);
                     fclose(fp);
                 }
-                if((double)(now-ids[i].last)<=5.0)
+                if ((double)(now-ids[i].last)<=5.0)
                     ret = 1;
             }
             found=1;
             ids[i].last = now;
             ids[i].t++;
-            if(ret==0)
-            if(ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=ID_CONNECT_CON_THRESHOLD)) {
-                fp=fopen(".IDdenys", "a");
-                if(fp){
-                    fprintf(fp, "1 %ld %s %d\n", now, id, ids[i].t);
-                    fclose(fp);
+            if (ret==0)
+                if (ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=ID_CONNECT_CON_THRESHOLD)) {
+                    fp=fopen(".IDdenys", "a");
+                    if (fp) {
+                        fprintf(fp, "1 %ld %s %d\n", now, id, ids[i].t);
+                        fclose(fp);
+                    }
+                    if (ids[i].t/(double)(ids[i].last-ids[i].first)>=100.0/60/60)
+                        ret = 1;
                 }
-                if(ids[i].t/(double)(ids[i].last-ids[i].first)>=100.0/60/60)
-                    ret = 1;
-            }
             break;
         }
-        if(ids[i].last<ids[min].last) min = i;
+        if (ids[i].last<ids[min].last) min = i;
     }
-    if(!found) {
+    if (!found) {
         strcpy(ids[min].id, id);
         ids[min].first = now;
         ids[min].last = now;
@@ -2478,27 +2482,26 @@ int check_ID_lists(char * id)
 }
 
 #ifdef HAVE_IPV6_SMTH
-void * ip_len2mask (int bitlen, void *vmask)
+void * ip_len2mask(int bitlen, void *vmask)
 {
     int i;
     u_char *mask = vmask;
 
     if (bitlen>128) bitlen = 128;
     if (bitlen <= 0) {
-		memset (mask, 0, 128/8);
-		return (mask);
+        memset(mask, 0, 128/8);
+        return (mask);
     }
     for (i = 0; i < (bitlen / 8); i++)
-		mask[i] = 0xff;
+        mask[i] = 0xff;
     if (bitlen < 128)
-		mask[i++] = 0xff << (8 - (bitlen & 7));
+        mask[i++] = 0xff << (8 - (bitlen & 7));
     for (; i < 128/8; i++)
-		mask[i] = 0;
+        mask[i] = 0;
     return (mask);
 }
 
-struct in6_addr * ip_mask(const struct in6_addr * addr, const struct in6_addr * mask, struct in6_addr * out)
-{
+struct in6_addr * ip_mask(const struct in6_addr * addr, const struct in6_addr * mask, struct in6_addr * out) {
     int i;
     for (i=0;i<128/8;i++) out->s6_addr[i] = addr->s6_addr[i] & mask->s6_addr[i];
     return out;
@@ -2519,18 +2522,18 @@ int check_ip_acl(char * id, char * sip)
     FILE* fp;
     sprintf(fn, BBSHOME "/home/%c/%s/ipacl", toupper(id[0]), id);
     fp = fopen(fn, "r");
-    if(fp) {
+    if (fp) {
 #ifndef HAVE_IPV6_SMTH
         sscanf(sip, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
         ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
-        while(!feof(fp)) {
-            if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a)<=0) break;
+        while (!feof(fp)) {
+            if (fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a)<=0) break;
             rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
-            if(((ips>>(32-l))<<(32-l))==((rips>>(32-l))<<(32-l))||l==0) {
+            if (((ips>>(32-l))<<(32-l))==((rips>>(32-l))<<(32-l))||l==0) {
                 fclose(fp);
                 return a;
             }
-        }        
+        }
 #else
         if ((!strchr(sip, ':')) && (strchr(sip, '.'))) {
             memset(&ip, 0, sizeof(ip));
@@ -2538,11 +2541,11 @@ int check_ip_acl(char * id, char * sip)
             ip.s6_addr[11]=0xff;
             inet_pton(AF_INET, sip, &ip.s6_addr[12]);
         } else inet_pton(AF_INET6, sip, &ip);
-        while(!feof(fp)) {
-            if(fscanf(fp, "%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX %d %d",
-                &rip.s6_addr[0], &rip.s6_addr[1], &rip.s6_addr[2], &rip.s6_addr[3], &rip.s6_addr[4], &rip.s6_addr[5],
-                &rip.s6_addr[6], &rip.s6_addr[7], &rip.s6_addr[8], &rip.s6_addr[9], &rip.s6_addr[10], &rip.s6_addr[11], 
-                &rip.s6_addr[12], &rip.s6_addr[13], &rip.s6_addr[14], &rip.s6_addr[15], &l, &a)<=0) break;
+        while (!feof(fp)) {
+            if (fscanf(fp, "%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX %d %d",
+                       &rip.s6_addr[0], &rip.s6_addr[1], &rip.s6_addr[2], &rip.s6_addr[3], &rip.s6_addr[4], &rip.s6_addr[5],
+                       &rip.s6_addr[6], &rip.s6_addr[7], &rip.s6_addr[8], &rip.s6_addr[9], &rip.s6_addr[10], &rip.s6_addr[11],
+                       &rip.s6_addr[12], &rip.s6_addr[13], &rip.s6_addr[14], &rip.s6_addr[15], &l, &a)<=0) break;
             ip_mask(&ip, ip_len2mask(l, &mask), &tmp);
             if (!ip_cmp(rip, tmp)) {
                 fclose(fp);
@@ -2556,22 +2559,24 @@ int check_ip_acl(char * id, char * sip)
 }
 
 #ifdef HAVE_ACTIVATION
-static int my_rand(int max) {
-    return (int) ((double)max*rand()/(RAND_MAX+1.0));
+static int my_rand(int max)
+{
+    return (int)((double)max*rand()/(RAND_MAX+1.0));
 }
 
 #define RANDCHAR "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-static char * randchar(char *c, int n){
+static char * randchar(char *c, int n)
+{
     int i,j;
     srand(time(NULL));
     srand(my_rand(RAND_MAX));
-	j = strlen(RANDCHAR);
+    j = strlen(RANDCHAR);
     for (i=0;i<n;i++) {
         c[i] = RANDCHAR[my_rand(j)];
     }
-	c[n] = '\0';
-	return c;
+    c[n] = '\0';
+    return c;
 }
 
 void create_activation(struct activation_info *ai)
@@ -2585,8 +2590,8 @@ int getactivation(struct activation_info *ai, struct userec *user)
 {
     char afile[PATHLEN], buf[STRLEN];
     FILE *fn;
-	sethomefile(afile,user->userid,"activation");
-	if ((fn=fopen(afile,"r")) != NULL) {
+    sethomefile(afile,user->userid,"activation");
+    if ((fn=fopen(afile,"r")) != NULL) {
         if (fgets(buf,STRLEN,fn) != NULL) {
             buf[STRLEN - 1] = '\0';
             if (strlen(buf) >= ACTIVATIONLEN + 1) {
@@ -2611,10 +2616,10 @@ int setactivation(struct activation_info *ai, struct userec *user)
     buf[0] = ai->activated ? '1' : '0';
     memcpy(buf + 1, ai->activationcode, ACTIVATIONLEN);
     strcpy(buf + 1 + ACTIVATIONLEN, ai->reg_email);
-	sethomefile(afile,user->userid,"activation");
+    sethomefile(afile,user->userid,"activation");
     if ((fn=fopen(afile,"w")) == NULL) return 0;
-	fprintf(fn,"%s",buf);
-	fclose(fn);
+    fprintf(fn,"%s",buf);
+    fclose(fn);
     return 1;
 }
 
@@ -2631,12 +2636,12 @@ int sendactivation(struct activation_info *ai, struct userec *user, session_t* s
     fprintf(fout, "用户名：%s\n", user->userid);
     fprintf(fout, "Email: %s\n", ai->reg_email);
     fprintf(fout, "激活码：%s\n", ai->activationcode);
-    fprintf(fout, "激活地址：http://%s/bbsact.php?userid=%s&acode=%s\n", 
-                       c, user->userid, ai->activationcode);
-	fprintf(fout, "您可以直接点击激活地址来激活您的帐号。\n\n");
-	fprintf(fout, "如果您使用 telnet/ssh 登录：也可以通过下面任何一种方式激活帐号：\n");
-	fprintf(fout, "1. 在 telnet/ssh 进站的时候输入激活码\n");
-	fprintf(fout, "2. 主菜单选择 I) 个人工具箱 -〉J) 激活码操作 来输入激活码\n");
+    fprintf(fout, "激活地址：http://%s/bbsact.php?userid=%s&acode=%s\n",
+            c, user->userid, ai->activationcode);
+    fprintf(fout, "您可以直接点击激活地址来激活您的帐号。\n\n");
+    fprintf(fout, "如果您使用 telnet/ssh 登录：也可以通过下面任何一种方式激活帐号：\n");
+    fprintf(fout, "1. 在 telnet/ssh 进站的时候输入激活码\n");
+    fprintf(fout, "2. 主菜单选择 I) 个人工具箱 -〉J) 激活码操作 来输入激活码\n");
     fclose(fout);
     return_no = bbs_sendmail(buf, BBS_FULL_NAME "欢迎您", ai->reg_email, 0, 1, session);
     unlink(buf);
@@ -2645,24 +2650,23 @@ int sendactivation(struct activation_info *ai, struct userec *user, session_t* s
 
 int doactivation(struct activation_info *ai, struct userec *user, session_t* session)
 {
-	FILE *fout;
-	char buf2[STRLEN],buf[STRLEN];
+    FILE *fout;
+    char buf2[STRLEN],buf[STRLEN];
 
     ai->activated = 1;
     if (setactivation(ai, user) == 0) return 0;
 
-	sprintf(buf, "tmp/activation.%s",user->userid);
-    if ((fout = fopen(buf, "w")) != NULL)
-	{
+    sprintf(buf, "tmp/activation.%s",user->userid);
+    if ((fout = fopen(buf, "w")) != NULL) {
         fprintf(fout, "激活 email   : %s\n", ai->reg_email);
         fprintf(fout, "激活 IP      : %s\n", session->fromhost);
         fprintf(fout, "以下是个人资料");
         getuinfo(fout, user);
         fclose(fout);
-		sprintf(buf2, "%s %s", ai->reg_email, session->fromhost);
-		post_file(user, "", buf, "Activation", buf2, 0, 2, session);
-		unlink(buf);
-	}
+        sprintf(buf2, "%s %s", ai->reg_email, session->fromhost);
+        post_file(user, "", buf, "Activation", buf2, 0, 2, session);
+        unlink(buf);
+    }
     user->flags |= ACTIVATED_FLAG;
     return 1;
 }
@@ -2671,157 +2675,158 @@ int doactivation(struct activation_info *ai, struct userec *user, session_t* ses
 #define INVITEFILE "etc/inviteme"
 int send_invite(struct userec *user, session_t* session, char *email, char *msg)
 {
-	FILE *fp;
-	FILE *fpp;
-	struct invite in;
-	char buf[PATHLEN];
-	char title[STRLEN];
-	int retry=10;
-	int expireday=0;
+    FILE *fp;
+    FILE *fpp;
+    struct invite in;
+    char buf[PATHLEN];
+    char title[STRLEN];
+    int retry=10;
+    int expireday=0;
 
-	memset(&in, 0, sizeof(in));
-	do{
-		if(retry < 0) return -2;
-		retry --;
-		randchar(in.inviteid, INVITE_ID_LEN);
-		sprintf(buf, "invite/%s", in.inviteid);
-	}while (dashf(buf));
-	randchar(in.passwd, INVITE_PASSWD_LEN);
+    memset(&in, 0, sizeof(in));
+    do {
+        if (retry < 0) return -2;
+        retry --;
+        randchar(in.inviteid, INVITE_ID_LEN);
+        sprintf(buf, "invite/%s", in.inviteid);
+    } while (dashf(buf));
+    randchar(in.passwd, INVITE_PASSWD_LEN);
 
-	if(1){
-		in.expire = 0;
-		expireday = 0;
-	}else if(HAS_PERM(user,PERM_SYSOP)){
-		in.expire = time(NULL) + 86400*100;
-		expireday = 100;
-	}else{
-		in.expire = time(NULL) + 86400*30;
-		expireday = 30;
-	}
+    if (1) {
+        in.expire = 0;
+        expireday = 0;
+    } else if (HAS_PERM(user,PERM_SYSOP)) {
+        in.expire = time(NULL) + 86400*100;
+        expireday = 100;
+    } else {
+        in.expire = time(NULL) + 86400*30;
+        expireday = 30;
+    }
 
-	sprintf(title, "%s 邀请您来到" BBS_FULL_NAME, user->userid);
-	if((fp=fopen(buf, "w"))==NULL)
-		return -1;
+    sprintf(title, "%s 邀请您来到" BBS_FULL_NAME, user->userid);
+    if ((fp=fopen(buf, "w"))==NULL)
+        return -1;
 
-	fprintf(fp,"%s 邀请您光临水木社区\n", user->userid );
-	fprintf(fp,"您可以直接注册成为社区一员,注册地址:\n    http://www.newsmth.net/bbsinvite.php?s=%s&p=%s\n", in.inviteid, in.passwd );
-	if(expireday)
-		fprintf(fp, "有效期 %d 天，超过有效期您也可以通过http://www.newsmth.net/随时注册成水木社区一员\n", expireday);
-	if(msg[0])
-		fprintf(fp, "%s 还想对您说: %s\n\n", user->userid, msg);
+    fprintf(fp,"%s 邀请您光临水木社区\n", user->userid);
+    fprintf(fp,"您可以直接注册成为社区一员,注册地址:\n    http://www.newsmth.net/bbsinvite.php?s=%s&p=%s\n", in.inviteid, in.passwd);
+    if (expireday)
+        fprintf(fp, "有效期 %d 天，超过有效期您也可以通过http://www.newsmth.net/随时注册成水木社区一员\n", expireday);
+    if (msg[0])
+        fprintf(fp, "%s 还想对您说: %s\n\n", user->userid, msg);
 
-	if((fpp=fopen(INVITEFILE,"r"))!=NULL){
-		char tmp[256];
-		while(fgets(tmp, 256, fpp)){
-			fputs(tmp, fp);
-		}
-		fclose(fpp);
-	}
-	fclose(fp);
+    if ((fpp=fopen(INVITEFILE,"r"))!=NULL) {
+        char tmp[256];
+        while (fgets(tmp, 256, fpp)) {
+            fputs(tmp, fp);
+        }
+        fclose(fpp);
+    }
+    fclose(fp);
 
     retry = bbs_sendmail(buf, title, email, 0, 1, session);
-	if( retry ){
-		unlink(buf);
-		return -3;
-	}
+    if (retry) {
+        unlink(buf);
+        return -3;
+    }
 
-	if((fp=fopen(buf, "w"))==NULL)
-		return -4;
+    if ((fp=fopen(buf, "w"))==NULL)
+        return -4;
 
-	fprintf(fp,"%s\n", in.passwd);
-	fprintf(fp,"%s\n", user->userid);
-	fprintf(fp,"%s\n", email);
-	fprintf(fp,"%lu\n", in.expire);
-	fclose(fp);
+    fprintf(fp,"%s\n", in.passwd);
+    fprintf(fp,"%s\n", user->userid);
+    fprintf(fp,"%s\n", email);
+    fprintf(fp,"%lu\n", in.expire);
+    fclose(fp);
 
-	return 0;
+    return 0;
 }
 
-int get_invite(char *inviteid, char *passwd, struct invite *in){
-	FILE *fp;
-	char f[PATHLEN];
-	char *c;
-	time_t exp=0;
+int get_invite(char *inviteid, char *passwd, struct invite *in)
+{
+    FILE *fp;
+    char f[PATHLEN];
+    char *c;
+    time_t exp=0;
 
-	sprintf(f, "invite/%s", inviteid);
-	if((fp=fopen(f,"r"))==NULL)
-		return -2;
-	
-	if(!fgets(f, PATHLEN, fp))
-		goto out;
-	if(passwd && strncmp(passwd, f, INVITE_PASSWD_LEN)){
-		fclose(fp);
-		return -3;
-	}
+    sprintf(f, "invite/%s", inviteid);
+    if ((fp=fopen(f,"r"))==NULL)
+        return -2;
 
-	if(!fgets(f, PATHLEN, fp))
-		goto out;
-	if((c=strchr(f,'\n'))!=NULL) *c='\0';
-	strncpy(in->userid, f, IDLEN);
-	in->userid[IDLEN]='\0';
+    if (!fgets(f, PATHLEN, fp))
+        goto out;
+    if (passwd && strncmp(passwd, f, INVITE_PASSWD_LEN)) {
+        fclose(fp);
+        return -3;
+    }
 
-	if(!fgets(f, PATHLEN, fp))
-		goto out;
-	if((c=strchr(f,'\n'))!=NULL) *c='\0';
-	strncpy(in->email, f, STRLEN-1);
-	in->email[STRLEN-1]='\0';
+    if (!fgets(f, PATHLEN, fp))
+        goto out;
+    if ((c=strchr(f,'\n'))!=NULL) *c='\0';
+    strncpy(in->userid, f, IDLEN);
+    in->userid[IDLEN]='\0';
 
-	if(!fgets(f, PATHLEN, fp))
-		goto out;
-	if(sscanf(f,"%lu",&exp) < 1 || (exp > 0 && exp < time(NULL)) ){
-		fclose(fp);
-		return -4;
-	}
-	in->expire = exp;
+    if (!fgets(f, PATHLEN, fp))
+        goto out;
+    if ((c=strchr(f,'\n'))!=NULL) *c='\0';
+    strncpy(in->email, f, STRLEN-1);
+    in->email[STRLEN-1]='\0';
 
-	fclose(fp);
+    if (!fgets(f, PATHLEN, fp))
+        goto out;
+    if (sscanf(f,"%lu",&exp) < 1 || (exp > 0 && exp < time(NULL))) {
+        fclose(fp);
+        return -4;
+    }
+    in->expire = exp;
 
-	return 1;
+    fclose(fp);
+
+    return 1;
 
 out:
-	fclose(fp);
-	return -1;
+    fclose(fp);
+    return -1;
 }
 
-int clean_invite(char *userid, char *inviteid){
-	struct invite in;
-	char f[PATHLEN];
-	struct userec *uc;
-	struct activation_info ai;
+int clean_invite(char *userid, char *inviteid)
+{
+    struct invite in;
+    char f[PATHLEN];
+    struct userec *uc;
+    struct activation_info ai;
 
-	if(getuser(userid,&uc)==0)
-		return -1;
+    if (getuser(userid,&uc)==0)
+        return -1;
 
-	sprintf(f, "invite/%s", inviteid);
+    sprintf(f, "invite/%s", inviteid);
 
-	memset(&in, 0, sizeof(in));
-	if(get_invite(inviteid, NULL, &in) <= 0 && in.email[0]=='\0'){
-		unlink(f);
-		return -2;
-	}else{
-		FILE *fout;
-		char buf2[STRLEN],buf[STRLEN];
+    memset(&in, 0, sizeof(in));
+    if (get_invite(inviteid, NULL, &in) <= 0 && in.email[0]=='\0') {
+        unlink(f);
+        return -2;
+    } else {
+        FILE *fout;
+        char buf2[STRLEN],buf[STRLEN];
 
-		sprintf(buf, "tmp/invite.%s",uc->userid);
-	    if ((fout = fopen(buf, "w")) != NULL)
-		{
-        	fprintf(fout, "我的 email   : %s\n", in.email);
-        	fprintf(fout, "我的 IP      : %s\n", getSession()->fromhost);
-        	fclose(fout);
-			sprintf(buf2, "%s通过%s邀请我", in.userid, in.email);
-			post_file(uc, "", buf, "Invite", buf2, 0, 2, getSession());
-			unlink(buf);
-		}
-	}
+        sprintf(buf, "tmp/invite.%s",uc->userid);
+        if ((fout = fopen(buf, "w")) != NULL) {
+            fprintf(fout, "我的 email   : %s\n", in.email);
+            fprintf(fout, "我的 IP      : %s\n", getSession()->fromhost);
+            fclose(fout);
+            sprintf(buf2, "%s通过%s邀请我", in.userid, in.email);
+            post_file(uc, "", buf, "Invite", buf2, 0, 2, getSession());
+            unlink(buf);
+        }
+    }
 
-	unlink(f);
+    unlink(f);
 
-	create_activation(&ai);
-	strcpy(ai.reg_email, in.email);
+    create_activation(&ai);
+    strcpy(ai.reg_email, in.email);
 
-	setactivation(&ai, uc);
+    setactivation(&ai, uc);
 
-	doactivation(&ai, uc, getSession());
+    doactivation(&ai, uc, getSession());
     uc->firstlogin -= REGISTER_WAIT_TIME;
 
     return 1;
@@ -2829,15 +2834,16 @@ int clean_invite(char *userid, char *inviteid){
 #endif /* NEWSMTH */
 #endif /* HAVE_ACTIVATION */
 
-char * filter_upload_filename(char *s) {
+char * filter_upload_filename(char *s)
+{
     char *ptr = s;
-    for( ; *ptr != '\0'; ptr++) {
+    for (; *ptr != '\0'; ptr++) {
         if (*ptr<0) continue;
         if (*ptr<32) {
             *ptr = '_';
             continue;
         }
-        switch(*ptr) {
+        switch (*ptr) {
             case ' ':
             case ':':
             case ';':
@@ -2861,7 +2867,8 @@ char * filter_upload_filename(char *s) {
 }
 
 /* etnlegend, 2006.10.04, 过滤控制字符... */
-char* process_control_chars(char *s,const char *reserved_chars){
+char* process_control_chars(char *s,const char *reserved_chars)
+{
     static const unsigned char TD[256]={
         0x00,0x10,0x10,0x10,0x10,0x10,0x10,0x10,
         0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,
@@ -2901,18 +2908,17 @@ char* process_control_chars(char *s,const char *reserved_chars){
     register const unsigned char *p;
     register unsigned char *q;
     register unsigned int n,t;
-    if(!reserved_chars){
+    if (!reserved_chars) {
         T=TD;
-    }
-    else{
+    } else {
         memcpy(TU,TD,(256*sizeof(unsigned char)));
-        for(p=(const unsigned char*)reserved_chars;*p;p++){
+        for (p=(const unsigned char*)reserved_chars;*p;p++) {
             TU[*p]=0x00;
         }
         T=TU;
     }
-    for(n=0x00,q=(unsigned char*)s,p=(const unsigned char*)s;*p;p++){
-        switch((t=T[*p])){
+    for (n=0x00,q=(unsigned char*)s,p=(const unsigned char*)s;*p;p++) {
+        switch ((t=T[*p])) {
             case 0x02:
             case 0x04:
                 n=((n<<1)&t);
@@ -2924,7 +2930,7 @@ char* process_control_chars(char *s,const char *reserved_chars){
                 n=t;
                 break;
         }
-        if(n==0x00)
+        if (n==0x00)
             *q++=*p;
     }
     *q=0;
@@ -2941,28 +2947,30 @@ char* process_control_chars(char *s,const char *reserved_chars){
  *
  * 代码 by stiger
  */
-char *strnzhcpy(char *dest, const char *src, size_t n) {
-	register int c = 0;
-	register char *dst = dest;
-	if (n==0) return dest;
-	n--;
-	while( n > 0 && *src != '\0') {
-		c = (((*src) & 0x80) & (c ^ 0x80) );
-		*dest = *src;
-		dest++; src++;
-		n--;
-	}
-	*(dest - (c>>7) )='\0';
-	return dst;
+char *strnzhcpy(char *dest, const char *src, size_t n)
+{
+    register int c = 0;
+    register char *dst = dest;
+    if (n==0) return dest;
+    n--;
+    while (n > 0 && *src != '\0') {
+        c = (((*src) & 0x80) & (c ^ 0x80));
+        *dest = *src;
+        dest++; src++;
+        n--;
+    }
+    *(dest - (c>>7))='\0';
+    return dst;
 }
 
-void trimstr(char *s){
+void trimstr(char *s)
+{
     char *p;
-    if(!s||!*s)
+    if (!s||!*s)
         return;
-    for(p=(s+(strlen(s)-1));!(p<s)&&(*p==' ');p--)
+    for (p=(s+(strlen(s)-1));!(p<s)&&(*p==' ');p--)
         continue;
-    for(*(p+1)=0,p=s;*p==' ';p++)
+    for (*(p+1)=0,p=s;*p==' ';p++)
         continue;
     memmove(s,p,((strlen(p)+1)*sizeof(char)));
     return;
@@ -2974,7 +2982,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
     char fname[STRLEN], timebuf[STRLEN];
     char *ptr;
 
-	gettmpfilename( fname, "security" );
+    gettmpfilename(fname, "security");
     //sprintf(fname, "tmp/security.%d", getpid());
     if ((se = fopen(fname, "w")) != NULL) {
         if (lookupuser) {
@@ -2985,19 +2993,19 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
                 fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
                 fprintf(se, "以下是通过者个人资料");
                 /*
-                 * getuinfo(se, lookupuser); 
+                 * getuinfo(se, lookupuser);
                  */
                 /*
-                 * Haohmaru.99.4.15.把被注册的资料列得更详细,同时去掉注册者的资料 
+                 * Haohmaru.99.4.15.把被注册的资料列得更详细,同时去掉注册者的资料
                  */
                 fprintf(se, "\n\n您的代号     : %s\n", fdata[1]);
                 fprintf(se, "您的昵称     : %s\n", lookupuser->username);
                 fprintf(se, "真实姓名     : %s\n", fdata[2]);
                 fprintf(se, "电子邮件信箱 : %s\n", ud.email);
                 if (strstr(str, "自动处理程序"))
-                	fprintf(se, "真实 E-mail  : %s$%s@SYSOP\n", fdata[3], fdata[5]);
+                    fprintf(se, "真实 E-mail  : %s$%s@SYSOP\n", fdata[3], fdata[5]);
                 else
-                	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], session->currentuser->userid);
+                    fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], session->currentuser->userid);
                 fprintf(se, "服务单位     : %s\n", fdata[3]);
                 fprintf(se, "目前住址     : %s\n", fdata[4]);
                 fprintf(se, "连络电话     : %s\n", fdata[5]);
@@ -3008,20 +3016,19 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
                 fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);
                 fprintf(se, "生    日     : %s\n", fdata[6]);
                 if (strstr(str,"拒绝"))
-                	fprintf(se, (strstr(str, "自动处理程序") ? "\033[1;32m自动拒绝理由 : %s\033[m\n" : "\033[1;32m拒绝理由 : %s\033[m\n"), fdata[7]);
+                    fprintf(se, (strstr(str, "自动处理程序") ? "\033[1;32m自动拒绝理由 : %s\033[m\n" : "\033[1;32m拒绝理由 : %s\033[m\n"), fdata[7]);
                 /*
                  * fprintf(se, "\n\033[33m以下是认证者个人资料\033[35m");
-                 * getuinfo(se, session->currentuser);rem by Haohmaru.99.4.16 
+                 * getuinfo(se, session->currentuser);rem by Haohmaru.99.4.16
                  */
                 fclose(se);
                 if (strstr(str,"拒绝"))
-                	post_file(session->currentuser, "", fname, "reject_registry", str, 0, (strstr(str, "自动处理程序") ? 1 : 2), session);     
-                else
-                {
-	                if (strstr(str, "自动处理程序"))
-	                	post_file(session->currentuser, "", fname, "Registry", str, 0, 1, session);       
-	                else
-		                post_file(session->currentuser, "", fname, "Registry", str, 0, 2, session);
+                    post_file(session->currentuser, "", fname, "reject_registry", str, 0, (strstr(str, "自动处理程序") ? 1 : 2), session);
+                else {
+                    if (strstr(str, "自动处理程序"))
+                        post_file(session->currentuser, "", fname, "Registry", str, 0, 1, session);
+                    else
+                        post_file(session->currentuser, "", fname, "Registry", str, 0, 2, session);
                 }
             } else if (strstr(str, "删除使用者：")) {
                 fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
@@ -3060,7 +3067,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
                         "\033[1m\033[33mX\033[m长期帐号 \033[1m\033[33mW\033[m编辑系统档案 \033[1m\033[33mB\033[m版主 \033[1m\033[33mA\033[m帐号管理 \033[1m\033[33m$\033[m智囊团 \033[1m\033[33mV\033[m封禁娱乐 \033[1m\033[33mS\033[m系统维护\n"
                         "\033[1m\033[33m!\033[mRead/Post限制 \033[1m\033[33mD\033[m精华区总管 \033[1m\033[33mE\033[m讨论区总管 \033[1m\033[33mM\033[m活动看版总管 \033[1m\033[33m1\033[m不能ZAP \033[1m\033[33m2\033[m聊天室OP\n"
                         "\033[1m\033[33m3\033[m系统总管理员 \033[1m\033[33m4\033[m荣誉帐号 \033[1m\033[33m5 7\033[m 特殊权限 \033[1m\033[33m6\033[m仲裁 \033[1m\033[33m8\033[m自杀 \033[1m\033[33m9\033[m集体帐号 \033[1m\033[33m0\033[m看系统讨论版\n"
-			"\033[1m\033[33m%%\033[m封禁Mail"
+                        "\033[1m\033[33m%%\033[m封禁Mail"
                         "\n");
 
                 fprintf(se, "\n以下是被改者个人资料");
@@ -3085,7 +3092,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
             if (strstr(str, "设定使用者注册资料"))      /* Leeward 98.03.29 */
                 post_file(session->currentuser, "", fname, "Registry", str, 0, 2, session);
             else {
-                if((ptr = strchr(str, '\n')) != NULL)
+                if ((ptr = strchr(str, '\n')) != NULL)
                     sprintf(ptr, "...");
                 post_file(session->currentuser, "", fname, "syssecurity", str, 0, 2, session);
             }
@@ -3095,14 +3102,15 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
 }
 
 /* etnlegend, 2006.11.17, 获取动态链接库中的函数指针... */
-void* dl_function(const char *s_library,const char *s_function,void **p_handle){
+void* dl_function(const char *s_library,const char *s_function,void **p_handle)
+{
     void *handle;
     void *function;
-    if(!p_handle)
+    if (!p_handle)
         return NULL;
-    if(!(handle=dlopen(s_library,RTLD_NOW)))
+    if (!(handle=dlopen(s_library,RTLD_NOW)))
         return NULL;
-    if(!(function=dlsym(handle,s_function))){
+    if (!(function=dlsym(handle,s_function))) {
         dlclose(handle);
         return NULL;
     }
@@ -3111,24 +3119,26 @@ void* dl_function(const char *s_library,const char *s_function,void **p_handle){
 }
 
 /* Enable core dump*/
-void enable_core_dump(int max_size) {
-  struct rlimit rl;
-  getrlimit(RLIMIT_CORE, &rl);
-  rl.rlim_cur = rl.rlim_max < max_size ? rl.rlim_max : max_size;
-  setrlimit(RLIMIT_CORE, &rl);
+void enable_core_dump(int max_size)
+{
+    struct rlimit rl;
+    getrlimit(RLIMIT_CORE, &rl);
+    rl.rlim_cur = rl.rlim_max < max_size ? rl.rlim_max : max_size;
+    setrlimit(RLIMIT_CORE, &rl);
 }
 
 
-int sock_readline(int socket, char *buf, unsigned int size){
+int sock_readline(int socket, char *buf, unsigned int size)
+{
     unsigned int n=0;
-    while(1){
-        if(read(socket, buf+n, 1) <= 0){
+    while (1) {
+        if (read(socket, buf+n, 1) <= 0) {
             return -1;
         }
         n++;
-        if(n >= size) { buf[n]='\0'; return n; }
-        if(buf[n-1]=='\r'){ n--; continue; }
-        if(buf[n-1]=='\n'){ buf[n-1]='\0'; return n-1; }
-    }   
-}       
+        if (n >= size) { buf[n]='\0'; return n; }
+        if (buf[n-1]=='\r') { n--; continue; }
+        if (buf[n-1]=='\n') { buf[n-1]='\0'; return n-1; }
+    }
+}
 

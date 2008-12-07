@@ -2,7 +2,7 @@
 
 struct boardheader *bcache;
 struct BCACHE *brdshm;
-struct BDIRCACHE	*bdirshm;
+struct BDIRCACHE *bdirshm;
 struct UTMPFILE *utmpshm;
 struct UTMPHEAD *utmphead;
 
@@ -46,7 +46,7 @@ void init_sessiondata(session_t * session)
 
     session->sigjmp_stack=NULL;
 
-#ifdef SMS_SUPPORT    
+#ifdef SMS_SUPPORT
     session->lastsmsstatus=0;
     session->smsbuf=NULL;
     session->smsresult=0;
@@ -69,6 +69,6 @@ int init_all(ARG_VOID)
 #ifndef THREADSAFE
     init_sessiondata(getSession());
 #endif
-	resolve_guest_table();
+    resolve_guest_table();
     return ret;
 }

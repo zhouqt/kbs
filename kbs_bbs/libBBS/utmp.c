@@ -13,8 +13,7 @@
 #endif
 
 static int rebuild_list(struct user_info *up, char *arg, int p);
-struct UTMPFILE *get_utmpshm_addr()
-{
+struct UTMPFILE *get_utmpshm_addr() {
     return utmpshm;
 }
 
@@ -59,18 +58,18 @@ static int utmp_lock()
 
 static void utmp_unlock(int fd)
 {
-	unlock_sem_check(UTMP_SEMLOCK);
+    unlock_sem_check(UTMP_SEMLOCK);
 }
 
-#endif 
+#endif
 static void utmp_setreadonly(int readonly)
 {
-/* ulock remove this protected
-    int iscreate;
+    /* ulock remove this protected
+        int iscreate;
 
-    shmdt(utmphead);
-    utmphead = (struct UTMPHEAD *) attach_shm1(NULL, 3698, sizeof(struct UTMPHEAD), &iscreate, readonly, utmphead);    
-*/
+        shmdt(utmphead);
+        utmphead = (struct UTMPHEAD *) attach_shm1(NULL, 3698, sizeof(struct UTMPHEAD), &iscreate, readonly, utmphead);
+    */
 }
 
 void detach_utmp()
@@ -98,9 +97,9 @@ void resolve_utmp()
             for (i = 0; i < USHM_SIZE - 1; i++)
                 utmphead->next[i] = i + 2;
             utmphead->next[USHM_SIZE - 1] = 0;
-/*
-        	utmphead->listhead=0;
-*/
+            /*
+                     utmphead->listhead=0;
+            */
             utmp_unlock(utmpfd);
         } else
             utmphead = (struct UTMPHEAD *) attach_shm1("UTMPHEAD_SHMKEY", 3698, sizeof(struct UTMPHEAD), &iscreate, 0, NULL);   /*attach user tmp head */
@@ -158,7 +157,7 @@ int sendutmpreq(struct requesthdr *req)
                 close(m_socket);
                 if (len!=sizeof(result)) return -1 ;
                 return result ;
-        } 
+        }
         close(m_socket);
         return -1;
 }
@@ -268,7 +267,7 @@ int getnewutmpent(struct user_info *up, int is_www)
                 utmphead->list_next[utmphead->list_prev[pos] - 1] = pos + 1;
             }
         }
-    /*    */
+        /*    */
 
         utmphead->hashhead[0] = utmphead->next[pos];
 
@@ -287,12 +286,12 @@ int getnewutmpent(struct user_info *up, int is_www)
 
         utmphead->number++;
 
-		setpublicshmreadonly(0);
-		if (!is_www) {
-			get_publicshm()->logincount ++;
-		} else {
-			get_publicshm()->wwwlogincount ++;
-		}
+        setpublicshmreadonly(0);
+        if (!is_www) {
+            get_publicshm()->logincount ++;
+        } else {
+            get_publicshm()->wwwlogincount ++;
+        }
         setpublicshmreadonly(1);
 
         if (get_utmp_number() + getwwwguestcount()>get_publicshm()->max_user) {
@@ -308,7 +307,7 @@ int getnewutmpent(struct user_info *up, int is_www)
                 utmphead->uptime = now;
                 uentp = &(utmpshm->uinfo[n]);
                 if ((uentp->pid == 1)
-                    && ((now - uentp->freshtime) < IDLE_TIMEOUT)) {
+                        && ((now - uentp->freshtime) < IDLE_TIMEOUT)) {
                     continue;
                 }
                 if (uentp->active && uentp->pid && kill(uentp->pid, 0) == -1) {     /*uentp检查 */
@@ -327,7 +326,7 @@ int getnewutmpent(struct user_info *up, int is_www)
     return ret;
 }
 
-/* same as getnewutmpent() except no updating of utmpshm 
+/* same as getnewutmpent() except no updating of utmpshm
  * only called in www
  */
 int getnewutmpent2(struct user_info *up, int is_www)
@@ -406,11 +405,11 @@ int getnewutmpent2(struct user_info *up, int is_www)
 
         utmphead->number++;
         setpublicshmreadonly(0);
-		if (!is_www) {
-			get_publicshm()->logincount ++;
-		} else {
-			get_publicshm()->wwwlogincount ++;
-		}
+        if (!is_www) {
+            get_publicshm()->logincount ++;
+        } else {
+            get_publicshm()->wwwlogincount ++;
+        }
         setpublicshmreadonly(1);
         ret=pos+1;
     }
@@ -483,7 +482,7 @@ int apply_ulist(APPLY_UTMP_FUNC fptr, void *arg)
     for (i = 0; i <= max; i++) {
         uentp = &(utmpshm->uinfo[i]);
         utmp = *uentp;
-        if ((*fptr) (&utmp, arg, i + 1) == QUIT)
+        if ((*fptr)(&utmp, arg, i + 1) == QUIT)
             return QUIT;
     }
     return 0;
@@ -502,7 +501,7 @@ int apply_ulist_addr(APPLY_UTMP_FUNC fptr, void *arg)
         if (fptr) {
             int ret;
 
-            ret = (*fptr) (&utmpshm->uinfo[i - 1], arg, num);
+            ret = (*fptr)(&utmpshm->uinfo[i - 1], arg, num);
             if (ret == QUIT)
                 return num;
             if (ret == COUNT)
@@ -516,7 +515,7 @@ int apply_ulist_addr(APPLY_UTMP_FUNC fptr, void *arg)
             if (fptr) {
                 int ret;
 
-                ret = (*fptr) (&utmpshm->uinfo[i - 1], arg, num);
+                ret = (*fptr)(&utmpshm->uinfo[i - 1], arg, num);
                 if (ret == QUIT)
                     return num;
                 if (ret == COUNT)
@@ -558,7 +557,7 @@ int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount,const char *userid, void *arg)
             int ret;
 
             if (fptr) {
-                ret = (*fptr) (&utmpshm->uinfo[i - 1], arg, i);
+                ret = (*fptr)(&utmpshm->uinfo[i - 1], arg, i);
                 if (ret == QUIT)
                     break;
                 if (ret == COUNT)
@@ -573,14 +572,14 @@ int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount,const char *userid, void *arg)
     return num;
 }
 
-int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg)
- /* ulist 中 search 符合fptr函数的 user */
+int search_ulist(struct user_info *uentp, int (*fptr)(int, struct user_info *), int farg)
+/* ulist 中 search 符合fptr函数的 user */
 {
     int i;
 
     for (i = 0; i < USHM_SIZE; i++) {
         *uentp = utmpshm->uinfo[i];
-        if ((*fptr) (farg, uentp))
+        if ((*fptr)(farg, uentp))
             return i + 1;
     }
     return 0;
@@ -614,7 +613,7 @@ void clear_utmp2(int uent)
 
     if (!utmpshm->uinfo[uent - 1].active) { //atppp 20051217
         bbslog("3system", "UTMP:clear inactive entry [%d]", uent);
-    //    return;
+        //    return;
     }
     user=getuserbynum(utmpshm->uinfo[uent-1].uid);
     do_after_logout(user,get_utmpent(uent),uent,0,true);
@@ -642,17 +641,17 @@ void clear_utmp2(int uent)
 
     utmphead->list_next[utmphead->list_prev[uent - 1] - 1] = utmphead->list_next[uent - 1];
     utmphead->list_prev[utmphead->list_next[uent - 1] - 1] = utmphead->list_prev[uent - 1];
-/*	*/
+    /* */
 
     newbbslog(BBSLOG_USIES,"UTMP:clean %s(%d)", utmpshm->uinfo[uent - 1].userid, uent);
     utmphead->next[uent - 1] = utmphead->hashhead[0];
     utmphead->hashhead[0] = uent;
     /* Delete the user's msglist entry from webmsgd,
      * if the user is login from web. */
-	/*
-    if (utmpshm->uinfo[uent - 1].pid == 1)
-        delfrom_msglist(uent, utmpshm->uinfo[uent - 1].userid);
-		*/
+    /*
+       if (utmpshm->uinfo[uent - 1].pid == 1)
+           delfrom_msglist(uent, utmpshm->uinfo[uent - 1].userid);
+     */
     zeroinfo.active = false;
     zeroinfo.pid = 0;
     zeroinfo.invisible = true;
@@ -660,19 +659,19 @@ void clear_utmp2(int uent)
     zeroinfo.sockaddr = 0;
     zeroinfo.destuid = 0;
 
-    if (utmpshm->uinfo[uent - 1].active != false){
+    if (utmpshm->uinfo[uent - 1].active != false) {
         utmphead->number--;
 
         setpublicshmreadonly(0);
-		if(utmpshm->uinfo[uent-1].pid != 1){
-			get_publicshm()->logoutcount ++;
-			get_publicshm()->staytime += time(NULL) - utmpshm->uinfo[uent-1].logintime;
-		}else{
-			get_publicshm()->wwwlogoutcount ++;
-			get_publicshm()->wwwstaytime += time(NULL) - utmpshm->uinfo[uent-1].logintime;
-		}
+        if (utmpshm->uinfo[uent-1].pid != 1) {
+            get_publicshm()->logoutcount ++;
+            get_publicshm()->staytime += time(NULL) - utmpshm->uinfo[uent-1].logintime;
+        } else {
+            get_publicshm()->wwwlogoutcount ++;
+            get_publicshm()->wwwstaytime += time(NULL) - utmpshm->uinfo[uent-1].logintime;
+        }
         setpublicshmreadonly(1);
-	}
+    }
     utmpshm->uinfo[uent - 1] = zeroinfo;
 }
 
@@ -680,8 +679,8 @@ void clear_utmp(int uent, int useridx, int pid)
 {
     int lockfd;
 
-/* ulock todo: use user lock
-*/
+    /* ulock todo: use user lock
+    */
     lockfd = utmp_lock();
     utmp_setreadonly(0);
 
@@ -698,16 +697,18 @@ struct kickuser_save {
     struct user_info *entp[10];
     int pid[10];
 };
-static int kickuser_count(struct user_info *uentp, int *arg, int pos){
+static int kickuser_count(struct user_info *uentp, int *arg, int pos)
+{
     struct kickuser_save *a = (struct kickuser_save *)arg;
     a->entp[a->count] = uentp;
     a->pid[a->count] = uentp->pid;
     a->count++;
-    if(a->count >= 10) return QUIT;
+    if (a->count >= 10) return QUIT;
     return COUNT;
 }
 /* uentp == NULL means to kick all logins */
-int kick_user_utmp(int uid, struct user_info *uentp, int signal) {
+int kick_user_utmp(int uid, struct user_info *uentp, int signal)
+{
     int i, currsave;
     struct kickuser_save s;
     s.count = 0;
@@ -721,24 +722,20 @@ int kick_user_utmp(int uid, struct user_info *uentp, int signal) {
         s.count = 1;
     }
     currsave = -1;
-    for(i=0;i<s.count;i++) {
+    for (i=0;i<s.count;i++) {
         struct user_info *enp = s.entp[i];
         if (enp->active) {
-            if (enp -> pid == getpid() && s.count > 1)
-            {
+            if (enp -> pid == getpid() && s.count > 1) {
                 currsave = i;
                 continue;
-            }
-            else if (enp->pid != 1)
+            } else if (enp->pid != 1)
                 kill(enp->pid, signal);
             clear_utmp(get_utmpent_num(enp), uid , s.pid[i]);
         }
     }
-    if (currsave != -1)
-    {
+    if (currsave != -1) {
         struct user_info *enp = s.entp[currsave];
-        if (enp -> active)
-        {
+        if (enp -> active) {
             if (enp -> pid != 1)
                 kill(enp -> pid, signal);
             clear_utmp(get_utmpent_num(enp), uid, s.pid[currsave]);
@@ -752,8 +749,7 @@ int get_utmp_number()
     return utmphead->number;
 }
 
-struct user_info *get_utmpent(int utmpnum)
-{
+struct user_info *get_utmpent(int utmpnum) {
     if (utmpnum <= 0)
         return NULL;
     return utmpshm->uinfo + (utmpnum - 1);
@@ -789,7 +785,7 @@ int getfriendstr(struct userec* user,struct user_info* puinfo,session_t * sessio
     if (nf <= 0)
         return 0;
     if (nf>MAXFRIENDS)
-    	nf=MAXFRIENDS;
+        nf=MAXFRIENDS;
     friendsdata = (struct friends *) calloc(nf,sizeof(struct friends));
     get_records(buf, friendsdata, sizeof(struct friends), 1, nf);
     for (i = 0; i < nf; i++) {
@@ -818,7 +814,7 @@ int myfriend(int uid, char *fexp,session_t* session)
 
     u = get_utmpent(session->utmpent);
     /*
-     * char buf[IDLEN+3]; 
+     * char buf[IDLEN+3];
      */
     if (u == NULL || u->friendsnum<= 0) {
         return false;
@@ -850,14 +846,16 @@ bool hisfriend(int uid,struct user_info* him)
 }
 
 /* etnlegend, 2006.10.29, 更新用户昵称... */
-static int update_username_proc(struct user_info *in,void *varg,int pos){
+static int update_username_proc(struct user_info *in,void *varg,int pos)
+{
     const char *o_name=(((const char**)varg)[0]),*n_name=(((const char**)varg)[1]);
-    if(!o_name||!strcmp(in->username,o_name))
+    if (!o_name||!strcmp(in->username,o_name))
         strcpy(in->username,n_name);
     return 0;
 }
 
-int update_username(const char *userid,const char *o_name,const char *n_name){
+int update_username(const char *userid,const char *o_name,const char *n_name)
+{
     const char *arg[2]={o_name,n_name};
     return apply_utmp(update_username_proc,0,userid,arg);
 }

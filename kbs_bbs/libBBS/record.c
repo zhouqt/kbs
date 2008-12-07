@@ -41,7 +41,7 @@ int safewrite(int fd, void *buf, int size)
             }
     }
 #endif                          /* 
-                                 */
+    */
     do {
         cc = write(fd, bp, sz);
         if ((cc < 0) && (errno != EINTR)) {
@@ -77,7 +77,7 @@ int size, pos;
     lseek(fd, (pos - numtowrite - 1) * size, SEEK_SET);
     read(fd, bigbuf, numtowrite * size);
     close(fd);
-                /*---	period	2000-10-20	file should be closed	---*/
+    /*--- period 2000-10-20 file should be closed ---*/
 }
 
 void restorerecords(filename, size, pos)
@@ -99,7 +99,7 @@ int size, pos;
     close(fd);
 }
 #endif                          /* 
-                                 */
+*/
 long get_num_records(filename, size)
 char *filename;
 int size;
@@ -218,9 +218,9 @@ int size;
     if (size == sizeof(struct fileheader) && numrecs && (numrecs % 4 == 0))
         saverecords(filename, size, numrecs + 1);
 #endif                          /* 
-                                 */
+    */
     /*
-     * if((fd = open(filename,O_WRONLY|O_CREAT,0644)) == -1) { 
+     * if((fd = open(filename,O_WRONLY|O_CREAT,0644)) == -1) {
      */
     if ((fd = open(filename, O_WRONLY | O_CREAT, 0664)) == -1) {        /* Leeward 98.04.27: 0664->Enable write access of WWW-POST programe */
 #ifdef BBS_MAIN
@@ -239,7 +239,7 @@ int size;
         restorerecords(filename, size, numrecs + 1);
     bug_possible = 0;
 #endif                          /* 
-                                 */
+    */
     return 0;
 }
 
@@ -251,7 +251,7 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
     int i;
     off_t file_size;
     int count;
-    
+
 
     if (applycopy)
         buf2 = malloc(size);
@@ -259,29 +259,29 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
         buf2 = NULL;
     BBS_TRY {
         if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &buf, &file_size, NULL) == 0)
-            BBS_RETURN(0);
+        BBS_RETURN(0);
         count = file_size / size;
         if (reverse)
             buf1 = buf + (count - 1) * size;
-        else
-            buf1 = buf;
-        for (i = 0; i < count; i++) {
-            if (applycopy)
-                memcpy(buf2, buf1, size);
             else
-                buf2 = buf1;
-            if ((*fptr) (buf2, reverse ? count - i : i + 1, arg) == QUIT) {
-                end_mmapfile((void *) buf, file_size, -1);
+                buf1 = buf;
+            for (i = 0; i < count; i++) {
                 if (applycopy)
-                    free(buf2);
-                end_mmapfile((void *) buf, file_size, -1);
-                BBS_RETURN(QUIT);
-            }
-            if (reverse)
-                buf1 -= size;
-            else
-                buf1 += size;
-        }
+                        memcpy(buf2, buf1, size);
+                    else
+                        buf2 = buf1;
+                    if ((*fptr)(buf2, reverse ? count - i : i + 1, arg) == QUIT) {
+                        end_mmapfile((void *) buf, file_size, -1);
+                        if (applycopy)
+                            free(buf2);
+                        end_mmapfile((void *) buf, file_size, -1);
+                        BBS_RETURN(QUIT);
+                    }
+                    if (reverse)
+                        buf1 -= size;
+                    else
+                        buf1 += size;
+                }
     }
     BBS_CATCH {
     }
@@ -294,8 +294,8 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
 }
 
 /*---   Added by period   2000-10-26  ---*/
-/*---	也可以考虑用一次读入CheckStep个记录的方法.	---*
- *---	就是在内存占用和系统IO之间作个选择		---*/
+/*--- 也可以考虑用一次读入CheckStep个记录的方法. ---*
+ *--- 就是在内存占用和系统IO之间作个选择  ---*/
 /*#ifdef _DEBUG_*/
 #define _FREE_MEMORY_
 #ifndef _FREE_MEMORY_
@@ -303,12 +303,12 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
 #    error
 #  endif
 #else                           /* 
-                                 */
+*/
 #  ifdef _FREE_IO_
 #    error
 #  endif
 #endif                          /* 
-                                 */
+*/
 /* COMMAN : use mmap to speed up searching */
 int search_record_back(int fd,  /* file handle */
                        int size,        /* record size */
@@ -328,7 +328,7 @@ int search_record_back(int fd,  /* file handle */
         if (start <= 0 || start > filesize / size)
             start = filesize / size;
         for (i = start, buf1 = buf + size * (start - 1); i > 0; i--, buf1 -= size) {
-            if ((*fptr) (farg, buf1)) {
+            if ((*fptr)(farg, buf1)) {
                 if (rptr)
                     memcpy(rptr, buf1, size);
                 end_mmapfile((void *) buf, filesize, -1);
@@ -357,7 +357,7 @@ int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_AR
         if (start <= 0 || start > filesize / size)
             start = filesize / size;
         for (i = start, buf1 = buf + size * (start - 1); (i > 0 && i > start - num); i--, buf1 -= size) {
-            if ((*fptr) (farg, buf1)) {
+            if ((*fptr)(farg, buf1)) {
                 if (rptr)
                     memcpy(rptr, buf1, size);
                 end_mmapfile((void *) buf, filesize, -1);
@@ -386,7 +386,7 @@ int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, vo
         if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &buf, &filesize, NULL) == 0)
             BBS_RETURN(0);
         for (i = 0, buf1 = buf; i < filesize / size; i++, buf1 += size) {
-            if ((*fptr) (farg, buf1)) {
+            if ((*fptr)(farg, buf1)) {
                 if (rptr)
                     memcpy(rptr, buf1, size);
                 end_mmapfile((void *) buf, filesize, -1);
@@ -511,17 +511,17 @@ void *rptr;
 int size, id;
 {
     /*
-     * add by KCN 
+     * add by KCN
      */
     struct flock ldata;
     int fd;
 
 #ifdef POSTBUG
     if (size == sizeof(struct fileheader) && (id > 1)
-        && ((id - 1) % 4 == 0))
+            && ((id - 1) % 4 == 0))
         saverecords(filename, size, id);
 #endif                          /* 
-                                 */
+    */
     if ((fd = open(filename, O_WRONLY | O_CREAT, 0644)) == -1)
         return -1;
     /*
@@ -535,12 +535,12 @@ int size, id;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
         bbslog("user", "%s", "reclock error");
         close(fd);
-                        /*---	period	2000-10-20	file should be closed	---*/
+        /*--- period 2000-10-20 file should be closed ---*/
         return -1;
     }
     if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
         bbslog("user", "%s", "subrec seek err");
-        /*---	period	2000-10-24	---*/
+        /*--- period 2000-10-24 ---*/
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
         close(fd);
@@ -557,10 +557,10 @@ int size, id;
     close(fd);
 #ifdef POSTBUG
     if (size == sizeof(struct fileheader) && (id > 1)
-        && ((id - 1) % 4 == 0))
+            && ((id - 1) % 4 == 0))
         restorerecords(filename, size, id);
 #endif                          /* 
-                                 */
+    */
     return 0;
 }
 
@@ -583,9 +583,9 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
             ret = -2;
         } else {
             if (filecheck) {
-                if (!(*filecheck) (ptr + (id - 1) * size, arg)) {
+                if (!(*filecheck)(ptr + (id - 1) * size, arg)) {
                     for (id = 1; id * size <= filesize; id++)
-                        if ((*filecheck) (ptr + (id - 1) * size, arg))
+                        if ((*filecheck)(ptr + (id - 1) * size, arg))
                             break;
                     if (id * size > filesize)
                         ret = -2;
@@ -601,9 +601,9 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
     }
     BBS_END;
     end_mmapfile(ptr, filesize, -1);
-	if (ret == 0)
-		ftruncate(fdr, filesize - size);
-	close(fdr);
+    if (ret == 0)
+        ftruncate(fdr, filesize - size);
+    close(fdr);
 
     return ret;
 }
@@ -615,7 +615,7 @@ int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG file
     char *ptr;
     int ret;
 
-    if (id <= 0 || toid <= 0 || toid == id )
+    if (id <= 0 || toid <= 0 || toid == id)
         return 0;
     BBS_TRY {
         if (safe_mmapfile(filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, &ptr, &filesize, &fdr) == 0)
@@ -625,36 +625,36 @@ int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG file
             ret = -2;
         } else {
             if (filecheck) {
-               if (!(*filecheck) (ptr + (id - 1) * size, arg)) {
-                  for (id = 1; id * size <= filesize; id++)
-                      if ((*filecheck) (ptr + (id - 1) * size, arg))
-                         break;
-                      if (id * size > filesize)
-                         ret = -2;
-               }
+                if (!(*filecheck)(ptr + (id - 1) * size, arg)) {
+                    for (id = 1; id * size <= filesize; id++)
+                        if ((*filecheck)(ptr + (id - 1) * size, arg))
+                            break;
+                    if (id * size > filesize)
+                        ret = -2;
+                }
             }
         }
         if (ret == 0) {
-			char *idptr;
-			idptr = (char *)malloc(size);
-			memcpy(idptr, ptr + (id - 1) * size, size);
+            char *idptr;
+            idptr = (char *)malloc(size);
+            memcpy(idptr, ptr + (id - 1) * size, size);
 
-			if (id > toid){ 
-				memmove(ptr + toid * size, ptr + (toid - 1) * size, (id - toid) * size);
-			}else{
-				memmove(ptr + (id - 1) * size, ptr + id * size, (toid - id) * size);
-			}
-			memcpy(ptr + (toid - 1) * size, idptr, size);
-			free(idptr);
-		}
-	}
-	BBS_CATCH {
-		ret = -3;
-	}
-	BBS_END;
+            if (id > toid) {
+                memmove(ptr + toid * size, ptr + (toid - 1) * size, (id - toid) * size);
+            } else {
+                memmove(ptr + (id - 1) * size, ptr + id * size, (toid - id) * size);
+            }
+            memcpy(ptr + (toid - 1) * size, idptr, size);
+            free(idptr);
+        }
+    }
+    BBS_CATCH {
+        ret = -3;
+    }
+    BBS_END;
     end_mmapfile(ptr, filesize, -1);
-	close(fdr);
-	
-	return ret;
+    close(fdr);
+
+    return ret;
 }
 

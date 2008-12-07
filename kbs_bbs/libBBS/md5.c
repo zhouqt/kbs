@@ -85,27 +85,27 @@ void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
 }
 
 #define GET_32BIT_LSB_FIRST(cp) \
-  (((unsigned long)(unsigned char)(cp)[0]) | \
+    (((unsigned long)(unsigned char)(cp)[0]) | \
      ((unsigned long)(unsigned char)(cp)[1] << 8) | \
-       ((unsigned long)(unsigned char)(cp)[2] << 16) | \
-         ((unsigned long)(unsigned char)(cp)[3] << 24))
+     ((unsigned long)(unsigned char)(cp)[2] << 16) | \
+     ((unsigned long)(unsigned char)(cp)[3] << 24))
 
 #define GET_16BIT_LSB_FIRST(cp) \
-	  (((unsigned long)(unsigned char)(cp)[0]) | \
-	     ((unsigned long)(unsigned char)(cp)[1] << 8))
+    (((unsigned long)(unsigned char)(cp)[0]) | \
+     ((unsigned long)(unsigned char)(cp)[1] << 8))
 
 #define PUT_32BIT_LSB_FIRST(cp, value) do { \
-	  (cp)[0] = (value); \
-		    (cp)[1] = (value) >> 8; \
-		      (cp)[2] = (value) >> 16; \
-		        (cp)[3] = (value) >> 24; } while (0)
+        (cp)[0] = (value); \
+        (cp)[1] = (value) >> 8; \
+        (cp)[2] = (value) >> 16; \
+        (cp)[3] = (value) >> 24; } while (0)
 
 #define PUT_16BIT_LSB_FIRST(cp, value) do { \
-	  (cp)[0] = (value); \
-		    (cp)[1] = (value) >> 8; } while (0)
+        (cp)[0] = (value); \
+        (cp)[1] = (value) >> 8; } while (0)
 
 /*
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
 void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
@@ -161,7 +161,7 @@ void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 
 /* This is the central step in the MD5 algorithm. */
 #define MD5STEP(f, w, x, y, z, data, s) \
-	( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
+    ( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
 
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to

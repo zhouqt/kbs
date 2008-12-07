@@ -41,7 +41,7 @@ static void bcache_unlock(int fd)
 static void bcache_setreadonly(int readonly)
 {
     int boardfd;
-	void *oldptr = bcache;
+    void *oldptr = bcache;
     char errbuf[STRLEN];
     munmap((void *)bcache, MAXBOARD * sizeof(struct boardheader));
     if ((boardfd = open(BOARDS, O_RDWR | O_CREAT, 0644)) == -1) {
@@ -98,10 +98,10 @@ int setboardmark(const char *board, int i)
 
     pos = getbid(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
-    	 int j;
-    	 j=brdshm->bstatus[pos - 1].updatemark;
-    	 if(i>=0&&i<=1)
-        brdshm->bstatus[pos - 1].updatemark = i;
+        int j;
+        j=brdshm->bstatus[pos - 1].updatemark;
+        if (i>=0&&i<=1)
+            brdshm->bstatus[pos - 1].updatemark = i;
         return j;
     } else
         return -1;
@@ -113,10 +113,10 @@ int setboardorigin(const char *board, int i)
 
     pos = getbid(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
-    	 int j;
-    	 j=brdshm->bstatus[pos - 1].updateorigin;
-    	 if(i>=0&&i<=1)
-        brdshm->bstatus[pos - 1].updateorigin = i;
+        int j;
+        j=brdshm->bstatus[pos - 1].updateorigin;
+        if (i>=0&&i<=1)
+            brdshm->bstatus[pos - 1].updateorigin = i;
         return j;
     } else
         return -1;
@@ -128,10 +128,10 @@ int setboardtitle(const char *board, int i)
 
     pos = getbid(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
-    	 int j;
-    	 j=brdshm->bstatus[pos - 1].updatetitle;
-    	 if(i>=0&&i<=1)
-        brdshm->bstatus[pos - 1].updatetitle = i;
+        int j;
+        j=brdshm->bstatus[pos - 1].updatetitle;
+        if (i>=0&&i<=1)
+            brdshm->bstatus[pos - 1].updatetitle = i;
         return j;
     } else
         return -1;
@@ -141,13 +141,12 @@ int get_nextid_bid(int bid)
 {
     int fd,ret=0;
 
-	if (bid > 0)
-	{
-		fd = bcache_lock();
-		brdshm->bstatus[bid-1].nowid++;
-		ret=brdshm->bstatus[bid-1].nowid;
-		bcache_unlock(fd);
-	}
+    if (bid > 0) {
+        fd = bcache_lock();
+        brdshm->bstatus[bid-1].nowid++;
+        ret=brdshm->bstatus[bid-1].nowid;
+        bcache_unlock(fd);
+    }
     return ret;
 }
 
@@ -159,7 +158,7 @@ int get_nextid(const char* boardname)
     if (ret!=0) {
         ret=get_nextid_bid(ret);
     } else
-       bbslog("3system", "wrong get_nextid %s", boardname);
+        bbslog("3system", "wrong get_nextid %s", boardname);
     return ret;
 }
 
@@ -206,7 +205,7 @@ void resolve_boards()
                         brdshm->bstatus[i].nowid=lastfh.id+1;
                     /* update top title */
                     board_update_toptitle(i+1,false);
-                    
+
                     maxi = i;
                 }
             if (maxi != -1)
@@ -218,8 +217,8 @@ void resolve_boards()
         bdirshm = attach_shm("BDIRCACHE_SHMKEY", 3697, sizeof(*bdirshm), &iscreate); /* attach board share memory */
         if (iscreate) {
             bbslog("3system", "reload bdircache!");
-			load_allboard(bdirshm->allbrd_list, &bdirshm->allbrd_list_t);
-			load_wwwboard(bdirshm->wwwbrd_list, &bdirshm->wwwbrd_list_t);
+            load_allboard(bdirshm->allbrd_list, &bdirshm->allbrd_list_t);
+            load_wwwboard(bdirshm->wwwbrd_list, &bdirshm->wwwbrd_list_t);
         }
     }
     if (boardfd!=-1)
@@ -234,50 +233,49 @@ void detach_boards()
     brdshm=NULL;
 }
 
-struct BoardStatus *getbstatus(int index)
-{
+struct BoardStatus *getbstatus(int index) {
     if (index<=0||index>MAXBOARD)
         return NULL;
     return &brdshm->bstatus[index-1];
 }
-int apply_boards(int (*func) (struct boardheader *, void* ),void* arg)
+int apply_boards(int (*func)(struct boardheader *, void*),void* arg)
 {                               /* 对所有版 应用 func函数 */
     register int i;
 
     for (i = 0; i < brdshm->numboards; i++)
-            if (bcache[i].filename[0])
-                if ((*func) (&bcache[i],arg) == QUIT)
-                    return QUIT;
+        if (bcache[i].filename[0])
+            if ((*func)(&bcache[i],arg) == QUIT)
+                return QUIT;
     return 0;
 }
 
-int apply_bids(int (*func) (struct boardheader* bh,int bid, void* arg),void* arg)
+int apply_bids(int (*func)(struct boardheader* bh,int bid, void* arg),void* arg)
 {
     register int i;
 
     for (i = 0; i < brdshm->numboards; i++)
-            if (bcache[i].filename[0])
-                if ((*func) (&bcache[i],i+1,arg) == QUIT)
-                    return QUIT;
+        if (bcache[i].filename[0])
+            if ((*func)(&bcache[i],i+1,arg) == QUIT)
+                return QUIT;
     return 0;
 }
 
 int fill_super_board(struct userec* user,const char *searchname, int result[], int max)
 {
-	register int i;
-	int total=0;
+    register int i;
+    int total=0;
 
-    for (i = 0; i < brdshm->numboards && total < max ; i++){
+    for (i = 0; i < brdshm->numboards && total < max ; i++) {
         if (bcache[i].filename[0] == '\0')
-			continue;
-    	if (check_read_perm(user, &bcache[i])) {
-			if (strcasestr(bcache[i].filename, searchname) || strcasestr(bcache[i].des, searchname) || strcasestr(bcache[i].title, searchname) ){
-				result[total] = i + 1;
-				total ++;
-			}
-		}
-	}
-	return total;
+            continue;
+        if (check_read_perm(user, &bcache[i])) {
+            if (strcasestr(bcache[i].filename, searchname) || strcasestr(bcache[i].des, searchname) || strcasestr(bcache[i].title, searchname)) {
+                result[total] = i + 1;
+                total ++;
+            }
+        }
+    }
+    return total;
 }
 
 
@@ -285,12 +283,12 @@ int fill_super_board(struct userec* user,const char *searchname, int result[], i
 /* return .-delimited manageable bid list */
 int get_manageable_bids(struct userec *user, char *buf, int buflen)
 {
-	register int i;
-	int total=0;
+    register int i;
+    int total=0;
     char *bufptr = buf;
-    
+
     buf[0] = '\0';
-    for (i = 0; i < brdshm->numboards; i++){
+    for (i = 0; i < brdshm->numboards; i++) {
         if (bcache[i].filename[0] == '\0')
             continue;
         if (check_read_perm(user, &bcache[i])) {
@@ -319,7 +317,7 @@ int getbnum_safe(const char *bname, session_t *session, const int mode)
     return 0;
 }
 
-/*---	added by period		2000-11-07	to be used in postfile	---*/
+/*--- added by period  2000-11-07 to be used in postfile ---*/
 int getboardnum(const char *bname, struct boardheader *bh)
 {                               /* board name --> board No. & not check level */
     register int i;
@@ -331,10 +329,9 @@ int getboardnum(const char *bname, struct boardheader *bh)
             return i + 1;
         }
     return 0;
-}/*---	---*/
+}/*--- ---*/
 
-const struct boardheader *getbcache(const char *bname)
-{
+const struct boardheader *getbcache(const char *bname) {
     int i;
 
     i = getbid(bname,NULL);
@@ -361,20 +358,21 @@ int get_boardcount()
     return brdshm->numboards;
 }
 
-const struct boardheader *getboard(int num)
-{
+const struct boardheader *getboard(int num) {
     if (num > 0 && num <= MAXBOARD) {
         return &bcache[num - 1];
     }
     return NULL;
 }
 
-static int clearclubreadright(struct userec* user, struct boardheader* bh){
+static int clearclubreadright(struct userec* user, struct boardheader* bh)
+{
     user->club_read_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
     return 0;
 }
 
-static int clearclubwriteright(struct userec* user, struct boardheader* bh){
+static int clearclubwriteright(struct userec* user, struct boardheader* bh)
+{
     user->club_write_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
     return 0;
 }
@@ -401,14 +399,14 @@ int delete_board(int bid, session_t* session)
                 }
     }
 
-    if(bcache[bid-1].flag&BOARD_CLUB_READ){
-        if(bcache[bid-1].clubnum>0&&!(bcache[bid-1].clubnum>MAXCLUB)){
+    if (bcache[bid-1].flag&BOARD_CLUB_READ) {
+        if (bcache[bid-1].clubnum>0&&!(bcache[bid-1].clubnum>MAXCLUB)) {
             apply_users((int(*)(struct userec*,void*))clearclubreadright,(void*)&bcache[bid-1]);
         }
     }
 
-    if(bcache[bid-1].flag&BOARD_CLUB_WRITE){
-        if(bcache[bid-1].clubnum>0&&!(bcache[bid-1].clubnum>MAXCLUB)){
+    if (bcache[bid-1].flag&BOARD_CLUB_WRITE) {
+        if (bcache[bid-1].clubnum>0&&!(bcache[bid-1].clubnum>MAXCLUB)) {
             apply_users((int(*)(struct userec*,void*))clearclubwriteright,(void*)&bcache[bid-1]);
         }
     }
@@ -445,58 +443,58 @@ int set_board(int bid,struct boardheader *board,struct boardheader *oldbh)
 {
     bcache_setreadonly(0);
     if (oldbh) {
-    	if ((board->flag&BOARD_CLUB_READ)^(oldbh->flag&BOARD_CLUB_READ)) {
-    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
-    	        apply_users((int (*)(struct userec*,void*))clearclubreadright,(void*)oldbh);
-    	}
-    	if ((board->flag&BOARD_CLUB_WRITE)^(oldbh->flag&BOARD_CLUB_WRITE)) {
-    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
-    	         apply_users((int (*)(struct userec*,void*))clearclubwriteright,(void*)oldbh);
-    	}
-       if (!(board->flag&BOARD_CLUB_READ)&&!(board->flag&BOARD_CLUB_WRITE))
-    	   board->clubnum=0;
-       else if ((board->clubnum<=0)||(board->clubnum>MAXCLUB)) {
-    	/* 需要计算clubnum*/
-    	    int used[MAXCLUB];
-    	    int i;
-    	    bzero(used,sizeof(int)*MAXCLUB);
-    	    for (i=0;i<MAXBOARD;i++)
-    	    	if ((bcache[i].flag&BOARD_CLUB_READ||bcache[i].flag&BOARD_CLUB_WRITE)
-    	    	    &&bcache[i].clubnum>0&&bcache[i].clubnum<=MAXCLUB)
-    	    	    used[bcache[i].clubnum-1]=1;
-    	    for (i=0;i<MAXCLUB;i++)
-    	    	if (used[i]==0)
-    	    		break;
-    	    if (i==MAXCLUB) {
-    	    	/* 俱乐部数满了!*/
-    	    	bbslog("3error","new club error:the number raise to max...");
-    	    	board->clubnum=0;
-    	    	board->flag&=(~BOARD_CLUB_READ) & (~BOARD_CLUB_WRITE);
-    	    } else board->clubnum=i+1;
-       }
-       /*
-       ulock remove nowid
-       board->nowid=bcache[bid-1].nowid;
-       */
-       /*重新计算目录的版面数*/
-       if (board->flag&BOARD_GROUP) {
-           int i;
-           board->board_data.group_total=0;
-    	    for (i=0;i<MAXBOARD;i++)
-    	        if (bcache[i].group==bid) 
+        if ((board->flag&BOARD_CLUB_READ)^(oldbh->flag&BOARD_CLUB_READ)) {
+            if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
+                apply_users((int (*)(struct userec*,void*))clearclubreadright,(void*)oldbh);
+        }
+        if ((board->flag&BOARD_CLUB_WRITE)^(oldbh->flag&BOARD_CLUB_WRITE)) {
+            if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
+                apply_users((int (*)(struct userec*,void*))clearclubwriteright,(void*)oldbh);
+        }
+        if (!(board->flag&BOARD_CLUB_READ)&&!(board->flag&BOARD_CLUB_WRITE))
+            board->clubnum=0;
+        else if ((board->clubnum<=0)||(board->clubnum>MAXCLUB)) {
+            /* 需要计算clubnum*/
+            int used[MAXCLUB];
+            int i;
+            bzero(used,sizeof(int)*MAXCLUB);
+            for (i=0;i<MAXBOARD;i++)
+                if ((bcache[i].flag&BOARD_CLUB_READ||bcache[i].flag&BOARD_CLUB_WRITE)
+                        &&bcache[i].clubnum>0&&bcache[i].clubnum<=MAXCLUB)
+                    used[bcache[i].clubnum-1]=1;
+            for (i=0;i<MAXCLUB;i++)
+                if (used[i]==0)
+                    break;
+            if (i==MAXCLUB) {
+                /* 俱乐部数满了!*/
+                bbslog("3error","new club error:the number raise to max...");
+                board->clubnum=0;
+                board->flag&=(~BOARD_CLUB_READ) & (~BOARD_CLUB_WRITE);
+            } else board->clubnum=i+1;
+        }
+        /*
+        ulock remove nowid
+        board->nowid=bcache[bid-1].nowid;
+        */
+        /*重新计算目录的版面数*/
+        if (board->flag&BOARD_GROUP) {
+            int i;
+            board->board_data.group_total=0;
+            for (i=0;i<MAXBOARD;i++)
+                if (bcache[i].group==bid)
                     board->board_data.group_total++;
-       } else if (((board->group) || (bcache[bid - 1].group)) &&(bcache[bid-1].group!=board->group)) {
-       //修正版面目录的版面数
+        } else if (((board->group) || (bcache[bid - 1].group)) &&(bcache[bid-1].group!=board->group)) {
+            //修正版面目录的版面数
             if (bcache[bid-1].group)
                 bcache[bcache[bid-1].group-1].board_data.group_total--;
             if (board->group)
                 bcache[board->group-1].board_data.group_total++;
-       }
+        }
     }
     /* ulock remove nowid
     if (board->nowid==-1) //保存nowid
-	    board->nowid=bcache[bid-1].nowid;
-	    */
+     board->nowid=bcache[bid-1].nowid;
+     */
     memcpy(&bcache[bid - 1], board, sizeof(struct boardheader));
     bcache_setreadonly(1);
     return 0;
@@ -554,8 +552,7 @@ void board_setcurrentuser(int idx,int num)
         brdshm->bstatus[idx - 1].currentusers++;
         currentusers_unlock(fd);
 #endif
-    }
-    else if (num < 0) {
+    } else if (num < 0) {
 #ifdef ASM_ATOMIC
         atomic_dec(&(brdshm->bstatus[idx - 1].currentusers));
 #else
@@ -566,8 +563,7 @@ void board_setcurrentuser(int idx,int num)
         /* 2 lines below just make a remedial step, I didn't pay attention to its atomicity, fancy May 22 2008 */
         if (brdshm->bstatus[idx - 1].currentusers<0)
             brdshm->bstatus[idx - 1].currentusers=0;
-    }
-    else
+    } else
         brdshm->bstatus[idx - 1].currentusers=0;
 }
 
@@ -597,11 +593,11 @@ void board_update_toptitle(int bid,bool needlock)
 void flush_bcache()
 {
     int i;
-	bcache_setreadonly(0);
+    bcache_setreadonly(0);
     for (i = 0; i < MAXBOARD; i++)
-	    bcache[i].idseq=brdshm->bstatus[i].nowid;
+        bcache[i].idseq=brdshm->bstatus[i].nowid;
     msync((void *)bcache,MAXBOARD * sizeof(struct boardheader),MS_SYNC);
-	bcache_setreadonly(1);
+    bcache_setreadonly(1);
 }
 
 /* add by stiger, 2004,0322 */
@@ -671,10 +667,10 @@ int board_regenspecial(const char *board, int mode, char *index)
     }
     ptr1 = (struct fileheader *) ptr;
     for (i = 0; i < total; i++) {
-        if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid ))
-            || ((mode == DIR_MODE_MARK) && (ptr1->accessed[0] & FILE_MARKED))
-            || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index) )
-            || ((mode == DIR_MODE_TITLE)  && bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
+        if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid))
+                || ((mode == DIR_MODE_MARK) && (ptr1->accessed[0] & FILE_MARKED))
+                || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index))
+                || ((mode == DIR_MODE_TITLE)  && bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
             write(fd, ptr1, size);
             count++;
         }
@@ -698,15 +694,16 @@ int board_regenspecial(const char *board, int mode, char *index)
     return count;
 }
 
-void process_no_bm(const struct boardheader *bh){
+void process_no_bm(const struct boardheader *bh)
+{
 //stiger, 2005.09.05, 版面无版主时进行系统通知
 #ifdef SMTH
 #define NO_BM_FILE "etc/nobms"
     struct userec *user_sysop;
     char buf[80];
-    if(!(bh->filename[0])||bh->BM[0]||!normal_board(bh->filename))
+    if (!(bh->filename[0])||bh->BM[0]||!normal_board(bh->filename))
         return;
-    if(!getuser("SYSOP",&user_sysop))
+    if (!getuser("SYSOP",&user_sysop))
         user_sysop=getCurrentUser();
     sprintf(buf,"%s 版面目前没有版主",bh->filename);
     post_file(user_sysop,"",NO_BM_FILE,"BD_Discuss",buf,0,2,getSession());
@@ -717,70 +714,70 @@ void process_no_bm(const struct boardheader *bh){
 }
 
 /* by etnlegend 20051002 */
-int add_bm(struct userec *user,const struct boardheader *bh,int pos,int bms_log){
-/*
- *  pos 为版面的 bid, 指定 pos 为 0 或负值的时候将自动根据 bh 获取 pos 的值
- *  bms_log 为标志是否记录版主数据库的参数, 指定为 0 时不记录, 指定为正值时记录, 指定为负值时根据 bh 是否为公开版面判断是否记录(默认)
- */
+int add_bm(struct userec *user,const struct boardheader *bh,int pos,int bms_log)
+{
+    /*
+     *  pos 为版面的 bid, 指定 pos 为 0 或负值的时候将自动根据 bh 获取 pos 的值
+     *  bms_log 为标志是否记录版主数据库的参数, 指定为 0 时不记录, 指定为正值时记录, 指定为负值时根据 bh 是否为公开版面判断是否记录(默认)
+     */
 #define BM_FILE "etc/forbm"
     struct boardheader newbh;
     char buf[256];
     memcpy(&newbh,bh,sizeof(struct boardheader));
     sprintf(buf,"%s %s",newbh.BM,user->userid);
-    if(!(pos>0)&&!(pos=getbid(newbh.filename,NULL)))
+    if (!(pos>0)&&!(pos=getbid(newbh.filename,NULL)))
         return 1;
-    if(strlen(buf)<BM_LEN){
+    if (strlen(buf)<BM_LEN) {
         sprintf(newbh.BM,"%s",buf+((buf[0]==' ')?1:0));
         sprintf(buf,"新任"NAME_BM"必读[%s]",bh->filename);
         mail_file(getCurrentUser()->userid,BM_FILE,user->userid,buf,BBSPOST_LINK,NULL);
 #if HAVE_MYSQL_SMTH==1
 #ifdef BMSLOG
-        if(bms_log>0||(bms_log&&normal_board(newbh.filename)))
+        if (bms_log>0||(bms_log&&normal_board(newbh.filename)))
             bms_add(user->userid,newbh.filename,time(0),2,NULL);
 #endif
 #endif
         user->userlevel|=PERM_BOARDS;
         edit_group(bh,&newbh);
         set_board(pos,&newbh,NULL);
-    }
-    else
+    } else
         return 2;
     return 0;
 #undef BM_FILE
 }
-int del_bm(struct userec *user,const struct boardheader *bh,int pos,int concurrent){
-/*
- *  concurrent 为当前该用户兼任版主数量, 设置为负值时自动检测
- */
+int del_bm(struct userec *user,const struct boardheader *bh,int pos,int concurrent)
+{
+    /*
+     *  concurrent 为当前该用户兼任版主数量, 设置为负值时自动检测
+     */
     struct boardheader newbh;
     char buf[256],*p;
     memcpy(&newbh,bh,sizeof(struct boardheader));
     sprintf(buf," %s ",user->userid);
-    if(!(pos>0)&&!(pos=getbid(newbh.filename,NULL)))
+    if (!(pos>0)&&!(pos=getbid(newbh.filename,NULL)))
         return 1;
-    do{
-        if(!(p=strstr(newbh.BM,buf))&&!((p=strstr(newbh.BM,buf+1))==newbh.BM)){
+    do {
+        if (!(p=strstr(newbh.BM,buf))&&!((p=strstr(newbh.BM,buf+1))==newbh.BM)) {
             !(p=strrchr(newbh.BM,' '))?(newbh.BM[0]=NULL):(*p=NULL);
             continue;
         }
         memmove(p,p+strlen(user->userid)+1,strlen(p)-strlen(user->userid));
-    }
-    while(chk_BM_instr(newbh.BM,user->userid));
+    } while (chk_BM_instr(newbh.BM,user->userid));
 #if HAVE_MYSQL_SMTH==1
 #ifdef BMSLOG
     bms_del(user->userid,newbh.filename);
 #endif
 #endif
-    if(concurrent<0){
+    if (concurrent<0) {
         const struct boardheader *ptr;
         register int i;
-        for(concurrent=0,i=0;i<get_boardcount();i++){
+        for (concurrent=0,i=0;i<get_boardcount();i++) {
             ptr=getboard(i+1);
-            if(ptr&&ptr->filename[0]&&chk_BM_instr(ptr->BM,user->userid))
+            if (ptr&&ptr->filename[0]&&chk_BM_instr(ptr->BM,user->userid))
                 concurrent++;
         }
     }
-    if(concurrent<2)
+    if (concurrent<2)
         user->userlevel&=~(PERM_BOARDS|PERM_CLOAK);
     edit_group(bh,&newbh);
     set_board(pos,&newbh,NULL);

@@ -1,5 +1,5 @@
 /*
-	KCN,use mmap for system config.
+ KCN,use mmap for system config.
 */
 #include "bbs.h"
 #define SC_BUFSIZE              20480
@@ -51,11 +51,11 @@ const char *sysconf_str(const char *key)
 
 const char *sysconf_str_default(const char *key, const char *default_value)
 {
-	const char *val = sysconf_str(key);
-	if (val != NULL)
-		return val;
-	else
-		return default_value;
+    const char *val = sysconf_str(key);
+    if (val != NULL)
+        return val;
+    else
+        return default_value;
 }
 
 int sysconf_eval(const char *key,int defaultval)
@@ -70,12 +70,12 @@ int sysconf_eval(const char *key,int defaultval)
     return defaultval;
 }
 
-char* sysconf_relocate(const char *data){
+char* sysconf_relocate(const char *data)
+{
     return (char*)data+sysconf_diff;
 }
 
-struct smenuitem *sysconf_getmenu(const char *menu_name)
-{
+struct smenuitem *sysconf_getmenu(const char *menu_name) {
     if (sysconf_version == -1)
         load_sysconf();
     return &menuitem[sysconf_eval(menu_name,0)];
@@ -213,7 +213,7 @@ static void parse_sysconf(const char *fname)
 
         if (*ptr == '%') {
             strtok_r(ptr, " \t\n", &save_ptr);
-            if (strcmp(ptr, "%menu" /*²Ëµ¥ */ ) == 0) {
+            if (strcmp(ptr, "%menu" /*²Ëµ¥ */) == 0) {
                 str = strtok_r(NULL, " \t\n", &save_ptr);
                 if (str != NULL)
                     sysconf_addmenu(fp, str);

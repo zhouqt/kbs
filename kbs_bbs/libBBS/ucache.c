@@ -44,16 +44,16 @@ static void ucache_unlock(int fd)
 #else
 static int ucache_lock()
 {
-	lock_sem(UCACHE_SEMLOCK);
-	return 0;
+    lock_sem(UCACHE_SEMLOCK);
+    return 0;
 }
 
 static void ucache_unlock(int fd)
 {
-	unlock_sem_check(UCACHE_SEMLOCK);
+    unlock_sem_check(UCACHE_SEMLOCK);
 }
 
-#endif 
+#endif
 /* do init hashtable , read from uhashgen.dat -- wwj*/
 static void ucache_hashinit()
 {
@@ -133,7 +133,7 @@ unsigned int ucache_hash_deep(const char *userid)
     while (n1 < 0) {
         n1 = -n1 - 1;
         if (!*userid) {
-/* disable it            usage->hash[n1][0]++; */
+            /* disable it            usage->hash[n1][0]++; */
             n1 = hash->hash[n1][0];
         } else {
             n2 = *userid++;
@@ -155,8 +155,8 @@ unsigned int ucache_hash_deep(const char *userid)
 
 
 /*
-   CaseInsensitive ucache_hash, assume 
-   isalpha(userid[0]) 
+   CaseInsensitive ucache_hash, assume
+   isalpha(userid[0])
    isahpha(userid[n]) || isnumber(userid[n]) n>0
    01/5/5 wwj
  */
@@ -178,13 +178,13 @@ unsigned int ucache_hash(const char *userid)
     if (n1 < 0 || n1 >= 26)
         return 0;
 
-/* disable it    usage->hash0[n1]++;*/
+    /* disable it    usage->hash0[n1]++;*/
     n1 = hash->hash0[n1];
 
     while (n1 < 0) {
         n1 = -n1 - 1;
         if (!*userid) {
-/* disable it            usage->hash[n1][0]++; */
+            /* disable it            usage->hash[n1][0]++; */
             n1 = hash->hash[n1][0];
         } else {
             n2 = *userid++;
@@ -197,7 +197,7 @@ unsigned int ucache_hash(const char *userid)
             }
             if (n2 < 0 || n2 >= 36)
                 return 0;
-/* disable it            usage->hash[n1][n2]++; */
+            /* disable it            usage->hash[n1][n2]++; */
             n1 = hash->hash[n1][n2];
         }
     }
@@ -232,8 +232,8 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
             bbslog("3system", "UCACHE:hash(%s) %d error", uentp->userid, hashkey);
             exit(0);
         }
-      addempty:
-        if (hashkey == 0) {     /* empty user add in recurise sort 
+addempty:
+        if (hashkey == 0) {     /* empty user add in recurise sort
                                    int i=uidshm->hashhead[0];
                                    uidshm->next[*number] = 0;
                                    if (i==0) uidshm->hashhead[0]=++(*number);
@@ -254,7 +254,7 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
             }
             *prev = *number;
         } else {
-/* check multi-entry of user */
+            /* check multi-entry of user */
             int i, prev;
 
             i = uidshm->hashhead[hashkey];
@@ -295,7 +295,7 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
 int flush_ucache(char *fname)
 {
     int ret;
-    if(fname)
+    if (fname)
         ret= substitute_record(fname, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
     else
         ret= substitute_record(PASSFILE, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
@@ -325,7 +325,7 @@ int load_ucache()
             exit(-1);
         }
         ftruncate(passwdfd, MAXUSERS * sizeof(struct userec));
-    	close(passwdfd);
+        close(passwdfd);
         if (get_records(PASSFILE, uidshm->passwd, sizeof(struct userec), 1, MAXUSERS) != MAXUSERS) {
             bbslog("4system", "error PASS file!");
             ucache_unlock(fd);
@@ -359,7 +359,7 @@ int resolve_ucache()
             remove_shm("UCACHE_SHMKEY",3696,sizeof(*uidshm));
             return -1;
         }
-        
+
     }
     return 0;
 }
@@ -370,7 +370,7 @@ void detach_ucache()
     uidshm=NULL;
 }
 
-/*---	period	2000-10-20	---*/
+/*--- period 2000-10-20 ---*/
 int getuserid(char *userid, int uid)
 {
     if (uid > uidshm->number || uid <= 0)
@@ -388,16 +388,16 @@ static int setuserid_internal(int num, const char *userid)
         oldkey = ucache_hash((char *) uidshm->passwd[num - 1].userid);
         newkey = ucache_hash(userid);
         find = uidshm->hashhead[newkey];
-	if (newkey!=oldkey) { //改名的问题 faint
-        while ((newkey!=0)&&find) { //check duplicate
-            if (!strcasecmp(uidshm->passwd[find-1].userid,userid))
-                return -1;
-            find = uidshm->next[find-1];
-        }
+        if (newkey!=oldkey) { //改名的问题 faint
+            while ((newkey!=0)&&find) { //check duplicate
+                if (!strcasecmp(uidshm->passwd[find-1].userid,userid))
+                    return -1;
+                find = uidshm->next[find-1];
+            }
         }
         if (num > uidshm->number)
             uidshm->number = num;
-/*        if (oldkey!=newkey) { disable,为了加强兼容性*/
+        /*        if (oldkey!=newkey) { disable,为了加强兼容性*/
         find = uidshm->hashhead[oldkey];
 
         if (find == num)
@@ -416,7 +416,7 @@ static int setuserid_internal(int num, const char *userid)
             if (!uidshm->next[find - 1]) {
                 if (oldkey != 0) {
                     bbslog("3system", "UCACHE:can't find %s in hash table", uidshm->passwd[num - 1].userid);
-/*		          	exit(0);*/
+                    /*             exit(0);*/
                 }
                 return -1;
             } else
@@ -425,7 +425,7 @@ static int setuserid_internal(int num, const char *userid)
 
         uidshm->next[num - 1] = uidshm->hashhead[newkey];
         uidshm->hashhead[newkey] = num;
-/*        }	        */
+        /*        }         */
         strncpy(uidshm->passwd[num - 1].userid, userid, IDLEN + 1);
     }
     return 0;
@@ -472,9 +472,9 @@ void setuserid(int num, const char *userid)
 #ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
 #elif defined HAVE_INET_PTON
-	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+    inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
 #else
-	/* Is it OK? */
+    /* Is it OK? */
     my_inet_aton("127.0.0.1", &sin.sin_addr);
 #endif
 #endif /* IPV6 */
@@ -529,9 +529,10 @@ int searchuser(const char *userid)
     return 0;
 }
 
-int getuser(const char *userid,struct userec **user){
+int getuser(const char *userid,struct userec **user)
+{
     int uid=searchuser(userid);
-    if(user)
+    if (user)
         *user=(!uid?NULL:&uidshm->passwd[uid-1]);
     return uid;
 }
@@ -615,7 +616,7 @@ char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag)
     return buf[0];
 }
 
-/* disable by KCN 
+/* disable by KCN
 int
 set_safe_record()
 {
@@ -671,9 +672,9 @@ int getnewuserid3(char *userid)
 #ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
 #elif defined HAVE_INET_PTON
-	inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
+    inet_pton(AF_INET, "127.0.0.1", &sin.sin_addr);
 #else
-	/* Is it OK? */
+    /* Is it OK? */
     my_inet_aton("127.0.0.1", &sin.sin_addr);
 #endif
 #endif /* IPV6 */
@@ -710,8 +711,7 @@ int getnewuserid2(char *userid)
 }
 #endif /* SECONDSITE */
 
-struct userec *getuserbynum(int num)
-{
+struct userec *getuserbynum(int num) {
     if (num <= 0 || num >= MAXUSERS)
         return NULL;
     return &uidshm->passwd[num - 1];
@@ -726,11 +726,11 @@ int getnewuserid(char *userid)
     int ret;
 
     system_time = time(NULL);
-/*
-    if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
-        return -1;
-    flock( fd, LOCK_EX );
-*/
+    /*
+        if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
+            return -1;
+        flock( fd, LOCK_EX );
+    */
     fd = ucache_lock();
 
     while (1) {
@@ -777,11 +777,12 @@ int update_user(struct userec *user, int num, int all)
     return 0;
 }
 
-int apply_users(int(*func)(struct userec*,void*),void *arg){
+int apply_users(int(*func)(struct userec*,void*),void *arg)
+{
     register int i,count;
-    for(count=0,i=0;i<uidshm->number;i++){
-        if(func){
-            switch((*func)(&uidshm->passwd[i],arg)){
+    for (count=0,i=0;i<uidshm->number;i++) {
+        if (func) {
+            switch ((*func)(&uidshm->passwd[i],arg)) {
                 case QUIT:
                     return count;
                 case COUNT:
@@ -789,19 +790,19 @@ int apply_users(int(*func)(struct userec*,void*),void *arg){
                 default:
                     break;
             }
-        }
-        else{
+        } else {
             count++;
         }
     }
     return count;
 }
 
-int apply_uids(int(*func)(struct userec*,int,void*),void *arg){
+int apply_uids(int(*func)(struct userec*,int,void*),void *arg)
+{
     register int i,count;
-    for(count=0,i=0;i<uidshm->number;i++){
-        if(func){
-            switch((*func)(&uidshm->passwd[i],(i+1),arg)){
+    for (count=0,i=0;i<uidshm->number;i++) {
+        if (func) {
+            switch ((*func)(&uidshm->passwd[i],(i+1),arg)) {
                 case QUIT:
                     return count;
                 case COUNT:
@@ -809,8 +810,7 @@ int apply_uids(int(*func)(struct userec*,int,void*),void *arg){
                 default:
                     break;
             }
-        }
-        else{
+        } else {
             count++;
         }
     }
@@ -818,9 +818,11 @@ int apply_uids(int(*func)(struct userec*,int,void*),void *arg){
 }
 
 /* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
-int get_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
+int get_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT])
+{
     static const unsigned int GIVEUP_PERM[GIVEUPINFO_PERM_COUNT]={
-        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX};
+        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX
+    };
     static const unsigned int INV_MASK=(PERM_DENYMAIL|PERM_DENYRELAX);
     FILE *fp;
     char buf[256],deny[GIVEUPINFO_PERM_COUNT];
@@ -829,34 +831,36 @@ int get_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
     bzero(deny,GIVEUPINFO_PERM_COUNT*sizeof(char));
     perm=0;
     sethomefile(buf,user->userid,"giveup");
-    if(!(fp=fopen(buf,"r")))
+    if (!(fp=fopen(buf,"r")))
         return 0;
-    while(fgets(buf,256,fp)){
-        switch(sscanf(buf,"%d %d %d",&i,&j,&k)){
+    while (fgets(buf,256,fp)) {
+        switch (sscanf(buf,"%d %d %d",&i,&j,&k)) {
             case 2:
                 k=0;
             case 3:
-                if(i>0&&i<GIVEUPINFO_PERM_COUNT+1)
+                if (i>0&&i<GIVEUPINFO_PERM_COUNT+1)
                     break;
             default:
                 continue;
         }
         deny[i-1]=k;
         s[i-1]=(!s[i-1]?j:((j<s[i-1])?j:s[i-1]));
-        if((user->userlevel^INV_MASK)&GIVEUP_PERM[i-1])
+        if ((user->userlevel^INV_MASK)&GIVEUP_PERM[i-1])
             s[i-1]=0;
         else
             perm|=GIVEUP_PERM[i-1];
     }
     fclose(fp);
-    for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
-        if(deny[i])
+    for (i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+        if (deny[i])
             s[i]=(-s[i]);
     return perm;
 }
-int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
+int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT])
+{
     static const unsigned int GIVEUP_PERM[GIVEUPINFO_PERM_COUNT]={
-        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX};
+        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX
+    };
     static const unsigned int GIVEUP_MASK=(PERM_BASIC|PERM_POST|PERM_CHAT|PERM_PAGE|PERM_DENYMAIL|PERM_DENYRELAX);
     static const unsigned int INV_MASK=(PERM_DENYMAIL|PERM_DENYRELAX);
     FILE *fp;
@@ -865,27 +869,27 @@ int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
     bzero(deny,GIVEUPINFO_PERM_COUNT*sizeof(char));
     g_perm=0;
     sethomefile(buf,user->userid,"giveup");
-    for(i=0;i<GIVEUPINFO_PERM_COUNT;i++){
-        if(!s[i])
+    for (i=0;i<GIVEUPINFO_PERM_COUNT;i++) {
+        if (!s[i])
             continue;
-        if(s[i]<0){
+        if (s[i]<0) {
             deny[i]=1;
             s[i]=(-s[i]);
         }
-        if((user->userlevel^INV_MASK)&GIVEUP_PERM[i])
+        if ((user->userlevel^INV_MASK)&GIVEUP_PERM[i])
             s[i]=0;
-        else if(!deny[i])
+        else if (!deny[i])
             g_perm|=GIVEUP_PERM[i];
     }
     u_perm=((user->userlevel^INV_MASK)&GIVEUP_MASK);
-    if(g_perm&&((u_perm|g_perm)==GIVEUP_MASK))
+    if (g_perm&&((u_perm|g_perm)==GIVEUP_MASK))
         user->flags|=GIVEUP_FLAG;
     else
         user->flags&=~GIVEUP_FLAG;
-    if(!(fp=fopen(buf,"w")))
+    if (!(fp=fopen(buf,"w")))
         return -1;
-    for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
-        if(s[i])
+    for (i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+        if (s[i])
             fprintf(fp,"%d %d %d\n",i+1,s[i],deny[i]);
     fclose(fp);
     return 0;
@@ -893,12 +897,13 @@ int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
 
 #ifdef DENYANONY
 /* stiger,增加封禁某人的发文权限1天 */
-int giveup_addpost(char *userid, int day){
+int giveup_addpost(char *userid, int day)
+{
     struct userec *user;
     int s[GIVEUPINFO_PERM_COUNT];
-    if(!(getuser(userid,&user)))
+    if (!(getuser(userid,&user)))
         return 0;
-	memset(s, 0, sizeof(s));
+    memset(s, 0, sizeof(s));
     get_giveupinfo(user,s);
     s[1]=day+(!s[1]?(time(NULL)/86400):((s[1]<0)?(-s[1]):s[1]));
     user->userlevel&=~PERM_POST;
@@ -909,15 +914,15 @@ int giveup_addpost(char *userid, int day){
 void setcachehomefile(char* path,const char* user,int unum,char* file)
 {
     if (unum==-1) {
-    if (file==NULL)
-      sprintf(path, "%s/home/%c/%s",TMPFSROOT,toupper(user[0]),user);
-    else
-      sprintf(path, "%s/home/%c/%s/%s",TMPFSROOT, toupper(user[0]), user,file);
+        if (file==NULL)
+            sprintf(path, "%s/home/%c/%s",TMPFSROOT,toupper(user[0]),user);
+        else
+            sprintf(path, "%s/home/%c/%s/%s",TMPFSROOT, toupper(user[0]), user,file);
     } else {
-    if (file==NULL)
-      sprintf(path, "%s/home/%c/%s/%d",TMPFSROOT,toupper(user[0]),user,unum);
-    else
-      sprintf(path, "%s/home/%c/%s/%d/%s",TMPFSROOT, toupper(user[0]), user,unum,file);
+        if (file==NULL)
+            sprintf(path, "%s/home/%c/%s/%d",TMPFSROOT,toupper(user[0]),user,unum);
+        else
+            sprintf(path, "%s/home/%c/%s/%d/%s",TMPFSROOT, toupper(user[0]), user,unum,file);
     }
 }
 
@@ -932,7 +937,7 @@ void init_cachedata(const char* userid,int unum)
     setcachehomefile(path1, userid, unum, NULL);
     if (mkdir(path1,0700)==-1)
         bbslog("3error","mkdir %s errorno %d",path1,errno);
-    
+
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
         ldata.l_type = F_RDLCK;
@@ -981,23 +986,23 @@ int clean_cachedata(const char* userid,int unum)
     //todo: check the dir
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("3error", "%s", "logincount err");
+        ldata.l_type = F_RDLCK;
+        ldata.l_whence = 0;
+        ldata.l_len = 0;
+        ldata.l_start = 0;
+        if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+            bbslog("3error", "%s", "logincount err");
+            close(fd);
+            return -1;              /* lock error*/
+        }
+        count=read(fd,path2,MAXPATH);
+        path2[count]=0;
+        logincount=atoi(path2);
+        logincount--;
+        lseek(fd,0,SEEK_SET);
+        sprintf(path2,"%d",logincount);
+        write(fd,path2,strlen(path2));
         close(fd);
-        return -1;              /* lock error*/
-    }
-    count=read(fd,path2,MAXPATH);
-    path2[count]=0;
-    logincount=atoi(path2);
-    logincount--;
-    lseek(fd,0,SEEK_SET);
-    sprintf(path2,"%d",logincount);
-    write(fd,path2,strlen(path2));
-    close(fd);
     } else logincount=0;
     if (logincount==0) {
         setcachehomefile(path1, userid, -1, "entry");
@@ -1011,11 +1016,11 @@ int clean_cachedata(const char* userid,int unum)
 
 int do_after_login(struct userec* user,int unum,int mode)
 {
-  if (mode==0)
-    init_cachedata(user->userid,unum);
-  else //www guest,使用负数来和telnet guest区分
-    init_cachedata(user->userid,-unum);
-  return 0;
+    if (mode==0)
+        init_cachedata(user->userid,unum);
+    else //www guest,使用负数来和telnet guest区分
+        init_cachedata(user->userid,-unum);
+    return 0;
 }
 
 int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int mode,int locked)
@@ -1025,12 +1030,12 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
         if (userinfo&&userinfo->currentboard)
             board_setcurrentuser(userinfo->currentboard,-1);
         return 0;
-    }else { //do something without utmp lock
+    } else { //do something without utmp lock
         int lockfd;
         lockfd=lock_user(userinfo->userid);
-        if(userinfo->pid > 1 && strcmp(userinfo->userid,"guest")){
-              snprintf(buf,MAXPATH,"tmp/%d/%s/", userinfo->pid, userinfo->userid);
-              f_rm(buf);
+        if (userinfo->pid > 1 && strcmp(userinfo->userid,"guest")) {
+            snprintf(buf,MAXPATH,"tmp/%d/%s/", userinfo->pid, userinfo->userid);
+            f_rm(buf);
         }
         if (userinfo&&(mode==0)) {
         }
@@ -1042,7 +1047,7 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
         }
         unlock_user(lockfd);
     }
-	return 0;
+    return 0;
 }
 
 /**
@@ -1064,7 +1069,7 @@ void load_user_title()
         int i;
         for (i=0;i<255;i++) {
             fgets(uidshm->user_title[i],USER_TITLE_LEN,titlefile);
-            
+
             if ((uidshm->user_title[i][0]!=0)&&(uidshm->user_title[i][strlen(uidshm->user_title[i])-1]=='\n'))
                 uidshm->user_title[i][strlen(uidshm->user_title[i])-1]=0;
         }
@@ -1174,14 +1179,14 @@ int resolve_guest_table()
 
     if (wwwguest_shm == NULL) {
         wwwguest_shm = (struct WWW_GUEST_TABLE *)
-            attach_shm("WWWGUEST_SHMKEY", 4500, sizeof(*wwwguest_shm), &iscreate);      /*attach user tmp cache */
-		if (wwwguest_shm==NULL)
-			bbslog("3error","can't load guest shm:%d",errno);
+                       attach_shm("WWWGUEST_SHMKEY", 4500, sizeof(*wwwguest_shm), &iscreate);      /*attach user tmp cache */
+        if (wwwguest_shm==NULL)
+            bbslog("3error","can't load guest shm:%d",errno);
         if (iscreate) {
             struct public_data *pub;
             int fd = www_guest_lock();
             setpublicshmreadonly(0);
-	    pub=get_publicshm();
+            pub=get_publicshm();
             if (fd == -1)
                 return -1;
             bzero(wwwguest_shm, sizeof(*wwwguest_shm));
@@ -1198,28 +1203,28 @@ int resolve_guest_table()
 
 int lock_user(char* userid)
 {
-	/*
-    int fd = 0;
-    char buf[MAXPATH];
+    /*
+       int fd = 0;
+       char buf[MAXPATH];
 
-    sethomefile(buf,userid,"lock");
-    fd = open(buf, O_RDWR | O_CREAT, 0600);
-    if (fd < 0) {
-        return -1;
-    }
-    if (flock(fd, LOCK_EX) == -1) {
-        return -1;
-    }
-    return fd;
-	*/
-	return 0;
+       sethomefile(buf,userid,"lock");
+       fd = open(buf, O_RDWR | O_CREAT, 0600);
+       if (fd < 0) {
+           return -1;
+       }
+       if (flock(fd, LOCK_EX) == -1) {
+           return -1;
+       }
+       return fd;
+    */
+    return 0;
 }
 
 void unlock_user(int fd)
 {
-	/*
-    flock(fd, LOCK_UN);
-    close(fd);
-	*/
-	return ;
+    /*
+       flock(fd, LOCK_UN);
+       close(fd);
+    */
+    return ;
 }

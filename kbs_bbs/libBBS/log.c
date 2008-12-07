@@ -14,7 +14,7 @@
 /*
 
   优先级
-  
+
   0   message
   1   notice
   2   warning
@@ -31,7 +31,7 @@ typedef struct _logconfig {
     int searchnext;             /* 如果这个匹配了，还查找后面的config吗？ */
 
     /*
-     * 运行时参数 
+     * 运行时参数
      */
     int bufptr;                 /* 使用缓存位置 */
     char *buf;                  /* 缓存 */
@@ -75,7 +75,7 @@ static void writelog(logconfig * pconf, const char *from, int prio, const char *
     getheader(header, from, prio, session);
 
     if (buf && pconf->buf) {
-        if ((int) (pconf->bufptr + strlen(header) + strlen(buf) + 2) <= pconf->bufsize) {
+        if ((int)(pconf->bufptr + strlen(header) + strlen(buf) + 2) <= pconf->bufsize) {
             strcpy(&pconf->buf[pconf->bufptr], header);
             pconf->bufptr += strlen(header);
             strcpy(&pconf->buf[pconf->bufptr], buf);
@@ -107,7 +107,7 @@ static void logatexit()
 
     pconf = logconf;
 
-    while (pconf - logconf < (int) (sizeof(logconf) / sizeof(logconfig))) {
+    while (pconf - logconf < (int)(sizeof(logconf) / sizeof(logconfig))) {
         if (pconf->buf && pconf->bufptr)
             writelog(pconf, NULL, 0, NULL,getSession());
         if (pconf->buf)
@@ -133,7 +133,7 @@ int bbslog(const char *from, const char *fmt, ...)
         from++;
     }
 
-    /* disable unimportant log. atppp 20060426 
+    /* disable unimportant log. atppp 20060426
      * 以前是 BBSMAIN 下不记录 prio == 0 的 log
      * 现在是所有情况都不记录了，反正也没什么有用的东东
      */
@@ -156,7 +156,7 @@ int bbslog(const char *from, const char *fmt, ...)
 
     pconf = logconf;
 
-    while (pconf - logconf < (int) (sizeof(logconf) / sizeof(logconfig))) {
+    while (pconf - logconf < (int)(sizeof(logconf) / sizeof(logconfig))) {
         if ((pconf->compare == 1 && prio >= pconf->prio) || (pconf->compare == 0 && prio == pconf->prio) || (pconf->compare == -1 && prio <= pconf->prio)) {
             if (!pconf->name || !strcasecmp(pconf->name, from)) {
                 if (pconf->fd <= 0) {   /* init it! */
@@ -188,7 +188,7 @@ int bbslog(const char *from, const char *fmt, ...)
         close(pconf->fd);
         pconf->fd = -1;
     }
-    
+
     in_bbslog = 0;
     return 0;
 }
@@ -197,26 +197,26 @@ int bbslog(const char *from, const char *fmt, ...)
 
 int bmlog(const char *id, const char *boardname, int type, int value)
 {
-/*
-type        meaning
-  0         停留时间
-  1         进版次数
-  2         版内发文
-  3         收入文摘
-  4         去掉文摘
-  5         区段
-  6         去掉 m 标记
-  7         标记 m
-  8         删除文章
-  9         恢复删除
-  10        封禁
-  11        解封
-  12        收入精华
-  13        整理精华
-  14        相同主题
-  15        标记 #/%
-  16        去掉 #/% 标记
-*/
+    /*
+    type        meaning
+      0         停留时间
+      1         进版次数
+      2         版内发文
+      3         收入文摘
+      4         去掉文摘
+      5         区段
+      6         去掉 m 标记
+      7         标记 m
+      8         删除文章
+      9         恢复删除
+      10        封禁
+      11        解封
+      12        收入精华
+      13        整理精华
+      14        相同主题
+      15        标记 #/%
+      16        去掉 #/% 标记
+    */
 #ifndef NEWBMLOG
     int fd, data[DATALEN];
     struct flock ldata;
@@ -235,7 +235,7 @@ type        meaning
         return 0;
 
 #ifdef NEWBMLOG
-	return newbmlog(id, boardname, type, value);
+    return newbmlog(id, boardname, type, value);
 #else
     sprintf(direct, "boards/%s/.bm.%s", boardname, id);
     if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
@@ -290,9 +290,9 @@ void newbbslog(int type, const char *fmt, ...)
         return;
     if (disablelog)
         return;
-    if (logmsqid == -1 ) {
+    if (logmsqid == -1) {
         logmsqid = init_bbslog();
-        if (logmsqid ==-1 ) {
+        if (logmsqid ==-1) {
             disablelog = 1;
             return;
         }
@@ -317,15 +317,15 @@ void newpostlog(const char *userid, const char *boardname, const char *title, in
 {
     char buf[512];
     struct bbs_msgbuf *msg = (struct bbs_msgbuf *) buf;
-	struct _new_postlog *ppostlog = (struct _new_postlog *) (buf + ((char *)msg->mtext - (char *)msg) + 1);
+    struct _new_postlog *ppostlog = (struct _new_postlog *)(buf + ((char *)msg->mtext - (char *)msg) + 1);
 
-	if (userid[0]=='\0' || boardname=='\0')
-		return;
+    if (userid[0]=='\0' || boardname=='\0')
+        return;
     if (disablelog)
         return;
-    if (logmsqid == -1 ) {
+    if (logmsqid == -1) {
         logmsqid = init_bbslog();
-        if (logmsqid ==-1 ) {
+        if (logmsqid ==-1) {
             disablelog = 1;
             return;
         }
@@ -336,11 +336,11 @@ void newpostlog(const char *userid, const char *boardname, const char *title, in
     msg->msgtime = time(0);
     strncpy(msg->userid, userid, IDLEN);
 
-	strncpy(ppostlog->boardname, boardname, BOARDNAMELEN);
-	ppostlog->boardname[BOARDNAMELEN-1]='\0';
-	ppostlog->threadid = groupid;
-	strncpy(ppostlog->title, title, 80);
-	ppostlog->title[80]='\0';
+    strncpy(ppostlog->boardname, boardname, BOARDNAMELEN);
+    ppostlog->boardname[BOARDNAMELEN-1]='\0';
+    ppostlog->threadid = groupid;
+    strncpy(ppostlog->title, title, 80);
+    ppostlog->title[80]='\0';
 
     msgsnd(logmsqid, msg, sizeof(struct _new_postlog) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
 }
@@ -349,35 +349,35 @@ void newpostlog(const char *userid, const char *boardname, const char *title, in
 #ifdef NEWBMLOG
 int newbmlog(const char *userid, const char *boardname, int type, int value)
 {
-/*
-type - meaning
-  0          停留时间
-  1          进版
-  2          版内发文
-  3          收入文摘
-  4          去掉文摘
-  5          区段
-  6          标记文章
-  7          去掉标记
-  8          删除文章
-  9          恢复删除
-  10        封禁
-  11        解封
-  12        收入精华
-  13        整理精华
-  14        相同主题
-*/
+    /*
+    type - meaning
+      0          停留时间
+      1          进版
+      2          版内发文
+      3          收入文摘
+      4          去掉文摘
+      5          区段
+      6          标记文章
+      7          去掉标记
+      8          删除文章
+      9          恢复删除
+      10        封禁
+      11        解封
+      12        收入精华
+      13        整理精华
+      14        相同主题
+    */
     char buf[512];
     struct bbs_msgbuf *msg = (struct bbs_msgbuf *) buf;
-	struct _new_bmlog *ppostlog = (struct _new_bmlog *) (buf + ((char *)msg->mtext - (char *)msg) + 1);
+    struct _new_bmlog *ppostlog = (struct _new_bmlog *)(buf + ((char *)msg->mtext - (char *)msg) + 1);
 
-	if (userid[0]=='\0' || boardname=='\0')
-		return 0;
+    if (userid[0]=='\0' || boardname=='\0')
+        return 0;
     if (disablelog)
         return 0;
-    if (logmsqid == -1 ) {
+    if (logmsqid == -1) {
         logmsqid = init_bbslog();
-        if (logmsqid ==-1 ) {
+        if (logmsqid ==-1) {
             disablelog = 1;
             return 0;
         }
@@ -388,13 +388,13 @@ type - meaning
     msg->msgtime = time(0);
     strncpy(msg->userid, userid, IDLEN);
 
-	strncpy(ppostlog->boardname, boardname, BOARDNAMELEN);
-	ppostlog->boardname[BOARDNAMELEN-1]='\0';
-	ppostlog->type = type;
-	ppostlog->value = value;
+    strncpy(ppostlog->boardname, boardname, BOARDNAMELEN);
+    ppostlog->boardname[BOARDNAMELEN-1]='\0';
+    ppostlog->type = type;
+    ppostlog->value = value;
 
     msgsnd(logmsqid, msg, sizeof(struct _new_bmlog) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype) + 1, IPC_NOWAIT | MSG_NOERROR);
 
-	return 0;
+    return 0;
 }
 #endif

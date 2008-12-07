@@ -17,19 +17,19 @@ static int build_badwordimage()
     struct stat st;
     fp = open("etc/badword", O_RDWR);
     if (fp==-1)
-    	return -1;
+        return -1;
     writew_lock(fp, 0, SEEK_SET, 0);
     if (dashf(BADWORD_IMG_FILE)) {
         un_lock(fp, 0, SEEK_SET, 0);
-    	close(fp);
-    	return 0;
+        close(fp);
+        return 0;
     }
     prepf(fp,&pattern_buf,&pattern_imagesize);
 
     imgfp = open(BADWORD_IMG_FILE, O_WRONLY|O_TRUNC|O_CREAT,0600);
     if (imgfp==-1) {
         releasepf(pattern_buf);
-    	return -1;
+        return -1;
     }
     write(imgfp,pattern_buf,pattern_imagesize);
     stat(BADWORD_IMG_FILE,&st);
@@ -45,27 +45,26 @@ static int check_badwordimg(int checkreload)
 {
     struct stat st;
     stat(BADWORD_IMG_FILE,&st);
-    if ((badword_img!=NULL)&&(badimg_time!=st.st_mtime)) 
+    if ((badword_img!=NULL)&&(badimg_time!=st.st_mtime))
         checkreload=1;
     if (checkreload) {
-    	if (badword_img)
-    		end_mmapfile(badword_img,badword_img_size,-1);
-    	badword_img=NULL;
-    	checkreload=0;
+        if (badword_img)
+            end_mmapfile(badword_img,badword_img_size,-1);
+        badword_img=NULL;
+        checkreload=0;
     }
     if (badword_img==NULL) {
-      badimg_time=st.st_mtime;
-      if (!dashf("etc/badword"))
-      	return -1;
-      retry:
-      if (safe_mmapfile(BADWORD_IMG_FILE, O_RDONLY, PROT_READ, MAP_SHARED, &badword_img, &badword_img_size, NULL) == 0)
-      {
-        if (!dashf(BADWORD_IMG_FILE)) {
-        	if (build_badwordimage()==0)
-        		goto retry;
+        badimg_time=st.st_mtime;
+        if (!dashf("etc/badword"))
+            return -1;
+retry:
+        if (safe_mmapfile(BADWORD_IMG_FILE, O_RDONLY, PROT_READ, MAP_SHARED, &badword_img, &badword_img_size, NULL) == 0) {
+            if (!dashf(BADWORD_IMG_FILE)) {
+                if (build_badwordimage()==0)
+                    goto retry;
+            }
+            return -1;
         }
-        return -1;
-      }
     }
     return 0;
 }
@@ -96,12 +95,10 @@ retry:
     default_setting(session);
     session->CurrentFileName = checkfile;
     BBS_TRY {
-        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0)
-        {
+        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0) {
             BBS_RETURN(0);
         }
-        if (check_badwordimg(0)!=0)
-        {
+        if (check_badwordimg(0)!=0) {
             end_mmapfile((void *) ptr, size, -1);
             BBS_RETURN(0);
         }
@@ -110,8 +107,7 @@ retry:
         retv = mgrep_str(ptr, check_size,badword_img, session);
     }
     BBS_CATCH {
-        if (check_badwordimg(1)!=0)
-        {
+        if (check_badwordimg(1)!=0) {
             end_mmapfile((void *) ptr, size, -1);
             BBS_RETURN(0);
         }
@@ -136,17 +132,17 @@ retry:
     BBS_TRY {
         if (check_badwordimg(0)!=0) {
             BBS_RETURN(0);
-	}
+        }
         retv = mgrep_str(string, str_len,badword_img,session);
     }
     BBS_CATCH {
         if (check_badwordimg(1)!=0) {
             BBS_RETURN(0);
-	}
-	retrycount++;
-	if (retrycount==0)
-	  goto retry;
-    	retv=-2;
+        }
+        retrycount++;
+        if (retrycount==0)
+            goto retry;
+        retv=-2;
     }
     BBS_END;
     return retv;
@@ -166,13 +162,13 @@ int check_filter(char *patternfile, char *checkfile,int defaultval, session_t* s
     prepf(fp,&pattern_buf,&pattern_imagesize);
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0) {
-	    close(fp);
+            close(fp);
             BBS_RETURN(0);
-	}
+        }
         retv = mgrep_str(ptr, size,pattern_buf, session);
     }
     BBS_CATCH {
-    	retv=defaultval;
+        retv=defaultval;
     }
     BBS_END;
     end_mmapfile((void *) ptr, size, -1);

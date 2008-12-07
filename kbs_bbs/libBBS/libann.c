@@ -1,17 +1,18 @@
 #include "bbs.h"
 
-struct _tmp_findboard{
+struct _tmp_findboard {
     char   *path;
     char   *board;
     size_t  len;
 };
 
-static int findboard(struct boardheader *bh,void *data){
+static int findboard(struct boardheader *bh,void *data)
+{
     struct _tmp_findboard *arg = (struct _tmp_findboard*)data;
-	if(!bh||!(bh->ann_path[0]))
+    if (!bh||!(bh->ann_path[0]))
         return 0;
-    if(!strncmp(bh->ann_path,arg->path,strlen(bh->ann_path))){
-        switch(arg->path[strlen(bh->ann_path)]){
+    if (!strncmp(bh->ann_path,arg->path,strlen(bh->ann_path))) {
+        switch (arg->path[strlen(bh->ann_path)]) {
             case 0:
             case '/':
                 break;
@@ -25,45 +26,46 @@ static int findboard(struct boardheader *bh,void *data){
     return 0;
 }
 
-static int ann_can_access(char *title,const char *board,struct userec *user){
+static int ann_can_access(char *title,const char *board,struct userec *user)
+{
     const struct boardheader *bp;
     char BM[BM_LEN];
-    if(strstr(title,"(BM: BMS)")){
-        if(board[0]&&getbid(board,&bp)){
+    if (strstr(title,"(BM: BMS)")) {
+        if (board[0]&&getbid(board,&bp)) {
             memcpy(BM,bp->BM,(BM_LEN*sizeof(char)));
             return (!chk_currBM(BM,user)?0:2);
         }
         return 0;
-    }
-    else if(strstr(title,"(BM: SYSOPS)"))
+    } else if (strstr(title,"(BM: SYSOPS)"))
         return (!HAS_PERM(user,PERM_SYSOP)?0:3);
     else
         return 1;
 }
 
 /*ÑÏ¸ñ¼ì²é¾«»ªÇøÂ·¾¶µÄºÏ·¨ÐÔ*/
-unsigned int check_ann(const struct boardheader* bh){
+unsigned int check_ann(const struct boardheader* bh)
+{
     char buf[PATHLEN],*ptr;
     unsigned int ret,i;
     ret=0;
     sprintf(buf,"%s",bh->ann_path);
-    if(!(ptr=strrchr(buf,'/')))
+    if (!(ptr=strrchr(buf,'/')))
         return 0x080000;
     *ptr++=0;
     /*¾«»ªÇøÂ·¾¶ÓëÌÖÂÛÇøÃû³Æ²»·û*/
-    if(strcmp(bh->filename,ptr))
+    if (strcmp(bh->filename,ptr))
         ret|=0x010000;
     /*¾«»ªÇø·ÖÇø´íÎó*/
-    for(i=0;groups[i];i++)
-        if(!strcmp(groups[i],buf))
+    for (i=0;groups[i];i++)
+        if (!strcmp(groups[i],buf))
             break;
-    if(!groups[i])
+    if (!groups[i])
         ret|=0x020000;
     else
         ret|=(i&0xFFFF);
     /*¾«»ªÇøÄ¿Â¼²»´æÔÚ*/
     sprintf(buf,"0Announce/groups/%s",bh->ann_path);
-    if(!dashd(buf))
+    if (!dashd(buf))
         ret|=0x040000;
     return ret;
 }
@@ -81,22 +83,22 @@ int ann_get_board(char *path, char *board, size_t len)
         return -1;
     if (ptr[0] == '/')
         ptr++;
-    if (! strncmp(path,"0Announce/groups/",strlen("0Announce/groups/"))){
-	    arg.path=path+strlen("0Announce/groups/");
-	    arg.board=board;
-	    arg.len=len;
-	    if (apply_boards(findboard,&arg)==QUIT)
-	        return 0;
-	    return -1;
-	}else if(! strncmp(path,"groups/",7)){
-	    arg.path=path+7;
-	    arg.board=board;
-	    arg.len=len;
-	    if (apply_boards(findboard,&arg)==QUIT)
-	        return 0;
-	    return -1;
-	}
-	return -1;
+    if (! strncmp(path,"0Announce/groups/",strlen("0Announce/groups/"))) {
+        arg.path=path+strlen("0Announce/groups/");
+        arg.board=board;
+        arg.len=len;
+        if (apply_boards(findboard,&arg)==QUIT)
+            return 0;
+        return -1;
+    } else if (! strncmp(path,"groups/",7)) {
+        arg.path=path+7;
+        arg.board=board;
+        arg.len=len;
+        if (apply_boards(findboard,&arg)==QUIT)
+            return 0;
+        return -1;
+    }
+    return -1;
 }
 
 /*
@@ -117,33 +119,33 @@ int ann_get_path(char *board, char *path, size_t len)
 #ifdef ANN_CTRLK
 static int canread(int level, char *path, char * fname, char *title)
 {
-	char buf[PATHLEN+20];
+    char buf[PATHLEN+20];
 
-	if(strlen(path)+strlen(fname) > PATHLEN)
-		return 0;
+    if (strlen(path)+strlen(fname) > PATHLEN)
+        return 0;
 
-	sprintf(buf,"%s/%s",path,fname);
+    sprintf(buf,"%s/%s",path,fname);
 
 #ifdef FB2KPC
-	if(!strncmp(path,FB2KPC,strlen(FB2KPC))){
-		if(fb2kpc_is_owner(buf))
-			return 1;
-		if(strstr(title,"<secret>"))
-			return 0;
-	}else{
+    if (!strncmp(path,FB2KPC,strlen(FB2KPC))) {
+        if (fb2kpc_is_owner(buf))
+            return 1;
+        if (strstr(title,"<secret>"))
+            return 0;
+    } else {
 #endif
-	if(level & PERM_BOARDS) return 1;
+        if (level & PERM_BOARDS) return 1;
 #ifdef FB2KPC
-	}
+    }
 #endif
 
-	if(dashd(buf)){
-		strcat(buf,"/.allow");
-		if(!dashf(buf)) return 1;
-		if(!seek_in_file(buf,getCurrentUser()->userid)) return 0;
-		return 1;
-	}
-	return 1;
+    if (dashd(buf)) {
+        strcat(buf,"/.allow");
+        if (!dashf(buf)) return 1;
+        if (!seek_in_file(buf,getCurrentUser()->userid)) return 0;
+        return 1;
+    }
+    return 1;
 }
 #endif
 
@@ -198,11 +200,9 @@ int ann_traverse_check(char *path, struct userec *user)
 
     /* ¿ªÊ¼Öð¼¶ÅÐ¶ÏÈ¨ÏÞ */
     while (*ptr != '\0') {
-        if (*ptr == '/')
-        {
+        if (*ptr == '/') {
             snprintf(filename, sizeof(filename), "%s/.Names", pathbuf);
-        }
-        else {
+        } else {
             if (i < sizeof(pathbuf))
                 pathbuf[i] = *ptr;
             ptr++;
@@ -229,8 +229,8 @@ int ann_traverse_check(char *path, struct userec *user)
             snprintf(currpath, sizeof(currpath), "%s/%s", pathbuf, fnameptr);
             if (strncmp(currpath, path, strlen(currpath)) != 0)
                 continue;
-            if (path[strlen(currpath)] != '/' && path[strlen(currpath)]!='\0' ) continue;
-            
+            if (path[strlen(currpath)] != '/' && path[strlen(currpath)]!='\0') continue;
+
             /* Èç¹ûÓÐÖ¸¶¨BM Ôò°´BMÃûµ¥»ñµÃ°æÖ÷È¨ÏÞ */
             bmstr = strstr(title, "(BM:");
             if (bmstr != NULL)
@@ -244,8 +244,7 @@ int ann_traverse_check(char *path, struct userec *user)
                 sysop_only = true;
 
 #ifdef ANN_CTRLK    /* Èç¹ûCtrl+KÈ¨ÏÞÑéÖ¤²»Í¨¹ý Ôò½ûÖ¹ */
-            if(!canread(has_perm_boards ? PERM_BOARDS : 0, pathbuf, fnameptr, title))
-            {
+            if (!canread(has_perm_boards ? PERM_BOARDS : 0, pathbuf, fnameptr, title)) {
                 fclose(fp);
                 return -1;
             }
@@ -285,58 +284,58 @@ int ann_traverse_check(char *path, struct userec *user)
 
 char * ann_numtopath(char *path, char *numpath, struct userec *user)
 {
-	int bid=0;
-	char *c;
-	char *ptr = NULL;
-	const struct boardheader *bh = NULL;
+    int bid=0;
+    char *c;
+    char *ptr = NULL;
+    const struct boardheader *bh = NULL;
     char filename[256];
     FILE *fp;
     char buf[256];
-	int endfile=0;
+    int endfile=0;
     char currpath[256];
     char title[STRLEN];
-	int ok;
+    int ok;
 
-	path[0]='\0';
-	title[0]='\0';
-	currpath[0]='\0';
+    path[0]='\0';
+    title[0]='\0';
+    currpath[0]='\0';
 
-	while(1){
+    while (1) {
 
-		if(path[0]=='\0'){
-			c=strchr(numpath, '-');
-			if(c!=NULL)
-				*c='\0';
-			bid = atoi(numpath);
+        if (path[0]=='\0') {
+            c=strchr(numpath, '-');
+            if (c!=NULL)
+                *c='\0';
+            bid = atoi(numpath);
 
-			if((bh=getboard(bid))==NULL) return NULL;
+            if ((bh=getboard(bid))==NULL) return NULL;
 
-    		if (check_read_perm(user, bh) == 0)
-		        return NULL;
+            if (check_read_perm(user, bh) == 0)
+                return NULL;
 
-		    snprintf(path,255,"0Announce/groups/%s",bh->ann_path);
-			
-			if(c==NULL)
-				break;
+            snprintf(path,255,"0Announce/groups/%s",bh->ann_path);
 
-			ptr = c + 1;
+            if (c==NULL)
+                break;
 
-			continue;
-		}else{
-			if(ptr[0]=='\0') break;
-			c = strchr(ptr, '-');
-			if(c==NULL) endfile=1;
-			else{
-				*c='\0';
-			}
-			bid = atoi(ptr);
-			if(c!=NULL) ptr = c+1;
-			if(bid <=0) return NULL;
-		}
+            ptr = c + 1;
 
-	    snprintf(filename, sizeof(filename), "%s/.Names", path);
+            continue;
+        } else {
+            if (ptr[0]=='\0') break;
+            c = strchr(ptr, '-');
+            if (c==NULL) endfile=1;
+            else {
+                *c='\0';
+            }
+            bid = atoi(ptr);
+            if (c!=NULL) ptr = c+1;
+            if (bid <=0) return NULL;
+        }
 
-		ok = 0;
+        snprintf(filename, sizeof(filename), "%s/.Names", path);
+
+        ok = 0;
         if ((fp = fopen(filename, "r")) == NULL)
             return NULL;
         while (fgets(buf, sizeof(buf), fp) != NULL) {
@@ -346,63 +345,64 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
                 strncpy(title, buf + 5, sizeof(title) - 1);
                 title[sizeof(title) - 1] = '\0';
                 continue;
-            }else if (strncmp(buf, "Path=~/", 7) == 0){
+            } else if (strncmp(buf, "Path=~/", 7) == 0) {
                 snprintf(currpath, sizeof(currpath), "%s/%s", path, buf + 7);
-				continue;
-			}else if (strncmp(buf, "Path=", 5) == 0){
+                continue;
+            } else if (strncmp(buf, "Path=", 5) == 0) {
                 snprintf(currpath, sizeof(currpath), "%s/%s", path, buf + 5);
-				continue;
-			}else if(strncmp(buf, "Numb=", 5) == 0){
-				if(bid != atoi(buf+5)){
-					title[0]='\0';
-					currpath[0]='\0';
-					continue;
-				}
-            	if (ann_can_access(title, bh->filename, user) == 0) {
-					break;
-				}else{
-					ok = 1;
-					strcpy(path, currpath);
-					break;
-				}
-			}else
-				continue;
+                continue;
+            } else if (strncmp(buf, "Numb=", 5) == 0) {
+                if (bid != atoi(buf+5)) {
+                    title[0]='\0';
+                    currpath[0]='\0';
+                    continue;
+                }
+                if (ann_can_access(title, bh->filename, user) == 0) {
+                    break;
+                } else {
+                    ok = 1;
+                    strcpy(path, currpath);
+                    break;
+                }
+            } else
+                continue;
         }
         fclose(fp);
-		if(!ok)
-			return NULL;
-		if(endfile)
-			break;
+        if (!ok)
+            return NULL;
+        if (endfile)
+            break;
     }
-	if(path[0]=='/' || strncmp(path, "0Announce/groups/", 17) || strstr(path, "..") ) return NULL;
+    if (path[0]=='/' || strncmp(path, "0Announce/groups/", 17) || strstr(path, "..")) return NULL;
     return path;
 }
 
 #ifdef FB2KPC
 int fb2kpc_is_owner(char *path)
 {
-	char *c;
-	char owner[IDLEN+1];
+    char *c;
+    char owner[IDLEN+1];
 
-	if(strlen(path) < strlen(FB2KPC)+3)
-		return 0;
-	c=path+strlen(FB2KPC);
-	if(*c=='/') c++;
-	c+=2;
-	strncpy(owner, c, IDLEN);
-	owner[IDLEN]='\0';
-	if((c=strchr(owner,'/'))!=NULL) *c='\0';
-	if(strcasecmp(owner,getCurrentUser()->userid))
-		return 0;
-	return 1;
+    if (strlen(path) < strlen(FB2KPC)+3)
+        return 0;
+    c=path+strlen(FB2KPC);
+    if (*c=='/') c++;
+    c+=2;
+    strncpy(owner, c, IDLEN);
+    owner[IDLEN]='\0';
+    if ((c=strchr(owner,'/'))!=NULL) *c='\0';
+    if (strcasecmp(owner,getCurrentUser()->userid))
+        return 0;
+    return 1;
 }
 #endif
 
 /* etnlegend, 2006.10.14, ¾«»ªÇø .Names ÎÄ¼þÏà¹Ø²Ù×÷ÐÞÕý... */
-void a_freenames(MENU *pm){
-    if(!pm)
+void a_freenames(MENU *pm)
+{
+    if (!pm)
         return;
-    while(pm->total){
+    while (pm->total) {
         pm->total--;
         I_FREE(pm->pool[pm->total]);
     }
@@ -410,34 +410,35 @@ void a_freenames(MENU *pm){
     return;
 }
 
-static int a_trim_menu(MENU *pm){   /* ¹æÕû MENU µÄ `pool` Ö¸Õë×é, Èç¹û¹æÕûºóÉÐÓÐ¿ÕÓàÎ»ÖÃÔò·µ»ØÕæÖµ... */
+static int a_trim_menu(MENU *pm)    /* ¹æÕû MENU µÄ `pool` Ö¸Õë×é, Èç¹û¹æÕûºóÉÐÓÐ¿ÕÓàÎ»ÖÃÔò·µ»ØÕæÖµ... */
+{
     int i,j,k,*offset;
-    if(!(pm->total))
+    if (!(pm->total))
         return 1;
-    if(!(offset=(int*)calloc((pm->total+1),sizeof(int))))
+    if (!(offset=(int*)calloc((pm->total+1),sizeof(int))))
         return 0;
-    for(i=0;i<pm->total;i++){
-        if(!(pm->pool[i]))
+    for (i=0;i<pm->total;i++) {
+        if (!(pm->pool[i]))
             offset[i]++;
         offset[i+1]=offset[i];
     }
-    for(i=0;i<pm->num;i++){
-        if(*(pm->p_item[i]))
+    for (i=0;i<pm->num;i++) {
+        if (*(pm->p_item[i]))
             pm->p_item[i]-=offset[pm->p_item[i]-pm->pool];
     }
     free(offset);
-    for(j=0,k=0,i=0;i<pm->total;i++){
-        if(pm->pool[i]){
+    for (j=0,k=0,i=0;i<pm->total;i++) {
+        if (pm->pool[i]) {
             j++;
             continue;
         }
-        if(j){
+        if (j) {
             memmove(&pm->pool[k],&pm->pool[i-j],(j*sizeof(ITEM*)));
             k+=j;
             j=0;
         }
     }
-    if(j){
+    if (j) {
         memmove(&pm->pool[k],&pm->pool[pm->total-j],(j*sizeof(ITEM*)));
         k+=j;
     }
@@ -445,11 +446,12 @@ static int a_trim_menu(MENU *pm){   /* ¹æÕû MENU µÄ `pool` Ö¸Õë×é, Èç¹û¹æÕûºóÉÐÓ
     return (pm->total<MAXITEMS);
 }
 
-static int a_additem_base(MENU *pm,const char *title,const char *fname,char *host,int port,long attachpos){
+static int a_additem_base(MENU *pm,const char *title,const char *fname,char *host,int port,long attachpos)
+{
     ITEM *it;
-    if(!(pm->total<MAXITEMS)&&!a_trim_menu(pm))
+    if (!(pm->total<MAXITEMS)&&!a_trim_menu(pm))
         return -2;
-    if(!(it=I_ALLOC()))
+    if (!(it=I_ALLOC()))
         return -1;
     strnzhcpy(it->title,title,ITITLE_LEN);
     it->host=(!host?NULL:strdup(host));
@@ -460,15 +462,17 @@ static int a_additem_base(MENU *pm,const char *title,const char *fname,char *hos
     return 0;
 }
 
-int a_additem(MENU *pm,const char *title,const char *fname,char *host,int port,long attachpos){
-    if(a_additem_base(pm,title,fname,host,port,attachpos))
+int a_additem(MENU *pm,const char *title,const char *fname,char *host,int port,long attachpos)
+{
+    if (a_additem_base(pm,title,fname,host,port,attachpos))
         return -1;
     pm->p_item[pm->num++]=&pm->pool[pm->total-1];
     return 0;
 }
 
-int a_delitem(MENU *pm,int index){
-    if(index<0||!(index<pm->num))
+int a_delitem(MENU *pm,int index)
+{
+    if (index<0||!(index<pm->num))
         return -1;
     I_FREE(M_ITEM(pm,index));
     M_ITEM(pm,index)=NULL;
@@ -477,7 +481,8 @@ int a_delitem(MENU *pm,int index){
     return 0;
 }
 
-int a_loadnames(MENU *pm,session_t *session){
+int a_loadnames(MENU *pm,session_t *session)
+{
     FILE *fp;
     ITEM it;
     struct stat st;
@@ -489,42 +494,41 @@ int a_loadnames(MENU *pm,session_t *session){
 #ifdef ANN_COUNT
     sprintf(name,"%s/counter.person",pm->path);
     pm->count=0;
-    if((fp=fopen(name,"r"))){
+    if ((fp=fopen(name,"r"))) {
         fgets(buf,PATHLEN,fp);
-        if(isdigit(buf[0]))
+        if (isdigit(buf[0]))
             pm->count=atoi(buf);
         fclose(fp);
     }
     pm->count++;
-    if((fp=fopen(name,"w"))){
+    if ((fp=fopen(name,"w"))) {
         fprintf(fp,"%d",pm->count);
         fclose(fp);
     }
 #endif /* ANN_COUNT */
     sprintf(name,"%s/.Names",pm->path);
-    if(stat(name,&st)==-1||!S_ISREG(st.st_mode))
+    if (stat(name,&st)==-1||!S_ISREG(st.st_mode))
         return 0;
     pm->modified_time=st.st_mtime;
-    if(!(fp=fopen(name,"r")))
+    if (!(fp=fopen(name,"r")))
         return -1;
     pm->mtitle[MTITLE_LEN-1]=0;
     it.title[ITITLE_LEN-1]=0;
     it.fname[STRLEN-1]=0;
     host[STRLEN-1]=0;
-    while(fgets(buf,PATHLEN,fp)){
-        if((p=strchr(buf,'\n')))
+    while (fgets(buf,PATHLEN,fp)) {
+        if ((p=strchr(buf,'\n')))
             *p=0;
-        if(!strncmp(buf,"Name=",5)){
+        if (!strncmp(buf,"Name=",5)) {
             strncpy(it.title,&buf[5],(ITITLE_LEN-1));
             it.attachpos=0;
             host[0]=0;
-        }
-        else if(!strncmp(buf,"Path=",5)){
+        } else if (!strncmp(buf,"Path=",5)) {
             strncpy(it.fname,&buf[(buf[5]=='~'&&buf[6]=='/')?7:5],(STRLEN-1));
-            if(it.fname[0]=='.'&&it.fname[1]=='.')
+            if (it.fname[0]=='.'&&it.fname[1]=='.')
                 continue;
 #if 0 /* disabled by fancy, Mar 2 2008 */
-            if(strstr(it.fname,"!@#$%")){
+            if (strstr(it.fname,"!@#$%")) {
                 char *save_ptr;
                 strcpy(name,it.fname);
                 if ((p=strtok_r(name,"!@#$%",&save_ptr)))
@@ -535,156 +539,159 @@ int a_loadnames(MENU *pm,session_t *session){
                     it.port=atoi(p);
             }
 #endif
-            if(a_additem_base(pm,it.title,it.fname,(!host[0]?NULL:host),it.port,it.attachpos)==-2)
+            if (a_additem_base(pm,it.title,it.fname,(!host[0]?NULL:host),it.port,it.attachpos)==-2)
                 break;
-        }
-        else if(!strncmp(buf,"# Title=",8)){
-            if(!(pm->mtitle[0]))
+        } else if (!strncmp(buf,"# Title=",8)) {
+            if (!(pm->mtitle[0]))
                 strncpy(pm->mtitle,&buf[8],(MTITLE_LEN-1));
-        }
-        else if(!strncmp(buf,"Host=",5))
+        } else if (!strncmp(buf,"Host=",5))
             strncpy(host,&buf[5],(STRLEN-1));
-        else if(!strncmp(buf,"Port=",5))
+        else if (!strncmp(buf,"Port=",5))
             it.port=atoi(&buf[5]);
-        else if(!strncmp(buf,"Attach=",7))
+        else if (!strncmp(buf,"Attach=",7))
             it.attachpos=atol(&buf[7]);
         else
             continue;
     }
     fclose(fp);
-    for(i=0;i<pm->total;i++){
+    for (i=0;i<pm->total;i++) {
 #ifdef ANN_CTRLK
-        if(!canread(pm->level,pm->path,pm->pool[i]->fname,pm->pool[i]->title))
+        if (!canread(pm->level,pm->path,pm->pool[i]->fname,pm->pool[i]->title))
             continue;
 #endif /* ANN_CTRLK */
-        if(session&&!HAS_PERM(session->currentuser,PERM_SYSOP)){
-            if(!HAS_PERM(session->currentuser,PERM_BOARDS)&&(p=strstr(pm->pool[i]->title,"(BM: BMS)"))){
-                if(!(p-pm->pool[i]->title<38))
+        if (session&&!HAS_PERM(session->currentuser,PERM_SYSOP)) {
+            if (!HAS_PERM(session->currentuser,PERM_BOARDS)&&(p=strstr(pm->pool[i]->title,"(BM: BMS)"))) {
+                if (!(p-pm->pool[i]->title<38))
                     continue;
             }
-            if((p=strstr(pm->pool[i]->title,"(BM: SYSOPS)"))){
-                if(!(p-pm->pool[i]->title<38))
+            if ((p=strstr(pm->pool[i]->title,"(BM: SYSOPS)"))) {
+                if (!(p-pm->pool[i]->title<38))
                     continue;
             }
-            if(!HAS_PERM(session->currentuser,PERM_SECANC)&&(p=strstr(pm->pool[i]->title,"(BM: ZIXIAs)"))){
-                if(!(p-pm->pool[i]->title<38))
+            if (!HAS_PERM(session->currentuser,PERM_SECANC)&&(p=strstr(pm->pool[i]->title,"(BM: ZIXIAs)"))) {
+                if (!(p-pm->pool[i]->title<38))
                     continue;
             }
         }
         pm->p_item[pm->num++]=&pm->pool[i];
     }
-    if(!(pm->now<pm->num))
+    if (!(pm->now<pm->num))
         pm->now=(pm->num-1);
-    if(pm->now<0)
+    if (pm->now<0)
         pm->now=0;
     return 1;
 }
 
-int a_savenames(MENU *pm){
+int a_savenames(MENU *pm)
+{
     FILE *fp;
     ITEM *it;
     struct stat st;
     char name[PATHLEN];
     int i, j;
     sprintf(name,"%s/.Names",pm->path);
-    if(!stat(name,&st)&&S_ISREG(st.st_mode)&&st.st_mtime!=pm->modified_time)
+    if (!stat(name,&st)&&S_ISREG(st.st_mode)&&st.st_mtime!=pm->modified_time)
         return -2;
-    if(!(fp=fopen(name,"w")))
+    if (!(fp=fopen(name,"w")))
         return -1;
     fprintf(fp,"%s\n","#");
-    if(!strncmp(pm->mtitle,"[ÎÄ¼þ] ",7)
-        ||!strncmp(pm->mtitle,"[Ä¿Â¼] ",7)
-        ||!strncmp(pm->mtitle,"[Á¬Ïß] ",7)
-        )
+    if (!strncmp(pm->mtitle,"[ÎÄ¼þ] ",7)
+            ||!strncmp(pm->mtitle,"[Ä¿Â¼] ",7)
+            ||!strncmp(pm->mtitle,"[Á¬Ïß] ",7)
+       )
         fprintf(fp,"# Title=%s\n",&pm->mtitle[7]);
     else
         fprintf(fp,"# Title=%s\n",pm->mtitle);
     fprintf(fp,"%s\n","#");
-    for(i=0,j=1;i<pm->total;i++){
-        if(!(it=pm->pool[i]))
+    for (i=0,j=1;i<pm->total;i++) {
+        if (!(it=pm->pool[i]))
             continue;
-        if(!strncmp(it->title,"[ÎÄ¼þ] ",7)
-            ||!strncmp(it->title,"[Ä¿Â¼] ",7)
-            ||!strncmp(it->title,"[Á¬Ïß] ",7)
-            )
+        if (!strncmp(it->title,"[ÎÄ¼þ] ",7)
+                ||!strncmp(it->title,"[Ä¿Â¼] ",7)
+                ||!strncmp(it->title,"[Á¬Ïß] ",7)
+           )
             fprintf(fp,"Name=%s\n",&it->title[7]);
         else
             fprintf(fp,"Name=%s\n",it->title);
         fprintf(fp,"Attach=%ld\n",it->attachpos);
-        if(it->host){
+        if (it->host) {
             fprintf(fp,"Host=%s\n",it->host);
             fprintf(fp,"Port=%d\n",it->port);
             fprintf(fp,"Type=%d\n",1);
             fprintf(fp,"Path=%s\n",it->fname);
-        }
-        else
+        } else
             fprintf(fp,"Path=~/%s\n",it->fname);
         fprintf(fp,"Numb=%d\n",(j++));
         fprintf(fp,"%s\n","#");
     }
     fclose(fp);
-    if(!stat(name,&st)&&S_ISREG(st.st_mode))
+    if (!stat(name,&st)&&S_ISREG(st.st_mode))
         pm->modified_time=st.st_mtime;
     return 0;
 }
 
-static int a_sort_items_filename(const void *vp,const void *vq){
+static int a_sort_items_filename(const void *vp,const void *vq)
+{
     ITEM *p=*((ITEM**)vp),*q=*((ITEM**)vq);
     return strcmp(p->fname,q->fname);
 }
 
-static int a_sort_items_title(const void *vp,const void *vq){
+static int a_sort_items_title(const void *vp,const void *vq)
+{
     ITEM *p=*((ITEM**)vp),*q=*((ITEM**)vq);
     int ret;
-    if(!(ret=strncmp(p->title,q->title,38)))
+    if (!(ret=strncmp(p->title,q->title,38)))
         return a_sort_items_filename(vp,vq);
     return ret;
 }
 
-static int a_sort_items_bm(const void *vp,const void *vq){
+static int a_sort_items_bm(const void *vp,const void *vq)
+{
     ITEM *p=*((ITEM**)vp),*q=*((ITEM**)vq);
     const char *sysops_p,*sysops_q,*bms_p,*bms_q;
     int ret,sz_p,sz_q;
     sz_p=strlen(p->title);
     sz_q=strlen(q->title);
-    if((sz_p>38)&&(sz_q>38)){
+    if ((sz_p>38)&&(sz_q>38)) {
         sysops_p=strstr(&p->title[38],"(BM: SYSOPS)");
         sysops_q=strstr(&q->title[38],"(BM: SYSOPS)");
         bms_p=strstr(&p->title[38],"(BM: BMS)");
         bms_q=strstr(&q->title[38],"(BM: BMS)");
-        if((sysops_p&&sysops_q)||(bms_p&&bms_q))
+        if ((sysops_p&&sysops_q)||(bms_p&&bms_q))
             return a_sort_items_title(vp,vq);
-        else if((!sysops_p&&!sysops_q)&&(!bms_p&&!bms_q)){
-            if(!(ret=strcmp(&p->title[38],&q->title[38])))
+        else if ((!sysops_p&&!sysops_q)&&(!bms_p&&!bms_q)) {
+            if (!(ret=strcmp(&p->title[38],&q->title[38])))
                 return a_sort_items_title(vp,vq);
             return ret;
-        }
-        else
+        } else
             return ((sysops_p||sysops_q)?(sysops_p-sysops_q):(bms_p-bms_q));
-    }
-    else if((sz_p>38)||(sz_q>38))
+    } else if ((sz_p>38)||(sz_q>38))
         return (sz_p-sz_q);
     else
         return a_sort_items_title(vp,vq);
 }
 
-static int a_sort_items_filename_r(const void *vp,const void *vq){
+static int a_sort_items_filename_r(const void *vp,const void *vq)
+{
     return -a_sort_items_filename(vp,vq);
 }
 
-static int a_sort_items_title_r(const void *vp,const void *vq){
+static int a_sort_items_title_r(const void *vp,const void *vq)
+{
     return -a_sort_items_title(vp,vq);
 }
 
-static int a_sort_items_bm_r(const void *vp,const void *vq){
+static int a_sort_items_bm_r(const void *vp,const void *vq)
+{
     return -a_sort_items_bm(vp,vq);
 }
 
-int a_sort_items(MENU *pm,enum ANN_SORT_MODE mode,session_t *session){
+int a_sort_items(MENU *pm,enum ANN_SORT_MODE mode,session_t *session)
+{
     int ret;
-    if(a_loadnames(pm,session)!=1)
+    if (a_loadnames(pm,session)!=1)
         return -1;
-    switch(mode){
+    switch (mode) {
         case ANN_SORT_BY_FILENAME:
             qsort(pm->pool,pm->total,sizeof(ITEM**),a_sort_items_filename);
             break;
@@ -707,7 +714,7 @@ int a_sort_items(MENU *pm,enum ANN_SORT_MODE mode,session_t *session){
             return -4;
     }
     ret=a_savenames(pm);
-    if(a_loadnames(pm,session)!=1)
+    if (a_loadnames(pm,session)!=1)
         return -3;
     return (!ret?0:-2);
 }
@@ -765,7 +772,7 @@ void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * 
             /*
              * TODO: access check need complete!
              * if (buf[0]!=0&&(ann_traverse_check(buf, session->getCurrentUser())!=0))
-             * buf[0]=0;  can't access 
+             * buf[0]=0;  can't access
              */
 
             i_path[i] = (char *) malloc(strlen(buf) + 1);
@@ -827,7 +834,7 @@ char *str;
 {
     char ch;
 
-	if(strstr(str,"..")) return 0;
+    if (strstr(str,"..")) return 0;
 
     while ((ch = *str++) != '\0') {
         if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || strchr("0123456789@[]-._", ch) != NULL) {
@@ -841,87 +848,90 @@ char *str;
 
 
 /*etnlegend,2005.06.28,ÐÞ¸Ä¾«»ªÇø*/
-int ann_show_board(const struct boardheader *bh){
-    if(bh->title_level||bh->flag&(BOARD_CLUB_READ|BOARD_CLUB_HIDE))
+int ann_show_board(const struct boardheader *bh)
+{
+    if (bh->title_level||bh->flag&(BOARD_CLUB_READ|BOARD_CLUB_HIDE))
         return 0;
-    if(!(bh->level)||bh->level&PERM_POSTMASK||bh->level&PERM_DEFAULT)
+    if (!(bh->level)||bh->level&PERM_POSTMASK||bh->level&PERM_DEFAULT)
         return 1;
     return 0;
 }
-int add_group(const struct boardheader *bh){
+int add_group(const struct boardheader *bh)
+{
     MENU m;
     FILE *fp;
     char gpath[256],bpath[256],*p;
     char genbuf[1024];
     int ret,i;
-    if(!bh)
+    if (!bh)
         return 0;
     memset(&m,0,sizeof(MENU));
     ret=0;
-    if(!dashd("0Announce")){
+    if (!dashd("0Announce")) {
         mkdir("0Announce",0755);
         chmod("0Announce",0755);
-        if(!(fp=fopen("0Announce/.Names","w")))
+        if (!(fp=fopen("0Announce/.Names","w")))
             return -1;
         fprintf(fp,"#\n# Title=%s ¾«»ªÇø¹«²¼À¸\n#\n",BBS_FULL_NAME);
         fclose(fp);
     }
-    if(!dashd("0Announce/groups")){
+    if (!dashd("0Announce/groups")) {
         mkdir("0Announce/groups",0755);
         chmod("0Announce/groups",0755);
         m.path="0Announce";
         a_loadnames(&m,getSession());
         a_additem(&m,"ÌÖÂÛÇø¾«»ª","groups",NULL,0,0);
-        if(a_savenames(&m))
+        if (a_savenames(&m))
             ret|=(1<<0);
     }
     sprintf(gpath,"0Announce/groups/%s",bh->ann_path);
     p=strrchr(gpath,'/');
     *p++=0;
-    if(!dashd(gpath)){
+    if (!dashd(gpath)) {
         mkdir(gpath,0755);
         chmod(gpath,0755);
-        for(i=0;groups[i];i++)
-            if(!strcmp(&gpath[17],groups[i]))
+        for (i=0;groups[i];i++)
+            if (!strcmp(&gpath[17],groups[i]))
                 break;
         m.path="0Announce/groups";
         a_loadnames(&m,getSession());
         a_additem(&m,(groups[i]?secname[i][0]:&gpath[17]),&gpath[17],NULL,0,0);
-        if(a_savenames(&m))
+        if (a_savenames(&m))
             ret|=(1<<1);
     }
     sprintf(bpath,"0Announce/groups/%s",bh->ann_path);
-    if(!dashd(bpath)){
+    if (!dashd(bpath)) {
         char buf[128];
         mkdir(bpath,0755);
         chmod(bpath,0755);
         sprintf(buf,"%s/.Names",bpath);
-        if(!(fp=fopen(buf,"w")))
+        if (!(fp=fopen(buf,"w")))
             return -1;
         fprintf(fp,"#\n# Title=%-32.32s",&bh->title[13]);
-        if(bh->BM[0])
+        if (bh->BM[0])
             fprintf(fp,"(BM: %s)",bh->BM);
         fprintf(fp,"\n#\n");
         fclose(fp);
         m.path=gpath;
         a_loadnames(&m,getSession());
         sprintf(genbuf,"%s/%s",bh->filename,&bh->title[13]);
-        if(!ann_show_board(bh))
+        if (!ann_show_board(bh))
             sprintf(buf,"%-38.38s(BM: SYSOPS)",genbuf);
         else
             sprintf(buf,"%-38.38s",genbuf);
         a_additem(&m,buf,p,NULL,0,0);
-        if(a_savenames(&m))
+        if (a_savenames(&m))
             ret|=(1<<3);
     }
     a_freenames(&m);
     return ret;
 }
-int del_group(const struct boardheader *bh){
+int del_group(const struct boardheader *bh)
+{
     MENU m;
     char path[256],*p;
     int ret,i;
-    if(!bh)
+    if (!bh)
         return 0;
     memset(&m,0,sizeof(MENU));
     ret=0;
@@ -931,79 +941,80 @@ int del_group(const struct boardheader *bh){
     p=strrchr(path,'/');
     *p++=0;
     a_loadnames(&m,getSession());
-    for(i=0;i<m.num;i++){
-        if(!strcmp(M_ITEM(&m,i)->fname,p))
+    for (i=0;i<m.num;i++) {
+        if (!strcmp(M_ITEM(&m,i)->fname,p))
             a_delitem(&m,i--);
     }
-    if(a_savenames(&m))
+    if (a_savenames(&m))
         ret|=(1<<0);
     a_freenames(&m);
     return ret;
 }
-int edit_group(const struct boardheader *oldbh,const struct boardheader *newbh){
+int edit_group(const struct boardheader *oldbh,const struct boardheader *newbh)
+{
     MENU m;
     char path[256],*p;
     char genbuf[1024];
     int ret,i;
     /*ÎÞÐ§²ÎÊý*/
-    if(!oldbh&&!newbh)
+    if (!oldbh&&!newbh)
         return 0;
     /*Ä¿µÄ¾«»ªÇøÎ»ÖÃ¼ì²â*/
     if (newbh) {
         sprintf(path,"0Announce/groups/%s",newbh->ann_path);
-        if((!oldbh||strcmp(oldbh->ann_path,newbh->ann_path))&&dashd(path))
+        if ((!oldbh||strcmp(oldbh->ann_path,newbh->ann_path))&&dashd(path))
             del_group(newbh);
     }
     /*Ôö¼Ó*/
-    if(!oldbh)
+    if (!oldbh)
         return add_group(newbh);
     /*É¾³ý*/
-    if(!newbh)
+    if (!newbh)
         return del_group(oldbh);
     /*Ô´¾«»ªÇøÎ»ÖÃ¼ì²â*/
     sprintf(path,"0Announce/groups/%s",oldbh->ann_path);
-    if(!dashd(path)){
+    if (!dashd(path)) {
         del_group(oldbh);
         return add_group(newbh);
     }
     /*ÐÞ¸Ä*/
     bzero(&m,sizeof(MENU));
     ret=0;
-    if(strcmp(&oldbh->title[13],&newbh->title[13])||strcmp(oldbh->BM,newbh->BM)){/*ÐèÒª¸üÐÂ±êÌâºÍ°æÖ÷*/
+    if (strcmp(&oldbh->title[13],&newbh->title[13])||strcmp(oldbh->BM,newbh->BM)) {/*ÐèÒª¸üÐÂ±êÌâºÍ°æÖ÷*/
         /*¶Ô¾«»ªÇø±êÌâµÄÐÞ¸Ä*/
         m.path=path;
         a_loadnames(&m,getSession());
         sprintf(genbuf,"%-32.32s",&newbh->title[13]);
-        if(newbh->BM[0])
+        if (newbh->BM[0])
             sprintf(&genbuf[32],"(BM: %s)",newbh->BM);
         snprintf(m.mtitle,MTITLE_LEN,"%s",genbuf);
-        if(a_savenames(&m))
+        if (a_savenames(&m))
             ret|=(1<<0);
         /*¶Ô¾«»ª¹«²¼À¸µÄÐÞ¸Ä*/
         p=strrchr(path,'/');
         *p++=0;
         a_loadnames(&m,getSession());
-        for(i=0;i<m.num;i++)
-            if(!strcmp(M_ITEM(&m,i)->fname,p)){
+        for (i=0;i<m.num;i++)
+            if (!strcmp(M_ITEM(&m,i)->fname,p)) {
                 sprintf(genbuf,"%s/%s",newbh->filename,&newbh->title[13]);
-                if(!ann_show_board(newbh))
+                if (!ann_show_board(newbh))
                     sprintf(M_ITEM(&m,i)->title,"%-38.38s(BM: SYSOPS)",genbuf);
                 else
                     sprintf(M_ITEM(&m,i)->title,"%-38.38s",genbuf);
             }
-        if(a_savenames(&m))
+        if (a_savenames(&m))
             ret|=(1<<1);
         a_freenames(&m);
     }
-    if(strcmp(oldbh->ann_path,newbh->ann_path)){/*ÐèÒª¸üÐÂÂ·¾¶*/
+    if (strcmp(oldbh->ann_path,newbh->ann_path)) {/*ÐèÒª¸üÐÂÂ·¾¶*/
         char oldpath[256],newpath[256];
         sprintf(oldpath,"0Announce/groups/%s",oldbh->ann_path);
         sprintf(newpath,"0Announce/groups/%s",newbh->ann_path);
         add_group(newbh);
         f_rm(newpath);
-        if(rename(oldpath,newpath)==-1)
+        if (rename(oldpath,newpath)==-1)
             ret|=(1<<2);
-        else if(del_group(oldbh))
+        else if (del_group(oldbh))
             ret|=(1<<3);
     }
     return ret;
@@ -1031,51 +1042,51 @@ int a_SeSave(char *path, const char *key, struct fileheader *fileinfo, bool appe
     struct fileheader savefileheader;
     char userinfo[STRLEN],posttime[STRLEN];
     char* t;
-		
+
     sprintf(qfile, "boards/%s/%s", key, fileinfo->filename);
     sprintf(filepath, "tmp/se.%s", userid);
     outf = fopen(filepath, "w");
     if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {
         fgets(buf, 256, inf);
-	
-	t = strrchr(buf,')');
-	if (t) { 
-		*(t+1)='\0';
-	    memcpy(userinfo,buf+8,STRLEN);
-	} else strcpy(userinfo,"Î´Öª·¢ÐÅÈË");
-	fgets(buf, 256, inf);
-	fgets(buf, 256, inf);
-	t = strrchr(buf,')');
-	if (t) {
-		*(t+1)='\0';
-	    if (NULL!=(t = strchr(buf,'(')))
-			memcpy(posttime,t,STRLEN);
-		else
-			strcpy(posttime,"Î´ÖªÊ±¼ä");
-	} else 
-			strcpy(posttime,"Î´ÖªÊ±¼ä");
-										
+
+        t = strrchr(buf,')');
+        if (t) {
+            *(t+1)='\0';
+            memcpy(userinfo,buf+8,STRLEN);
+        } else strcpy(userinfo,"Î´Öª·¢ÐÅÈË");
+        fgets(buf, 256, inf);
+        fgets(buf, 256, inf);
+        t = strrchr(buf,')');
+        if (t) {
+            *(t+1)='\0';
+            if (NULL!=(t = strchr(buf,'(')))
+                memcpy(posttime,t,STRLEN);
+            else
+                strcpy(posttime,"Î´ÖªÊ±¼ä");
+        } else
+            strcpy(posttime,"Î´ÖªÊ±¼ä");
+
         fprintf(outf, "\033[0;1;32m¡î©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤¡î\033[0;37m\n");
         fprintf(outf, "  \033[0;1;32m %s \033[0;1;37mÓÚ \033[0;1;36m %s \033[0;1;37m Ìáµ½:\033[m\n", userinfo,posttime);
 
-	fprintf(outf,"\n");	
+        fprintf(outf,"\n");
         while (fgets(buf, 256, inf) != NULL)
             if (buf[0] == '\n')
                 break;
 
         while (fgets(buf, 256, inf) != NULL) {
             /*½áÊø*/
-            if(!strcmp(buf,"--\n"))
+            if (!strcmp(buf,"--\n"))
                 break;
             /*ÒýÎÄ*/
-            if((mode==1)&&(strstr(buf,": ")==buf||(strstr(buf,"¡¾ ÔÚ")==buf&&strstr(buf,") µÄ´ó×÷ÖÐÌáµ½: ¡¿"))))
+            if ((mode==1)&&(strstr(buf,": ")==buf||(strstr(buf,"¡¾ ÔÚ")==buf&&strstr(buf,") µÄ´ó×÷ÖÐÌáµ½: ¡¿"))))
                 continue;
             /*À´Ô´ºÍÐÞ¸ÄÐÅÏ¢*/
-            if((strstr(buf,"\033[m\033")==buf&&strstr(buf,"¡ù À´Ô´:¡¤")==buf+10)
-                ||(strstr(buf,"\033[36m¡ù ÐÞ¸Ä:¡¤")==buf))
+            if ((strstr(buf,"\033[m\033")==buf&&strstr(buf,"¡ù À´Ô´:¡¤")==buf+10)
+                    ||(strstr(buf,"\033[36m¡ù ÐÞ¸Ä:¡¤")==buf))
                 continue;
             if (fileinfo->attachment&&
-                !memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
+                    !memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
                 findattach=true;
                 break;
             }
@@ -1206,7 +1217,7 @@ long a_append_attachment(char *fpath, char *attachpath)
                 attachpos=st.st_size;
                 free(src);
             }
-            close(fsrc);
+        close(fsrc);
     }
     return attachpos;
 }

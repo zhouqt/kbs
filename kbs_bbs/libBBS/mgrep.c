@@ -13,9 +13,9 @@
 #define MAXPATFILE 2600 /*pattern文件的最大长度*/
 #define BLOCKSIZE  8192  /*用于预读的数据大小*/
 #define MAXHASH    512  /*pattern使用的hash表大小*/
-#define mm 	   511  /*用于hash值的取模运算*/
+#define mm     511  /*用于hash值的取模运算*/
 #define max_num    200 /*最大的pattern个数*/
-#define W_DELIM	   128
+#define W_DELIM    128
 #define L_DELIM    10
 
 
@@ -33,21 +33,21 @@
 struct pat_list {
     int index;
     int next;
-/*    struct pat_list *next;*/
+    /*    struct pat_list *next;*/
 };
 struct pattern_image {
-	int LONG;
-	int SHORT;
-	int p_size;
-	unsigned char SHIFT1[MAXMEMBER1];
-	unsigned char tr[MAXSYM];
-	unsigned char tr1[MAXSYM];
+    int LONG;
+    int SHORT;
+    int p_size;
+    unsigned char SHIFT1[MAXMEMBER1];
+    unsigned char tr[MAXSYM];
+    unsigned char tr1[MAXSYM];
     unsigned int HASH[MAXHASH]; /*pattern hash 入口,指向hashtable的位置*/
-	unsigned char buf[MAXPATFILE + BLOCKSIZE]; /*原始的file*/
-	unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];/*保存转化后的pattern*/
-	unsigned long patt[max_num]; /*用于指向pat_spool的偏移*/
-	unsigned char pat_len[max_num]; /*每一个pattern的长度*/
-	struct pat_list hashtable[max_num+1]; /* 保存所有的pattern hash数据,0节点恒为index=0*/
+    unsigned char buf[MAXPATFILE + BLOCKSIZE]; /*原始的file*/
+    unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];/*保存转化后的pattern*/
+    unsigned long patt[max_num]; /*用于指向pat_spool的偏移*/
+    unsigned char pat_len[max_num]; /*每一个pattern的长度*/
+    struct pat_list hashtable[max_num+1]; /* 保存所有的pattern hash数据,0节点恒为index=0*/
 };
 
 #if 0 // those defined in lvars.c already...???!!
@@ -69,8 +69,8 @@ int releasepf(struct pattern_image* patt_img)
         while (curr!=NULL) {
             struct pat_list* next;
             next=curr->next;
-        	free((void*)curr);
-        	curr=next;
+         free((void*)curr);
+         curr=next;
         }
     }
     */
@@ -94,8 +94,8 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
     patt_img->LONG = 0;
     patt_img->SHORT = 0;
     patt_img->p_size = 0;
-	patt_img->hashtable[0].index = 0;
-	patt_img->hashtable[0].next = 0;
+    patt_img->hashtable[0].index = 0;
+    patt_img->hashtable[0].next = 0;
     while ((num_read = read(fp, patt_img->buf + length, BLOCKSIZE)) > 0) {
         length = length + num_read;
         if (length > MAXPATFILE) {
@@ -184,7 +184,7 @@ int len;
     for (i = 0, total_line=0; i < len; i++)
         if (text[i] == '\n')
             total_line++;
-	return total_line;
+    return total_line;
 }
 
 int mgrep(int fd,struct pattern_image *patt_img, session_t* session)
@@ -264,9 +264,9 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
             p = &patt_img->hashtable[patt_img->HASH[hash]];
             while (p&&p->index != 0) {
                 pat_index = p->index;
-		if (p->next==0)
-		    p=NULL;
-		else
+                if (p->next==0)
+                    p=NULL;
+                else
                     p = &patt_img->hashtable[p->next];
                 qx = text - m1;
                 j = 0;
@@ -309,14 +309,14 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
                             }
 #endif /* I_WANT_TO_DEBUG_MGREP_CRAP */
                         }
-/*
-				else {
-			  		if(FNAME) printf("%s: ",CurrentFileName);
-                          		while(*(--text) != '\n');
-                          		while(*(++text) != '\n') putchar(*text);
-			  		printf("\n");
-				}
-*/
+                        /*
+                            else {
+                               if(FNAME) printf("%s: ",CurrentFileName);
+                                                    while(*(--text) != '\n');
+                                                    while(*(++text) != '\n') putchar(*text);
+                               printf("\n");
+                            }
+                        */
                     }
                 }
                 if (MATCHED)
@@ -358,9 +358,9 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
         p = &patt_img->hashtable[patt_img->HASH[*text]];
         while (p&&p->index != 0) {
             pat_index = p->index;
-	    if (p->next==0)
-	        p=NULL;
-	    else
+            if (p->next==0)
+                p=NULL;
+            else
                 p = &patt_img->hashtable[p->next];
             qx = text;
             j = 0;
@@ -418,7 +418,7 @@ static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* 
 {
     int i, m;
     register unsigned hash, Mask = 15;
-	struct pat_list *pt, *qt;
+    struct pat_list *pt, *qt;
 
     m = patt_img->p_size;
     for (i = m - 1; i >= (1 + patt_img->LONG); i--) {
@@ -435,15 +435,15 @@ static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* 
     for (i = m - 1; i >= 0; i--) {
         hash = (hash << 4) + (patt_img->tr[Pattern[i]] & Mask);
     }
-/*
-	if(INVERSE) hash = Pattern[1];
-*/
+    /*
+     if(INVERSE) hash = Pattern[1];
+    */
     hash = hash & mm;
     qt = &patt_img->hashtable[pat_index];
     qt->index = pat_index;
-	if (patt_img->HASH[hash]!=0) {
-    pt = &patt_img->hashtable[patt_img->HASH[hash]];
-    qt->next = pt->index;
-	} else qt->next=0;
+    if (patt_img->HASH[hash]!=0) {
+        pt = &patt_img->hashtable[patt_img->HASH[hash]];
+        qt->next = pt->index;
+    } else qt->next=0;
     patt_img->HASH[hash] = pat_index;
 }
