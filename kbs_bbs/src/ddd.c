@@ -4,8 +4,7 @@
 static int check_newpost(struct newpostdata *ptr);
 
 
-/* */
-
+// 初始化状态结构体
 int ddd_gs_init(struct ddd_global_status* gs) {
     gs->type = GS_NONE;
     gs->sec = 0;
@@ -18,6 +17,7 @@ int ddd_gs_init(struct ddd_global_status* gs) {
     return 0;
 }
 
+// 测试入口
 int ddd_entry() {
     char ans[2];
 
@@ -61,10 +61,12 @@ int ddd_entry() {
     return 0;
 }
 
+// 主循环
 int ddd_read_loop() {
     struct ddd_global_status gs_this_level;
     while(true) {
         memcpy(&DDD_GS_NEW, &DDD_GS_CURR, sizeof(struct ddd_global_status));
+        // 根据当前状态的类型进入不同的阅读函数
         switch(DDD_GS_CURR.type) {
         
         case GS_ALL:
@@ -75,12 +77,17 @@ int ddd_read_loop() {
             ddd_read_unknown();
             break;
         }
+        // 如果新状态需要递归
         if(DDD_GS_NEW.recur) {
+            // 记录此层状态
             memcpy(&gs_this_level, &DDD_GS_CURR, sizeof(struct ddd_global_status));
             memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
+            // 递归进去
             ddd_read_loop();
+            // 恢复此层状态
             memcpy(&DDD_GS_CURR, &gs_this_level, sizeof(struct ddd_global_status));
         }
+        // 如果新状态不需要递归
         else
             memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
         if(DDD_GS_CURR.type == GS_NONE)
@@ -89,10 +96,12 @@ int ddd_read_loop() {
     return 0;
 }
 
+// 显示站点标题
 int ddd_header() {
     int colour, centerpos, rightpos, l1, l2;
     char lefttxt[STRLEN], righttxt[STRLEN];
 
+    // 自动颜色变换
     if(DEFINE(getCurrentUser(), DEF_TITLECOLOR)) {
         colour = 4;
     }
@@ -137,6 +146,7 @@ int ddd_header() {
         strcpy(righttxt, "我在哪里？");
         break;
     }
+    // 计算中间的位置
     l1 = strlen(lefttxt);
     l2 = strlen(righttxt);
     centerpos = l1 + (scr_cols - l1 - l2 - strlen(BBS_FULL_NAME)) / 2;
@@ -153,8 +163,9 @@ int ddd_header() {
 }
 
 
-/* common */
+// 公用函数:
 
+// 检查版面是否有新帖子（这个函数是从boards_t.c里直接拿过来的）
 static int check_newpost(struct newpostdata *ptr)
 {
     struct BoardStatus *bptr;
@@ -184,19 +195,23 @@ static int check_newpost(struct newpostdata *ptr)
 }
 
 
-/* GS_ALL */
+// type=GS_ALL的阅读函数:
 
+// select的参数
 struct ddd_read_all_arg {
     struct newpostdata *boardlist;
 };
 
+// select回调函数 读取版面列表
 static int ddd_read_all_getdata(struct _select_def* conf, int pos, int len) {
     struct ddd_read_all_arg *arg;
     char *prefix, buf[STRLEN];
     
     arg = (struct ddd_read_all_arg *)(conf->arg);
+    // 全部版面
     if(DDD_GS_CURR.sec == 0)
         prefix = NULL;
+    // 分类讨论区的某一区
     else {
         sprintf(buf, "EGROUP%c", (char)(DDD_GS_CURR.sec));
         prefix = sysconf_str(buf);
@@ -205,17 +220,20 @@ static int ddd_read_all_getdata(struct _select_def* conf, int pos, int len) {
     return SHOW_CONTINUE;
 }
 
+// select回调函数 选择了某一个版面
 static int ddd_read_all_onselect(struct _select_def* conf) {
     struct ddd_read_all_arg *arg;
     struct newpostdata *ptr;
 
     arg = (struct ddd_read_all_arg *)(conf->arg); 
     ptr = &(arg->boardlist[conf->pos - conf->page_pos]);
+    // 如果是目录版面
     if(ptr->flag & BOARD_GROUP) {
         DDD_GS_NEW.type = GS_GROUP;
         DDD_GS_NEW.bid = getboardnum(ptr->name, NULL);
         DDD_GS_NEW.recur = 1;
     }
+    // 如果是普通版面
     else {
         DDD_GS_NEW.type = GS_BOARD;
         DDD_GS_NEW.bid = getboardnum(ptr->name, NULL);
@@ -227,6 +245,7 @@ static int ddd_read_all_onselect(struct _select_def* conf) {
     return SHOW_SELECT;
 }
 
+// select回调函数 显示版面信息
 static int ddd_read_all_showdata(struct _select_def* conf, int pos) {
     struct ddd_read_all_arg *arg;
     struct newpostdata *ptr;
@@ -235,16 +254,18 @@ static int ddd_read_all_showdata(struct _select_def* conf, int pos) {
     arg = (struct ddd_read_all_arg *)(conf->arg); 
     ptr = &(arg->boardlist[pos - conf->page_pos]);
     
+    // 目录版面包含的版面数
     if(ptr->flag & BOARD_GROUP) {
         prints(" %4d  ＋ ", ptr->total);
         strcpy(onlines, "    ");
     }
+    // 普通版面的文章数、未读标记和在线人数
     else {
         check_newpost(ptr);
         prints(" %4d%s%s ", ptr->total, (ptr->total > 99999) ? "" : ((ptr->total > 9999) ? " " : "  "), ptr->unread ? "◆" : "◇");
         sprintf(onlines, "%4d", (ptr->currentusers > 9999) ? 9999 : ptr->currentusers);
     }
-    
+    // 俱乐部标记
     if((ptr->flag & BOARD_CLUB_READ) && (ptr->flag & BOARD_CLUB_WRITE))
         f = 'A';
     else if(ptr->flag & BOARD_CLUB_READ)
@@ -254,25 +275,31 @@ static int ddd_read_all_showdata(struct _select_def* conf, int pos) {
     else
         f = ' ';
     sprintf(flag, "\033[1;3%cm%c", (ptr->flag & BOARD_CLUB_HIDE) ? '1' : '3', f);
+    // 版面英文名和投票标记
     prints(" %-16s%s%s", ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "\033[1;31mV" : " ", flag);
+    // 只读标记和中文叙述
     if(checkreadonly(ptr->name))
         prints("\033[1;32m[只读]\033[m%-32s", ptr->title + 7);
     else
         prints("\033[m%-32s", ptr->title + 1);
+    // 在线人数和版大
     strncpy(tmpBM, ptr->BM, BM_LEN);
     tmpBM[BM_LEN] = 0;
     prints(" %s %-12s", onlines, (ptr->BM[0] <= ' ') ? "诚征版主中" : strtok(tmpBM, " "));
     return SHOW_CONTINUE;
 }
 
+// select回调函数 预处理按键
 static int ddd_read_all_prekeycommand(struct _select_def* conf, int* command) {
     return SHOW_CONTINUE;
 }
 
+// select回调函数 处理按键
 static int ddd_read_all_keycommand(struct _select_def* conf, int command) {
     return SHOW_CONTINUE;
 }
 
+// select回调函数 显示标题
 static int ddd_read_all_showtitle(struct _select_def* conf) {
     clear();
     ddd_header();
@@ -284,12 +311,14 @@ static int ddd_read_all_showtitle(struct _select_def* conf) {
     return SHOW_CONTINUE;
 }
 
+// type=GS_ALL的入口
 int ddd_read_all() {
     struct _select_def conf;
     struct ddd_read_all_arg arg;
     POINT *pts;
     int i, ret;
 
+    // 计算列表中项目的显示位置
     pts = (POINT *)malloc(BBS_PAGESIZE * sizeof(POINT));
     for(i=0; i<BBS_PAGESIZE; i++) {
         pts[i].x = 1;
@@ -328,8 +357,7 @@ int ddd_read_all() {
 }
 
 
-/* unknown global status */
-
+// type=?搞不清楚的时候就显示这个
 int ddd_read_unknown() {
     clear();
     ddd_header();

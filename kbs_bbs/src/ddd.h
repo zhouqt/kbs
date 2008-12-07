@@ -3,18 +3,19 @@
 
 #ifdef DDD_ACTIVE
 
+// 全局阅读状态
 struct ddd_global_status {
-    int type;
-    int sec;
-    int favid;
-    int bid;
-    int mode;
-    int pos;
-    int filter;
-    int recur;
+    int type;  // 类型
+    int sec;  // 分类讨论区号码
+    int favid;  // 新分类讨论区或个人定制区位置
+    int bid;  // 版面序号
+    int mode;  // 阅读模式
+    int pos;  // 位置
+    int filter;  // 超级版面选择
+    int recur;  // 递归标记
 };
 
-
+// ddd_global_status.type 的取值
 #define GS_NONE 0 // 不在阅读状态
 #define GS_ALL 1 // 所有版面列表或者分类讨论区
 #define GS_NEW 2 // 新分类讨论区
@@ -23,7 +24,9 @@ struct ddd_global_status {
 #define GS_BOARD 5 // 版面
 #define GS_MAIL 6 // 信箱
 
+// 当前状态
 #define DDD_GS_CURR (getSession()->gs_curr)
+// 即将变换到的新状态
 #define DDD_GS_NEW (getSession()->gs_new)
 
 
