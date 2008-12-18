@@ -61,15 +61,15 @@ int from64tobits(char *out,const char *in); /* Base64 to Big-Endian, ·µ»Ø×Ö½Ú¼ÇÊ
 void to64frombits(unsigned char *out,const unsigned char *in,int inlen);
 
 #define read_lock(fd,offset,whence,len)\
-	lock_reg(fd,F_SETLK,F_RDLCK,offset,whence,len)
+    lock_reg(fd,F_SETLK,F_RDLCK,offset,whence,len)
 #define readw_lock(fd,offset,whence,len)\
-	lock_reg(fd,F_SETLKW,F_RDLCK,offset,whence,len)
+    lock_reg(fd,F_SETLKW,F_RDLCK,offset,whence,len)
 #define write_lock(fd,offset,whence,len)\
-	lock_reg(fd,F_SETLK,F_WRLCK,offset,whence,len)
+    lock_reg(fd,F_SETLK,F_WRLCK,offset,whence,len)
 #define writew_lock(fd,offset,whence,len)\
-	lock_reg(fd,F_SETLKW,F_WRLCK,offset,whence,len)
+    lock_reg(fd,F_SETLKW,F_WRLCK,offset,whence,len)
 #define un_lock(fd,offset,whence,len)\
-	lock_reg(fd,F_SETLKW,F_UNLCK,offset,whence,len)
+    lock_reg(fd,F_SETLKW,F_UNLCK,offset,whence,len)
 
 /* fancy May 17 2008, atomic integer type definitions and operations
  * ×¢Òâ, gcc ÓÐ¿ÉÄÜ½«±äÁ¿ *v ·ÅÈë¼Ä´æÆ÷ÖÐ½øÐÐõåõï, ÎÞ·¨È¡µÃÆäÕæÊµµØÖ·
@@ -81,36 +81,36 @@ void to64frombits(unsigned char *out,const unsigned char *in,int inlen);
 static inline void atomic_add(int i, int *v)
 {
     asm volatile(
-            "lock addl %1,%0"
-            :"=m" (*v)
-            :"ir" (i), "m" (*v)
+        "lock addl %1,%0"
+    :"=m"(*v)
+                :"ir"(i), "m"(*v)
             );
 }
 
 static inline void atomic_sub(int i, int *v)
 {
     asm volatile(
-            "lock subl %1,%0"
-            :"=m" (*v)
-            :"ir" (i), "m" (*v)
+        "lock subl %1,%0"
+    :"=m"(*v)
+                :"ir"(i), "m"(*v)
             );
 }
 
 static inline void atomic_inc(int *v)
 {
     asm volatile(
-            "lock incl %0"
-            :"=m" (*v)
-            :"m" (*v)
+        "lock incl %0"
+    :"=m"(*v)
+                :"m"(*v)
             );
 }
 
 static inline void atomic_dec(int *v)
 {
     asm volatile(
-            "lock decl %0"
-            :"=m" (*v)
-            :"m" (*v)
+        "lock decl %0"
+    :"=m"(*v)
+                :"m"(*v)
             );
 }
 

@@ -197,7 +197,7 @@ typedef int32 POINTDIFF;
 #ifdef CELESTIS
 #define PUBLIC_SHMKEY   4700
 #else
-#define PUBLIC_SHMKEY	3700
+#define PUBLIC_SHMKEY 3700
 #endif
 /*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要
 public shm,而attach shm又需要sysconf_eval,ft*/
@@ -238,7 +238,7 @@ extern long ti;
 #define MOBILE_NUMBER_LEN   17
 #define MAX_SIGNATURES      20      /* 最大签名档个数 by flyriver, 2002.11.10 */
 #define MAX_MSG_SIZE        1024    /* 最大消息长度 by bad, 2003-2-14 */
-#define ANNPATH_NUM	        40
+#define ANNPATH_NUM         40
 
 #define FILE_BUFSIZE    LENGTH_FILE_BUFFER  /* max. length of a file in SHM */
 #define FILE_MAXLINE    24                  /* max. line of a file in SHM */
@@ -248,10 +248,10 @@ extern long ti;
 #define MAX_DIGEST      3000                /* 最大文摘数 */
 #define MAX_DING        10                  /* 最大置顶数 */
 
-/* added by bad 2002-08-2	FavBoardDir */
+/* added by bad 2002-08-2 FavBoardDir */
 #define FAVBOARDNUM     100                 /*收藏夹最大条目*/
-#define MAXBOARDPERDIR	100		            /*每个收藏夹目录最大版面数目*/
-#define MAILBOARDNUM	20                  /*自定义邮箱最大数目*/
+#define MAXBOARDPERDIR 100              /*每个收藏夹目录最大版面数目*/
+#define MAILBOARDNUM 20                  /*自定义邮箱最大数目*/
 
 #define MORE_BUFSIZE    4096
 #define ACBOARD_BUFSIZE LENGTH_ACBOARD_BUFFER   /* max. length of each line for activity board  */
@@ -262,7 +262,7 @@ extern long ti;
 #define ULIST           "UTMP"              /* Names of users currently on line */
 #define POSTLOGFILE     ".post.X"           /* Name of file which log posting report */
 
-#define USER_TITLE_LEN	18
+#define USER_TITLE_LEN 18
 #define USER_TITLE_FILE "etc/title"
 #define FLUSH           ".PASSFLUSH"        /* Stores date for user cache flushing */
 #define WWWFLUSH        ".WWWPASSFLUSH"     /* user cache flushing for www regist */
@@ -270,7 +270,7 @@ extern long ti;
 #define DOT_DIR         ".DIR"              /* Name of Directory file info */
 #define THREAD_DIR      ".THREAD"
 #define DIGEST_DIR      ".DIGEST"           /* Name of Directory file info */
-#define DING_DIR        ".DINGDIR"	        /* 置顶文章.DIR , stiger */
+#define DING_DIR        ".DINGDIR"         /* 置顶文章.DIR , stiger */
 #define NAMEFILE        "BoardName"         /* File containing site name of bbs */
 #define BADLOGINFILE    "logins.bad"
 #define USERDATA        ".userdata"
@@ -290,21 +290,21 @@ extern long ti;
 #define FILE_CENSOR     0x20        /* for accessed[1], flyriver, 2002.9.29 */
 #define FILE_READ       0x1         /* Ownership flags used in fileheader structure in accessed[1] */
 #define FILE_DEL        0x2         /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
-#define FILE_MAILBACK	0x4		    /* reply articles mail to owner's mailbox, accessed[1] */
-#define FILE_COMMEND    0x8		    /* 推荐文章,stiger , in accessed[1], */
+#define FILE_MAILBACK 0x4      /* reply articles mail to owner's mailbox, accessed[1] */
+#define FILE_COMMEND    0x8      /* 推荐文章,stiger , in accessed[1], */
 #define FILE_TEX        0x80        /* tex article, in accessed[1], added by atppp 20040729 */
 #define FILE_FEN        0x10      /* had added fen by bm */
 
 #define BADWORD_IMG_FILE    "etc/badwordv3.img"
 #define MAXMAILSIZE         (30000)
 
-#define CHECK_MAIL          0x1	    /* 0 需要检查信笺  1 不需要重新检查 */
-#define CHECK_MSG           0x2	    /* 0 没有 msg 1 有 msg */
+#define CHECK_MAIL          0x1     /* 0 需要检查信笺  1 不需要重新检查 */
+#define CHECK_MSG           0x2     /* 0 没有 msg 1 有 msg */
 
 #define BOARD_VOTEFLAG      0x1
 #define BOARD_NOZAPFLAG     0x2
 #define BOARD_READONLY      0x4
-#define BOARD_JUNK	        0x8
+#define BOARD_JUNK         0x8
 #define BOARD_ANNONY        0x10
 #define BOARD_OUTFLAG       0x20    /* for outgo boards */
 #define BOARD_CLUB_READ     0x40    /* 限制读的俱乐部 */
@@ -325,7 +325,7 @@ extern long ti;
 #define CLOAK_FLAG          0x2     /* true if cloak was ON last session */
 #define BRDSORT_FLAG        0x20    /* true if the boards sorted alphabetical */
 #define GIVEUP_FLAG         0x4     /* true if the user is giving up  by bad 2002.7.6 */
-#define PCORP_FLAG	        0x40    /* true if have personalcorp */
+#define PCORP_FLAG         0x40    /* true if have personalcorp */
 #define ACTIVATED_FLAG      0x8     /* true if email activated - atppp 20050405 */
 #define BRDSORT1_FLAG       0x10    /* true if sort by online */
 #define USEREC_FLAGS_UNUSED_FLAG  0x80  /* ask atppp if you want to use this bit - 20051215 */
@@ -443,12 +443,12 @@ extern int KEY_ESC_arg;
 #endif /* FILTER */
 
 #define FILE_ATTACHPOS_FLAG 0x100
-#define FILE_DING_FLAG      0x200	/* stiger,置顶 */
+#define FILE_DING_FLAG      0x200 /* stiger,置顶 */
 #define FILE_EFFSIZE_FLAG   0x400
 #define FILE_COMMEND_FLAG   0x800
 #define FILE_PERCENT_FLAG   0x1000
 #define FILE_FEN_FLAG       0x2000
-																   
+
 /* 0-1 locks used sem count, @author kxn */
 #define SEMLOCK_COUNT       20
 #define UCACHE_SEMLOCK      0
@@ -483,8 +483,8 @@ enum BBSLOG_TYPE {
     BBSLOG_BOARDUSAGE   = 3,
     BBSLOG_SMS          = 4,
     BBSLOG_DEBUG        = 5,
-	BBSLOG_POST         = 6,
-	BBSLOG_BM           = 7
+    BBSLOG_POST         = 6,
+    BBSLOG_BM           = 7
 };
 
 enum BBSPOST_MODE {
@@ -536,11 +536,11 @@ struct _brc_cache_entry {
 #ifdef SMS_SUPPORT
 #define SMS_SHM_SIZE        1024*50
 
-struct header{
-  char Type;
-  byte SerialNo[4];
-  byte pid[4];
-  byte BodyLength[4];               //总Packet长度
+struct header {
+    char Type;
+    byte SerialNo[4];
+    byte pid[4];
+    byte BodyLength[4];               //总Packet长度
 };
 
 #define CMD_LOGIN                   1
@@ -626,12 +626,12 @@ extern struct sms_shm_head *head;
 #define DELETE_RANGE_BASE_MODE_CHECK    0x40        /* 校验源 DIR 文件修改 */
 #define DELETE_RANGE_BASE_MODE_OVERM    0x80        /* 拟删标记优先权高于保留标记 */
 #define DELETE_RANGE_BASE_MODE_OPMASK   (0\
-    |DELETE_RANGE_BASE_MODE_TOKEN\
-    |DELETE_RANGE_BASE_MODE_RANGE\
-    |DELETE_RANGE_BASE_MODE_FORCE\
-    |DELETE_RANGE_BASE_MODE_MPDEL\
-    |DELETE_RANGE_BASE_MODE_CLEAR\
-)                                                   /* 区段删除模式掩码 */
+        |DELETE_RANGE_BASE_MODE_TOKEN\
+        |DELETE_RANGE_BASE_MODE_RANGE\
+        |DELETE_RANGE_BASE_MODE_FORCE\
+        |DELETE_RANGE_BASE_MODE_MPDEL\
+        |DELETE_RANGE_BASE_MODE_CLEAR\
+                                        )                                                   /* 区段删除模式掩码 */
 /* --END--, etnlegend, 2006.04.20, 区段删除核心 */
 
 #define ARG_NOPROMPT_FLAG       1       /* 操作不提示 */

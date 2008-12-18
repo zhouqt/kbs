@@ -111,7 +111,7 @@ typedef struct {
 
 struct chat_command {
     char *cmdname;              /* Char-room command length */
-    void (*cmdfunc) (chatcontext * pthis, const char *arg);     /* Pointer to function */
+    void (*cmdfunc)(chatcontext * pthis, const char *arg);      /* Pointer to function */
     short nCmdLenth;            /*命令字串判别需要匹配的字符数 */
 };
 

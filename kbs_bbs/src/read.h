@@ -10,9 +10,9 @@
 #define READ_PREV       6       /* Direct read prev file */
 #define GOTO_NEXT       7       /* Move cursor to next */
 #define DIRCHANGED      8       /* Index file was changed */
-#define NEWSCREEN	9	/* split the screen */
+#define NEWSCREEN 9 /* split the screen */
 #define CHANGEMODE  10  /* 换版面了或者是换模式了*/
-#define SELCHANGE   11 /*选择变了,对应SHOW_SELCHANGE*/ 
+#define SELCHANGE   11 /*选择变了,对应SHOW_SELCHANGE*/
 
 /*
   阅读的键定义回调函数，参数依次为
@@ -33,7 +33,7 @@ typedef int (*READ_KEY_FUNC)(struct _select_def*,void*,void*);
   返回:
   显示的字符串。应该是一个指向outputbuf的指针
   */
-typedef char *(*READ_ENT_FUNC) (char *, int, void *,void*,struct _select_def*);
+typedef char *(*READ_ENT_FUNC)(char *, int, void *,void*,struct _select_def*);
 int fileheader_thread_read(struct _select_def* conf, struct fileheader* fh,int ent, void* extraarg);
 int find_nextnew(struct _select_def* conf,int begin);
 
@@ -57,7 +57,7 @@ struct read_arg {
     enum BBS_DIR_MODE newmode; /*当返回NEWDIRECT的时候，设置这个*/
     char* direct;
     char* dingdirect;
-    void (*dotitle) ();
+    void (*dotitle)();
     READ_ENT_FUNC doentry;
     struct key_command *rcmdlist;
     int ssize;
@@ -74,7 +74,7 @@ struct read_arg {
     READ_NORMAL  正常的顺序阅读
     READ_THREAD  正在主题阅读
     */
-    int readmode; 
+    int readmode;
 
     char* data; //readed data
     int fd; //filehandle,open always
@@ -89,9 +89,9 @@ struct read_arg {
 char* read_getcurrdirect(struct _select_def* conf);
 
 enum {
-        APPLY_CONTINUE,
-        APPLY_QUIT,
-        APPLY_REAPPLY
+    APPLY_CONTINUE,
+    APPLY_QUIT,
+    APPLY_REAPPLY
 };
 
 /* 应用于apply_thread的函数
@@ -124,7 +124,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
    @param conf _select_conf结构指针
 */
 
-int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct _select_def*), READ_ENT_FUNC doentry, struct key_command *rcmdlist, int ssize);
+int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle)(struct _select_def*), READ_ENT_FUNC doentry, struct key_command *rcmdlist, int ssize);
 
 /* some function for fileheader */
 int auth_search(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg);

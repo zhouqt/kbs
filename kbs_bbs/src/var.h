@@ -19,7 +19,7 @@ struct UTMPHEAD {
 #define SMTH_API extern
 #endif
 
-struct newpostdata {            
+struct newpostdata {
     char dir;    /* added by bad  0-board 1-board directory 2-mail 3-function */
     const char *name, *title, *BM;
     unsigned int flag;
@@ -28,13 +28,13 @@ struct newpostdata {
     int currentusers;
     char unread, zap;
     int lastpost;
-    int (*fptr) ();
+    int (*fptr)();
 };
 
 /* global unique variable */
 SMTH_API struct boardheader *bcache;
 SMTH_API struct BCACHE *brdshm;
-extern struct BDIRCACHE	*bdirshm;
+extern struct BDIRCACHE *bdirshm;
 SMTH_API struct UTMPFILE *utmpshm;
 extern struct UTMPHEAD *utmphead;
 extern int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
@@ -76,7 +76,7 @@ typedef struct {
     int currentuid;
     struct usermemo *currentmemo;
     struct friends_info* topfriend;
-    
+
     char fromhost[IPLEN + 1];
 
     struct favbrd_struct *favbrd_list;
@@ -84,19 +84,19 @@ typedef struct {
     struct favbrd_struct mybrd_list[FAVBOARDNUM];
     int mybrd_list_t;
     int favnow;
-	int nowfavmode; //used by web
-    
+    int nowfavmode; //used by web
+
     int *zapbuf;
     int zapbuf_changed;
 
     char MsgDesUid[20];
     char msgerr[255];
-    
+
     int  num_of_matched;
     int total_line;
     char *CurrentFileName;
-    
-     struct _sigjmp_stack *sigjmp_stack;
+
+    struct _sigjmp_stack *sigjmp_stack;
 #ifdef SMS_SUPPORT
     int lastsmsstatus;
     struct sms_shm_head* head;
@@ -113,9 +113,9 @@ typedef struct {
     char gb2big_savec[2];
     char big2gb_savec[2];
 
-	char strbuf[STRLEN];
+    char strbuf[STRLEN];
 
-	int utmpent;
+    int utmpent;
     struct user_info *currentuinfo;
 #ifdef SECONDSITE
     unsigned int anonyindex;

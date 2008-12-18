@@ -13,11 +13,10 @@
 
 #define MAX_CLOCK_DEF 100
 
-struct clock_struct
-{
-	int type;
-	time_t clock_time;
-	char memo[40];
+struct clock_struct {
+    int type;
+    time_t clock_time;
+    char memo[40];
 };
 
 #endif

@@ -8,34 +8,34 @@
 #define STATE_NONE   0x00
 #define STATE_UBB_START 0x10
 #define STATE_UBB_MIDDLE 0x20
-#define STATE_UBB_END	0x40
+#define STATE_UBB_END 0x40
 #define STATE_TEX_SET   0x80
 
 enum UBBTYPE {UBB_TYPE_IMG,
-	UBB_TYPE_ITALICIZE,
-	UBB_TYPE_UNDERLINE,
-	UBB_TYPE_BOLD,
-	UBB_TYPE_FLY,
-	UBB_TYPE_RM,
-	UBB_TYPE_FLASH,
-	UBB_TYPE_CENTER,
-	UBB_TYPE_EMAIL,
-	UBB_TYPE_HTTPLINK,
-	UBB_TYPE_QUOTE,
-	UBB_TYPE_QUICKTIME,
-	UBB_TYPE_SHOCKWAVE,
-	UBB_TYPE_MOVE,
-	UBB_TYPE_GLOW,
-	UBB_TYPE_SHADOW,
-	UBB_TYPE_FACE,
-	UBB_TYPE_SOUND,
-	UBB_TYPE_ATTACH
-};
+              UBB_TYPE_ITALICIZE,
+              UBB_TYPE_UNDERLINE,
+              UBB_TYPE_BOLD,
+              UBB_TYPE_FLY,
+              UBB_TYPE_RM,
+              UBB_TYPE_FLASH,
+              UBB_TYPE_CENTER,
+              UBB_TYPE_EMAIL,
+              UBB_TYPE_HTTPLINK,
+              UBB_TYPE_QUOTE,
+              UBB_TYPE_QUICKTIME,
+              UBB_TYPE_SHOCKWAVE,
+              UBB_TYPE_MOVE,
+              UBB_TYPE_GLOW,
+              UBB_TYPE_SHADOW,
+              UBB_TYPE_FACE,
+              UBB_TYPE_SOUND,
+              UBB_TYPE_ATTACH
+             };
 
 enum ATTACHMENTTYPE {
-	ATTACH_IMG,
-	ATTACH_FLASH,
-	ATTACH_OTHERS
+    ATTACH_IMG,
+    ATTACH_FLASH,
+    ATTACH_OTHERS
 };
 
 #define STATE_SET(s, b) ((s) |= (b))

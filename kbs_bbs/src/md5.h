@@ -6,7 +6,7 @@ typedef unsigned int word32;
 
 
 #define MD5_DIGEST_LENGTH 16
-    struct MD5Context {
+struct MD5Context {
     md5_uint32 buf[4];
     md5_uint32 bits[2];
     unsigned char in[64];
@@ -19,7 +19,7 @@ void MD5Transform(md5_uint32 buf[4], const unsigned char in[64]);
 
 /*
  * This is needed to make RSAREF happy on some MS-DOS compilers.
- */ 
+ */
 typedef struct MD5Context MD5_CTX;
 
 

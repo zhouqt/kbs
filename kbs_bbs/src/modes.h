@@ -5,7 +5,7 @@
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
                         Guy Vega, gtvega@seabass.st.usm.edu
                         Dominic Tynes, dbtynes@seabass.st.usm.edu
-                             
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -75,19 +75,19 @@
 #define OFFLINE         49
 #define EDITANN         50
 //#define WWW             51
-//#define WEBEXPLORE	WWW
-#define WEBEXPLORE	51
+//#define WEBEXPLORE WWW
+#define WEBEXPLORE 51
 #define CCUGOPHER       52
 #define LOOKMSGS        53
 #define WFRIEND         54
 #define LOCKSCREEN      55
-#define IMAIL		56
+#define IMAIL  56
 #define EDITSIG         57
 #define EDITPLAN        58
-#define GIVEUPNET	59
-#define SERVICES	60
+#define GIVEUPNET 59
+#define SERVICES 60
 #define FRIENDTEST  61
-#define	CHICKEN		62
+#define CHICKEN  62
 #define QUIZ 63
 #define KILLER 64
 #define CALENDAR 65

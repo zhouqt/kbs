@@ -13,13 +13,13 @@
     }
 
 typedef int (*CMD_FUNC)();
-typedef struct _cmd_list{
+typedef struct _cmd_list {
     const char *name;
     CMD_FUNC    func;
     int         type;
 }
 CMD_LIST;
-typedef struct _cmd_menu{
+typedef struct _cmd_menu {
     CMD_FUNC    func;
     int         row;
     int         col;

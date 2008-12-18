@@ -8,7 +8,7 @@
 #define MTITLE_LEN      128
 #define ITITLE_LEN      88
 
-typedef struct _ann_item{
+typedef struct _ann_item {
     char    title[ITITLE_LEN];
     char    fname[STRLEN];
     char   *host;
@@ -17,7 +17,7 @@ typedef struct _ann_item{
 }
 ITEM;
 
-typedef struct _ann_menu{
+typedef struct _ann_menu {
     ITEM  **p_item[MAXITEMS];       /* 可见 ITEM 指针列表 */
     ITEM   *pool[MAXITEMS];         /* 全部 ITEM 列表 */
     char    mtitle[MTITLE_LEN];     /* 当前 .Names 标题内容 */
@@ -48,7 +48,7 @@ MENU;
 /* 取菜单(m)中序号(n)位置的项目 */
 #define M_ITEM(m,n)     (*((m)->p_item[n]))
 
-enum ANN_SORT_MODE{
+enum ANN_SORT_MODE {
     ANN_SORT_BY_FILENAME,
     ANN_SORT_BY_TITLE,
     ANN_SORT_BY_BM,

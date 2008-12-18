@@ -14,7 +14,7 @@ SMTH_API struct friends_info *topfriend;
 
 SMTH_API int scrint;              /* Set when screen has been initialized */
 
-                                  /* Used by namecomplete *only* */
+/* Used by namecomplete *only* */
 
 extern struct user_info uinfo;  /* Ditto above...utmp entry is stored here
                                    and written back to the utmp file when

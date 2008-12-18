@@ -16,10 +16,10 @@ void load_board_banner(const char * board);
 
 /*etnlegend*/
 #define WAIT_RETURN do{\
-    int ch = igetkey();\
-    if (ch=='\r'||ch=='\n') break;\
-}while(1)
-            
+        int ch = igetkey();\
+        if (ch=='\r'||ch=='\n') break;\
+    }while(1)
+
 
 /*screen.c*/
 void do_naws(int ln, int col);
@@ -63,11 +63,11 @@ void ochar(char c);
 int ask(char *prompt);
 void oflush();
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel);
-void set_alarm(int set_timeout,int set_timeoutusec, void (*timeout_func) (void *), void *data);
+void set_alarm(int set_timeout,int set_timeoutusec, void (*timeout_func)(void *), void *data);
 int igetkey();
 int check_calltime();
 void add_io(int fd, int timeout);
-void add_flush(void (*flushfunc) ());
+void add_flush(void (*flushfunc)());
 int igetch();
 int num_in_buf();
 void output(const char *s, int len);
@@ -82,13 +82,13 @@ int zsend_file(char *filename, char *title);
 /* more.c */
 int ansimore(char *filename, int promptend);
 int ansimore2(char *filename, int promptend, int row, int numlines);
-int ansimore_withzmodem( char *filename, int promptend,char* title);
+int ansimore_withzmodem(char *filename, int promptend,char* title);
 int NNread_init();
 void m_init();
 int countln(char *fname);
 void R_monitor(void *data);
 void printacbar();
-typedef void  (*generate_attach_link_t)(char* buf,int buf_len,char *ext, int len, long attachpos,void* arg);
+typedef void (*generate_attach_link_t)(char* buf,int buf_len,char *ext, int len, long attachpos,void* arg);
 void register_attach_link(generate_attach_link_t fn,void* arg);
 int mmap_more(char *fn, int quit, char *keystr, char *title);
 
@@ -218,8 +218,8 @@ struct keeploc *getkeep(char *s, int def_topline, int def_cursline);
 int sread(int passonly, int readfirst, int auser, int pnum, struct fileheader *ptitle);
 void fixkeep(char *s, int first, int last);
 
-typedef char *(*READ_FUNC) (void *, int, void *);
-int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct one_key *rcmdlist, int ssize);
+typedef char *(*READ_FUNC)(void *, int, void *);
+int i_read(int cmdmode, char *direct, void (*dotitle)(), READ_FUNC doentry, struct one_key *rcmdlist, int ssize);
 void u_exit();
 
 /* sendmsg.c */
@@ -238,7 +238,7 @@ void show_message(char *msg);
 void setlistrange(int i);
 int t_friends(void);
 int fill_userlist();
-int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), int (*list_show) (), int (*read) ());
+int choose(int update, int defaultn, int (*title_show)(), int (*key_deal)(), int (*list_show)(), int (*read)());
 
 /* edit.c */
 int vedit(char *filename, int saveheader,long* eff_size,long* pattachpos,int add_loginfo);
@@ -248,7 +248,7 @@ void keep_fail_post();
 
 /* Announce.c */
 void a_prompt(int bot, char *pmt, char *buf);
-int a_chkbmfrmpath(char *path );
+int a_chkbmfrmpath(char *path);
 int a_menusearch(char *path, char *key, int level);
 int a_Import(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent);     /* Leeward 98.04.15 */
 int set_import_path(char* path);
@@ -279,12 +279,12 @@ void show_goodbyeshm();
 
 /* newterm.c */
 void term_init();
-void do_move(int destcol, int destline, void (*outc) (char));
+void do_move(int destcol, int destline, void (*outc)(char));
 
 /* xyz.c */
 int qqwry_search(char *description,const char *ip_address);
 int showperminfo(struct _select_def *conf, int i);
-unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int numbers, int (*show) (struct _select_def *, int), int (*select) (struct _select_def *));
+unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int numbers, int (*show)(struct _select_def *, int), int (*select)(struct _select_def *));
 int fhselect(struct _select_def* conf,struct fileheader *fh,long flag);
 
 /* boards_t.c */
@@ -323,7 +323,7 @@ int choose_tmpl(char *title, char *fname);
 
 /* stuff.c */
 #ifdef HAVE_IPV6_SMTH
-void * ip_len2mask (int bitlen, void *vmask);
+void * ip_len2mask(int bitlen, void *vmask);
 struct in6_addr * ip_mask(const struct in6_addr * addr, const struct in6_addr * mask, struct in6_addr * out);
 #endif
 
