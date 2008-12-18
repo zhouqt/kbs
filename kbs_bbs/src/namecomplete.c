@@ -19,73 +19,80 @@
 */
 #include "bbs.h"
 struct word *toplev = NULL, *current = NULL;
-struct word* GetNameListHead(void){
+struct word* GetNameListHead(void) {
     return toplev;
 }
-int GetNameListCount(void){
+int GetNameListCount(void)
+{
     struct word *p;
     int ret;
-    for(ret=0,p=toplev;p;p=p->next)
+    for (ret=0,p=toplev;p;p=p->next)
         ret++;
     return ret;
 }
-static void FreeNameList(void){
+static void FreeNameList(void)
+{
     /*
-     * 加上 static, 显式释放 NameList 应该使用 CreateNameList 函数, 
-     * 不应该在本文件外有对 FreeNameList 的调用... 
+     * 加上 static, 显式释放 NameList 应该使用 CreateNameList 函数,
+     * 不应该在本文件外有对 FreeNameList 的调用...
     */
     struct word *p,*temp;
-    for(p=toplev;p;p=temp){
+    for (p=toplev;p;p=temp) {
         temp=p->next;
         free(p->word);
         free(p);
     }
 }
-void CreateNameList(void){
-    if(toplev)
+void CreateNameList(void)
+{
+    if (toplev)
         FreeNameList();
     toplev=NULL;
     current=NULL;
 }
-void AddNameList(const char *name){
+void AddNameList(const char *name)
+{
     struct word *node;
-    if(!name)
+    if (!name)
         return;
-    if(!(node=(struct word*)malloc(sizeof(struct word))))
+    if (!(node=(struct word*)malloc(sizeof(struct word))))
         return;
-    if(!(node->word=strdup(name))){
+    if (!(node->word=strdup(name))) {
         free(node);
         return;
     }
     node->next=NULL;
-    if(!current)
+    if (!current)
         toplev=node;
-    else{
-        while(current->next)
+    else {
+        while (current->next)
             current=current->next;
         current->next=node;
     }
     current=node;
     return;
 }
-static int CompareName(const void *v1,const void *v2){
+static int CompareName(const void *v1,const void *v2)
+{
     return strcmp((*((const char**)v1)),(*((const char**)v2)));
 }
-static int CompareNameCase(const void *v1,const void *v2){
+static int CompareNameCase(const void *v1,const void *v2)
+{
     return strcasecmp((*((const char**)v1)),(*((const char**)v2)));
 }
-void SortNameList(int case_sensitive){
+void SortNameList(int case_sensitive)
+{
     struct word *p;
     const char **array,**t;
     int count;
-    if(!(count=GetNameListCount()))
+    if (!(count=GetNameListCount()))
         return;
-    if(!(array=(const char**)malloc(count*sizeof(const char*))))
+    if (!(array=(const char**)malloc(count*sizeof(const char*))))
         return;
-    for(p=toplev,t=array;p;p=p->next,t++)
+    for (p=toplev,t=array;p;p=p->next,t++)
         (*t)=p->word;
     qsort(array,count,sizeof(const char*),(case_sensitive?CompareName:CompareNameCase));
-    for(p=toplev,t=array;p;p=p->next,t++)
+    for (p=toplev,t=array;p;p=p->next,t++)
         p->word=(char*)(*t);
     free(array);
     return;
@@ -98,16 +105,17 @@ register struct word *list;
 
     for (i = 0; list != NULL; i++, list = list->next)
         /*
-         * Null Statement 
+         * Null Statement
          */ ;
     return i;
 }
 
 /* etnlegend, 2005.12.26, 遍历 NameList 时可传递附加参数 */
-void ApplyToNameList(int (*fptr)(char*,void*),void *arg){
+void ApplyToNameList(int (*fptr)(char*,void*),void *arg)
+{
     struct word *p;
-    if(fptr){
-        for(p=toplev;p;p=p->next)
+    if (fptr) {
+        for (p=toplev;p;p=p->next)
             (*fptr)(p->word,arg);
     }
     return;
@@ -128,8 +136,7 @@ char *otag, *tag, *name;
         strcpy(otag, oname);
     return 1;
 }
-struct word *GetSubList(register char *tag, register struct word *list)
-{
+struct word *GetSubList(register char *tag, register struct word *list) {
     struct word *wlist, *wcurr;
     char tagbuf[STRLEN];
     int n;
@@ -215,10 +222,10 @@ char *prompt, *data;
         getyx(&y, &x);
         getyx(&origy, &origx);
         while ((ch = igetkey()) != EOF) {
-        	/* TODO: add KEY_REFRESH support */
-        	if (ch>255&&ch<0)
-        		continue;
-            if(ch==KEY_ESC){ /* etnlegend, 2006.04.07, 处理 ESC 键... */
+            /* TODO: add KEY_REFRESH support */
+            if (ch>255&&ch<0)
+                continue;
+            if (ch==KEY_ESC) { /* etnlegend, 2006.04.07, 处理 ESC 键... */
                 *data=0;
                 ClearSubList(cwlist);
                 ingetdata=false;
@@ -229,8 +236,8 @@ char *prompt, *data;
                 prints("\n");
                 if (NumInList(cwlist) == 1)
                     strcpy(data, cwlist->word);
-                /*---	Modified by period	2000-09-13		---*
-                 *---	when more results found, compare one by one	---*/
+                /*--- Modified by period 2000-09-13  ---*
+                 *--- when more results found, compare one by one ---*/
                 /*
                  * if(!strcasecmp(data,cwlist->word))
                  * strcpy(data,cwlist->word) ;
@@ -247,12 +254,12 @@ char *prompt, *data;
                 ClearSubList(cwlist);
                 break;
             }
-            if ((ch == ' ')||(ch == '\t')) {	/* add TAB key by pig2532 on 2005.12.10 */
+            if ((ch == ' ')||(ch == '\t')) { /* add TAB key by pig2532 on 2005.12.10 */
                 int col, len;
 
                 if (NumInList(cwlist) == 1) {
                     /*
-                     * added for * boards. cityhunter on 2k.5.21 
+                     * added for * boards. cityhunter on 2k.5.21
                      */
                     if (cwlist->word[0] != '_') {
                         strcpy(data, cwlist->word);
@@ -269,7 +276,7 @@ char *prompt, *data;
                     struct word *list;
                     int len = strlen(cwlist->word);
                     j = temp-data;
-                    while(j <= len) {
+                    while (j <= len) {
                         int ok=1;
                         j++;
                         for (list = cwlist; list != NULL; list = list->next)
@@ -277,10 +284,10 @@ char *prompt, *data;
                                 ok=0;
                                 break;
                             }
-                        if(!ok) break;
+                        if (!ok) break;
                     }
                     j--;
-                    while(temp-data<j) {
+                    while (temp-data<j) {
                         move(y, x);
                         outc(cwlist->word[temp-data]);
                         x++;
@@ -306,7 +313,7 @@ char *prompt, *data;
                     for (i = NUMLINES; (morelist) && (i > 0); i--) {
                         move(3 + (NUMLINES - i), col);
                         /*
-                         * add for * boards 
+                         * add for * boards
                          */
                         if (morelist->word[0] != '_')
                             prints("%s", morelist->word);
@@ -340,12 +347,12 @@ char *prompt, *data;
                 continue;
             }
             if (isprint2(ch)) {
-				if( ch == '#' && count==0 && in_do_sendmsg ){
-                	*temp = '\0';
-                	ClearSubList(cwlist);
-        			ingetdata = false;
-					return ( ch ) ;
-				}
+                if (ch == '#' && count==0 && in_do_sendmsg) {
+                    *temp = '\0';
+                    ClearSubList(cwlist);
+                    ingetdata = false;
+                    return (ch) ;
+                }
                 if (count < STRLEN) {
                     struct word *node;
 
@@ -380,7 +387,7 @@ char *prompt, *data;
             move(origy, origx);
             prints("%s\n", data);
             /*
-             * for (x=1; x<500; x++);  delay 
+             * for (x=1; x<500; x++);  delay
              */
         }
         ingetdata = false;
@@ -447,7 +454,7 @@ char *prompt, *data;
         int ch;
         struct userec *lookupuser;
 
-/* 大量内存临时占用 KCN,TODO*/
+        /* 大量内存临时占用 KCN,TODO*/
         cwbuf = malloc(MAXUSERS * (IDLEN + 1));
         if (prompt != NULL) {
             prints("%s", prompt);
@@ -459,9 +466,9 @@ char *prompt, *data;
         getyx(&y, &x);
         getyx(&origy, &origx);
         while ((ch = igetkey()) != EOF) {
-        	/* TODO: add KEY_REFRESH support */
-        	if (ch>255&&ch<0)
-        		continue;
+            /* TODO: add KEY_REFRESH support */
+            if (ch>255&&ch<0)
+                continue;
             if (ch == '\n' || ch == '\r') {
                 int i;
                 char *ptr;
@@ -486,7 +493,7 @@ char *prompt, *data;
                     data[IDLEN] = 0;
                 }
                 break;
-            } else if ((ch == ' ')||(ch == '\t')) {		/* add TAB key by pig2532 on 2005.12.10 */
+            } else if ((ch == ' ')||(ch == '\t')) {  /* add TAB key by pig2532 on 2005.12.10 */
                 int col, len;
 
                 if (cwnum == 1) {
@@ -502,7 +509,7 @@ char *prompt, *data;
                     int i, j;
                     char * ptr;
                     j = temp-data;
-                    while(1) {
+                    while (1) {
                         int ok=1;
                         j++;
                         ptr = cwlist;
@@ -513,10 +520,10 @@ char *prompt, *data;
                             }
                             ptr += IDLEN + 1;
                         }
-                        if(!ok) break;
+                        if (!ok) break;
                     }
                     j--;
-                    while(temp-data<j) {
+                    while (temp-data<j) {
                         move(y, x);
                         outc(cwlist[temp-data]);
                         x++;
@@ -528,10 +535,10 @@ char *prompt, *data;
                 }
                 if (count < 2)
                     continue;
-                cwlist = u_namearray((char (*)[13]) cwbuf, &cwnum, data);
+                cwlist = u_namearray((char(*)[13]) cwbuf, &cwnum, data);
                 clearbot = true;
                 col = 0;
-                len = UserMaxLen((char (*)[13]) cwlist, cwnum, morenum, NUMLINES);
+                len = UserMaxLen((char(*)[13]) cwlist, cwnum, morenum, NUMLINES);
                 move(2, 0);
                 clrtobot();
                 printdash(" 所有使用者列表 ");
@@ -545,7 +552,7 @@ char *prompt, *data;
                     col += len + 2;
                     if (morenum >= cwnum)
                         break;
-                    len = UserMaxLen((char (*)[13]) cwlist, cwnum, morenum, NUMLINES);
+                    len = UserMaxLen((char(*)[13]) cwlist, cwnum, morenum, NUMLINES);
                 }
                 if (morenum < cwnum) {
                     move(t_lines - 1, 0);
@@ -576,7 +583,7 @@ char *prompt, *data;
                     *temp++ = ch;
                     *temp = '\0';
                     if ((count > 1) && cwnum) {
-                        n = UserSubArray((char (*)[13]) cwbuf, (char (*)[13]) cwlist, cwnum, ch, count);
+                        n = UserSubArray((char(*)[13]) cwbuf, (char(*)[13]) cwlist, cwnum, ch, count);
                         if (n == 0) {
                             temp--;
                             *temp = '\0';

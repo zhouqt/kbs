@@ -19,8 +19,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/  
-/* KCN modified 2001.5.10 */ 
+*/
+/* KCN modified 2001.5.10 */
 
 #include "bbs.h"
 extern time_t login_start_time;
@@ -28,9 +28,9 @@ extern time_t login_start_time;
 void disply_userinfo(struct userec *u, int real)
 {
     int num, diff;
-	struct userdata ud;
+    struct userdata ud;
 
-	read_userdata(u->userid, &ud);
+    read_userdata(u->userid, &ud);
     move(real >= 1 ? 2 : 3, 0);
     clrtobot();
     prints("您的代号     : %s\n", u->userid);
@@ -38,15 +38,15 @@ void disply_userinfo(struct userec *u, int real)
     if (real != 2)  //注册单不显示真实姓名
         prints("真实姓名     : %s\n", ud.realname);
     prints("居住住址     : %s\n", ud.address);
-    if(real)
-	prints("注册E-mail   : %s\n",ud.reg_email);
+    if (real)
+        prints("注册E-mail   : %s\n",ud.reg_email);
     else
-    	prints("电子邮件信箱 : %s\n", ud.email);
+        prints("电子邮件信箱 : %s\n", ud.email);
 
-	/*加入生日等显示 added by binxun 2003.5.20*/
+    /*加入生日等显示 added by binxun 2003.5.20*/
 #ifdef HAVE_BIRTHDAY
     prints("您的性别     : %s\n",(ud.gender=='M')?"男":"女");
-	prints("您的生日     : %d-%d-%d\n",ud.birthyear+1900,ud.birthmonth,ud.birthday);
+    prints("您的生日     : %d-%d-%d\n",ud.birthyear+1900,ud.birthmonth,ud.birthday);
 #endif
 #ifdef ZIXIA
     prints("您的修炼道行 : %d\n",u->altar);
@@ -66,23 +66,23 @@ void disply_userinfo(struct userec *u, int real)
     if (real)
         prints("文章数目     : %d 篇\n", u->numposts);
 
-        /*       if( real ) {
-           prints("文章数目     : %d / %d (Board/1Discuss)\n",
-           u->numposts, post_in_tin( u->userid ));
-           }  removed by stephen 2000-11-02 */
-        /*    } */
+    /*       if( real ) {
+       prints("文章数目     : %d / %d (Board/1Discuss)\n",
+       u->numposts, post_in_tin( u->userid ));
+       }  removed by stephen 2000-11-02 */
+    /*    } */
 #if 0
-        {
-           int exp;
-           exp=countexp(u);
-           prints("经验值       : %d(%s)\n",exp,c_exp(exp));
-           exp=countperf(u);
-           prints("表现值       : %d(%s)\n",exp,c_perf(exp));
-        }
+    {
+        int exp;
+        exp=countexp(u);
+        prints("经验值       : %d(%s)\n",exp,c_exp(exp));
+        exp=countperf(u);
+        prints("表现值       : %d(%s)\n",exp,c_perf(exp));
+    }
 #endif
-        prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);
+    prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);
 #if defined(NEWSMTH) && !defined(SECONDSITE)
-    if(u->score_user>publicshm->us_sample[1])
+    if (u->score_user>publicshm->us_sample[1])
         sprintf(genbuf,"%d -- RANKING %.2lf%%",u->score_user,100*us_ranking(u->score_user));
     else
         sprintf(genbuf,"%d -- RANKING %.1lf%%",u->score_user,100*us_ranking(u->score_user));
@@ -111,27 +111,27 @@ void disply_userinfo(struct userec *u, int real)
         prints("  注册尚未成功, 请参考本站进站画面说明.\n");
     }
 }
-int uinfo_query(struct userec *u, int real, int unum) 
+int uinfo_query(struct userec *u, int real, int unum)
 {
     struct userec newinfo;
-	const char *emailfile;
+    const char *emailfile;
     char ans[3], buf[STRLEN], genbuf[STRLEN];
     int i, fail = 0, netty_check = 0, tmpchange = 0;
     FILE * fin, *fout, *dp;
     time_t code;
-	struct userdata ud;
-	struct usermemo *um;
-	
-	time_t now;
-	struct tm *tmnow;
+    struct userdata ud;
+    struct usermemo *um;
 
-	now = time(0);
-	tmnow = localtime(&now);
+    time_t now;
+    struct tm *tmnow;
+
+    now = time(0);
+    tmnow = localtime(&now);
 
     memcpy(&newinfo, u, sizeof(struct userec));
-	read_userdata(u->userid, &ud);
-	read_user_memo(u->userid, &um);
-	//memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
+    read_userdata(u->userid, &ud);
+    read_user_memo(u->userid, &um);
+    //memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
 #ifndef SECONDSITE
     getdata(t_lines - 1, 0, real ? "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" : "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]", ans, 2, DOECHO, NULL, true);
 #else
@@ -143,237 +143,232 @@ int uinfo_query(struct userec *u, int real, int unum)
     if (ans[0] != '3' || real)
         prints("使用者代号: %s\n", u->userid);
     switch (ans[0]) {
-    case '1':
-        move(1, 0);
-        prints("请逐项修改,直接按 <ENTER> 代表使用 [] 内的资料。\n");
-        sprintf(genbuf, "昵称 [%s]: ", u->username);
-        getdata(i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL, true);
-        if (buf[0])
-            strncpy(newinfo.username, buf, NAMELEN);
-        sprintf(genbuf, "真实姓名 [%s]: ", ud.realname);
-        getdata(i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL, true);
-        if (buf[0])
-            strncpy(ud.realname, buf, NAMELEN);
-        sprintf(genbuf, "居住地址 [%s]: ", ud.address);
-        getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
-        if (buf[0])
-            strncpy(ud.address, buf, NAMELEN);
-        sprintf(genbuf, "电子信箱 [%s]: ", ud.email);
-        getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
-        if (buf[0])
-             {
+        case '1':
+            move(1, 0);
+            prints("请逐项修改,直接按 <ENTER> 代表使用 [] 内的资料。\n");
+            sprintf(genbuf, "昵称 [%s]: ", u->username);
+            getdata(i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL, true);
+            if (buf[0])
+                strncpy(newinfo.username, buf, NAMELEN);
+            sprintf(genbuf, "真实姓名 [%s]: ", ud.realname);
+            getdata(i++, 0, genbuf, buf, NAMELEN, DOECHO, NULL, true);
+            if (buf[0])
+                strncpy(ud.realname, buf, NAMELEN);
+            sprintf(genbuf, "居住地址 [%s]: ", ud.address);
+            getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
+            if (buf[0])
+                strncpy(ud.address, buf, NAMELEN);
+            sprintf(genbuf, "电子信箱 [%s]: ", ud.email);
+            getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
+            if (buf[0]) {
 
                 /*netty_check = 1; */
                 /* 取消email 认证, alex , 97.7 */
                 strncpy(ud.email, buf, STRLEN);
             }
-		/* 加入修改生日等 added by binxun 2003.5.20 */
+            /* 加入修改生日等 added by binxun 2003.5.20 */
 #ifdef  HAVE_BIRTHDAY
-        sprintf(genbuf, "您的性别: [1]男 [2]女 (1 or 2)[%d]",(ud.gender=='M')?1:2);
-	    do{
-            getdata(i, 0, genbuf,buf, 2, DOECHO, NULL, true);
-			if(buf[0]==0)break;
-        }while (buf[0] < '1' || buf[0] > '2');
-        i++;
-		switch (buf[0])
-		{
-		case '1':
-			ud.gender = 'M';
-			break;
-		case '2':
-			ud.gender = 'F';
-			break;
-		default:
-		    break;
-		}
+            sprintf(genbuf, "您的性别: [1]男 [2]女 (1 or 2)[%d]",(ud.gender=='M')?1:2);
+            do {
+                getdata(i, 0, genbuf,buf, 2, DOECHO, NULL, true);
+                if (buf[0]==0)break;
+            } while (buf[0] < '1' || buf[0] > '2');
+            i++;
+            switch (buf[0]) {
+                case '1':
+                    ud.gender = 'M';
+                    break;
+                case '2':
+                    ud.gender = 'F';
+                    break;
+                default:
+                    break;
+            }
 
-		prints("请输入您的出生日期");
-		i++;
-        do{
-			buf[0] = '\0';
-			sprintf(genbuf, "四位数公元年: [%d]: ", ud.birthyear+1900);
-			getdata(i, 0, genbuf, buf, 5, DOECHO, NULL, true);
-			if(buf[0]) {
-				if (atoi(buf) < 1900)continue;
-				ud.birthyear = atoi(buf) - 1900;
-			}
-		}while (ud.birthyear < tmnow->tm_year - 98 || ud.birthyear > tmnow->tm_year - 3);
-		i++;
+            prints("请输入您的出生日期");
+            i++;
+            do {
+                buf[0] = '\0';
+                sprintf(genbuf, "四位数公元年: [%d]: ", ud.birthyear+1900);
+                getdata(i, 0, genbuf, buf, 5, DOECHO, NULL, true);
+                if (buf[0]) {
+                    if (atoi(buf) < 1900)continue;
+                    ud.birthyear = atoi(buf) - 1900;
+                }
+            } while (ud.birthyear < tmnow->tm_year - 98 || ud.birthyear > tmnow->tm_year - 3);
+            i++;
 
-        do{
-			buf[0] = '\0';
-			sprintf(genbuf, "出生月: (1-12) [%d]: ", ud.birthmonth);
-			getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
-			if(buf[0]) {
-				ud.birthmonth = atoi(buf);
-			}
-		}while (ud.birthmonth < 1 || ud.birthmonth > 12);
-		i++;
+            do {
+                buf[0] = '\0';
+                sprintf(genbuf, "出生月: (1-12) [%d]: ", ud.birthmonth);
+                getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
+                if (buf[0]) {
+                    ud.birthmonth = atoi(buf);
+                }
+            } while (ud.birthmonth < 1 || ud.birthmonth > 12);
+            i++;
 
-        do
-		{
-			buf[0] = '\0';
-			sprintf(genbuf, "出生日: (1-31) [%d]: ", ud.birthday);
-			getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
-			if((buf[0] && atoi(buf) >= 1 && atoi(buf) <= 31))
-				ud.birthday = atoi(buf);
-		}while (!is_valid_date(ud.birthyear + 1900,
-					ud.birthmonth,
-					ud.birthday));
-		i++;
+            do {
+                buf[0] = '\0';
+                sprintf(genbuf, "出生日: (1-31) [%d]: ", ud.birthday);
+                getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
+                if ((buf[0] && atoi(buf) >= 1 && atoi(buf) <= 31))
+                    ud.birthday = atoi(buf);
+            } while (!is_valid_date(ud.birthyear + 1900,
+                                    ud.birthmonth,
+                                    ud.birthday));
+            i++;
 #endif
 
-        if (real) {
-	usertitle:
-	     sprintf(genbuf, "当前职务: %s[%d](可以直接输入职务，输入0除去职务): ", get_user_title(u->title),u->title);
-         getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
-         if (buf[0]) {
-            if (!strcmp(buf, "0")) {
-                newinfo.title = 0;
-            } else {
-                unsigned char ititle,tflag;
-                ititle = atoi(buf);
-                if (ititle > 0) {
-                    newinfo.title = ititle;
-                } else {
-                    ititle=0;tflag=0;
-                    do{
-                        ititle++;
-                        if(!strcmp(buf,get_user_title(ititle))){
-                            newinfo.title=ititle;
-                            tflag=1;
-                            break;
+            if (real) {
+usertitle:
+                sprintf(genbuf, "当前职务: %s[%d](可以直接输入职务，输入0除去职务): ", get_user_title(u->title),u->title);
+                getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
+                if (buf[0]) {
+                    if (!strcmp(buf, "0")) {
+                        newinfo.title = 0;
+                    } else {
+                        unsigned char ititle,tflag;
+                        ititle = atoi(buf);
+                        if (ititle > 0) {
+                            newinfo.title = ititle;
+                        } else {
+                            ititle=0;tflag=0;
+                            do {
+                                ititle++;
+                                if (!strcmp(buf,get_user_title(ititle))) {
+                                    newinfo.title=ititle;
+                                    tflag=1;
+                                    break;
+                                }
+                            } while (ititle<255);
+                            if (!tflag) {
+                                prints("职务表内没有此职务，请先修改用户职务表\n");
+                                pressreturn();
+                                i--;
+                                goto usertitle;
+                            }
                         }
-                    }while(ititle<255);
-                    if(!tflag){
-                        prints("职务表内没有此职务，请先修改用户职务表\n");
-                        pressreturn();
-                        i--;
-                        goto usertitle;
                     }
                 }
-            }
-        }
-            sprintf(genbuf, "真实Email[%s]: ", ud.realemail);
-            getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
-            if (buf[0])
-                strncpy(ud.realemail, buf, STRLEN - 16);
-            sprintf(genbuf, "上线次数 [%d]: ", u->numlogins);
-            getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
-            if (atoi(buf) > 0)
-                newinfo.numlogins = atoi(buf);
-            sprintf(genbuf, "文章数目 [%d]: ", u->numposts);
-            getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
-             {
-                int lres;
+                sprintf(genbuf, "真实Email[%s]: ", ud.realemail);
+                getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
+                if (buf[0])
+                    strncpy(ud.realemail, buf, STRLEN - 16);
+                sprintf(genbuf, "上线次数 [%d]: ", u->numlogins);
+                getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
+                if (atoi(buf) > 0)
+                    newinfo.numlogins = atoi(buf);
+                sprintf(genbuf, "文章数目 [%d]: ", u->numposts);
+                getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
+                {
+                    int lres;
 
-                lres = atoi(buf);
-                if (lres > 0 || ('\0' == buf[1] && '0' == *buf))
-                    newinfo.numposts = lres;
-            }
-            
-                /*            if( atoi( buf ) > 0 ) newinfo.numposts = atoi( buf ); */ 
+                    lres = atoi(buf);
+                    if (lres > 0 || ('\0' == buf[1] && '0' == *buf))
+                        newinfo.numposts = lres;
+                }
+
+                /*            if( atoi( buf ) > 0 ) newinfo.numposts = atoi( buf ); */
                 sprintf(genbuf, "将注册日期提前" REGISTER_WAIT_TIME_NAME " [Y/N]");
-            getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
-            if (buf[0] == 'y' || buf[0] == 'Y')
-                newinfo.firstlogin -= REGISTER_WAIT_TIME;
-            sprintf(genbuf, "将最近光临日期设置为今天吗？[Y/N]");
-            getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
-            if (buf[0] == 'y' || buf[0] == 'Y')
-                newinfo.lastlogin = time(0);
-        }
-        break;
+                getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
+                if (buf[0] == 'y' || buf[0] == 'Y')
+                    newinfo.firstlogin -= REGISTER_WAIT_TIME;
+                sprintf(genbuf, "将最近光临日期设置为今天吗？[Y/N]");
+                getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
+                if (buf[0] == 'y' || buf[0] == 'Y')
+                    newinfo.lastlogin = time(0);
+            }
+            break;
 #ifndef SECONDSITE
-    case '3':
-        if (!real) {
-			end_mmapfile(um, sizeof(struct usermemo), -1);
-            clear();
-            return 0;
-        }
-        
-            /* Bigman 2000.10.2 修改使用者ID位数不够 */ 
+        case '3':
+            if (!real) {
+                end_mmapfile(um, sizeof(struct usermemo), -1);
+                clear();
+                return 0;
+            }
+
+            /* Bigman 2000.10.2 修改使用者ID位数不够 */
             getdata(i++, 0, "新的使用者代号: ", genbuf, IDLEN + 1, DOECHO, NULL, true);
-	 if (strncmp(genbuf,u->userid, IDLEN+2)&&!strncasecmp(genbuf,u->userid, IDLEN+2)) tmpchange = 1;
-        if (*genbuf != '\0') {
-            if (searchuser(genbuf) && !tmpchange) {
-                prints("\n错误! 已经有同样 ID 的使用者\n");
-                fail++;
-                break;
+            if (strncmp(genbuf,u->userid, IDLEN+2)&&!strncasecmp(genbuf,u->userid, IDLEN+2)) tmpchange = 1;
+            if (*genbuf != '\0') {
+                if (searchuser(genbuf) && !tmpchange) {
+                    prints("\n错误! 已经有同样 ID 的使用者\n");
+                    fail++;
+                    break;
+                } else {
+                    strncpy(newinfo.userid, genbuf, IDLEN + 2);
+                    strncpy(ud.userid, genbuf, IDLEN + 2);
+                }
             } else {
-                strncpy(newinfo.userid, genbuf, IDLEN + 2);
-				strncpy(ud.userid, genbuf, IDLEN + 2);
+                break;
             }
-        } else {
-            break;
-        }
-        
-            /* fall throw, must change passwd for newid, by wwj 2001/5/7 */ 
-    case '2':
-        if (!real) {
-            getdata(i++, 0, "请输入原密码: ", buf, 39, NOECHO, NULL, true);
-            if (*buf == '\0' || !checkpasswd2(buf, u)) {
-                prints("\n\n很抱歉, 您输入的密码不正确。\n");
+
+            /* fall throw, must change passwd for newid, by wwj 2001/5/7 */
+        case '2':
+            if (!real) {
+                getdata(i++, 0, "请输入原密码: ", buf, 39, NOECHO, NULL, true);
+                if (*buf == '\0' || !checkpasswd2(buf, u)) {
+                    prints("\n\n很抱歉, 您输入的密码不正确。\n");
+                    fail++;
+                    break;
+                }
+            }
+            getdata(i++, 0, "请设定新密码: ", buf, 39, NOECHO, NULL, true);
+            if (buf[0] == '\0') {
+                prints("\n\n密码设定取消, 继续使用旧密码\n");
+                if (ans[0]!='3')
+                    fail++;
+                break;
+            }
+            getdata(i++, 0, "请重新输入新密码: ", genbuf, 39, NOECHO, NULL, true);
+            if (strcmp(buf, genbuf)) {
+                prints("\n\n两个密码不一致, 无法设定新密码。\n");
                 fail++;
                 break;
             }
-        }
-        getdata(i++, 0, "请设定新密码: ", buf, 39, NOECHO, NULL, true);
-        if (buf[0] == '\0') {
-            prints("\n\n密码设定取消, 继续使用旧密码\n");
-            if(ans[0]!='3')
-                fail++;
-            break;
-        }
-        getdata(i++, 0, "请重新输入新密码: ", genbuf, 39, NOECHO, NULL, true);
-        if (strcmp(buf, genbuf)) {
-            prints("\n\n两个密码不一致, 无法设定新密码。\n");
-            fail++;
-            break;
-        }
-        
-            /*      Added by cityhunter to deny others to modify SYSOP's passwd */ 
-            if (real && (strcmp(u->userid, "SYSOP") == 0))
-             {
-            prints("\n\n错误!系统禁止修改SYSOP的密码," NAME_POLICE "正在来的路上 :)");
-            pressreturn();
-            clear();
-			end_mmapfile(um, sizeof(struct usermemo), -1);
-            return 0;
+
+            /*      Added by cityhunter to deny others to modify SYSOP's passwd */
+            if (real && (strcmp(u->userid, "SYSOP") == 0)) {
+                prints("\n\n错误!系统禁止修改SYSOP的密码," NAME_POLICE "正在来的路上 :)");
+                pressreturn();
+                clear();
+                end_mmapfile(um, sizeof(struct usermemo), -1);
+                return 0;
             }
-        
-            /* end of this addin */ 
+
+            /* end of this addin */
             setpasswd(buf, &newinfo);
 #ifdef NEWSMTH
-            if(!strcmp(getCurrentUser()->userid, newinfo.userid))
+            if (!strcmp(getCurrentUser()->userid, newinfo.userid))
                 strcpy(getSession()->passwd, buf);
 #endif
-        break;
+            break;
 #endif /* SECONDSITE */
-    default:
-        clear();
-		end_mmapfile(um, sizeof(struct usermemo), -1);
-        return 0;
+        default:
+            clear();
+            end_mmapfile(um, sizeof(struct usermemo), -1);
+            return 0;
     }
     if (fail != 0) {
         pressreturn();
         clear();
-		end_mmapfile(um, sizeof(struct usermemo), -1);
+        end_mmapfile(um, sizeof(struct usermemo), -1);
         return 0;
     }
-    for (;;)
-	{
+    for (;;) {
         getdata(t_lines - 1, 0, "确定要改变吗?  (Yes or No): ", ans, 2, DOECHO, NULL, true);
         if (*ans == 'n' || *ans == 'N')
             break;
         if (*ans == 'y' || *ans == 'Y') {
-			if (!real) {
+            if (!real) {
                 update_user(&newinfo, getSession()->currentuid, 1);
                 if (strcmp(newinfo.username, uinfo.username)) {
                     strcpy(uinfo.username, newinfo.username);
                     UPDATE_UTMP_STR(username, uinfo);
                 }
             }
-	     if (strcmp(u->userid, newinfo.userid)) {
+            if (strcmp(u->userid, newinfo.userid)) {
                 char src[STRLEN], dst[STRLEN];
                 if (id_invalid(newinfo.userid) == 1) {
                     prints("帐号必须由英文字母或数字组成，并且第一个字符必须是英文字母!\n");
@@ -381,38 +376,35 @@ int uinfo_query(struct userec *u, int real, int unum)
                 } else {
                     setmailpath(src, u->userid);
                     setmailpath(dst, newinfo.userid);
-                
+
                     /*
                        sprintf(genbuf,"mv %s %s",src, dst);
-                     */ 
+                     */
                     f_mv(src, dst);
                     sethomepath(src, u->userid);
                     sethomepath(dst, newinfo.userid);
-                
+
                     /*
                        sprintf(genbuf,"mv %s %s",src ,dst);
-                     */ 
+                     */
                     f_mv(src, dst);
                     sprintf(src, "tmp/email/%s", u->userid);
                     unlink(src);
                     setuserid(unum, newinfo.userid);
                 }
             }
-            
-                /* added by netty to automatically send a mail to new user. */ 
-                if ((netty_check == 1))
-                 {
-                if ((strchr(ud.email, '@') != NULL) && 
-                     (!strstr(ud.email, "@firebird.cs")) && (!strstr(ud.email, "@bbs.")) && (!invalidaddr(ud.email)) && (!strstr(ud.email, ".bbs@"))) {
-                    if ((emailfile = sysconf_str("EMAILFILE")) != NULL)
-                         {
+
+            /* added by netty to automatically send a mail to new user. */
+            if ((netty_check == 1)) {
+                if ((strchr(ud.email, '@') != NULL) &&
+                        (!strstr(ud.email, "@firebird.cs")) && (!strstr(ud.email, "@bbs.")) && (!invalidaddr(ud.email)) && (!strstr(ud.email, ".bbs@"))) {
+                    if ((emailfile = sysconf_str("EMAILFILE")) != NULL) {
                         code = (time(0) / 2) + (rand() / 10);
                         sethomefile(genbuf, u->userid, "mailcheck");
-                        if ((dp = fopen(genbuf, "w")) == NULL)
-                             {
+                        if ((dp = fopen(genbuf, "w")) == NULL) {
                             fclose(dp);
                             return -1;
-                            }
+                        }
                         fprintf(dp, "%9.9lu\n", code);
                         fclose(dp);
                         sprintf(genbuf, "/usr/lib/sendmail -f SYSOP@%s %s ", email_domain(), ud.email);
@@ -436,50 +428,48 @@ int uinfo_query(struct userec *u, int real, int unum)
                         while (fgets(genbuf, 255, fin) != NULL) {
                             if (genbuf[0] == '.' && genbuf[1] == '\n')
                                 fputs(". \n", fout);
-                            
+
                             else
                                 fputs(genbuf, fout);
                         }
                         fprintf(fout, ".\n");
                         fclose(fin);
                         pclose(fout);
-                        }
-                } else
-                     {
-                    if (sysconf_str("EMAILFILE") != NULL)
-                         {
+                    }
+                } else {
+                    if (sysconf_str("EMAILFILE") != NULL) {
                         move(t_lines - 5, 0);
                         prints("\n你的电子邮件地址 【\033[33m%s\033[m】\n", ud.email);
                         prints("并非 Unix 帐号，系统不会投递身份确认信，请到\033[32m工具箱\033[m中修改..\n");
                         pressanykey();
-                        }
                     }
                 }
+            }
             update_user(&newinfo, unum, 1);
-			if(strcmp(um->ud.realname, ud.realname)){
-    			newbbslog(BBSLOG_USER, "ChangeName '%s' to '%s'", um->ud.realname, ud.realname);
-			}
-			memcpy(&(um->ud), &ud, sizeof(ud));
-			write_userdata(newinfo.userid, &ud);
-            if (real)
-                 {
+            if (strcmp(um->ud.realname, ud.realname)) {
+                newbbslog(BBSLOG_USER, "ChangeName '%s' to '%s'", um->ud.realname, ud.realname);
+            }
+            memcpy(&(um->ud), &ud, sizeof(ud));
+            write_userdata(newinfo.userid, &ud);
+            if (real) {
                 char secu[STRLEN];
 
                 if (strcmp(u->userid, newinfo.userid))
                     sprintf(secu, "%s 的 ID 被 %s 改为 %s", u->userid, getCurrentUser()->userid, newinfo.userid);   /*Haohmaru.99.5.6 */
-                
+
                 else
                     sprintf(secu, "修改 %s 的基本资料或密码。", u->userid);
                 securityreport(secu, &newinfo, NULL, getSession());
             }
             break;             /*Haohmaru.98.01.10.faint...Luzi加个for循环也不break! */
         }
-	} /* for(;;) */
+    } /* for(;;) */
     clear();
-	end_mmapfile(um, sizeof(struct usermemo), -1);
+    end_mmapfile(um, sizeof(struct usermemo), -1);
     return 0;
 }
-int x_info(void){
+int x_info(void)
+{
     modify_user_mode(GMENU);
     disply_userinfo(getCurrentUser(), 1);
     if (!strcmp("guest", getCurrentUser()->userid)) {
@@ -491,13 +481,13 @@ int x_info(void){
 }
 
 void getfield(line, info, desc, buf, len)
-    int line, len;
-    char *info, *desc, *buf;
+int line, len;
+char *info, *desc, *buf;
 {
     char prompt[STRLEN];
 
-    
-    /*    sprintf( genbuf, "  原先设定: %-46.46s (%s)", buf, info ); */ 
+
+    /*    sprintf( genbuf, "  原先设定: %-46.46s (%s)", buf, info ); */
     sprintf(genbuf, "  原先设定: %-20.20s %s", buf, info);
     move(line, 0);
     prints(genbuf);
@@ -511,7 +501,8 @@ void getfield(line, info, desc, buf, len)
     prints("  %s: %s\n", desc, buf);
     clrtoeol();
 }
-int x_fillform(void){
+int x_fillform(void)
+{
     char rname[NAMELEN], addr[STRLEN];
     char phone[STRLEN], career[STRLEN], birth[STRLEN];
     char ans[5], *mesg, *ptr;
@@ -542,22 +533,21 @@ int x_fillform(void){
 #else
     if ((time(0) - getCurrentUser()->firstlogin) < REGISTER_WAIT_TIME)
 #endif
-{
+    {
         prints("您首次登入本站未满" REGISTER_WAIT_TIME_NAME "...");
         prints("请先四处熟悉一下，在满" REGISTER_WAIT_TIME_NAME "以后再填写注册单。");
         pressreturn();
         return -1;
-	}
+    }
 #ifdef HAVE_ACTIVATION
-    if (!(getCurrentUser()->flags & ACTIVATED_FLAG))
-    {
+    if (!(getCurrentUser()->flags & ACTIVATED_FLAG)) {
         prints("您还没有激活帐号,请先激活帐号再填写注册单.上站时将提示激活步骤.");
         pressreturn();
         return -1;
     }
 #endif
 
-	if ((fn = fopen("new_register", "r")) != NULL) {
+    if ((fn = fopen("new_register", "r")) != NULL) {
         while (fgets(genbuf, STRLEN, fn) != NULL) {
             if ((ptr = strchr(genbuf, '\n')) != NULL)
                 *ptr = '\0';
@@ -570,9 +560,9 @@ int x_fillform(void){
         }
         fclose(fn);
     }
-    
-	/* added by KCN 1999.10.25 */ 
-	ansimore("etc/register.note", false);
+
+    /* added by KCN 1999.10.25 */
+    ansimore("etc/register.note", false);
     getdata(t_lines - 1, 0, "您确定要填写注册单吗 (Y/N)? [N]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] != 'Y' && ans[0] != 'y')
         return -1;
@@ -618,9 +608,9 @@ int x_fillform(void){
     }
     strncpy(ud.realname, rname, NAMELEN);
     strncpy(ud.address, addr, STRLEN);
-	write_userdata(getCurrentUser()->userid, &ud);
-//	memcpy(&curruserdata,&ud,sizeof(ud));
-	memcpy(&(getSession()->currentmemo->ud),&ud,sizeof(ud));
+    write_userdata(getCurrentUser()->userid, &ud);
+// memcpy(&curruserdata,&ud,sizeof(ud));
+    memcpy(&(getSession()->currentmemo->ud),&ud,sizeof(ud));
     if ((fn = fopen("new_register", "a")) != NULL) {
         now = time(NULL);
         fprintf(fn, "usernum: %d, %s", getSession()->currentuid, ctime(&now));
@@ -676,7 +666,7 @@ int x_fillform(void){
 #define MU_GET(r,p,b,l)                 MU_GET_CORE(r,p,b,l,DOECHO)
 #define MU_GETPWD(r,p,b,l)              MU_GET_CORE(r,p,b,l,NOECHO)
 
-struct mu_item{
+struct mu_item {
     int x;
     int y;
     int key;
@@ -685,29 +675,31 @@ struct mu_item{
     const char *menu;
 };
 
-struct mu_arg{
+struct mu_arg {
     enum {MU_MENU_INIT,MU_MENU_SELECT,MU_MENU_RESET,MU_MENU_QUIT} type;
     const unsigned int *access;
     const struct mu_item *item;
 };
 
-struct mu_so_arg{
+struct mu_so_arg {
     char from[18][IPLEN];
     int count;
 };
 
-struct mu_so_key{
+struct mu_so_key {
     const char *value;
     int count;
 };
 
-static inline int mu_digit_string(const char *s){
-    while(isdigit(*s++))
+static inline int mu_digit_string(const char *s)
+{
+    while (isdigit(*s++))
         continue;
     return (!*--s);
 }
 
-static inline int mu_show_help(int n){
+static inline int mu_show_help(int n)
+{
     static const char *help[MU_ITEM]={
         "选择此项可进行用户名称修改相关操作...",
         "选择此项可进行用户密码修改相关操作...",
@@ -738,7 +730,8 @@ static inline int mu_show_help(int n){
     return 0;
 }
 
-static inline int mu_show_hint(const char *h){
+static inline int mu_show_hint(const char *h)
+{
     char buf[MU_LENGTH];
     snprintf(buf,MU_LENGTH,"  原始设定值 [%-.64s]",h);
     move((t_lines-1),0);
@@ -747,27 +740,29 @@ static inline int mu_show_hint(const char *h){
     return 0;
 }
 
-static inline int mu_get_time_desc(time_t *timestamp,char *buf,int from,int length){
+static inline int mu_get_time_desc(time_t *timestamp,char *buf,int from,int length)
+{
     char *p;
-    if(!(p=ctime(timestamp))){
+    if (!(p=ctime(timestamp))) {
         buf[0]=0;
         return -1;
     }
     snprintf(buf,length,"%s",&p[from]);
-    if((p=strchr(buf,'\n')))
+    if ((p=strchr(buf,'\n')))
         *p=0;
     return 0;
 }
 
-static int mu_show_online_list(struct user_info *info,void *varg,int pos){
+static int mu_show_online_list(struct user_info *info,void *varg,int pos)
+{
     struct mu_so_arg *arg=(struct mu_so_arg*)varg;
     char buf[MU_LENGTH];
 #ifndef HAVE_IPV6_SMTH
     char desc[32];
 #endif /* ! HAVE_IPV6_SMTH */
-    if(!(info->active))
+    if (!(info->active))
         return 0;
-    if(!(arg->count<18))
+    if (!(arg->count<18))
         return 0;
     move((arg->count+4),0);
 #ifndef HAVE_IPV6_SMTH
@@ -781,11 +776,12 @@ static int mu_show_online_list(struct user_info *info,void *varg,int pos){
     return 0;
 }
 
-static int mu_show_online_generate_user(struct userec *user,void *varg){
+static int mu_show_online_generate_user(struct userec *user,void *varg)
+{
     struct mu_so_key *key=(struct mu_so_key*)varg;
-    if(!(user->userid[0]))
+    if (!(user->userid[0]))
         return 0;
-    if(!strcmp(key->value,user->lasthost)&&(key->count<100)){
+    if (!strcmp(key->value,user->lasthost)&&(key->count<100)) {
         move((3+(key->count%20)),(2+((key->count/20)<<4)));
         prints("\033[1;37m%s\033[m",user->userid);
         key->count++;
@@ -793,11 +789,12 @@ static int mu_show_online_generate_user(struct userec *user,void *varg){
     return 0;
 }
 
-static int mu_show_online_generate_utmp(struct user_info *info,void *varg,int pos){
+static int mu_show_online_generate_utmp(struct user_info *info,void *varg,int pos)
+{
     struct mu_so_key *key=(struct mu_so_key*)varg;
-    if(!(info->active))
+    if (!(info->active))
         return 0;
-    if(!strcmp(key->value,info->from)&&(key->count<100)){
+    if (!strcmp(key->value,info->from)&&(key->count<100)) {
         move((3+(key->count%20)),(2+((key->count/20)<<4)));
         prints((info->invisible?"\033[1;32m%s\033[m":"\033[1;37m%s\033[m"),info->userid);
         key->count++;
@@ -805,7 +802,8 @@ static int mu_show_online_generate_utmp(struct user_info *info,void *varg,int po
     return 0;
 }
 
-static inline int mu_show_online(int uid,int mode){
+static inline int mu_show_online(int uid,int mode)
+{
     struct mu_so_arg arg;
     struct mu_so_key key;
     const struct userec *urec;
@@ -813,7 +811,7 @@ static inline int mu_show_online(int uid,int mode){
     int use_utmp_method;
     move(2,0);
     clrtobot();
-    if(!(urec=getuserbynum(uid))||!(urec->userid[0])){
+    if (!(urec=getuserbynum(uid))||!(urec->userid[0])) {
         MU_PUT(2,MU_MSG(R,"无法获取所请求用户的信息..."));
         return -1;
     }
@@ -833,15 +831,15 @@ static inline int mu_show_online(int uid,int mode){
     memset(&arg,0,sizeof(struct mu_so_arg));
     apply_utmp(mu_show_online_list,0,urec->userid,&arg);
     move((t_lines-1),0);
-    if(!mode){
+    if (!mode) {
         prints("\033[0;32;47m%s\033[K\033[m","列示完成, 按 <Enter> 键退出...");
         WAIT_RETURN;
         return 0;
     }
     prints("\033[0;32;47m%s\033[K\033[m","列示完成, 按 <Enter> 键退出, 按 <A>/<L> 键进行来源分析...");
     use_utmp_method=0;
-    do{
-        switch(igetkey()){
+    do {
+        switch (igetkey()) {
             case '\n':
             case '\r':
                 return 1;
@@ -856,17 +854,15 @@ static inline int mu_show_online(int uid,int mode){
                 continue;
         }
         break;
-    }
-    while(1);
+    } while (1);
     move((t_lines-1),0);
     clrtoeol();
     getdata((t_lines-1),0,MU_MSG(Y,"请输入需要进行分析的项目序号 [0]: "),buf,3,DOECHO,NULL,true);
     trimstr(buf);
-    if(isdigit(buf[0])){
+    if (isdigit(buf[0])) {
         buf[0]=atoi(buf);
         buf[0]=((buf[0]>arg.count)?0:buf[0]);
-    }
-    else
+    } else
         buf[0]=0;
     key.value=(buf[0]?arg.from[buf[0]-1]:urec->lasthost);
     key.count=0;
@@ -874,7 +870,7 @@ static inline int mu_show_online(int uid,int mode){
     clrtobot();
     snprintf(buf,MU_LENGTH,"以下为%s登录来源为 %s 的用户...",(use_utmp_method?"当前在线":"最近访问"),key.value);
     prints("\033[0;32;47m%s\033[K\033[m",buf);
-    if(use_utmp_method)
+    if (use_utmp_method)
         apply_ulist(mu_show_online_generate_utmp,&key);
     else
         apply_users(mu_show_online_generate_user,&key);
@@ -884,7 +880,8 @@ static inline int mu_show_online(int uid,int mode){
     return 2;
 }
 
-int mu_generate_level(int row,int col,unsigned int *level,unsigned int init){
+int mu_generate_level(int row,int col,unsigned int *level,unsigned int init)
+{
 #define MU_GL_N                         "\033[1;33m%c\033[m"
 #define MU_GL_A                         "\033[1;32m%c\033[m"
 #define MU_GL_D                         "\033[1;31m%c\033[m"
@@ -896,15 +893,15 @@ int mu_generate_level(int row,int col,unsigned int *level,unsigned int init){
     *level=(perm=init);
     move(row,col);
     prints(MU_GL_B,'[');
-    for(i=0,mask=0x01;i<NUMPERMS;i++,mask<<=1)
+    for (i=0,mask=0x01;i<NUMPERMS;i++,mask<<=1)
         prints(((perm&mask)?MU_GL_N:MU_GL_U),XPERMSTR[i]);
     prints(MU_GL_B,']');
     next=0;
-    do{
+    do {
         i=next;
         mask=(1<<i);
         move(row,(col+(i+1)));
-        if((perm^init)&mask)
+        if ((perm^init)&mask)
             prints(((perm&mask)?MU_GL_C(A):MU_GL_C(D)),XPERMSTR[i]);
         else
             prints(((perm&mask)?MU_GL_C(N):MU_GL_C(U)),XPERMSTR[i]);
@@ -912,8 +909,8 @@ int mu_generate_level(int row,int col,unsigned int *level,unsigned int init){
         clrtoeol();
         prints(" \033[1;36m%s\033[m",permstrings[i]);
         move(row,2);
-        do{
-            switch((key=igetkey())){
+        do {
+            switch ((key=igetkey())) {
                 case KEY_ESC:
                     return -1;
                 case '\n':
@@ -931,43 +928,41 @@ int mu_generate_level(int row,int col,unsigned int *level,unsigned int init){
                     break;
                 case KEY_HOME:
                     next=0;
-                    if(next==i)
+                    if (next==i)
                         continue;
                     break;
                 case KEY_END:
                     next=(NUMPERMS-1);
-                    if(next==i)
+                    if (next==i)
                         continue;
                     break;
                 default:
-                    for(next=(NUMPERMS-1);!(next<0);next--)
-                        if(key==XPERMSTR[next])
+                    for (next=(NUMPERMS-1);!(next<0);next--)
+                        if (key==XPERMSTR[next])
                             break;
-                    if(next==-1&&isalpha(key)){
-                        for(next=(NUMPERMS-1);!(next<0);next--)
-                            if(toupper(key)==toupper(XPERMSTR[next]))
+                    if (next==-1&&isalpha(key)) {
+                        for (next=(NUMPERMS-1);!(next<0);next--)
+                            if (toupper(key)==toupper(XPERMSTR[next]))
                                 break;
                     }
-                    if(next==-1){
+                    if (next==-1) {
                         next=i;
                         continue;
                     }
-                    if(next==i)
+                    if (next==i)
                         continue;
                     break;
             }
             break;
-        }
-        while(1);
-        if(next!=i){
+        } while (1);
+        if (next!=i) {
             move(row,(col+(i+1)));
-            if((perm^init)&mask)
+            if ((perm^init)&mask)
                 prints(((perm&mask)?MU_GL_A:MU_GL_D),XPERMSTR[i]);
             else
                 prints(((perm&mask)?MU_GL_N:MU_GL_U),XPERMSTR[i]);
         }
-    }
-    while(1);
+    } while (1);
     return 1;
 #undef MU_GL_N
 #undef MU_GL_A
@@ -977,17 +972,18 @@ int mu_generate_level(int row,int col,unsigned int *level,unsigned int init){
 #undef MU_GL_C
 }
 
-static inline int mu_process_directories(const char *ouserid,const char *nuserid){
+static inline int mu_process_directories(const char *ouserid,const char *nuserid)
+{
     char src[MU_LENGTH],dst[MU_LENGTH];
     setmailpath(dst,nuserid);
     setmailpath(src,ouserid);
     my_f_rm(dst);
-    if(f_mv(src,dst)==-1)
+    if (f_mv(src,dst)==-1)
         return -1;
     sethomepath(dst,nuserid);
     sethomepath(src,ouserid);
     my_f_rm(dst);
-    if(f_mv(src,dst)==-1){
+    if (f_mv(src,dst)==-1) {
         return -1;
     }
     snprintf(dst,MU_LENGTH,"tmp/email/%s",ouserid);
@@ -995,17 +991,19 @@ static inline int mu_process_directories(const char *ouserid,const char *nuserid
     return 0;
 }
 
-static int mu_menu_on_select(struct _select_def *conf){
+static int mu_menu_on_select(struct _select_def *conf)
+{
     struct mu_arg *arg=(struct mu_arg*)conf->arg;
     const struct mu_item *item=&(arg->item[conf->pos-1]);
-    if(item->access){
+    if (item->access) {
         arg->type=MU_MENU_SELECT;
         return SHOW_SELECT;
     }
     return SHOW_CONTINUE;
 }
 
-static int mu_menu_show(struct _select_def *conf,int pos){
+static int mu_menu_show(struct _select_def *conf,int pos)
+{
     struct mu_arg *arg=(struct mu_arg*)conf->arg;
     const struct mu_item *item=&(arg->item[pos-1]);
     move(item->y,item->x);
@@ -1013,28 +1011,29 @@ static int mu_menu_show(struct _select_def *conf,int pos){
     return SHOW_CONTINUE;
 }
 
-static int mu_menu_pre_key(struct _select_def *conf,int *key){
+static int mu_menu_pre_key(struct _select_def *conf,int *key)
+{
     struct mu_arg *arg=(struct mu_arg*)conf->arg;
     int pos=conf->pos;
     unsigned int current=(1<<(pos-1));
     unsigned int access=((*(arg->access))&(~current));
-    switch(*key){
+    switch (*key) {
         case KEY_UP:
-            if(!(access&(current-1))){
+            if (!(access&(current-1))) {
                 pos=MU_ITEM;
                 current=(1<<(pos-1));
             }
-            while(!(access&current)){
+            while (!(access&current)) {
                 pos--;
                 current>>=1;
             }
             break;
         case KEY_DOWN:
-            if(!(access&~(current-1))){
+            if (!(access&~(current-1))) {
                 pos=1;
                 current=(1<<(pos-1));
             }
-            while(!(access&current)){
+            while (!(access&current)) {
                 pos++;
                 current<<=1;
             }
@@ -1046,57 +1045,60 @@ static int mu_menu_pre_key(struct _select_def *conf,int *key){
     return SHOW_SELCHANGE;
 }
 
-static int mu_menu_key(struct _select_def *conf,int key){
+static int mu_menu_key(struct _select_def *conf,int key)
+{
     struct mu_arg *arg=(struct mu_arg*)conf->arg;
     const struct mu_item *item=arg->item;
     int value,index;
-    if(key==KEY_ESC){
+    if (key==KEY_ESC) {
         arg->type=MU_MENU_QUIT;
         return SHOW_QUIT;
     }
-    if(key==MU_KEY_RESET&&item[conf->pos-1].access){
+    if (key==MU_KEY_RESET&&item[conf->pos-1].access) {
         arg->type=MU_MENU_RESET;
         return SHOW_QUIT;
     }
-    for(value=toupper(key),index=0;index<MU_ITEM;index++)
-        if(item[index].access&&item[index].key==value){
+    for (value=toupper(key),index=0;index<MU_ITEM;index++)
+        if (item[index].access&&item[index].key==value) {
             conf->new_pos=(index+1);
             return SHOW_SELCHANGE;
         }
     return SHOW_CONTINUE;
 }
 
-static int mu_menu_on_change(struct _select_def *conf,int new_pos){
+static int mu_menu_on_change(struct _select_def *conf,int new_pos)
+{
     mu_show_help(new_pos-1);
     return SHOW_CONTINUE;
 }
 
-int modify_userinfo(int uid,int mode){
-/* add defines by jiangjun, 2008-09-01 */
-#define MOD_USERID      0  
-#define MOD_PASSWD      1  
-#define MOD_USERNAME    2  
-#define MOD_REALNAME    3  
-#define MOD_GENDER      4  
-#define MOD_BIRTHDAY    5  
-#define MOD_ADDRESS     6  
-#define MOD_EMAIL       7  
-#define MOD_TELEPHONE   8  
-#define MOD_TITLE       9  
-#define MOD_REALEMAIL   10 
-#define MOD_FIRSTLOGIN  11 
-#define MOD_LASTLOGIN   12 
-#define MOD_LASTHOST    13 
-#define MOD_NUMLOGINS   14 
-#define MOD_NUMPOSTS    15 
-#define MOD_STAY        16 
-#define MOD_SCORE       17 
-#define MOD_USERLEVEL   18 
-#define MOD_EXIT        19 
+int modify_userinfo(int uid,int mode)
+{
+    /* add defines by jiangjun, 2008-09-01 */
+#define MOD_USERID      0
+#define MOD_PASSWD      1
+#define MOD_USERNAME    2
+#define MOD_REALNAME    3
+#define MOD_GENDER      4
+#define MOD_BIRTHDAY    5
+#define MOD_ADDRESS     6
+#define MOD_EMAIL       7
+#define MOD_TELEPHONE   8
+#define MOD_TITLE       9
+#define MOD_REALEMAIL   10
+#define MOD_FIRSTLOGIN  11
+#define MOD_LASTLOGIN   12
+#define MOD_LASTHOST    13
+#define MOD_NUMLOGINS   14
+#define MOD_NUMPOSTS    15
+#define MOD_STAY        16
+#define MOD_SCORE       17
+#define MOD_USERLEVEL   18
+#define MOD_EXIT        19
 
 #define MU_ACCESS_USER                  (1<<MOD_PASSWD)   | (1<<MOD_USERNAME) | (1<<MOD_REALNAME) | (1<<MOD_GENDER)    |  \
-                                        (1<<MOD_BIRTHDAY) | (1<<MOD_ADDRESS)  | (1<<MOD_EMAIL)    | (1<<MOD_TELEPHONE) |  \
-                                        (1<<MOD_LASTHOST) | (1<<MOD_STAY)     | (1<<MOD_EXIT)
+    (1<<MOD_BIRTHDAY) | (1<<MOD_ADDRESS)  | (1<<MOD_EMAIL)    | (1<<MOD_TELEPHONE) |  \
+    (1<<MOD_LASTHOST) | (1<<MOD_STAY)     | (1<<MOD_EXIT)
 #define MU_ACCESS_ADMIN                 ((1<<MU_ITEM)-1)
 #define MU_ACCESS_READ                  (1<<MOD_LASTHOST) | (1<<MOD_STAY)     | (1<<MOD_EXIT)
 #define MU_ACCESS(d)                    (access&(1<<(d)))
@@ -1190,7 +1192,7 @@ int modify_userinfo(int uid,int mode){
     int i,j,k,loop,pos,mail;
     unsigned int access,change,verify,level;
     time_t current;
-    switch(mode){
+    switch (mode) {
         case 0:
             access=MU_ACCESS_USER;
             break;
@@ -1213,22 +1215,22 @@ int modify_userinfo(int uid,int mode){
     clear();
     move(0,0);
     prints("%s",title);
-    if(!(urec=getuserbynum(uid))||!(urec->userid[0])){
+    if (!(urec=getuserbynum(uid))||!(urec->userid[0])) {
         MU_PUT(2,MU_MSG(R,"所请求的用户信息不正确..."));
         return -3;
     }
-    if(!mode&&strcmp(urec->userid,getCurrentUser()->userid)){
+    if (!mode&&strcmp(urec->userid,getCurrentUser()->userid)) {
         MU_PUT(2,MU_MSG(R,"当前的调用类型错误..."));
         return -4;
     }
     memcpy(&ouser,urec,sizeof(struct userec));
-    if(read_userdata(urec->userid,&odata)==-1){
+    if (read_userdata(urec->userid,&odata)==-1) {
         MU_PUT(2,MU_MSG(R,"读取用户数据时发生错误..."));
         return -5;
     }
     memcpy(&nuser,&ouser,sizeof(struct userec));
     memcpy(&ndata,&odata,sizeof(struct userdata));
-    for(i=0;i<MU_ITEM;i++){
+    for (i=0;i<MU_ITEM;i++) {
         loc[i].x=2;
         loc[i].y=(2+i);
         item[i].x=loc[i].x;
@@ -1254,7 +1256,7 @@ int modify_userinfo(int uid,int mode){
 #else /* HAVE_BIRTHDAY */
     MU_MENUFORM(MOD_GENDER,N,"%s",(ndata.gender=='M'?"男":"女"));
     snprintf(buf,MU_LENGTH,"%04d 年 %02d 月 %02d 日",(ndata.birthyear+1900),
-        ndata.birthmonth,ndata.birthday);
+             ndata.birthmonth,ndata.birthday);
     MU_MENUFORM(MOD_BIRTHDAY,N,"%s",buf);
 #endif /* ! HAVE_BIRTHDAY */
     MU_MENUFORM(MOD_ADDRESS,N,"%-.64s",ndata.address);
@@ -1270,7 +1272,7 @@ int modify_userinfo(int uid,int mode){
     MU_MENUFORM(MOD_LASTHOST,N,"%s",nuser.lasthost);
     MU_MENUFORM(MOD_NUMLOGINS,N,"%u",nuser.numlogins);
     MU_MENUFORM(MOD_NUMPOSTS,N,"%u",nuser.numposts);
-    if(nuser.stay>3600)
+    if (nuser.stay>3600)
         snprintf(buf,MU_LENGTH,"%ld 小时 %2ld 分钟",(nuser.stay/3600),((nuser.stay%3600)/60));
     else
         snprintf(buf,MU_LENGTH,"%ld 分钟",(nuser.stay/60));
@@ -1284,7 +1286,7 @@ int modify_userinfo(int uid,int mode){
     snprintf(buf,MU_LENGTH,"用户: %d  管理: %d",nuser.score_user,nuser.score_manager);
 #else /* SECONDSITE */
     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
-        "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+                            "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
 #endif
     MU_MENUFORM(MOD_SCORE,N,"%s",buf);
 #endif /* ! NEWSMTH */
@@ -1310,28 +1312,27 @@ int modify_userinfo(int uid,int mode){
     pos=MU_ITEM;
     mail=0;
     change=0;
-    do{
+    do {
         move(1,0);
         clrtobot();
         conf.pos=pos;
         conf.flag=LF_LOOP;
-        if(change)
+        if (change)
             MU_MENUFORM((MU_ITEM-1),R,"%s","<已修改>");
         else
             MU_MENUFORM((MU_ITEM-1),N,"%s","<未修改>");
         mu_show_help(conf.pos-1);
         list_select_loop(&conf);
         pos=conf.pos;
-        if(arg.type==MU_MENU_QUIT){
-            if(change){
+        if (arg.type==MU_MENU_QUIT) {
+            if (change) {
                 MU_GET((MU_ITEM+2),MU_MSG(Y,"放弃修改并退出? [N]: "),buf,1);
-                if(toupper(buf[0])!='Y')
+                if (toupper(buf[0])!='Y')
                     continue;
             }
             return -1;
-        }
-        else if(arg.type==MU_MENU_SELECT){
-            switch((i=(pos-1))){
+        } else if (arg.type==MU_MENU_SELECT) {
+            switch ((i=(pos-1))) {
 #define MU_CURR_ROW                     (i+2)
 #define MU_BREAK_TRIM(s)                if(!((s)[0]))break;trimstr(s)
 #define MU_TRIM_BREAK(s)                trimstr(s);if(!((s)[0]))break
@@ -1340,64 +1341,63 @@ int modify_userinfo(int uid,int mode){
 #ifdef SECONDSITE
                     MU_PUT(MU_CURR_ROW,MU_MSG(C, "一般不要在水木二站修改用户名"));
 #endif
-                    if(!strcmp(nuser.userid,getCurrentUser()->userid)){
+                    if (!strcmp(nuser.userid,getCurrentUser()->userid)) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"无法修改当前登录的用户名..."));
                         break;
                     }
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户名: "),buf,IDLEN);
-                    if(!buf[0]||!strcmp(buf,nuser.userid))
+                    if (!buf[0]||!strcmp(buf,nuser.userid))
                         break;
-                    if(id_invalid(buf)){
+                    if (id_invalid(buf)) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的用户名不合法..."));
                         break;
                     }
-                    if(strcasecmp(buf,ouser.userid)&&searchuser(buf)){
+                    if (strcasecmp(buf,ouser.userid)&&searchuser(buf)) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的用户名已经存在..."));
                         break;
                     }
                 case MOD_PASSWD:
 #ifdef SECONDSITE
-                    if(mode != 1) {
+                    if (mode != 1) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C, "请到水木社区主站修改密码"));
                         break;
-                    }
-                    else
+                    } else
                         MU_PUT(MU_CURR_ROW,MU_MSG(C, "一般不要在水木二站修改密码"));
 #endif
-                    if(!mode){
+                    if (!mode) {
                         MU_GETPWD(MU_CURR_ROW,MU_MSG(Y,"请输入原密码: "),&buf[40],38);
-                        if(!buf[40])
+                        if (!buf[40])
                             break;
-                        if(!checkpasswd2(&buf[40],&ouser)){
+                        if (!checkpasswd2(&buf[40],&ouser)) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的密码不正确..."));
                             break;
                         }
                     }
                     j=0;
-                    while(!j){
+                    while (!j) {
                         MU_GETPWD(MU_CURR_ROW,MU_MSG(Y,"请输入新的密码: "),&buf[40],38);
-                        if(!buf[40]){
+                        if (!buf[40]) {
                             j++;
                             continue;
                         }
                         MU_GETPWD(MU_CURR_ROW,MU_MSG(Y,"请重复输入新的密码: "),&buf[80],38);
-                        if(!buf[80]){
+                        if (!buf[80]) {
                             j++;
                             continue;
                         }
-                        if(strcmp(&buf[40],&buf[80])){
+                        if (strcmp(&buf[40],&buf[80])) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(R,"两次输入的密码不匹配, 请重新输入..."));
                             continue;
                         }
-                        if(!mode&&(strlen(&buf[40])<6)){
+                        if (!mode&&(strlen(&buf[40])<6)) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"新的密码过于简短, 请至少设置 6 位..."));
                             continue;
                         }
                         break;
                     }
-                    if(j)
+                    if (j)
                         break;
-                    if(!i){
+                    if (!i) {
                         snprintf(nuser.userid,(IDLEN+2),"%s",buf);
                         snprintf(ndata.userid,(IDLEN+2),"%s",buf);
                         snprintf(buf,80,"%s \033[0;33m[将会踢出该用户全部登录]\033[m",nuser.userid);
@@ -1406,8 +1406,7 @@ int modify_userinfo(int uid,int mode){
                     setpasswd(&buf[80],&nuser);
                     snprintf(buf,MU_LENGTH,"%s",md5_mask);
                     MU_SET(MOD_PASSWD,user,md5passwd,str,"%s",buf);
-                    if (!i && strcasecmp(nuser.userid, ouser.userid))
-                    {
+                    if (!i && strcasecmp(nuser.userid, ouser.userid)) {
                         nuser.firstlogin = time(NULL);
                         MU_GET_TIME(nuser.firstlogin);
                         MU_SET(MOD_FIRSTLOGIN, user, firstlogin, val, "%s", buf);
@@ -1416,7 +1415,7 @@ int modify_userinfo(int uid,int mode){
                 case MOD_USERNAME:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的昵称: "),buf,(NAMELEN-1));
-                    if(!buf[0])
+                    if (!buf[0])
                         break;
                     snprintf(nuser.username,NAMELEN,"%s",buf);
                     MU_SET(i,user,username,str,"%s",0);
@@ -1443,15 +1442,15 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的出生日期(YYYYMMDD): "),buf,8);
                     MU_TRIM_BREAK(buf);
-                    if(!mu_digit_string(buf)){
+                    if (!mu_digit_string(buf)) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的出生日期不符合预定格式..."));
                         break;
                     }
                     j=MU_PARSE4(buf);
                     buf[0]=MU_PARSE2(&buf[4]);
                     buf[1]=MU_PARSE2(&buf[6]);
-                    if((j<1910||j>2010)||(buf[0]<1||buf[0]>12)||(buf[1]<1
-                        ||buf[1]>(31-(MU_MON_CORR(buf[0])+(buf[0]==2?MU_FEB_CORR(j):0))))){
+                    if ((j<1910||j>2010)||(buf[0]<1||buf[0]>12)||(buf[1]<1
+                            ||buf[1]>(31-(MU_MON_CORR(buf[0])+(buf[0]==2?MU_FEB_CORR(j):0))))) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的出生日期不合法..."));
                         break;
                     }
@@ -1459,12 +1458,12 @@ int modify_userinfo(int uid,int mode){
                     ndata.birthmonth=buf[0];
                     ndata.birthday=buf[1];
                     snprintf(buf,MU_LENGTH,"%04d 年 %02d 月 %02d 日",(ndata.birthyear+1900),
-                        ndata.birthmonth,ndata.birthday);
+                             ndata.birthmonth,ndata.birthday);
                     MU_SET(i,data,birthyear,val,"%s",buf);
-                    if(change&(1<<MOD_BIRTHDAY))
+                    if (change&(1<<MOD_BIRTHDAY))
                         break;
                     MU_SET(i,data,birthmonth,val,"%s",buf);
-                    if(change&(1<<MOD_BIRTHDAY))
+                    if (change&(1<<MOD_BIRTHDAY))
                         break;
                     MU_SET(i,data,birthday,val,"%s",buf);
 #undef MU_PARSE2
@@ -1501,32 +1500,30 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的职务{<名称>|<#序号>|<@>}: "),buf,(USER_TITLE_LEN-1));
                     MU_TRIM_BREAK(buf);
-                    if(buf[0]=='@'&&!buf[1]){
+                    if (buf[0]=='@'&&!buf[1]) {
                         j=select_user_title(NULL);
-                        if(j==-1)
+                        if (j==-1)
                             break;
-                    }
-                    else if(buf[0]=='#'){
-                        if(!mu_digit_string(&buf[1])||(j=atoi(&buf[1]))>255){
+                    } else if (buf[0]=='#') {
+                        if (!mu_digit_string(&buf[1])||(j=atoi(&buf[1]))>255) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的职务序号不合法..."));
                             break;
                         }
-                        if(j&&!*get_user_title(j)){
+                        if (j&&!*get_user_title(j)) {
                             MU_GET(MU_CURR_ROW,MU_MSG(Y,"当前序号对应的职务不存在, 是否继续? [N]: "),buf,1);
-                            if(toupper(buf[0])!='Y')
+                            if (toupper(buf[0])!='Y')
                                 break;
                         }
-                    }
-                    else{
-                        for(uc=0,uf=0,j=1;j<256;j++)
-                            if(!strcmp(get_user_title(j),buf)&&!uc++)
+                    } else {
+                        for (uc=0,uf=0,j=1;j<256;j++)
+                            if (!strcmp(get_user_title(j),buf)&&!uc++)
                                 uf=j;
-                        if(!uc){
+                        if (!uc) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"当前输入的职务名称尚未定义..."));
                             break;
                         }
                         j=(uc==1?uf:select_user_title(buf));
-                        if(j==-1)
+                        if (j==-1)
                             break;
                     }
                     nuser.title=j;
@@ -1544,18 +1541,16 @@ int modify_userinfo(int uid,int mode){
                 case MOD_FIRSTLOGIN:
                     MU_SHOW_HINT(i);
                     current=time(NULL);
-                    if(!(nuser.firstlogin)){
+                    if (!(nuser.firstlogin)) {
                         MU_GET(MU_CURR_ROW,MU_MSG(Y,"该用户注册时间错误, 是否重新设置? [Y]: "),buf,1);
-                        if(toupper(buf[0])=='N')
+                        if (toupper(buf[0])=='N')
                             break;
-                    }
-                    else if((nuser.userlevel&PERM_LOGINOK)||(current-nuser.firstlogin)>REGISTER_WAIT_TIME){
+                    } else if ((nuser.userlevel&PERM_LOGINOK)||(current-nuser.firstlogin)>REGISTER_WAIT_TIME) {
                         MU_PUT(MU_CURR_ROW,MU_MSG(C,"该用户无重新设置注册时间的必要..."));
                         break;
-                    }
-                    else{
+                    } else {
                         MU_GET(MU_CURR_ROW,MU_MSG(Y,"是否重新设置该用户的注册时间(以便其填写注册单)? [N]: "),buf,1);
-                        if(toupper(buf[0])!='Y')
+                        if (toupper(buf[0])!='Y')
                             break;
                     }
                     nuser.firstlogin=(current-REGISTER_WAIT_TIME);
@@ -1566,7 +1561,7 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     current=time(NULL);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"是否重新设置该用户的最近访问时间? [N]: "),buf,1);
-                    if(toupper(buf[0])!='Y')
+                    if (toupper(buf[0])!='Y')
                         break;
                     nuser.lastlogin=current;
                     MU_GET_TIME(nuser.lastlogin);
@@ -1579,18 +1574,17 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的登录数量{<N>|<+N>|<-N>}: "),buf,9);
                     MU_TRIM_BREAK(buf);
-                    if(buf[0]=='+'||buf[0]=='-'){
-                        if(!mu_digit_string(&buf[1])){
+                    if (buf[0]=='+'||buf[0]=='-') {
+                        if (!mu_digit_string(&buf[1])) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
                             break;
                         }
                         j=atoi(buf);
-                        if((nuser.numlogins+j)<0)
+                        if ((nuser.numlogins+j)<0)
                             nuser.numlogins=0;
                         nuser.numlogins+=j;
-                    }
-                    else{
-                        if(!mu_digit_string(buf)){
+                    } else {
+                        if (!mu_digit_string(buf)) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
                             break;
                         }
@@ -1602,18 +1596,17 @@ int modify_userinfo(int uid,int mode){
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的文章数量{<N>|<+N>|<-N>}: "),buf,9);
                     MU_TRIM_BREAK(buf);
-                    if(buf[0]=='+'||buf[0]=='-'){
-                        if(!mu_digit_string(&buf[1])){
+                    if (buf[0]=='+'||buf[0]=='-') {
+                        if (!mu_digit_string(&buf[1])) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
                             break;
                         }
                         j=atoi(buf);
-                        if((nuser.numposts+j)<0)
+                        if ((nuser.numposts+j)<0)
                             nuser.numposts=0;
                         nuser.numposts+=j;
-                    }
-                    else{
-                        if(!mu_digit_string(buf)){
+                    } else {
+                        if (!mu_digit_string(buf)) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
                             break;
                         }
@@ -1624,19 +1617,18 @@ int modify_userinfo(int uid,int mode){
                 case MOD_STAY:
                     current=time(NULL);
                     j=(int)((((double)nuser.stay)/((double)(current-nuser.firstlogin)))*1440);
-                    if(j<60)
+                    if (j<60)
                         snprintf(buf,MU_LENGTH,"\033[1;33m日均在线时间为 \033[1;31m%d\033[1;33m 分钟...\033[m",j);
                     else
                         snprintf(buf,MU_LENGTH,"\033[1;33m日均在线时间为 \033[1;31m%d\033[1;33m 小时 "
-                            "\033[1;31m%2d\033[1;33m 分钟...\033[m",(j/60),(j%60));
+                                 "\033[1;31m%2d\033[1;33m 分钟...\033[m",(j/60),(j%60));
                     MU_PUT(MU_CURR_ROW,buf);
                     break;
 #ifdef NEWSMTH
                 case MOD_SCORE:
                     MU_SHOW_HINT(i);
                     MU_GET(MU_CURR_ROW, MU_MSG(Y, "请选择要修改的积分种类{U(用户)|M(管理)}: "), buf, 2);
-                    if (!((k = (toupper(buf[0]) == 'U')) || (toupper(buf[0]) == 'M')))
-                    {
+                    if (!((k = (toupper(buf[0]) == 'U')) || (toupper(buf[0]) == 'M'))) {
                         MU_PUT(MU_CURR_ROW, MU_MSG(C, "选择的积分种类不合法..."));
                         break;
                     }
@@ -1645,8 +1637,8 @@ int modify_userinfo(int uid,int mode){
                     else
                         MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的管理积分数量{<=N>|<+N>|<-N>}: "),buf,9);
                     MU_TRIM_BREAK(buf);
-                    if(buf[0]=='+'||buf[0]=='-'){
-                        if(!mu_digit_string(&buf[1])){
+                    if (buf[0]=='+'||buf[0]=='-') {
+                        if (!mu_digit_string(&buf[1])) {
                             MU_PUT(MU_CURR_ROW,MU_MSG(C,"输入的数字形式不合法..."));
                             break;
                         }
@@ -1656,28 +1648,23 @@ int modify_userinfo(int uid,int mode){
                         /*if((nuser.score_user+j)<0)
                             nuser.score_user=0;*/
 #endif /* NEGATIVE_SCORE */
-                        if (k)
-                        {
+                        if (k) {
                             if ((nuser.score_user += j) > INT_MAX)
                                 nuser.score_user = 0;
-                        }
-                        else if ((nuser.score_manager += j) > INT_MAX)
+                        } else if ((nuser.score_manager += j) > INT_MAX)
                             nuser.score_manager = 0;
-                    }
-                    else if(buf[0] == '='){
+                    } else if (buf[0] == '=') {
                         if (k) {
                             nuser.score_user = atoi(buf+1);
-                            if(nuser.score_user > INT_MAX)
+                            if (nuser.score_user > INT_MAX)
                                 nuser.score_user = 0;
-                        }
-                        else {
+                        } else {
                             nuser.score_manager=atoi(buf+1);
-                            if(nuser.score_manager > INT_MAX)
+                            if (nuser.score_manager > INT_MAX)
                                 nuser.score_manager = 0;
                         }
-                    }
-                    else {
-                        if(!mu_digit_string(buf)) {
+                    } else {
+                        if (!mu_digit_string(buf)) {
                             MU_PUT(MU_CURR_ROW, MU_MSG(C, "输入的数字形式不合法..."));
                             break;
                         }
@@ -1692,7 +1679,7 @@ int modify_userinfo(int uid,int mode){
                     snprintf(buf,MU_LENGTH,"用户: %d  管理: %d",nuser.score_user,nuser.score_manager);
 #else
                     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
-                        "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+                                            "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
 #endif
                     MU_SET(i,user,score_user,val,"%s",buf);
                     if (change & (1 << i))
@@ -1702,9 +1689,9 @@ int modify_userinfo(int uid,int mode){
 #endif /* NEWSMTH */
                 case MOD_USERLEVEL:
                     MU_SHOW_HINT(i);
-                    if(mu_generate_level(MU_CURR_ROW,15,&level,nuser.userlevel)==-1)
+                    if (mu_generate_level(MU_CURR_ROW,15,&level,nuser.userlevel)==-1)
                         break;
-                    if(level!=ouser.userlevel&&level!=nuser.userlevel){
+                    if (level!=ouser.userlevel&&level!=nuser.userlevel) {
                         MU_GET(MU_CURR_ROW,MU_MSG(Y,"是否向该用户发送权限修改通知? [Y]: "),buf,1);
                         mail=(toupper(buf[0])!='N');
                     }
@@ -1717,8 +1704,8 @@ int modify_userinfo(int uid,int mode){
 #undef MU_CURR_ROW
 #undef MU_BREAK_TRIM
 #undef MU_TRIM_BREAK
-                case (MU_ITEM-1):
-                    if(!change)
+                case(MU_ITEM-1):
+                    if (!change)
                         return 0;
                     MU_GET((MU_ITEM+2),MU_MSG(Y,"执行修改并退出? [N]: "),buf,1);
                     loop=(!(toupper(buf[0])=='Y'));
@@ -1726,9 +1713,8 @@ int modify_userinfo(int uid,int mode){
                 default:
                     break;
             }
-        }
-        else if(arg.type==MU_MENU_RESET){
-            switch((i=(pos-1))){
+        } else if (arg.type==MU_MENU_RESET) {
+            switch ((i=(pos-1))) {
                 case MOD_USERID:
                 case MOD_PASSWD:
                     /* fancyrabbit Sep 17 2007, should reset these values together, somewhat a dirty fix ...*/
@@ -1769,8 +1755,7 @@ int modify_userinfo(int uid,int mode){
                     break;
                 case MOD_FIRSTLOGIN:
                     MU_RESET(i,user,firstlogin);
-                    if (change & (1<<MOD_USERID))
-                    {
+                    if (change & (1<<MOD_USERID)) {
                         MU_RESET(MOD_USERID, user, userid);
                         MU_RESET(MOD_PASSWD, user, md5passwd);
                     }
@@ -1801,8 +1786,8 @@ int modify_userinfo(int uid,int mode){
                 case MOD_USERLEVEL:
                     MU_RESET(i,user,userlevel);
                     break;
-                case (MU_ITEM-1):
-                    if(change){
+                case(MU_ITEM-1):
+                    if (change) {
                         memcpy(&nuser,&ouser,sizeof(struct userec));
                         memcpy(&ndata,&odata,sizeof(struct userdata));
                         memcpy(menu,omenu,(MU_ITEM*MU_LENGTH*sizeof(char)));
@@ -1812,13 +1797,11 @@ int modify_userinfo(int uid,int mode){
                 default:
                     break;
             }
-        }
-        else
+        } else
             continue;
-    }
-    while(loop);
+    } while (loop);
     memcpy(&vuser,urec,sizeof(struct userec));
-    if(read_userdata(urec->userid,&vdata)==-1){
+    if (read_userdata(urec->userid,&vdata)==-1) {
         MU_PUT((MU_ITEM+2),MU_MSG(R,"校验用户数据时发生致命错误..."));
         return -6;
     }
@@ -1849,17 +1832,17 @@ int modify_userinfo(int uid,int mode){
     MU_VERIFY(MOD_SCORE,user,score_manager,val);
 #endif /* NEWSMTH */
     MU_VERIFY(MOD_USERLEVEL,user,userlevel,val);
-    if(verify){
+    if (verify) {
         MU_GET((MU_ITEM+2),MU_MSG(Y,"部分用户数据已经发生变化, 是否强制修改? [N]: "),buf,1);
-        if(toupper(buf[0])!='Y'){
+        if (toupper(buf[0])!='Y') {
             MU_PUT((MU_ITEM+2),MU_MSG(Y,"取消修改操作..."));
             return -7;
         }
-        if(verify&(1<<MOD_USERID))
+        if (verify&(1<<MOD_USERID))
             change&=(~(1<<MOD_USERID|1<<MOD_PASSWD|1<<MOD_FIRSTLOGIN));  //0x803
     }
     memcpy(&vuser,urec,sizeof(struct userec));
-    if(read_userdata(urec->userid,&vdata)==-1){
+    if (read_userdata(urec->userid,&vdata)==-1) {
         MU_PUT((MU_ITEM+2),MU_MSG(R,"修改用户数据时发生致命错误..."));
         return -8;
     }
@@ -1887,96 +1870,91 @@ int modify_userinfo(int uid,int mode){
     MU_EXEC(MOD_SCORE,user,score_manager);
 #endif /* NEWSMTH */
     MU_EXEC(MOD_USERLEVEL,user,userlevel);
-    if(change&(1<<MOD_USERNAME)){
-        if(mode)
+    if (change&(1<<MOD_USERNAME)) {
+        if (mode)
             update_username(urec->userid,NULL,nuser.username);
-        else{
+        else {
             update_username(urec->userid,vuser.username,nuser.username);
             strncpy(uinfo.username,nuser.username,NAMELEN);
         }
         MU_EXEC(MOD_USERNAME,user,username);
     }
     i=(verify&(1<<MOD_USERID));
-    do{
-        if(change&(1<<MOD_USERID)){
-            if(strcasecmp(vuser.userid,nuser.userid)&&searchuser(nuser.userid)){
+    do {
+        if (change&(1<<MOD_USERID)) {
+            if (strcasecmp(vuser.userid,nuser.userid)&&searchuser(nuser.userid)) {
                 i=2;
                 break;
             }
-            for(j=0;(k=kick_user_utmp(uid,NULL,0))==10;j+=k)
+            for (j=0;(k=kick_user_utmp(uid,NULL,0))==10;j+=k)
                 continue;
-            if(j+=k)
+            if (j+=k)
                 newbbslog(BBSLOG_USER,"modify_userinfo_kick: %s <%d> [ %d logins ]",urec->userid,uid,j);
             setuserid(uid,nuser.userid);
-            if(searchuser(nuser.userid)!=uid){
+            if (searchuser(nuser.userid)!=uid) {
                 i=3;
                 break;
             }
-            if(mu_process_directories(vuser.userid,nuser.userid)==-1){
+            if (mu_process_directories(vuser.userid,nuser.userid)==-1) {
                 i=4;
                 break;
             }
             MU_EXEC(MOD_USERID,user,userid);
             MU_EXEC(MOD_USERID,data,userid);
         }
-    }
-    while(0);
-    if(!i)
-    {
+    } while (0);
+    if (!i) {
         MU_EXEC(MOD_PASSWD,user,md5passwd);
 #ifdef CONV_PASS
         MU_EXEC(MOD_PASSWD, user, passwd);
 #endif
-    }
-    else
+    } else
         change&=(~(1<<MOD_USERID|1<<MOD_PASSWD|1<<MOD_FIRSTLOGIN)); //0x803
     MU_EXEC(MOD_FIRSTLOGIN,user,firstlogin);
     memcpy(urec,&vuser,sizeof(struct userec));
-    if(write_userdata(urec->userid,&vdata)==-1){
+    if (write_userdata(urec->userid,&vdata)==-1) {
         MU_PUT((MU_ITEM+2),MU_MSG(R,"回写用户数据时发生致命错误..."));
         return -9;
     }
     j=read_user_memo(urec->userid,&memo);
-    if(!(j<0)&&(j!=sizeof(struct usermemo)))
+    if (!(j<0)&&(j!=sizeof(struct usermemo)))
         end_mmapfile(memo,sizeof(struct usermemo),-1);
-    if(j==sizeof(struct usermemo)){
+    if (j==sizeof(struct usermemo)) {
         memcpy(&(memo->ud),&vdata,sizeof(struct userdata));
         end_mmapfile(memo,sizeof(struct usermemo),-1);
-    }
-    else{
+    } else {
         sethomefile(buf,urec->userid,"usermemo");
         unlink(buf);
     }
-    if(mail&&(change&(1<<MOD_USERLEVEL))){
+    if (mail&&(change&(1<<MOD_USERLEVEL))) {
         snprintf(name,MU_LENGTH,"tmp/modify_userinfo_%lu_%d.mail",time(NULL),(int)getpid());
-        if((fp=fopen(name,"w"))){
+        if ((fp=fopen(name,"w"))) {
             write_header(fp,getCurrentUser(),1,NULL,"[系统] 用户权限修改通知",0,0,getSession());
             fprintf(fp,"\033[1;37m[%s]\033[m\n\n","用户权限修改明细");
             fprintf(fp,"  \033[1;33m原用户权限状态: \033[0;33m<%s>\033[m\n",gen_permstr(ouser.userlevel,buf));
             fprintf(fp,"  \033[1;33m现用户权限状态: \033[1;32m<%s>\033[m\n\n",gen_permstr(vuser.userlevel,buf));
             fprintf(fp,"\033[1;37m[%s]\033[m\n\n","涉及修改的权限位说明");
-            for(level=(ouser.userlevel^vuser.userlevel),j=0;j<NUMPERMS;j++)
-                if(level&(1<<j))
+            for (level=(ouser.userlevel^vuser.userlevel),j=0;j<NUMPERMS;j++)
+                if (level&(1<<j))
                     fprintf(fp,"  %s<%c> \033[1;33m%s\033[m\n",((vuser.userlevel&(1<<j))?"\033[1;32m+":"\033[1;31m-"),
-                        XPERMSTR[j],permstrings[j]);
+                            XPERMSTR[j],permstrings[j]);
             fprintf(fp,"\n\033[1;37m[%s]\033[m\n","如有异常情况请及时回复本信联系站务人员设法解决!");
             fclose(fp);
             mail_file(getCurrentUser()->userid,name,urec->userid,"[系统] 用户权限修改通知",BBSPOST_MOVE,NULL);
             unlink(name);
         }
     }
-    if(mode){
+    if (mode) {
         snprintf(name,MU_LENGTH,"tmp/modify_userinfo_%lu_%d.log",time(NULL),(int)getpid());
-        if(!(fp=fopen(name,"w"))){
+        if (!(fp=fopen(name,"w"))) {
             snprintf(buf,MU_LENGTH,"设定用户数据: <%d,%#6.6x> %s%c-> %s",uid,change,ouser.userid,((change&0x01)?' ':0),nuser.userid);
             securityreport(buf,NULL,NULL,getSession());
-        }
-        else{
+        } else {
             sprintf(buf,"设定用户数据: %s%c-> %s",ouser.userid,((change&0x01)?' ':0),nuser.userid);
             write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
             fprintf(fp,"\033[1;37m[用户 <uid=\033[1;31m%d\033[1;37m> 数据修改明细]\033[m\n\n",uid);
-            for(j=0;j<(MU_ITEM-1);j++){
-                if(change&(1<<j))
+            for (j=0;j<(MU_ITEM-1);j++) {
+                if (change&(1<<j))
                     fprintf(fp," \033[1;33m[%-8.8s]: \033[0;33m%s\033[m\n%-13.13s\033[1;32m%s\033[m\n\n",prefix[j],omenu[j],"",menu[j]);
             }
             fclose(fp);
@@ -1985,7 +1963,7 @@ int modify_userinfo(int uid,int mode){
         }
         newbbslog(BBSLOG_USER,"modify_userinfo: %s <%d,%#6.6x>",urec->userid,uid,change);
     }
-    switch(i){
+    switch (i) {
         case 1:
             MU_PUT((MU_ITEM+2),MU_MSG(Y,"操作完成! 已取消名称和密码的修改(用户数据变化)..."));
             return 2;
@@ -2047,11 +2025,13 @@ int modify_userinfo(int uid,int mode){
 #undef MOD_EXIT
 }
 
-int modify_userinfo_current(void){
+int modify_userinfo_current(void)
+{
     return modify_userinfo(uinfo.uid,0);
 }
 
-int modify_userinfo_admin(void){
+int modify_userinfo_admin(void)
+{
 #ifdef HAVE_STRICT_USERINFO
 #define MUA_PERM    (PERM_ADMIN)
 #else /* HAVE_STRICT_USERINFO */
@@ -2063,13 +2043,13 @@ int modify_userinfo_admin(void){
 #ifndef SOURCE_PERM_CHECK
     mode=1;
 #else /* SOURCE_PERM_CHECK */
-    if(!HAS_PERM(getCurrentUser(),MUA_PERM)){
+    if (!HAS_PERM(getCurrentUser(),MUA_PERM)) {
         MU_PUT(2,MU_MSG(R,"当前用户不具有查阅用户资料的权限..."));
         return -0xFF;
     }
     mode=(HAS_PERM(getCurrentUser(),PERM_ADMIN)?1:2);
 #endif /* ! SOURCE_PERM_CHECK */
-    if(!check_systempasswd())
+    if (!check_systempasswd())
         return -0xFE;
     clear();
     move(0,0);
@@ -2078,11 +2058,11 @@ int modify_userinfo_admin(void){
     usercomplete("请输入用户名: ",name);
     move(1,0);
     clrtobot();
-    if(!name[0]){
+    if (!name[0]) {
         MU_PUT(2,MU_MSG(Y,"取消..."));
         return -0xFD;
     }
-    if(!(uid=searchuser(name))){
+    if (!(uid=searchuser(name))) {
         MU_PUT(2,MU_MSG(R,"错误的用户名..."));
         return -0xFC;
     }

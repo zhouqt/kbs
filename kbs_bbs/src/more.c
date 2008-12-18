@@ -10,7 +10,7 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
     any later version.
- 
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -69,10 +69,10 @@ int NNread_init()
     time_t ftime, now;
     int iscreate;
 #ifdef ACBOARD_BNAME
-	struct fileheader fh;
-	int fd;
-	char fname[PATHLEN];
-	int i;
+    struct fileheader fh;
+    int fd;
+    char fname[PATHLEN];
+    int i;
 #else
     char *ptr;
 #endif
@@ -84,25 +84,25 @@ int NNread_init()
 #if MAXnettyLN > 5
     if (stat("etc/movie7", &st) < 0) {
 #else
-    if (stat("etc/movie", &st) < 0) {
+        if (stat("etc/movie", &st) < 0) {
 #endif
 #endif
         return 0;
     }
     ftime = st.st_mtime;
     if (movieshm == NULL) {
-		if(MAXnettyLN > 5)
-        	movieshm = (void *) attach_shm("ACBOARD7_SHMKEY", 4124, sizeof(*movieshm), &iscreate);
-		else
-        	movieshm = (void *) attach_shm("ACBOARD_SHMKEY", 4123, sizeof(*movieshm), &iscreate);
+        if (MAXnettyLN > 5)
+            movieshm = (void *) attach_shm("ACBOARD7_SHMKEY", 4124, sizeof(*movieshm), &iscreate);
+        else
+            movieshm = (void *) attach_shm("ACBOARD_SHMKEY", 4123, sizeof(*movieshm), &iscreate);
     }
     if (abs(now - movieshm->update) < 12 * 60 * 60 && ftime < movieshm->update) {
         return 1;
     }
-    /*---	modified by period	2000-10-20	---*
+    /*--- modified by period 2000-10-20 ---*
             if ((fffd = fopen( "etc/movie" , "r" )) == NULL) {
                     return 0;
-            }         
+            }
      ---*/
     nnline = 0;
     xxxline = 0;
@@ -112,50 +112,50 @@ int NNread_init()
         return 1;
     }
 #ifdef ACBOARD_BNAME
-	if ((fd=open("boards/"ACBOARD_BNAME"/.DIGEST", O_RDONLY, 0)) == -1)
-		return 0;
-	while(read(fd, &fh, sizeof(fh)) == sizeof(fh)){
-		if(xxxline >= ACBOARD_MAXLINE)
-			break;
-		setbfile(fname, ACBOARD_BNAME, fh.filename);
-		if((fffd = fopen(fname, "r")) == NULL)
-			continue;
-		for(i=0; i<4; i++) //跳过文章头部信息
-			fgets(buf, ACBOARD_BUFSIZE, fffd);
-		for(i=0; i < MAXnettyLN; i++){
-			if( fgets(buf, ACBOARD_BUFSIZE, fffd) == 0 )
-				break;
-			if( ! strcmp(buf, "--\n") )
-				break;
-			if (xxxline >= ACBOARD_MAXLINE)
-				break;
-			strncpy(movieshm->line[xxxline], buf, ACBOARD_BUFSIZE);
-			movieshm->line[xxxline][ACBOARD_BUFSIZE-1]='\0';
-			xxxline ++;
-		}
-		if (xxxline >= ACBOARD_MAXLINE){
-			fclose(fffd);
-			break;
-		}
-		fclose(fffd);
-		for(; i<MAXnettyLN; i++){
-			if (xxxline >= ACBOARD_MAXLINE)
-				break;
-			sprintf(buf, "%79.79s\n", " ");
-			strcpy(movieshm->line[xxxline], buf);
-			xxxline++;
-		}
-	}
-	close(fd);
+    if ((fd=open("boards/"ACBOARD_BNAME"/.DIGEST", O_RDONLY, 0)) == -1)
+        return 0;
+    while (read(fd, &fh, sizeof(fh)) == sizeof(fh)) {
+        if (xxxline >= ACBOARD_MAXLINE)
+            break;
+        setbfile(fname, ACBOARD_BNAME, fh.filename);
+        if ((fffd = fopen(fname, "r")) == NULL)
+            continue;
+        for (i=0; i<4; i++) //跳过文章头部信息
+            fgets(buf, ACBOARD_BUFSIZE, fffd);
+        for (i=0; i < MAXnettyLN; i++) {
+            if (fgets(buf, ACBOARD_BUFSIZE, fffd) == 0)
+                break;
+            if (! strcmp(buf, "--\n"))
+                break;
+            if (xxxline >= ACBOARD_MAXLINE)
+                break;
+            strncpy(movieshm->line[xxxline], buf, ACBOARD_BUFSIZE);
+            movieshm->line[xxxline][ACBOARD_BUFSIZE-1]='\0';
+            xxxline ++;
+        }
+        if (xxxline >= ACBOARD_MAXLINE) {
+            fclose(fffd);
+            break;
+        }
+        fclose(fffd);
+        for (; i<MAXnettyLN; i++) {
+            if (xxxline >= ACBOARD_MAXLINE)
+                break;
+            sprintf(buf, "%79.79s\n", " ");
+            strcpy(movieshm->line[xxxline], buf);
+            xxxline++;
+        }
+    }
+    close(fd);
 #else
-    /*---	原有程序顺序有误, !DEFINE --> return后没close	---*/
+    /*--- 原有程序顺序有误, !DEFINE --> return后没close ---*/
 #if MAXnettyLN > 5
     if ((fffd = fopen("etc/movie7", "r")) == NULL)
 #else
-    if ((fffd = fopen("etc/movie", "r")) == NULL)
+        if ((fffd = fopen("etc/movie", "r")) == NULL)
 #endif
-        return 0;
-    /*---	---*/
+            return 0;
+    /*--- ---*/
     while ((xxxline < ACBOARD_MAXLINE) && (fgets(buf, ACBOARD_BUFSIZE, fffd) != NULL)) {
         ptr = movieshm->line[xxxline];
         memcpy(ptr, buf, sizeof(buf));
@@ -176,13 +176,12 @@ int NNread_init()
     return 1;
 }
 
-int check_calltime()
-{
+int check_calltime() {
 
-    if ( calltime != 0 && time(0) >= calltime ) {
-    	int line;
-		int ch;
-		int y,x;
+    if (calltime != 0 && time(0) >= calltime) {
+        int line;
+        int ch;
+        int y,x;
         /*
          * if (uinfo.mode != MMENU)
          * {
@@ -197,7 +196,7 @@ int check_calltime()
          * pressreturn();
          * R_monitor(NULL);
          */
-		getyx(&y, &x);
+        getyx(&y, &x);
         if (uinfo.mode == TALK)
             line = t_lines / 2 - 1;
         else
@@ -208,22 +207,21 @@ int check_calltime()
         bell();
         move(line, 0);
         clrtoeol();
-		calltimememo[39]='\0';
+        calltimememo[39]='\0';
         prints("\033[44m\033[32mBBS 系统闹铃: \033[37m%-40s\033[m回车继续",calltimememo);
-		refresh();
-		for( ch=igetch(); ch!='\r' && ch!='\n'; ch=igetch() ) ;
+        refresh();
+        for (ch=igetch(); ch!='\r' && ch!='\n'; ch=igetch()) ;
         move(line, 0);
         clrtoeol();
         saveline(line, 1, NULL);
         calltime = calc_calltime(0);
-		move(y,x);
-		return 1;
+        move(y,x);
+        return 1;
     }
-	return 0;
+    return 0;
 }
 
-void setcalltime()
-{
+void setcalltime() {
     char ans[6];
     int ttt;
 
@@ -240,64 +238,62 @@ void setcalltime()
 }
 
 #if 0
-int morekey()
-{
+int morekey() {
     while (1) {
         switch (igetkey()) {
-        case Ctrl('Y'):
-            return Ctrl('Y');
-        case Ctrl('Z'):
-            return 'M';         /* Leeward 98.07.30 support msgX */
-        case '!':
-            return '!';         /*Haohmaru 98.09.24 */
-        case 'q':
-        case KEY_LEFT:
-        case EOF:
-            return KEY_LEFT;
-        case ' ':
-        case KEY_RIGHT:
-        case KEY_PGDN:
-        case Ctrl('F'):
-            return KEY_RIGHT;
-        case KEY_PGUP:
-        case Ctrl('B'):
-            return KEY_PGUP;
-        case '\r':
-        case KEY_DOWN:
-        case 'j':
-            return KEY_DOWN;
-        case 'k':
-        case KEY_UP:
-            return KEY_UP;
-            /*************** 新增加阅读时的热键 Luzi 1997.11.1 ****************/
-        case 'h':
-        case '?':
-            return 'H';
-        case 'o':
-        case 'O':
-            return 'O';
-        case 'l':
-        case 'L':
-            return 'L';
-        case 'w':
-        case 'W':
-            return 'W';
-        case 'H':
-            return 'M';
-        case 'X':              /* Leeward 98.06.05 */
-            return 'X';
-        case 'u':              /*Haohmaru 99.11.29 */
-            return 'u';
-        case KEY_REFRESH:
-            return KEY_REFRESH;
-        default:;
+            case Ctrl('Y'):
+                return Ctrl('Y');
+            case Ctrl('Z'):
+                return 'M';         /* Leeward 98.07.30 support msgX */
+            case '!':
+                return '!';         /*Haohmaru 98.09.24 */
+            case 'q':
+            case KEY_LEFT:
+            case EOF:
+                return KEY_LEFT;
+            case ' ':
+            case KEY_RIGHT:
+            case KEY_PGDN:
+            case Ctrl('F'):
+                return KEY_RIGHT;
+            case KEY_PGUP:
+            case Ctrl('B'):
+                return KEY_PGUP;
+            case '\r':
+            case KEY_DOWN:
+            case 'j':
+                return KEY_DOWN;
+            case 'k':
+            case KEY_UP:
+                return KEY_UP;
+                /*************** 新增加阅读时的热键 Luzi 1997.11.1 ****************/
+            case 'h':
+            case '?':
+                return 'H';
+            case 'o':
+            case 'O':
+                return 'O';
+            case 'l':
+            case 'L':
+                return 'L';
+            case 'w':
+            case 'W':
+                return 'W';
+            case 'H':
+                return 'M';
+            case 'X':              /* Leeward 98.06.05 */
+                return 'X';
+            case 'u':              /*Haohmaru 99.11.29 */
+                return 'u';
+            case KEY_REFRESH:
+                return KEY_REFRESH;
+            default:;
         }
     }
 }
 #endif
 
-int seek_nth_line(int fd, int no, char *more_buf)
-{
+int seek_nth_line(int fd, int no, char *more_buf) {
     int n_read, line_count, viewed;
     char *p, *end;
 
@@ -340,13 +336,12 @@ char *fname;
     return count;
 }
 
-                           /*
-                            * below added by netty  
-                                                       *//*
-                                                       * Rewrite by SmallPig 
-                                                       */
-void netty_more()
-{
+/*
+ * below added by netty
+                            *//*
+                            * Rewrite by SmallPig
+                            */
+void netty_more() {
     char buf[350];
     int ne_row = 1;
     int x, y;
@@ -357,15 +352,15 @@ void netty_more()
         return;
     }
 
-	if( movieshm->movielines <= 0 )
-		nnline = 0;
-	else
-    nnline = ((thetime / 10) % (movieshm->movielines / MAXnettyLN)) * MAXnettyLN;
+    if (movieshm->movielines <= 0)
+        nnline = 0;
+    else
+        nnline = ((thetime / 10) % (movieshm->movielines / MAXnettyLN)) * MAXnettyLN;
 
     getyx(&y, &x);
     update_endline();
     move(3, 0);
-    while ((nnline < movieshm->movielines) /*&&DEFINE(getCurrentUser(),DEF_ACBOARD) */ ) {
+    while ((nnline < movieshm->movielines) /*&&DEFINE(getCurrentUser(),DEF_ACBOARD) */) {
         move(((MAXnettyLN>5)?1:2) + ne_row, 0);
         clrtoeol();
 
@@ -384,11 +379,10 @@ void netty_more()
     move(y, x);
 }
 
-void printacbar()
-{
+void printacbar() {
     int x, y;
 
-	if(MAXnettyLN > 5) return;
+    if (MAXnettyLN > 5) return;
 
     getyx(&y, &x);
 
@@ -407,8 +401,7 @@ void printacbar()
 }
 
 extern int idle_count;
-void R_monitor(void *data)
-{
+void R_monitor(void *data) {
     if (!DEFINE(getCurrentUser(), DEF_ACBOARD))
         return;
 
@@ -446,8 +439,7 @@ struct MemMoreLines {
   oldty是上一行的type
   *ty返回行的type
 */
-int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
-{
+int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty) {
     int i, w, in_esc = 0, db = 0, lastspace = 0, autoline = 1;
     char *p = p0;
     int att_size;
@@ -458,7 +450,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             *ty=LINE_ATTACHALLLINK;
             *s=0;
             *l=0;
-			return 0;
+            return 0;
         }
         return -1;
     }
@@ -474,9 +466,9 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 *s = i;
                 break;
             }
-    /*        if (asciiart) {
-                continue;
-            } else*/
+            /*        if (asciiart) {
+                        continue;
+                    } else*/
             if (*p == '\t') {
                 db = 0;
                 w = (w + 8) / 8 * 8;
@@ -487,29 +479,29 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                 lastspace = i - 1;
             } else if (in_esc) {
                 if (strchr("suHmMfL@PABCDJK", *p) != NULL) {
-                    if(strchr("suHmABCDJ", *p) != NULL) autoline=0;
+                    if (strchr("suHmABCDJ", *p) != NULL) autoline=0;
                     in_esc = 0;
                     continue;
                 }
-    //            if (strchr("[0123456789;,", *p) == NULL)
-    //                in_esc = 0;
+                //            if (strchr("[0123456789;,", *p) == NULL)
+                //                in_esc = 0;
             } else if (isprint2(*p)) {
                 if (!db) {
-                    if(autoline)
-                    if ((w >= scr_cols-1&&(i>=size-1||*(p+1)<0) )|| w >= scr_cols) {
+                    if (autoline)
+                        if ((w >= scr_cols-1&&(i>=size-1||*(p+1)<0))|| w >= scr_cols) {
 #ifdef TELNET_WORD_WRAP
-                        if (((unsigned char)*p<128) && (lastspace>0) && (lastspace<i)) {
-                            *l = lastspace+1;
-                            *s = lastspace+1;
-                        } else {
+                            if (((unsigned char)*p<128) && (lastspace>0) && (lastspace<i)) {
+                                *l = lastspace+1;
+                                *s = lastspace+1;
+                            } else {
 #endif
-                            *l = i;
-                            *s = i;
+                                *l = i;
+                                *s = i;
 #ifdef TELNET_WORD_WRAP
+                            }
+#endif
+                            break;
                         }
-#endif
-                        break;
-                    }
                     if ((unsigned char) *p >= 128)
                         db = 1;
                     else if (strchr(" >)]},;'", *p))
@@ -528,47 +520,47 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         if (*s > 0 && ((p0[*s - 1] == '\n') || (p0[*s - 1] == '\0'))) {
             /*有回车的行*/
             switch (oldty) {
-            case LINE_NORMAL_NOCF:
-                *ty = LINE_NORMAL;
-                break;
-            case LINE_QUOTA_NOCF:
-                *ty = LINE_QUOTA;
-                break;
-            default:
-#ifdef TELNET_WORD_WRAP
-                if (*l > 1 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
-#else
-                if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
-#endif
-                    *ty = LINE_QUOTA; //引文
-                else
+                case LINE_NORMAL_NOCF:
                     *ty = LINE_NORMAL;
+                    break;
+                case LINE_QUOTA_NOCF:
+                    *ty = LINE_QUOTA;
+                    break;
+                default:
+#ifdef TELNET_WORD_WRAP
+                    if (*l > 1 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#else
+                    if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#endif
+                        *ty = LINE_QUOTA; //引文
+                    else
+                        *ty = LINE_NORMAL;
             }
         } else {
             /*无回车的行*/
             switch (oldty) {
-            case LINE_NORMAL_NOCF:
-                *ty = LINE_NORMAL_NOCF;
-                break;
-            case LINE_QUOTA_NOCF:
-                *ty = LINE_QUOTA_NOCF;
-                break;
-            default:
-#ifdef TELNET_WORD_WRAP
-                if (*l > 1 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
-#else
-                if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
-#endif
-                    *ty = LINE_QUOTA_NOCF;
-                else
+                case LINE_NORMAL_NOCF:
                     *ty = LINE_NORMAL_NOCF;
+                    break;
+                case LINE_QUOTA_NOCF:
+                    *ty = LINE_QUOTA_NOCF;
+                    break;
+                default:
+#ifdef TELNET_WORD_WRAP
+                    if (*l > 1 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#else
+                    if (*l > 2 && (!strncmp(p0, ": " ,2) || !strncmp(p0, "> " ,2)))
+#endif
+                        *ty = LINE_QUOTA_NOCF;
+                    else
+                        *ty = LINE_NORMAL_NOCF;
             }
         }
         if (*s == size)
             return 0;
     }
-    if ( oldty==LINE_ATTACHMENT|| (size > ATTACHMENT_SIZE
-        && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE))) {
+    if (oldty==LINE_ATTACHMENT|| (size > ATTACHMENT_SIZE
+                                  && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE))) {
 
         *ty = LINE_ATTACHMENT;
         p = p0;
@@ -593,7 +585,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             if ((*s>size)||(*s<0))
                 *s=size;
             else
-	            *s=1;
+                *s=1;
         }
     } else {
         /* ??
@@ -605,8 +597,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 }
 
 int effectiveline;              /*有效行数, 只计算前面的部分, 头部不含, 空行不含, 签名档不含, 引言不含 */
-void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
-{
+void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size) {
     int i, s, u;
     char *p0, oldty = 0;
 
@@ -620,7 +611,7 @@ void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
         u = (l->start + l->num) % 100;
         l->line[u] = p0;
         if (measure_line(p0, s, &l->len[u], &l->s[u], oldty, &l->ty[u])
-            < 0) {
+                < 0) {
             break;
         }
         oldty = l->ty[u];
@@ -644,8 +635,7 @@ void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
     l->currty = l->ty[0];
 }
 
-int next_MemMoreLines(struct MemMoreLines *l)
-{
+int next_MemMoreLines(struct MemMoreLines *l) {
     int n;
     char *p0;
 
@@ -653,11 +643,11 @@ int next_MemMoreLines(struct MemMoreLines *l)
         char oldty;
 
         n = (l->start + l->num - 1) % 100;
-/*
-        if (l->ptr + l->size == (l->line[n] + l->s[n])) {
-            return -1;
-        }
-*/
+        /*
+                if (l->ptr + l->size == (l->line[n] + l->s[n])) {
+                    return -1;
+                }
+        */
         if (l->num == 100) {
             l->start++;
             l->num--;
@@ -667,7 +657,7 @@ int next_MemMoreLines(struct MemMoreLines *l)
         n = (l->start + l->num) % 100;
         l->line[n] = p0;
         if (measure_line(p0, l->size - (p0 - l->ptr), &l->len[n], &l->s[n], oldty, &l->ty[n])==-1)
-			return -1;
+            return -1;
         l->num++;
         if (l->size - (p0 - l->ptr) == l->s[n]) {
             l->total = l->start + l->num;
@@ -680,8 +670,7 @@ int next_MemMoreLines(struct MemMoreLines *l)
     return l->curr_line;
 }
 
-int seek_MemMoreLines(struct MemMoreLines *l, int n)
-{
+int seek_MemMoreLines(struct MemMoreLines *l, int n) {
     int i;
 
     if (n < 0) {
@@ -708,8 +697,7 @@ int seek_MemMoreLines(struct MemMoreLines *l, int n)
 
 #include <sys/mman.h>
 
-int mmap_show(char *fn, int row, int numlines)
-{
+int mmap_show(char *fn, int row, int numlines) {
     char *ptr;
     off_t size;
     int retv=0;
@@ -727,8 +715,7 @@ int mmap_show(char *fn, int row, int numlines)
     return retv;
 }
 
-int mmap_more(char *fn, int quit, char *keystr, char *title)
-{
+int mmap_more(char *fn, int quit, char *keystr, char *title) {
     char *ptr;
     off_t size;
     int retv=0;
@@ -746,8 +733,7 @@ int mmap_more(char *fn, int quit, char *keystr, char *title)
     return retv;
 }
 
-void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
-{
+void mem_printline(struct MemMoreLines *l, char *fn,char* begin) {
     char* ptr=l->curr;
     int len=l->currlen;
     int ty=l->currty;
@@ -772,7 +758,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
                 prints("\033[m附件: %s (%s) 链接:\n",attachname,attlenbuf);
         } else {
             if (current_attach_link)
-               (*current_attach_link)(slink,255,p,attlen,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
+                (*current_attach_link)(slink,255,p,attlen,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
             else
                 strcpy(slink,"(用www方式阅读本文可以下载此附件)");
             prints("\033[4m%s\033[m\n",slink);
@@ -783,9 +769,9 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
 
         if (current_attach_link) {
             (*current_attach_link)(slink,255,NULL,-1,-1,current_attach_link_arg);
-	    prints("全文链接：\033[4m%s\033[m\n",slink);
+            prints("全文链接：\033[4m%s\033[m\n",slink);
         }
-	 return;
+        return;
     }
     if (stuffmode) {
         char buf[256];
@@ -797,7 +783,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         return;
     }
     if (!strncmp(ptr, "□ 引用", 7) || !strncmp(ptr, "==>", 3)
-        || !strncmp(ptr, "【 在", 5) || !strncmp(ptr, "※ 引述", 7)) {
+            || !strncmp(ptr, "【 在", 5) || !strncmp(ptr, "※ 引述", 7)) {
         outns("\033[1;33m", 7);
         outns(ptr, len);
         outns("\033[m\n", 4);
@@ -813,8 +799,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     outns("\n", 1);
 }
 
-static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
-{
+static int mem_show(char *ptr, int size, int row, int numlines, char *fn) {
     extern int t_lines;
     struct MemMoreLines l;
     int i, curr_line;
@@ -832,28 +817,27 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
     return 0;
 }
 
-void mem_printbotline(int l1, int l2, int total, int read, int size)
-{
+void mem_printbotline(int l1, int l2, int total, int read, int size) {
     extern int t_lines;
 
-/*	static int n = 0;
-	char *(s[4]) = {
-		"结束 ← q | ↑ ↓ PgUp PgDn 移动",
-		"s 开头 | e 末尾 | b f 向前后翻页",
-		"g 跳到指定行 | ? / 向上下搜索字符串",
-		"n下一篇 | l上一篇 | R 回文 | E 评价"
-	};
-	n++;
-	if (uinfo.mode == READING)
-		n %= 4;
-	else
-		n %= 3;*/
+    /* static int n = 0;
+     char *(s[4]) = {
+      "结束 ← q | ↑ ↓ PgUp PgDn 移动",
+      "s 开头 | e 末尾 | b f 向前后翻页",
+      "g 跳到指定行 | ? / 向上下搜索字符串",
+      "n下一篇 | l上一篇 | R 回文 | E 评价"
+     };
+     n++;
+     if (uinfo.mode == READING)
+      n %= 4;
+     else
+      n %= 3;*/
     move(t_lines - 1, 0);
     resetcolor();
-/*	prints
-	    ("\033[1;44;32m%s (%d%%) 第(%d-%d)行 \033[33m| %s | h 辅助说明\033[m",
-	     (read >= size) ? "看到末尾啦" : "下面还有喔",
-	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
+    /* prints
+         ("\033[1;44;32m%s (%d%%) 第(%d-%d)行 \033[33m| %s | h 辅助说明\033[m",
+          (read >= size) ? "看到末尾啦" : "下面还有喔",
+          total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
     if (getCurrentUser() != NULL && DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
         prints("\033[1;44m\033[32m下面还有喔 (%d%%) 第(%d-%d)行\033[33m | g 跳转 |%s / ? 搜索 | s e 开头末尾|", total ? (100 * l2 / total) : (100 * read / size), l1, l2, uinfo.mode==READING?" l n 上下篇 |":"");
     else
@@ -862,8 +846,7 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
     resetcolor();
 }
 
-int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
-{
+int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title) {
     extern int t_lines;
     struct MemMoreLines l;
     static char searchstr[30] = "";
@@ -907,127 +890,127 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
             move(t_lines - 1, 0);
             clrtoeol();
             switch (ch) {
-            case 'k':
-            case KEY_UP:
-                change = -1;
-                break;
-            case 'j':
-            case KEY_DOWN:
-            case 'd':
-            case '\n':
-            case '\r':
-                change = 1;
-                break;
-            case 'b':
-            case Ctrl('b'):
-            case KEY_PGUP:
-                change = -t_lines + 2;
-                break;
-            case ' ':
-            case 'f':
-            case Ctrl('f'):
-            case KEY_PGDN:
-            case KEY_RIGHT:
-                if (!l.total)
-                    seek_MemMoreLines(&l, last_line + t_lines);
-                change = t_lines - 2;
-                if (l.total && last_line < l.total && curr_line + change + t_lines - 1 > l.total)
-                    change = l.total - curr_line - t_lines + 1;
-                break;
-            case 's':
-            case KEY_HOME:
-                change = -curr_line;
-                break;
-            case KEY_END:
-            case 'e':
-                if (!l.total) {
-                    while (next_MemMoreLines(&l) >= 0);
-                    curr_line = l.curr_line;
-                } else
-                    curr_line = l.total - 1;
-                change = -t_lines + 2;
-                break;
-            case 'g':
-		getdata(t_lines - 1, 0, "跳转到的行号:", buf, 9,
-			1, 0, 1);
-		if (isdigit(buf[0])) {
-			change = atoi(buf) - curr_line;
-		}
-		break;
-	case '/':
-	case '?':
-		getdata(t_lines - 1, 0,
-			ch ==
-			'/' ? "向下查找字符串:" :
-			"向上查找字符串:", searchstr, 29,
-			1, 0, 0);
-		if (strlen(searchstr) > 0) {
-			int i = curr_line;
-			while (1) {
-				if (ch == '/')
-					i++;
-				else
-					i--;
-				if (seek_MemMoreLines(&l, i) <
-				    0)
-					break;
-				memcpy(buf, l.curr,
-				       (l.currlen >=
-					256) ? 255 : l.currlen);
-				buf[(l.currlen >= 256) ? 255 :
-				    l.currlen] = 0;
-				if (strcasestr(buf, searchstr)
-				    != NULL) {
-					change = i - curr_line;
-					break;
-				}
-			}
-			if (change == 0) {
-				move(t_lines - 1, 0);
-				prints("没有找到呀...");
-				continue;
-			}
-		}
-		break;
-            case KEY_LEFT:
-            case 'q':
-                return 0;
-            case '!':
-                Goodbye();
-                curr_line += t_lines - 1;
-                change = 1 - t_lines;
-                break;
-            case 'n':
-                return KEY_DOWN;
-            case 'l':
-                return KEY_UP;
-            case KEY_REFRESH:
-                curr_line += t_lines - 1;
-                change = 1 - t_lines;
-                break;
-            case 'L':
-                if (uinfo.mode != LOOKMSGS) {
-                    show_allmsgs();
+                case 'k':
+                case KEY_UP:
+                    change = -1;
+                    break;
+                case 'j':
+                case KEY_DOWN:
+                case 'd':
+                case '\n':
+                case '\r':
+                    change = 1;
+                    break;
+                case 'b':
+                case Ctrl('b'):
+                case KEY_PGUP:
+                    change = -t_lines + 2;
+                    break;
+                case ' ':
+                case 'f':
+                case Ctrl('f'):
+                case KEY_PGDN:
+                case KEY_RIGHT:
+                    if (!l.total)
+                        seek_MemMoreLines(&l, last_line + t_lines);
+                    change = t_lines - 2;
+                    if (l.total && last_line < l.total && curr_line + change + t_lines - 1 > l.total)
+                        change = l.total - curr_line - t_lines + 1;
+                    break;
+                case 's':
+                case KEY_HOME:
+                    change = -curr_line;
+                    break;
+                case KEY_END:
+                case 'e':
+                    if (!l.total) {
+                        while (next_MemMoreLines(&l) >= 0);
+                        curr_line = l.curr_line;
+                    } else
+                        curr_line = l.total - 1;
+                    change = -t_lines + 2;
+                    break;
+                case 'g':
+                    getdata(t_lines - 1, 0, "跳转到的行号:", buf, 9,
+                            1, 0, 1);
+                    if (isdigit(buf[0])) {
+                        change = atoi(buf) - curr_line;
+                    }
+                    break;
+                case '/':
+                case '?':
+                    getdata(t_lines - 1, 0,
+                            ch ==
+                            '/' ? "向下查找字符串:" :
+                            "向上查找字符串:", searchstr, 29,
+                            1, 0, 0);
+                    if (strlen(searchstr) > 0) {
+                        int i = curr_line;
+                        while (1) {
+                            if (ch == '/')
+                                i++;
+                            else
+                                i--;
+                            if (seek_MemMoreLines(&l, i) <
+                                    0)
+                                break;
+                            memcpy(buf, l.curr,
+                                   (l.currlen >=
+                                    256) ? 255 : l.currlen);
+                            buf[(l.currlen >= 256) ? 255 :
+                                l.currlen] = 0;
+                            if (strcasestr(buf, searchstr)
+                                    != NULL) {
+                                change = i - curr_line;
+                                break;
+                            }
+                        }
+                        if (change == 0) {
+                            move(t_lines - 1, 0);
+                            prints("没有找到呀...");
+                            continue;
+                        }
+                    }
+                    break;
+                case KEY_LEFT:
+                case 'q':
+                    return 0;
+                case '!':
+                    Goodbye();
                     curr_line += t_lines - 1;
                     change = 1 - t_lines;
-                }
-                break;
-            case 'M':
-                r_lastmsg();
-                clear();
-                curr_line += t_lines - 1;
-                change = 1 - t_lines;
-                break;
-            case 'w':	/* 原来是大W 改成小的 统一起见 by pig2532 on 2005-12-1 */
-                if (HAS_PERM(getCurrentUser(), PERM_PAGE)) {
-                    oldmode = uinfo.mode;
-                    s_msg();
-                    modify_user_mode(oldmode);
+                    break;
+                case 'n':
+                    return KEY_DOWN;
+                case 'l':
+                    return KEY_UP;
+                case KEY_REFRESH:
                     curr_line += t_lines - 1;
                     change = 1 - t_lines;
-                }
-                break;
-            case 'u':{
+                    break;
+                case 'L':
+                    if (uinfo.mode != LOOKMSGS) {
+                        show_allmsgs();
+                        curr_line += t_lines - 1;
+                        change = 1 - t_lines;
+                    }
+                    break;
+                case 'M':
+                    r_lastmsg();
+                    clear();
+                    curr_line += t_lines - 1;
+                    change = 1 - t_lines;
+                    break;
+                case 'w': /* 原来是大W 改成小的 统一起见 by pig2532 on 2005-12-1 */
+                    if (HAS_PERM(getCurrentUser(), PERM_PAGE)) {
+                        oldmode = uinfo.mode;
+                        s_msg();
+                        modify_user_mode(oldmode);
+                        curr_line += t_lines - 1;
+                        change = 1 - t_lines;
+                    }
+                    break;
+                case 'u': {
                     oldmode = uinfo.mode;
 
                     clear();
@@ -1039,26 +1022,26 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     change = 1 - t_lines;
                 }
                 break;
-			case 'U':		/* pig2532 2005.12.10 */
-				board_query();
-				curr_line += t_lines - 1;
-				change = 1 - t_lines;
-				break;
-            case 'H':
-                show_help("help/morehelp");
-                curr_line += t_lines - 1;
-                change = 1 - t_lines;
-                break;
-            case Ctrl('Y'):
-                if (title) {
-                    zsend_file(fn, title);
+                case 'U':  /* pig2532 2005.12.10 */
+                    board_query();
                     curr_line += t_lines - 1;
                     change = 1 - t_lines;
-                }
-                break;
-            default:
-                if (keystr != NULL && strchr(keystr, ch) != NULL)
-                    return ch;
+                    break;
+                case 'H':
+                    show_help("help/morehelp");
+                    curr_line += t_lines - 1;
+                    change = 1 - t_lines;
+                    break;
+                case Ctrl('Y'):
+                    if (title) {
+                        zsend_file(fn, title);
+                        curr_line += t_lines - 1;
+                        change = 1 - t_lines;
+                    }
+                    break;
+                default:
+                    if (keystr != NULL && strchr(keystr, ch) != NULL)
+                        return ch;
             }
             if (change < 0 && curr_line == 0) {
                 if (quit)
@@ -1073,9 +1056,9 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     move(t_lines - 2, 0);
                     mem_printline(&l, fn, ptr);
                     if ((ch == KEY_PGDN || ch == ' ' || ch == Ctrl('f')
-                         || ch == KEY_RIGHT || ch == KEY_DOWN || ch == 'j' || ch == '\n')
-                        && (l.ty[last_line % 100] != LINE_ATTACHLINK) // 防止一直往下按会不显示全文链接 atppp 20060122
-                        && l.line[last_line % 100] - ptr + l.s[last_line % 100] == size) {
+                            || ch == KEY_RIGHT || ch == KEY_DOWN || ch == 'j' || ch == '\n')
+                            && (l.ty[last_line % 100] != LINE_ATTACHLINK) // 防止一直往下按会不显示全文链接 atppp 20060122
+                            && l.line[last_line % 100] - ptr + l.s[last_line % 100] == size) {
                         move(t_lines - 1, 0);
                         clrtoeol();
                         return 0;
@@ -1102,8 +1085,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
     }
 }
 
-int ansimore(char *filename, int promptend)
-{
+int ansimore(char *filename, int promptend) {
     int ch;
 
     clear();
@@ -1111,7 +1093,7 @@ int ansimore(char *filename, int promptend)
     if (promptend)
         pressanykey();
     if (scrint)
-    move(t_lines - 1, 0);
+        move(t_lines - 1, 0);
     prints("\033[m\033[m");
     return ch;
 }
@@ -1133,8 +1115,7 @@ int numlines;
     return ch;
 }
 
-int ansimore_withzmodem(char *filename, int promptend, char *title)
-{
+int ansimore_withzmodem(char *filename, int promptend, char *title) {
     int ch;
 
     clear();
@@ -1144,7 +1125,7 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
         prints("\x1b[m");
         clrtoeol();
         prints("                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
-        if(igetkey()==Ctrl('Y')) {
+        if (igetkey()==Ctrl('Y')) {
             zsend_file(filename, title);
         }
         move(t_lines - 1, 0);
@@ -1156,8 +1137,7 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
 extern int offsetln;
 extern int minln;
 
-int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
-{
+int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh) {
     struct MemMoreLines l;
     int i, j, curr_line, last_line;
     bool header = true;
@@ -1168,8 +1148,8 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     init_MemMoreLines(&l, ptr, size);
 
     move(BBS_PAGESIZE / 2+3, 0);
-/*    prints("\033[34m——————————————————预览窗口—————————————————");*/
-/*    move(t_lines/2+1, 0);*/
+    /*    prints("\033[34m——————————————————预览窗口—————————————————");*/
+    /*    move(t_lines/2+1, 0);*/
     if (fh) {
         sprintf(buf, "\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s\033[1;32m标  题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[转]" : "");
     } else {
@@ -1177,7 +1157,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     }
     outs(buf);
     prints("\n\033[m");
-    for(i=BBS_PAGESIZE / 2+4;i<t_lines-1;i++) {
+    for (i=BBS_PAGESIZE / 2+4;i<t_lines-1;i++) {
         move(i,0);
         clrtoeol();
     }
@@ -1209,8 +1189,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     return 0;
 }
 
-int draw_content(char *fn, struct fileheader *fh)
-{
+int draw_content(char *fn, struct fileheader *fh) {
     char *ptr;
     off_t size;
     int retv=0;

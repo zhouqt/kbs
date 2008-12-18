@@ -2,7 +2,7 @@
 
 #define refreshtime     (30)
 extern time_t login_start_time;
-int (*func_list_show) ();
+int (*func_list_show)();
 
 time_t update_time = 0;
 int showexplain = 0, freshmode = 0;
@@ -59,16 +59,16 @@ void update_data(void *data)
         freshmode = 1;
 
         /*
-         * Take out by SmallPig 
+         * Take out by SmallPig
          */
         /*
-         * 否则在执行一些子程式时，画面也会更新 
+         * 否则在执行一些子程式时，画面也会更新
          */
         /*
          * (*func_list_show)();
          * update_endline();
          * move( 3+num-page,0 ); prints( ">");
-         * refresh(); 
+         * refresh();
          */
     }
     set_alarm(refreshtime * idle_count, 0, update_data, NULL);
@@ -87,12 +87,12 @@ int print_user_info_title()
     if (real_user_names)
         field_2 = "真实姓名  ";
     sprintf(title_str,
-             /*---	modified by period	2000-10-21	在线用户数可以大于1000的
-                     "\033[44m%s%-12.12s %-16.16s %-16.16s %c %c %-16.16s %5s\033[m\n",
-             ---*/
+            /*--- modified by period 2000-10-21 在线用户数可以大于1000的
+                    "\033[44m%s%-12.12s %-16.16s %-16.16s %c %c %-16.16s %5s\033[m\n",
+            ---*/
             "\033[44m %s%-12.12s %-22.22s %-16.16s %c %c %-10.10s%5s", "编号  ", "使用者代号", (showexplain == 1) ? "好友说明或代号" : field_2, "来自", 'P',
             /*
-             * (HAS_PERM(getCurrentUser(),PERM_SYSOP) ? 'C' : ' ') 
+             * (HAS_PERM(getCurrentUser(),PERM_SYSOP) ? 'C' : ' ')
              */ 'M', "动态",
             "时:分");
     prints("%s", title_str);
@@ -143,19 +143,20 @@ int fill_userlist()
 
 
     /*
-     * struct      user_info *not_good; 
+     * struct      user_info *not_good;
      */
     i2 = 0;
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
     } else {
         struct user_info* u;
-	u=get_utmpent(getSession()->utmpent);
+        u=get_utmpent(getSession()->utmpent);
         for (i = 0; i < u->friendsnum; i++) {
             if (u->friends_uid[i])
                 apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
+        }
     }
-   } range = i2;
+    range = i2;
     return i2 == 0 ? -1 : 1;
 }
 
@@ -166,9 +167,8 @@ int fill_wglist()
 
     resolve_guest_table();
     count = 0;
-    for(i=0; i<MAX_WWW_GUEST; i++)
-    {
-        if(wwwguest_shm->guest_entry[i].key > 0) {
+    for (i=0; i<MAX_WWW_GUEST; i++) {
+        if (wwwguest_shm->guest_entry[i].key > 0) {
             wg_record[count] = &(wwwguest_shm->guest_entry[i]);
             count++;
         }
@@ -214,13 +214,13 @@ int do_userlist()
     int i,y,x;
     char user_info_str[256 /*STRLEN*2 */ ], pagec;
     char tbuf[80];
-	char modebuf[80],idlebuf[10];
+    char modebuf[80],idlebuf[10];
     int override;
     extern bool disable_move;
     extern bool disable_color;
     char fexp[30];
     struct user_info uentp;
-	struct userec *lookupuser;
+    struct userec *lookupuser;
 
     move(3, 0);
     print_user_info_title();
@@ -241,10 +241,10 @@ int do_userlist()
             prints(" %4d 啊,我刚走\n", i + 1 + page);
             continue;
         }
-		if( getuser(uentp.userid, &lookupuser) == 0 ){
-			prints(" error");
-			continue;
-		}
+        if (getuser(uentp.userid, &lookupuser) == 0) {
+            prints(" error");
+            continue;
+        }
         if (!showexplain)
             override = (i + page < numf) || friendmode;
 
@@ -260,38 +260,38 @@ int do_userlist()
         pagec = pagerchar(getSession()->currentuid,&uentp, uentp.pager, &isfriend);
         strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, sizeof(tbuf));
 //昵称在列表中最后一字消除乱码，shiyao  2003.6.1
-//	j = 15;
-//	while (j>=0 && tbuf[j]<0) j--;
-//	if ((15-j)%2)  tbuf[15] = 0;
+// j = 15;
+// while (j>=0 && tbuf[j]<0) j--;
+// if ((15-j)%2)  tbuf[15] = 0;
         tbuf[sizeof(tbuf) - 1]=0;
         resetcolor();
         clrtoeol();
         getyx(&y, &x);
         move(y, (i+page>9998)?21:20);
-        if(!showcolor)
+        if (!showcolor)
             disable_color = true;
         disable_move = true;
         prints("%s", tbuf);
         disable_move = false;
-        if(!showcolor)
+        if (!showcolor)
             disable_color = false;
         resetcolor();
         move(y, x);
         sprintf(user_info_str,
-                " %4d%2s%s%-12.12s%s%s ", 
+                " %4d%2s%s%-12.12s%s%s ",
                 i + 1 + page, (override) ? (uentp.invisible ? "＃" : "．") : (uentp.invisible ? "＊" : ""),
-                (override) ? "\033[1;32m" : "", uentp.userid, (override) ? "\033[m" : "", 
-                (override && showexplain) ? "\033[1;31m" : "");
+                        (override) ? "\033[1;32m" : "", uentp.userid, (override) ? "\033[m" : "",
+                        (override && showexplain) ? "\033[1;31m" : "");
         prints("%s", user_info_str);
         resetcolor();
         move(y, 42);
-        sprintf(user_info_str, " %-16.16s %c %c %s%-10.10s\033[m%5.5s\n",  
-                (HAS_PERM(getCurrentUser(), PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(lookupuser, uentp.from) : "*" ),
-                pagec, msgchar(&uentp, &isfriend), 
-                (uentp.invisible == true)? (uentp.pid==1?"\033[33m":"\033[34m") : (uentp.pid==1?"\033[1;36m":""), 
-				modestring(modebuf,uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
-                                           (uentp.in_chat ? uentp.chatid : NULL)),            
-                idle_str(idlebuf,&uentp));
+        sprintf(user_info_str, " %-16.16s %c %c %s%-10.10s\033[m%5.5s\n",
+                (HAS_PERM(getCurrentUser(), PERM_SYSOP))? uentp.from : ((pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(lookupuser, uentp.from) : "*"),
+                pagec, msgchar(&uentp, &isfriend),
+                (uentp.invisible == true)? (uentp.pid==1?"\033[33m":"\033[34m") : (uentp.pid==1?"\033[1;36m":""),
+                        modestring(modebuf,uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+                                   (uentp.in_chat ? uentp.chatid : NULL)),
+                        idle_str(idlebuf,&uentp));
         prints("%s", user_info_str);
         resetcolor();
     }
@@ -303,28 +303,28 @@ int show_utmplist()
 {
     int i, rn;
     struct user_info uent;
-	struct boardheader *bp = NULL;
+    struct boardheader *bp = NULL;
     char stbuf[STRLEN];
-    
+
     if (update_time + refreshtime < time(0)) {
         fill_userlist();
         update_time = time(0);
     }
     move(2, 0);
-	prints("\033[1;37;44m  序号 用户名        进程号 IP地址          当前状态");
-	clrtoeol();
-	prints("\033[m");
+    prints("\033[1;37;44m  序号 用户名        进程号 IP地址          当前状态");
+    clrtoeol();
+    prints("\033[m");
     rn = 3;
-    for(i=0; i<BBS_PAGESIZE && i+page<range; i++) {
+    for (i=0; i<BBS_PAGESIZE && i+page<range; i++) {
         uent = *(user_record[i+page]);
         move(rn, 0);
         rn++;
-        if(!uent.active || !uent.pid || uent.logintime > update_time)
+        if (!uent.active || !uent.pid || uent.logintime > update_time)
             prints("    -- null --\n");
         else {
             bp = (struct boardheader *)getboard(uent.currentboard);
             prints("  %4d %s%-12s\033[m %7d %-15s", i+page, uent.invisible?"\033[1;34m":"", uent.userid?uent.userid:"", uent.pid, uent.from);
-            if(bp)
+            if (bp)
                 prints(" %s", bp->filename);
             prints(" %s", modestring(stbuf, uent.mode, uent.destuid, 0, ""));
         }
@@ -349,7 +349,7 @@ int show_wwwguestlist()
     clrtoeol();
     prints("\033[m");
     rn = 3;
-    for(i=0; i<BBS_PAGE_SIZE && i+page<range; i++) {
+    for (i=0; i<BBS_PAGE_SIZE && i+page<range; i++) {
         move(rn, 0);
         rn++;
         wgentp = wg_record[i+page];
@@ -369,19 +369,19 @@ int show_userlist()
 
 
     /*
-     * num_alcounter(); 
+     * num_alcounter();
      */
     /*
      * if(!friendmode)
      * range=count_users;
      * else
-     * range=count_friends; 
+     * range=count_friends;
      */
     if (update_time + refreshtime < time(0)) {
         fill_userlist();
         update_time = time(0);
     }
-    if (range == 0 /*||fill_userlist() == 0 */ ) {
+    if (range == 0 /*||fill_userlist() == 0 */) {
         move(2, 0);
         prints("没有使用者（朋友）在列表中...\n");
         clrtobot();
@@ -404,7 +404,8 @@ int show_userlist()
     return 1;
 }
 
-int t_rusers(void){
+int t_rusers(void)
+{
     real_user_names = 1;
     t_users();
     real_user_names = 0;
@@ -419,136 +420,133 @@ int allnum, pagenum;
     int i, buflen;
 
     switch (ch) {
-    case UL_CHANGE_NICK_UPPER:
-        if(!strcmp(getCurrentUser()->userid,"guest"))
+        case UL_CHANGE_NICK_UPPER:
+            if (!strcmp(getCurrentUser()->userid,"guest"))
+                break;
+            strncpy(buf,getCurrentUser()->username,NAMELEN);
+            getdata(t_lines-1,0,"永久变换昵称: ",buf,NAMELEN,DOECHO,NULL,false);
+            if (!buf[0]||!strcmp(buf,getCurrentUser()->username))
+                break;
+            update_username(getCurrentUser()->userid,getCurrentUser()->username,buf);
+            strncpy(getCurrentUser()->username,buf,NAMELEN);
+            strncpy(uinfo.username,buf,NAMELEN);
             break;
-        strncpy(buf,getCurrentUser()->username,NAMELEN);
-        getdata(t_lines-1,0,"永久变换昵称: ",buf,NAMELEN,DOECHO,NULL,false);
-        if(!buf[0]||!strcmp(buf,getCurrentUser()->username))
-            break;
-        update_username(getCurrentUser()->userid,getCurrentUser()->username,buf);
-        strncpy(getCurrentUser()->username,buf,NAMELEN);
-        strncpy(uinfo.username,buf,NAMELEN);
-        break;
-    case UL_CHANGE_NICK_LOWER:
-       if(!strcmp(getCurrentUser()->userid,"guest")) break;
-       strncpy(buf,uinfo.username,NAMELEN);
-       enableESC = true;
-       getdata( BBS_PAGESIZE+3, 0, "临时变换昵称: ",buf,NAMELEN,DOECHO,NULL,false);
-       enableESC = false;
-       if(buf[0]!='\0')
-       {	       
-	    strncpy(uinfo.username,buf,NAMELEN);
-	    UPDATE_UTMP_STR(username,uinfo);
-       }	    
-        break;	    
-    case Ctrl('T'):
-        showcolor = !showcolor;
-        break;
-    case 'l':
-        do{
-            struct stat st;
-            sethomefile(buf,user_record[allnum]->userid,"plans");
-            if(!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size){
-                ansimore(buf,true);
-                move(0,0);
+        case UL_CHANGE_NICK_LOWER:
+            if (!strcmp(getCurrentUser()->userid,"guest")) break;
+            strncpy(buf,uinfo.username,NAMELEN);
+            enableESC = true;
+            getdata(BBS_PAGESIZE+3, 0, "临时变换昵称: ",buf,NAMELEN,DOECHO,NULL,false);
+            enableESC = false;
+            if (buf[0]!='\0') {
+                strncpy(uinfo.username,buf,NAMELEN);
+                UPDATE_UTMP_STR(username,uinfo);
             }
-        }                                                                                                                          
-        while(0);
-        break;
-    case 'k':
-    case 'K':
-        if (user_record[allnum]->logintime > update_time)
-            return 1;
-        strncpy(tmpid, user_record[allnum]->userid, sizeof(tmpid));
-        tmpid[sizeof(tmpid) - 1] = '\0';
-        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && strcmp(getCurrentUser()->userid, tmpid))
-            return 1;
-        if (!strcmp(getCurrentUser()->userid, "guest"))
-            return 1;           /* Leeward 98.04.13 */
-        sprintf(buf, "你要把 %s 踢出站外吗 (Yes/No) [N]: ", tmpid);
-        move(BBS_PAGESIZE + 3, 0);
-        clrtoeol();
-        getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
-        if (genbuf[0] != 'Y' && genbuf[0] != 'y') {
-            update_endline();
-            return 1;
-        }
-        if (user_record[allnum]->logintime > update_time || strcmp(user_record[allnum]->userid, tmpid) || !user_record[allnum]->active) {
-            sprintf(buf, "%s 已经下线", tmpid);
-        } else if (kick_user(user_record[allnum]->uid, user_record[allnum]->userid, user_record[allnum]) == 1) {
-            sprintf(buf, "%s 已被踢出站外", tmpid);
-        } else {
-            sprintf(buf, "%s 无法踢出站外", tmpid);
-        }
-        show_message(buf);
-        break;
-    case 'h':
-    case 'H':
-        show_help("help/userlisthelp");
-        break;
-    case 'W':
-    case 'w':
-        if (showexplain == 1)
-            showexplain = 0;
-
-        else
-            showexplain = 1;
-        break;
-    case 't':
-    case 'T':
-        if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
-            return 1;
-        if (strcmp(getCurrentUser()->userid, user_record[allnum]->userid))
-            ttt_talk(user_record[allnum]);
-
-        else
-            return 1;
-        break;
-    case 'm':
-    case 'M':
-        if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
-        	||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
-            return 1;
-        m_send(user_record[allnum]->userid);
-        break;
-    case UL_SWITCH_FRIEND_LOWER:
-    case UL_SWITCH_FRIEND_UPPER:
-        if(!strcmp(getCurrentUser()->userid,"guest")) break;
-        if (friendmode)
-            friendmode = false;
-
-        else
-            friendmode = true;
-        update_time = 0;
-        break;
-    case 's':
-    case 'S':
-        if (strcmp(user_record[allnum]->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
-            return 1;
-        if (!canmsg(getCurrentUser(), user_record[allnum])) {
-            sprintf(buf, "%s 已经关闭讯息呼叫器", user_record[allnum]->userid);
+            break;
+        case Ctrl('T'):
+            showcolor = !showcolor;
+            break;
+        case 'l':
+            do {
+                struct stat st;
+                sethomefile(buf,user_record[allnum]->userid,"plans");
+                if (!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size) {
+                    ansimore(buf,true);
+                    move(0,0);
+                }
+            } while (0);
+            break;
+        case 'k':
+        case 'K':
+            if (user_record[allnum]->logintime > update_time)
+                return 1;
+            strncpy(tmpid, user_record[allnum]->userid, sizeof(tmpid));
+            tmpid[sizeof(tmpid) - 1] = '\0';
+            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && strcmp(getCurrentUser()->userid, tmpid))
+                return 1;
+            if (!strcmp(getCurrentUser()->userid, "guest"))
+                return 1;           /* Leeward 98.04.13 */
+            sprintf(buf, "你要把 %s 踢出站外吗 (Yes/No) [N]: ", tmpid);
+            move(BBS_PAGESIZE + 3, 0);
+            clrtoeol();
+            getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
+            if (genbuf[0] != 'Y' && genbuf[0] != 'y') {
+                update_endline();
+                return 1;
+            }
+            if (user_record[allnum]->logintime > update_time || strcmp(user_record[allnum]->userid, tmpid) || !user_record[allnum]->active) {
+                sprintf(buf, "%s 已经下线", tmpid);
+            } else if (kick_user(user_record[allnum]->uid, user_record[allnum]->userid, user_record[allnum]) == 1) {
+                sprintf(buf, "%s 已被踢出站外", tmpid);
+            } else {
+                sprintf(buf, "%s 无法踢出站外", tmpid);
+            }
             show_message(buf);
             break;
-        }
+        case 'h':
+        case 'H':
+            show_help("help/userlisthelp");
+            break;
+        case 'W':
+        case 'w':
+            if (showexplain == 1)
+                showexplain = 0;
 
-        /*
-         * 保存所发msg的目的uid 1998.7.5 by dong 
-         */
-        strcpy(getSession()->MsgDesUid, user_record[allnum]->userid);
+            else
+                showexplain = 1;
+            break;
+        case 't':
+        case 'T':
+            if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
+                return 1;
+            if (strcmp(getCurrentUser()->userid, user_record[allnum]->userid))
+                ttt_talk(user_record[allnum]);
+
+            else
+                return 1;
+            break;
+        case 'm':
+        case 'M':
+            if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
+                    ||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
+                return 1;
+            m_send(user_record[allnum]->userid);
+            break;
+        case UL_SWITCH_FRIEND_LOWER:
+        case UL_SWITCH_FRIEND_UPPER:
+            if (!strcmp(getCurrentUser()->userid,"guest")) break;
+            if (friendmode)
+                friendmode = false;
+
+            else
+                friendmode = true;
+            update_time = 0;
+            break;
+        case 's':
+        case 'S':
+            if (strcmp(user_record[allnum]->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
+                return 1;
+            if (!canmsg(getCurrentUser(), user_record[allnum])) {
+                sprintf(buf, "%s 已经关闭讯息呼叫器", user_record[allnum]->userid);
+                show_message(buf);
+                break;
+            }
+
+            /*
+             * 保存所发msg的目的uid 1998.7.5 by dong
+             */
+            strcpy(getSession()->MsgDesUid, user_record[allnum]->userid);
 #ifdef SMS_SUPPORT
-	/*
-	if(ch=='S')
-	    do_send_sms_func(user_record[allnum]->userid, NULL);
-	else
-	*/
+            /*
+            if(ch=='S')
+                do_send_sms_func(user_record[allnum]->userid, NULL);
+            else
+            */
 #endif
-        do_sendmsg(user_record[allnum], NULL, 0);
-        break;
+            do_sendmsg(user_record[allnum], NULL, 0);
+            break;
 #ifdef PERSONAL_CORP
-    case 'x':
-    case 'X':
-        {
+        case 'x':
+        case 'X': {
             struct userec *u;
             if (getuser(user_record[allnum]->userid, &u)) {
                 if (u->flags & PCORP_FLAG) {
@@ -561,64 +559,64 @@ int allnum, pagenum;
         }
         break;
 #endif
-    case 'o':
-    case 'O':
-        if (friendmode)
-            return 0;
-        if (!strcmp("guest", getCurrentUser()->userid))
-            return 0;
-        if (addtooverride(user_record[allnum]->userid) == -1) {
-            sprintf(buf, "%s 已在朋友名单", user_record[allnum]->userid);
-        }
+        case 'o':
+        case 'O':
+            if (friendmode)
+                return 0;
+            if (!strcmp("guest", getCurrentUser()->userid))
+                return 0;
+            if (addtooverride(user_record[allnum]->userid) == -1) {
+                sprintf(buf, "%s 已在朋友名单", user_record[allnum]->userid);
+            }
 
-        else {
-            sprintf(buf, "%s 列入朋友名单", user_record[allnum]->userid);
-        }
-        show_message(buf);
-        break;
-    case 'd':
-    case 'D':
-        if (!strcmp("guest", getCurrentUser()->userid))
-            return 0;
+            else {
+                sprintf(buf, "%s 列入朋友名单", user_record[allnum]->userid);
+            }
+            show_message(buf);
+            break;
+        case 'd':
+        case 'D':
+            if (!strcmp("guest", getCurrentUser()->userid))
+                return 0;
 
-        /*
-         * Leeward: 97.12.19: confirm removing operation 
-         */
-        sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", user_record[allnum]->userid);
-        move(BBS_PAGESIZE + 3, 0);
-        clrtoeol();
-        getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
-        move(BBS_PAGESIZE + 3, 0);
-        clrtoeol();
-        if (genbuf[0] != 'Y' && genbuf[0] != 'y')
-            return 0;
-        if (deleteoverride(user_record[allnum]->userid) == -1) {
-            sprintf(buf, "%s 本来就不在朋友名单中", user_record[allnum]->userid);
-        }
+            /*
+             * Leeward: 97.12.19: confirm removing operation
+             */
+            sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", user_record[allnum]->userid);
+            move(BBS_PAGESIZE + 3, 0);
+            clrtoeol();
+            getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
+            move(BBS_PAGESIZE + 3, 0);
+            clrtoeol();
+            if (genbuf[0] != 'Y' && genbuf[0] != 'y')
+                return 0;
+            if (deleteoverride(user_record[allnum]->userid) == -1) {
+                sprintf(buf, "%s 本来就不在朋友名单中", user_record[allnum]->userid);
+            }
 
-        else {
-            sprintf(buf, "%s 已从朋友名单移除", user_record[allnum]->userid);
-        }
-        show_message(buf);
-        break;
-    case '/':
-        strcpy(buf, "输入所要查找的ID: ");
-        move(BBS_PAGESIZE + 3, 0);
-        clrtoeol();
-        getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, IDLEN+2, DOECHO, NULL, true);
-        move(BBS_PAGESIZE + 3, 0);
-        clrtoeol();
-        buflen = strlen(genbuf);
-        if (buflen>0)
-        	for (i=0; i<range; i++)
-        		if (strncasecmp(genbuf, user_record[i]->userid, buflen) == 0) {
-        			num = i;
-        			update_time = 0;
-        			break;
-        		}
-    	break;
-    default:
-        return 0;
+            else {
+                sprintf(buf, "%s 已从朋友名单移除", user_record[allnum]->userid);
+            }
+            show_message(buf);
+            break;
+        case '/':
+            strcpy(buf, "输入所要查找的ID: ");
+            move(BBS_PAGESIZE + 3, 0);
+            clrtoeol();
+            getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, IDLEN+2, DOECHO, NULL, true);
+            move(BBS_PAGESIZE + 3, 0);
+            clrtoeol();
+            buflen = strlen(genbuf);
+            if (buflen>0)
+                for (i=0; i<range; i++)
+                    if (strncasecmp(genbuf, user_record[i]->userid, buflen) == 0) {
+                        num = i;
+                        update_time = 0;
+                        break;
+                    }
+            break;
+        default:
+            return 0;
     }
     if (friendmode)
         modify_user_mode(FRIEND);
@@ -657,70 +655,70 @@ int allnum, pagenum;
     char buf[STRLEN];
 
     switch (ch) {
-    case 'h':
-    case 'H':
-        show_help("help/usershelp");
-        break;
-    case 'm':
-    case 'M':
-        if (!HAS_PERM(getCurrentUser(), PERM_POST))
-            return 1;
-        m_send(user_data[allnum - pagenum].userid);
-        break;
-    case 'o':
-    case 'O':
-        if (!strcmp("guest", getCurrentUser()->userid))
+        case 'h':
+        case 'H':
+            show_help("help/usershelp");
+            break;
+        case 'm':
+        case 'M':
+            if (!HAS_PERM(getCurrentUser(), PERM_POST))
+                return 1;
+            m_send(user_data[allnum - pagenum].userid);
+            break;
+        case 'o':
+        case 'O':
+            if (!strcmp("guest", getCurrentUser()->userid))
+                return 0;
+            if (addtooverride(user_data[allnum - pagenum].userid) == -1) {
+                sprintf(buf, "%s 已在朋友名单", user_data[allnum - pagenum].userid);
+                show_message(buf);
+            }
+
+            else {
+                sprintf(buf, "%s 列入朋友名单", user_data[allnum - pagenum].userid);
+                show_message(buf);
+            }
+            if (!friendmode)
+                return 1;
+            break;
+        case 'W':
+        case 'w':
+            if (showexplain == 1)
+                showexplain = 0;
+
+            else
+                showexplain = 1;
+            break;
+        case 'd':
+        case 'D':
+            if (!strcmp("guest", getCurrentUser()->userid))
+                return 0;
+
+            /*
+             * Leeward: 97.12.19: confirm removing operation
+             */
+            sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", user_data[allnum - pagenum].userid);
+            move(BBS_PAGESIZE + 3, 0);
+            clrtoeol();
+            getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
+            move(BBS_PAGESIZE + 3, 0);
+            clrtoeol();
+            if (genbuf[0] != 'Y' && genbuf[0] != 'y')
+                return 0;
+            if (deleteoverride(user_data[allnum - pagenum].userid) == -1) {
+                sprintf(buf, "%s 本来就不在朋友名单中", user_data[allnum - pagenum].userid);
+                show_message(buf);
+            }
+
+            else {
+                sprintf(buf, "%s 已从朋友名单移除", user_data[allnum - pagenum].userid);
+                show_message(buf);
+            }
+            if (!friendmode)
+                return 1;
+            break;
+        default:
             return 0;
-        if (addtooverride(user_data[allnum - pagenum].userid) == -1) {
-            sprintf(buf, "%s 已在朋友名单", user_data[allnum - pagenum].userid);
-            show_message(buf);
-        }
-
-        else {
-            sprintf(buf, "%s 列入朋友名单", user_data[allnum - pagenum].userid);
-            show_message(buf);
-        }
-        if (!friendmode)
-            return 1;
-        break;
-    case 'W':
-    case 'w':
-        if (showexplain == 1)
-            showexplain = 0;
-
-        else
-            showexplain = 1;
-        break;
-    case 'd':
-    case 'D':
-        if (!strcmp("guest", getCurrentUser()->userid))
-            return 0;
-
-        /*
-         * Leeward: 97.12.19: confirm removing operation 
-         */
-        sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", user_data[allnum - pagenum].userid);
-        move(BBS_PAGESIZE + 3, 0);
-        clrtoeol();
-        getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
-        move(BBS_PAGESIZE + 3, 0);
-        clrtoeol();
-        if (genbuf[0] != 'Y' && genbuf[0] != 'y')
-            return 0;
-        if (deleteoverride(user_data[allnum - pagenum].userid) == -1) {
-            sprintf(buf, "%s 本来就不在朋友名单中", user_data[allnum - pagenum].userid);
-            show_message(buf);
-        }
-
-        else {
-            sprintf(buf, "%s 已从朋友名单移除", user_data[allnum - pagenum].userid);
-            show_message(buf);
-        }
-        if (!friendmode)
-            return 1;
-        break;
-    default:
-        return 0;
     }
     modify_user_mode(LAUSERS);
     if (readplan == false) {
@@ -748,9 +746,9 @@ int printuent(struct userec *uentp, void *arg)
     /*
     if (uentp->numlogins == 0 || uleveltochar(permstr, uentp) == 0)
         return 0;
-	*/
+    */
     if (uentp->userid[0]==0)
-	return 0;
+        return 0;
     if (i < page || i >= page + BBS_PAGESIZE || i >= range) {
         i++;
         if (i >= page + BBS_PAGESIZE || i >= range)
@@ -763,7 +761,7 @@ int printuent(struct userec *uentp, void *arg)
     user_data[i - page] = *uentp;
     override = myfriend(searchuser(uentp->userid), fexp, getSession());
 
-    /*---	modified by period	2000-11-02	hide posts/logins	---*/
+    /*--- modified by period 2000-11-02 hide posts/logins ---*/
     prints(" %5d%2s%s%-14s%s %s%-19s%s  %5d %5d %4s   %-16s\n", i + 1,
            (override) ? "．" : "", (override) ? "\033[32m" : "", uentp->userid, (override) ? "\033[m" : "", (override && showexplain) ? "\033[31m" : "",
 #if defined(ACTS_REALNAMES)
@@ -819,7 +817,7 @@ int do_query(int star, int curr)
         move(t_lines - 1, 0);
         if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
             prints
-                ("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 选择使用者[\x1b[1;32m↑\x1b[m\x1b[0;44m,\x1b[1;32m↓\x1b[m\x1b[0;44m] 切换模式 [\x1b[1;32mf\x1b[m\x1b[0;44m] 求救[\x1b[1;32mh\x1b[m\x1b[0;44m]");
+            ("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 选择使用者[\x1b[1;32m↑\x1b[m\x1b[0;44m,\x1b[1;32m↓\x1b[m\x1b[0;44m] 切换模式 [\x1b[1;32mf\x1b[m\x1b[0;44m] 求救[\x1b[1;32mh\x1b[m\x1b[0;44m]");
         else
             prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 选择使用者[↑,↓] 切换模式 [f] 求救[h]");
         clrtoeol();
@@ -832,7 +830,7 @@ int utmp_query(int star, int curr)
 {
     struct user_info *uentp;
     struct boardheader *bp = NULL;
-    
+
     uentp = user_record[curr];
     clear();
     move(1, 0);
@@ -869,31 +867,33 @@ int do_query2(int star, int curr)
     return 0;
 }
 
-int Users(void){
+int Users(void)
+{
 #ifdef NEW_HELP
-	int oldhelpmode=helpmode;
+    int oldhelpmode=helpmode;
 #endif
     range = allusers();
     modify_user_mode(LAUSERS);
     clear();
     user_data = (struct userec *) calloc(sizeof(struct userec), BBS_PAGESIZE);
 #ifdef NEW_HELP
-	helpmode=HELP_FRIEND;
+    helpmode=HELP_FRIEND;
 #endif
     choose(false, 0, print_title2, deal_key2, Show_Users, do_query2);
 #ifdef NEW_HELP
-	helpmode=oldhelpmode;
+    helpmode=oldhelpmode;
 #endif
     clear();
     free(user_data);
     return 0;
 }
 
-int t_friends(void){
+int t_friends(void)
+{
     char genbuf[STRLEN];
     int oldmode;
 #ifdef NEW_HELP
-	int oldhelpmode=helpmode;
+    int oldhelpmode=helpmode;
 #endif
 
     oldmode = uinfo.mode;
@@ -922,11 +922,11 @@ int t_friends(void){
             friendmode = false;
             update_time = 0;
 #ifdef NEW_HELP
-			helpmode=HELP_FRIEND;
+            helpmode=HELP_FRIEND;
 #endif
             choose(true, 0, print_title, deal_key, show_userlist, do_query);
 #ifdef NEW_HELP
-	helpmode=oldhelpmode;
+            helpmode=oldhelpmode;
 #endif
             clear();
             modify_user_mode(oldmode);
@@ -934,12 +934,12 @@ int t_friends(void){
         }
     } else {
 #ifdef NEW_HELP
-		helpmode=HELP_FRIEND;
+        helpmode=HELP_FRIEND;
 #endif
         update_time = 0;
         choose(true, 0, print_title, deal_key, show_userlist, do_query);
 #ifdef NEW_HELP
-	helpmode=oldhelpmode;
+        helpmode=oldhelpmode;
 #endif
     }
     clear();
@@ -948,9 +948,10 @@ int t_friends(void){
     return 0;
 }
 
-int t_users(void){
+int t_users(void)
+{
 #ifdef NEW_HELP
-	int oldhelpmode=helpmode;
+    int oldhelpmode=helpmode;
 #endif
     friendmode = false;
     modify_user_mode(LUSERS);
@@ -962,18 +963,19 @@ int t_users(void){
     }
     update_time = 0;
 #ifdef NEW_HELP
-	helpmode=HELP_FRIEND;
+    helpmode=HELP_FRIEND;
 #endif
     choose(true, 0, print_title, deal_key, show_userlist, do_query);
 #ifdef NEW_HELP
-	helpmode=oldhelpmode;
+    helpmode=oldhelpmode;
 #endif
     clear();
     return 0;
 }
 
-int t_utmp(void){
-    if(!HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) {
+int t_utmp(void)
+{
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) {
         prints("您不具有查看该项目的权限（可见隐身）。");
         pressanykey();
     }
@@ -982,27 +984,27 @@ int t_utmp(void){
     return 0;
 }
 
-int t_wwwguest(void){
-   struct public_data *publicshm;
-   publicshm = get_publicshm();
-   range = publicshm->www_guest_count;
-   if(range == 0) {
-       clear();
-       move(5, 6);
-       prints("目前没有www guest在线。");
-       pressanykey();
-   }
-   else
-       choose(true, 0, wwwguest_title, wwwguest_key, show_wwwguestlist, wwwguest_query);
-   return 0;
+int t_wwwguest(void)
+{
+    struct public_data *publicshm;
+    publicshm = get_publicshm();
+    range = publicshm->www_guest_count;
+    if (range == 0) {
+        clear();
+        move(5, 6);
+        prints("目前没有www guest在线。");
+        pressanykey();
+    } else
+        choose(true, 0, wwwguest_title, wwwguest_key, show_wwwguestlist, wwwguest_query);
+    return 0;
 }
 
-int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), int (*list_show) (), int (*read) ())
+int choose(int update, int defaultn, int (*title_show)(), int (*key_deal)(), int (*list_show)(), int (*read)())
 {
     int ch, number, deal;
 
     readplan = false;
-    (*title_show) ();
+    (*title_show)();
     func_list_show = list_show;
     set_alarm(0, 0, NULL, NULL);
     if (update == 1)
@@ -1020,19 +1022,19 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
             page = (num / BBS_PAGESIZE) * BBS_PAGESIZE;
             move(3, 0);
             clrtobot();
-            if ((*list_show) () == -1)
+            if ((*list_show)() == -1)
                 return -1;
             update_endline();
         }
         if (num < page || num >= page + BBS_PAGESIZE) {
             page = (num / BBS_PAGESIZE) * BBS_PAGESIZE;
-            if ((*list_show) () == -1)
+            if ((*list_show)() == -1)
                 return -1;
             update_endline();
             continue;
         }
         if (readplan == true) {
-            if ((*read) (page, num) == -1)
+            if ((*read)(page, num) == -1)
                 return num;
         }
 
@@ -1049,14 +1051,14 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
                 readplan = false;
                 move(1, 0);
                 clrtobot();
-                if ((*list_show) () == -1)
+                if ((*list_show)() == -1)
                     return -1;
-                (*title_show) ();
+                (*title_show)();
                 continue;
             }
             break;
         }
-        deal = (*key_deal) (ch, num, page);
+        deal = (*key_deal)(ch, num, page);
         if (range == 0)
             break;
         if (deal == 1)
@@ -1065,66 +1067,65 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
         else if (deal == -1)
             break;
         switch (ch) {
-        case Ctrl('Z'):
-            r_lastmsg();        /* Leeward 98.07.30 support msgX */
-            break;
-        case 'P':
-        case 'b':
-        case Ctrl('B'):
-        case KEY_PGUP:
-            if (num == 0)
-                num = range - 1;
+            case Ctrl('Z'):
+                r_lastmsg();        /* Leeward 98.07.30 support msgX */
+                break;
+            case 'P':
+            case 'b':
+            case Ctrl('B'):
+            case KEY_PGUP:
+                if (num == 0)
+                    num = range - 1;
 
-            else
-                num -= BBS_PAGESIZE;
-            break;
-        case ' ':
-            if (readplan == true) {
+                else
+                    num -= BBS_PAGESIZE;
+                break;
+            case ' ':
+                if (readplan == true) {
+                    if (++num >= range)
+                        num = 0;
+                    break;
+                }
+            case 'N':
+            case Ctrl('F'):
+            case KEY_PGDN:
+                if (num == range - 1)
+                    num = 0;
+
+                else
+                    num += BBS_PAGESIZE;
+                break;
+            case 'p':
+            case 'l':
+            case KEY_UP:
+                if (num-- <= 0)
+                    num = range - 1;
+                break;
+            case 'n':
+            case 'j':
+            case KEY_DOWN:
                 if (++num >= range)
                     num = 0;
                 break;
-            }
-        case 'N':
-        case Ctrl('F'):
-        case KEY_PGDN:
-            if (num == range - 1)
-                num = 0;
-
-            else
-                num += BBS_PAGESIZE;
-            break;
-        case 'p':
-        case 'l':
-        case KEY_UP:
-            if (num-- <= 0)
+            case '$':
+            case KEY_END:
                 num = range - 1;
-            break;
-        case 'n':
-        case 'j':
-        case KEY_DOWN:
-            if (++num >= range)
-                num = 0;
-            break;
-        case '$':
-        case KEY_END:
-            num = range - 1;
-            break;
-        case KEY_HOME:
-            num = 0;
-            break;
-        case '\n':
-        case '\r':
-            if (number > 0) {
-                num = number - 1;
                 break;
-            }
+            case KEY_HOME:
+                num = 0;
+                break;
+            case '\n':
+            case '\r':
+                if (number > 0) {
+                    num = number - 1;
+                    break;
+                }
 
-            /*
-             * fall through 
-             */
-        case 'r':
-        case KEY_RIGHT:
-            {
+                /*
+                 * fall through
+                 */
+            case 'r':
+            case KEY_RIGHT: {
                 if (readplan == true) {
                     if (++num >= range)
                         num = 0;
@@ -1134,8 +1135,8 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
                     readplan = true;
                 break;
             }
-        default:
-            ;
+            default:
+                ;
         }
         if (ch >= '0' && ch <= '9') {
             number = number * 10 + (ch - '0');
@@ -1148,7 +1149,8 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
     return -1;
 }
 
-int display_publicshm(void){
+int display_publicshm(void)
+{
     struct public_data *publicshm;
     publicshm = get_publicshm();
     clear();

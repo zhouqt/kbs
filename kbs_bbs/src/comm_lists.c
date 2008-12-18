@@ -170,17 +170,18 @@ static const CMD_LIST CMD[]={
 
 static CMD_MENU *menu;
 
-static int decode_string(const char *s){
+static int decode_string(const char *s)
+{
     register int i,j;
     char buf[4096];
     int val,count;
-    for(i=0,j=0;(buf[i]=s[j]);j++){
-        if(buf[i]!='\001'){
+    for (i=0,j=0;(buf[i]=s[j]);j++) {
+        if (buf[i]!='\001') {
             i++;
             continue;
         }
-        if((val=s[++j])&&(count=s[++j])){
-            while(count-->0)
+        if ((val=s[++j])&&(count=s[++j])) {
+            while (count-->0)
                 buf[i++]=val;
         }
     }
@@ -188,10 +189,11 @@ static int decode_string(const char *s){
     return 0;
 }
 
-static CMD_FUNC search_func(const char *name,int *type){
+static CMD_FUNC search_func(const char *name,int *type)
+{
     register const CMD_LIST *p=CMD;
-    while(p->name){
-        if(!strcmp(name,p->name)){
+    while (p->name) {
+        if (!strcmp(name,p->name)) {
             *type=p->type;
             return p->func;
         }
@@ -201,7 +203,8 @@ static CMD_FUNC search_func(const char *name,int *type){
     return NULL;
 }
 
-int exec_mbem(const char *command){
+int exec_mbem(const char *command)
+{
 #define EM_QUIT(msg)                                                    \
     do{                                                                 \
         if(orig_mode!=-1)                                               \
@@ -219,23 +222,23 @@ int exec_mbem(const char *command){
     char buf[1024],*p,*q;
     int orig_mode=-1;
     void *dll;
-    if(HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&!HAS_PERM(getCurrentUser(),(PERM_SYSOP|PERM_ADMIN))
+    if (HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&!HAS_PERM(getCurrentUser(),(PERM_SYSOP|PERM_ADMIN))
 #ifdef NEWSMTH
             && !strstr(command, "@mod:admin/")
 #endif
-    )
+       )
         EM_QUIT("您目前不具有休闲娱乐权限, 无法执行此项操作...");
     strcpy(buf,command);
-    if(!(p=strstr(buf,"@mod")))
+    if (!(p=strstr(buf,"@mod")))
         return 0;
     orig_mode=modify_user_mode(SERVICES);
-    if((p>&buf[1])&&(toupper(buf[1])==
+    if ((p>&buf[1])&&(toupper(buf[1])==
 #ifdef SSHBBS
-        'T'
+                      'T'
 #else /* ! SSHBBS */
-        'S'
+                      'S'
 #endif /* SSHBBS */
-        )){
+                     )) {
 #ifdef SSHBBS
         EM_QUIT("当前功能仅在 Telnet 方式登录下有效...");
 #else /* ! SSHBBS */
@@ -243,31 +246,29 @@ int exec_mbem(const char *command){
 #endif /* SSHBBS */
     }
     p+=5;
-    if((q=strchr(p,'#')))
+    if ((q=strchr(p,'#')))
         *q++=0;
 #if defined(CYGWIN) && defined(SSHBBS)
-    do{
+    do {
         char svc[STRLEN],*r;
-        if((r=strrchr(p,'.')))
+        if ((r=strrchr(p,'.')))
             *r=0;
         snprintf(svc,STRLEN,"%s.ssh%s",p,(!r?"":r));
         dll=dlopen(svc,RTLD_NOW);
-    }
-    while(0);
+    } while (0);
 #else /* ! (CYGWIN && SSHBBS) */
     /* 黑手搞掉一个安全漏洞... 嗯... */
-    do{
+    do {
 #define EM_TOKEN " /,:;()[]{}<>?*+=~!@#$%^&`'\"\t\n\r\\"
         char so_name[PATHLEN],token_buffer[PATHLEN],*token,*record;
         snprintf(token_buffer,PATHLEN,"%s/%s",BBSHOME,p);
         record=so_name;
         *record++='/';
-        for(token=strtok(token_buffer,EM_TOKEN);token;token=strtok(NULL,EM_TOKEN)){
-            if(token[0]=='.'&&token[1]=='.'&&!token[2]){
+        for (token=strtok(token_buffer,EM_TOKEN);token;token=strtok(NULL,EM_TOKEN)) {
+            if (token[0]=='.'&&token[1]=='.'&&!token[2]) {
                 EM_QUIT("模块位置与当前安全原则不符, 操作终止...");
-            }
-            else{
-                while(*token){
+            } else {
+                while (*token) {
                     *record++=*token++;
                 }
                 *record++='/';
@@ -276,10 +277,9 @@ int exec_mbem(const char *command){
         *--record=0;
         dll=dlopen(so_name,RTLD_NOW);
 #undef EM_TOKEN
-    }
-    while(0);
+    } while (0);
 #endif /* CYGWIN && SSHBBS */
-    if(!dll) {
+    if (!dll) {
 #ifdef SOLEE
         clear();
         move(6, 0);
@@ -288,7 +288,7 @@ int exec_mbem(const char *command){
 #endif /* SOLEE */
         EM_QUIT("模块载入失败, 操作终止...");
     }
-    if(!(func=dlsym(dll,(!q?"mod_main":q)))){
+    if (!(func=dlsym(dll,(!q?"mod_main":q)))) {
         dlclose(dll);
         EM_QUIT("入口函数装入失败, 操作终止...");
     }
@@ -297,44 +297,42 @@ int exec_mbem(const char *command){
     EM_QUIT(NULL);
 }
 
-static int domenu_screen(const struct smenuitem *pm,const char *prompt){
+static int domenu_screen(const struct smenuitem *pm,const char *prompt)
+{
     const char *name,*desc,*str;
     int row,col,count,n;
     clear();
     row=3;col=0;count=0;
-    while(1){
+    while (1) {
         n=(pm-menuitem);
-        switch(pm->level){
+        switch (pm->level) {
             case -1:
                 return count;
             case -2:
                 name=sysconf_relocate(pm->name);
                 desc=sysconf_relocate(pm->desc);
-                if(!strcmp(name,"title")){
+                if (!strcmp(name,"title")) {
                     docmdtitle(desc,prompt);
                     update_endline();
-                }
-                else if(!strcmp(name,"screen")
-                    &&(str=sysconf_str(DEFINE(getCurrentUser(),DEF_SHOWSCREEN)?desc:"S_BLANK"))){
+                } else if (!strcmp(name,"screen")
+                           &&(str=sysconf_str(DEFINE(getCurrentUser(),DEF_SHOWSCREEN)?desc:"S_BLANK"))) {
                     move(menu[n].row,menu[n].col);
                     decode_string(str);
                 }
                 break;
             default:
-                if(!(menu[n].row<0)&&HAS_PERM(getCurrentUser(),pm->level)){
-                    if(!(menu[n].row)){
+                if (!(menu[n].row<0)&&HAS_PERM(getCurrentUser(),pm->level)) {
+                    if (!(menu[n].row)) {
                         menu[n].row=row;
                         menu[n].col=col;
-                    }
-                    else{
+                    } else {
                         row=menu[n].row;
                         col=menu[n].col;
                     }
                     move(row++,col);
                     prints("  %s",sysconf_relocate(pm->desc));
-                }
-                else{
-                    if(menu[n].row>0){
+                } else {
+                    if (menu[n].row>0) {
                         row=menu[n].row;
                         col=menu[n].col;
                     }
@@ -346,9 +344,10 @@ static int domenu_screen(const struct smenuitem *pm,const char *prompt){
     }
 }
 
-static int dump_menu_pos(void){
+static int dump_menu_pos(void)
+{
     register int i;
-    for(i=0;i<sysconf_menu;i++){
+    for (i=0;i<sysconf_menu;i++) {
         menu[i].row=menuitem[i].line;
         menu[i].col=menuitem[i].col;
         menu[i].func=search_func(sysconf_relocate(menuitem[i].func_name),&(menu[i].type));
@@ -356,7 +355,8 @@ static int dump_menu_pos(void){
     return 0;
 }
 
-int domenu(const char *name){
+int domenu(const char *name)
+{
 #ifndef FREE
     const char *prompt="目前选择: ";
     const int prompt_len=10;
@@ -367,17 +367,17 @@ int domenu(const char *name){
     CMD_FUNC func;
     struct smenuitem *pm;
     int size,now,n,i,key;
-    if(!menu){
-        if(!(menu=(CMD_MENU*)malloc(sysconf_menu*sizeof(CMD_MENU))))
+    if (!menu) {
+        if (!(menu=(CMD_MENU*)malloc(sysconf_menu*sizeof(CMD_MENU))))
             return -1;
         dump_menu_pos();
     }
     pm=sysconf_getmenu(name);
     size=domenu_screen(pm,prompt);
     n=(pm-menuitem);now=0;
-    if(!strcmp(name,"TOPMENU")&&chkmail()){
-        for(i=0;i<size;i++){
-            if((menu[n+i].row>0)&&(*sysconf_relocate(pm[i].name)=='M'))
+    if (!strcmp(name,"TOPMENU")&&chkmail()) {
+        for (i=0;i<size;i++) {
+            if ((menu[n+i].row>0)&&(*sysconf_relocate(pm[i].name)=='M'))
                 now=i;
         }
     }
@@ -385,15 +385,15 @@ int domenu(const char *name){
 #ifdef NEW_HELP
     helpmode=0;
 #endif /* NEW_HELP */
-    if(nettyNN==1)
+    if (nettyNN==1)
         R_monitor(NULL);
-    while(1){
+    while (1) {
 #ifndef FREE
         printacbar();
 #endif /* FREE */
-        while((pm[now].level<0)||!HAS_PERM(getCurrentUser(),pm[now].level)){
+        while ((pm[now].level<0)||!HAS_PERM(getCurrentUser(),pm[now].level)) {
             now++;
-            if(!(now<size))
+            if (!(now<size))
                 now=0;
         }
         move(menu[n+now].row,menu[n+now].col);
@@ -402,7 +402,7 @@ int domenu(const char *name){
 #else /* FREE */
         prints("%s","> ");
 #endif /* ! FREE */
-        if(prompt){
+        if (prompt) {
             move(1,prompt_len);
             clrtoeol();
             prints("[\033[7m%-12s\033[m]",sysconf_relocate(pm[now].name));
@@ -410,7 +410,7 @@ int domenu(const char *name){
         key=igetkey();
         move(menu[n+now].row,menu[n+now].col);
         prints("%s","  ");
-        switch(key){
+        switch (key) {
             case EOF:
                 abort_bbs(0);
                 break;
@@ -420,33 +420,33 @@ int domenu(const char *name){
 #ifdef NEW_HELP
                 helpmode=0;
 #endif /* NEW_HELP */
-                if(nettyNN==1)
+                if (nettyNN==1)
                     R_monitor(NULL);
                 break;
             case Ctrl('Z'):
                 r_lastmsg();
                 break;
             case KEY_RIGHT:
-                for(i=0;i<size;i++){
-                    if((menu[n+i].row==menu[n+now].row)&&!(pm[i].level<0)&&(menu[n+i].col>menu[n+now].col)
-                        &&HAS_PERM(getCurrentUser(),pm[i].level))
+                for (i=0;i<size;i++) {
+                    if ((menu[n+i].row==menu[n+now].row)&&!(pm[i].level<0)&&(menu[n+i].col>menu[n+now].col)
+                            &&HAS_PERM(getCurrentUser(),pm[i].level))
                         break;
                 }
-                if(i<size){
+                if (i<size) {
                     now=i;
                     break;
                 }
             case '\n':
             case '\r':
-                if(!strcmp(sysconf_relocate(pm[now].arg),".."))
+                if (!strcmp(sysconf_relocate(pm[now].arg),".."))
                     return 0;
-                if((func=menu[n+now].func)){
-                    if(prompt){
+                if ((func=menu[n+now].func)) {
+                    if (prompt) {
                         move(1,prompt_len);
                         clrtoeol();
                     }
                     set_alarm(0,0,NULL,NULL);
-                    if(menu[n+now].type)
+                    if (menu[n+now].type)
                         (*func)(sysconf_relocate(pm[now].arg));
                     else
                         (*func)();
@@ -455,19 +455,19 @@ int domenu(const char *name){
 #ifdef NEW_HELP
                     helpmode=0;
 #endif /* NEW_HELP */
-                    if(nettyNN==1)
+                    if (nettyNN==1)
                         R_monitor(NULL);
                 }
                 break;
             case KEY_LEFT:
-                for(i=0;i<size;i++){
-                    if((menu[n+i].row==menu[n+now].row)&&!(pm[i].level<0)&&(menu[n+i].col<menu[n+now].col)
-                        &&HAS_PERM(getCurrentUser(),pm[i].level))
+                for (i=0;i<size;i++) {
+                    if ((menu[n+i].row==menu[n+now].row)&&!(pm[i].level<0)&&(menu[n+i].col<menu[n+now].col)
+                            &&HAS_PERM(getCurrentUser(),pm[i].level))
                         break;
-                    if(menu[n+i].func==Goodbye)
+                    if (menu[n+i].func==Goodbye)
                         break;
                 }
-                if(i<size){
+                if (i<size) {
                     now=i;
                     break;
                 }
@@ -477,22 +477,22 @@ int domenu(const char *name){
                 break;
             case KEY_UP:
                 now--;
-                while((pm[now].level<0)||!HAS_PERM(getCurrentUser(),pm[now].level)){
-                    if(now>0)
+                while ((pm[now].level<0)||!HAS_PERM(getCurrentUser(),pm[now].level)) {
+                    if (now>0)
                         now--;
                     else
                         now=(size-1);
                 }
                 break;
             case '~':
-                if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+                if (!HAS_PERM(getCurrentUser(),PERM_SYSOP))
                     break;
                 newbbslog(BBSLOG_USIES,"rebuild sysconf.img");
                 build_sysconf("etc/sysconf.ini",NULL);
                 newbbslog(BBSLOG_USIES,"reload sysconf.img");
                 load_sysconf();
                 free(menu);
-                if(!(menu=(CMD_MENU*)malloc(sysconf_menu*sizeof(CMD_MENU))))
+                if (!(menu=(CMD_MENU*)malloc(sysconf_menu*sizeof(CMD_MENU))))
                     return -1;
                 dump_menu_pos();
                 pm=sysconf_getmenu(name);
@@ -500,9 +500,9 @@ int domenu(const char *name){
                 now=0;
                 break;
             default:
-                for(i=0;i<size;i++){
-                    if((menu[n+i].row>0)&&(*sysconf_relocate(pm[i].name)==toupper(key))
-                        &&HAS_PERM(getCurrentUser(),pm[i].level)){
+                for (i=0;i<size;i++) {
+                    if ((menu[n+i].row>0)&&(*sysconf_relocate(pm[i].name)==toupper(key))
+                            &&HAS_PERM(getCurrentUser(),pm[i].level)) {
                         now=i;
                         break;
                     }

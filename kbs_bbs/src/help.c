@@ -24,9 +24,9 @@
 #include "bbs.h"
 #include "read.h"
 void show_help(fname)
-    char *fname;
+char *fname;
 {
-    /*---	Modified by period	2000-10-26	according to ylsdd's warning	---*/
+    /*--- Modified by period 2000-10-26 according to ylsdd's warning ---*/
     static short int cnt;
 
     if (cnt >= 2) {

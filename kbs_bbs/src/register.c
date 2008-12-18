@@ -47,7 +47,7 @@ void new_register()
     int allocid, do_try, flag, usernum;
     char buf[STRLEN];
 
-/* temp !!!!!*/
+    /* temp !!!!!*/
 
 #ifdef SECONDSITE
     prints("不接受新帐号注册！！！\n");
@@ -55,12 +55,12 @@ void new_register()
     sleep(2);
     exit(-1);
 #else
-    
-/*    prints("Sorry, we don't accept newusers due to system problem, we'll fixit ASAP\n");
-    oflush();
-    sleep(2);
-    exit(-1);
-*/
+
+    /*    prints("Sorry, we don't accept newusers due to system problem, we'll fixit ASAP\n");
+        oflush();
+        sleep(2);
+        exit(-1);
+    */
     memset(&newuser, 0, sizeof(newuser));
     getdata(0, 0, "使用GB编码阅读?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", buf, 4, DOECHO, NULL, true);
     if (*buf == 'n' || *buf == 'N')
@@ -90,19 +90,18 @@ void new_register()
             } else if ((usernum = searchuser(newuser.userid)) != 0) {   /*( dosearchuser( newuser.userid ) ) midified by dong , 1998.12.2, change getuser -> searchuser , 1999.10.26 */
                 prints("此帐号已经有人使用\n");
             } else {
-                /*---	---*/
+                /*--- ---*/
                 struct stat lst;
                 time_t lnow;
 
                 lnow = time(NULL);
                 sethomepath(genbuf, newuser.userid);
                 if (!stat(genbuf, &lst) && S_ISDIR(lst.st_mode)
-                    && (lnow - lst.st_ctime < SEC_DELETED_OLDHOME /* 3600*24*30 */ )) {
+                        && (lnow - lst.st_ctime < SEC_DELETED_OLDHOME /* 3600*24*30 */)) {
                     prints("目前无法注册帐号%s，请与系统管理人员联系。\n", newuser.userid);
                     sprintf(genbuf, "IP %s new id %s failed[home changed in past 30 days]", getSession()->fromhost, newuser.userid);
                     bbslog("user","%s",genbuf);
-                }
-                else{
+                } else {
                     /* etnlegend, 2006.10.14, 新用户可能继承原有同名用户信件... */
                     sethomepath(genbuf,newuser.userid);
                     my_f_rm(genbuf);
@@ -142,7 +141,7 @@ void new_register()
         break;
     }
 
-    if ( searchuser(newuser.userid) != 0) {   
+    if (searchuser(newuser.userid) != 0) {
         prints("此帐号已经有人使用\n");
         refresh();
         longjmp(byebye, -1);
@@ -151,13 +150,13 @@ void new_register()
     newuser.userlevel = PERM_BASIC;
     newuser.userdefine[0] = -1;
     newuser.userdefine[1] = -1;
-/*   newuser.userdefine&=~DEF_MAILMSG;
-    newuser.userdefine&=~DEF_EDITMSG; */
+    /*   newuser.userdefine&=~DEF_MAILMSG;
+        newuser.userdefine&=~DEF_EDITMSG; */
     SET_UNDEFINE(&newuser, DEF_NOTMSGFRIEND);
     if (convcode)
         SET_UNDEFINE(&newuser, DEF_USEGB);
 
-	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
+    SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
 
     newuser.exittime = time(NULL) - 100;
     /*newuser.unuse2 = -1;*/
@@ -191,17 +190,17 @@ void new_register()
 /*加入对 #TH 结尾的realemail的帐号自动通过注册的功能  by binxun
 */
 int invalid_realmail(userid, email, msize)
-    char *userid, *email;
-    int msize;
+char *userid, *email;
+int msize;
 {
     FILE *fn;
     char ans[4], fname[STRLEN];
     char genbuf[STRLEN];
 
-/*
-    if ((emailfile = sysconf_str("EMAILFILE")) == NULL)
-        return 0;
-*/
+    /*
+        if ((emailfile = sysconf_str("EMAILFILE")) == NULL)
+            return 0;
+    */
 
     if (strchr(email, '@') && valid_ident(email))
         return 0;
@@ -242,8 +241,8 @@ void check_register_info()
     char buf[STRLEN];
 #ifndef NEWSMTH
     /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
-	char career[STRLEN];
-	char phone[40];
+    char career[STRLEN];
+    char phone[40];
 #endif
     clear();
     sprintf(buf, "%s", email_domain());
@@ -284,143 +283,131 @@ void check_register_info()
         strcpy(getSession()->currentmemo->ud.address, buf);
     }
 
-	/* 加入转让ID后的代码   by binxun 2003-5-23 */
-	sethomefile(buf,getCurrentUser()->userid,"conveyID");
-	if(dashf(buf))
-	{
+    /* 加入转让ID后的代码   by binxun 2003-5-23 */
+    sethomefile(buf,getCurrentUser()->userid,"conveyID");
+    if (dashf(buf)) {
 #ifndef NEWSMTH
         /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
         move(6,0);
-		prints("此ID由您的朋友转让给您,恭喜您获得此ID,请填写以下资料.");
+        prints("此ID由您的朋友转让给您,恭喜您获得此ID,请填写以下资料.");
 #endif
-		getCurrentUser()->firstlogin = getCurrentUser()->lastlogin; /* atppp 20050312 */
+        getCurrentUser()->firstlogin = getCurrentUser()->lastlogin; /* atppp 20050312 */
 #ifndef NEWSMTH
-		do{
-		    getdata(7,0,"学校系级或单位全称(具体到部门):",career,STRLEN,DOECHO,NULL,true);
-		}while(strlen(career) < 4);
-        do{
-		    getdata(8,0,"您的联系电话或者Email:",phone,40,DOECHO,NULL,true);
-		}while(strlen(phone) < 6);
+        do {
+            getdata(7,0,"学校系级或单位全称(具体到部门):",career,STRLEN,DOECHO,NULL,true);
+        } while (strlen(career) < 4);
+        do {
+            getdata(8,0,"您的联系电话或者Email:",phone,40,DOECHO,NULL,true);
+        } while (strlen(phone) < 6);
 
-             unlink(buf);   
+        unlink(buf);
         sprintf(buf,"%s$%s@转让", career,phone);
-		if(strlen(buf) >= STRLEN - 16)sprintf(buf,"%s@转让",phone);
-//		strncpy(curruserdata.realemail,buf,STRLEN-16);
-		strncpy(getSession()->currentmemo->ud.realemail,buf,STRLEN-16);
-//		curruserdata.realemail[STRLEN-16-1]='\0';
-		getSession()->currentmemo->ud.realemail[STRLEN-16-1]='\0';
-//		write_userdata(getCurrentUser()->userid,&curruserdata);
-		write_userdata(getCurrentUser()->userid,&(getSession()->currentmemo->ud));
+        if (strlen(buf) >= STRLEN - 16)sprintf(buf,"%s@转让",phone);
+//  strncpy(curruserdata.realemail,buf,STRLEN-16);
+        strncpy(getSession()->currentmemo->ud.realemail,buf,STRLEN-16);
+//  curruserdata.realemail[STRLEN-16-1]='\0';
+        getSession()->currentmemo->ud.realemail[STRLEN-16-1]='\0';
+//  write_userdata(getCurrentUser()->userid,&curruserdata);
+        write_userdata(getCurrentUser()->userid,&(getSession()->currentmemo->ud));
 #endif /* NEWSMTH */
-	}
+    }
 
 #ifdef HAVE_BIRTHDAY
-	if (!is_valid_date(getSession()->currentmemo->ud.birthyear+1900, 
-				getSession()->currentmemo->ud.birthmonth,
-				getSession()->currentmemo->ud.birthday))
-	{
-		time_t now;
-		struct tm *tmnow;
+    if (!is_valid_date(getSession()->currentmemo->ud.birthyear+1900,
+                       getSession()->currentmemo->ud.birthmonth,
+                       getSession()->currentmemo->ud.birthday)) {
+        time_t now;
+        struct tm *tmnow;
 
-		now = time(0);
-		tmnow = localtime(&now);
-		clear();
-		buf[0] = '\0';
-		move(0, 0);
-		prints("我们检查到你的部分注册资料不够完全，为了更好的为您提供个性化的服务，");
-		move(1, 0);
-		prints("希望您填写以下资料。");
-		while (buf[0] < '1' || buf[0] > '2')
-		{
-			getdata(2, 0, "请输入你的性别: [1]男的 [2]女的 (1 or 2): ",
-					buf, 2, DOECHO, NULL, true);
-		}
-		switch (buf[0])
-		{
-		case '1':
-			getSession()->currentmemo->ud.gender = 'M';
-			break;
-		case '2':
-			getSession()->currentmemo->ud.gender = 'F';
-			break;
-		}
-		move(4, 0);
-		prints("请输入您的出生日期");
-		while (getSession()->currentmemo->ud.birthyear < tmnow->tm_year - 98
-			   || getSession()->currentmemo->ud.birthyear > tmnow->tm_year - 3)
-		{
-			buf[0] = '\0';
-			getdata(5, 0, "四位数公元年: ", buf, 5, DOECHO, NULL, true);
-			if (atoi(buf) < 1900)
-				continue;
-			getSession()->currentmemo->ud.birthyear = atoi(buf) - 1900;
-		}
-		while (getSession()->currentmemo->ud.birthmonth < 1 
-				|| getSession()->currentmemo->ud.birthmonth > 12)
-		{
-			buf[0] = '\0';
-			getdata(6, 0, "出生月: (1-12) ", buf, 3, DOECHO, NULL, true);
-			getSession()->currentmemo->ud.birthmonth = atoi(buf);
-		}
-		do
-		{
-			buf[0] = '\0';
-			getdata(7, 0, "出生日: (1-31) ", buf, 3, DOECHO, NULL, true);
-			getSession()->currentmemo->ud.birthday = atoi(buf);
-		} while (!is_valid_date(getSession()->currentmemo->ud.birthyear + 1900,
-					getSession()->currentmemo->ud.birthmonth,
-					getSession()->currentmemo->ud.birthday));
-		write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
-	}
+        now = time(0);
+        tmnow = localtime(&now);
+        clear();
+        buf[0] = '\0';
+        move(0, 0);
+        prints("我们检查到你的部分注册资料不够完全，为了更好的为您提供个性化的服务，");
+        move(1, 0);
+        prints("希望您填写以下资料。");
+        while (buf[0] < '1' || buf[0] > '2') {
+            getdata(2, 0, "请输入你的性别: [1]男的 [2]女的 (1 or 2): ",
+                    buf, 2, DOECHO, NULL, true);
+        }
+        switch (buf[0]) {
+            case '1':
+                getSession()->currentmemo->ud.gender = 'M';
+                break;
+            case '2':
+                getSession()->currentmemo->ud.gender = 'F';
+                break;
+        }
+        move(4, 0);
+        prints("请输入您的出生日期");
+        while (getSession()->currentmemo->ud.birthyear < tmnow->tm_year - 98
+                || getSession()->currentmemo->ud.birthyear > tmnow->tm_year - 3) {
+            buf[0] = '\0';
+            getdata(5, 0, "四位数公元年: ", buf, 5, DOECHO, NULL, true);
+            if (atoi(buf) < 1900)
+                continue;
+            getSession()->currentmemo->ud.birthyear = atoi(buf) - 1900;
+        }
+        while (getSession()->currentmemo->ud.birthmonth < 1
+                || getSession()->currentmemo->ud.birthmonth > 12) {
+            buf[0] = '\0';
+            getdata(6, 0, "出生月: (1-12) ", buf, 3, DOECHO, NULL, true);
+            getSession()->currentmemo->ud.birthmonth = atoi(buf);
+        }
+        do {
+            buf[0] = '\0';
+            getdata(7, 0, "出生日: (1-31) ", buf, 3, DOECHO, NULL, true);
+            getSession()->currentmemo->ud.birthday = atoi(buf);
+        } while (!is_valid_date(getSession()->currentmemo->ud.birthyear + 1900,
+                                getSession()->currentmemo->ud.birthmonth,
+                                getSession()->currentmemo->ud.birthday));
+        write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+    }
 #endif
 #ifdef NEW_COMERS
-	if (getCurrentUser()->numlogins == 1)
-	{
-		FILE *fout;
-		char buf2[STRLEN];
+    if (getCurrentUser()->numlogins == 1) {
+        FILE *fout;
+        char buf2[STRLEN];
 
-		gettmpfilename( buf, "newcomer" );
-		//sprintf(buf, "tmp/newcomer.%s", getCurrentUser()->userid);
-		if ((fout = fopen(buf, "w")) != NULL)
-		{
-			fprintf(fout, "大家好,\n\n");
-			fprintf(fout, "我是 %s (%s), 来自 %s\n", getCurrentUser()->userid,
-					getCurrentUser()->username, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
-			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
+        gettmpfilename(buf, "newcomer");
+        //sprintf(buf, "tmp/newcomer.%s", getCurrentUser()->userid);
+        if ((fout = fopen(buf, "w")) != NULL) {
+            fprintf(fout, "大家好,\n\n");
+            fprintf(fout, "我是 %s (%s), 来自 %s\n", getCurrentUser()->userid,
+                    getCurrentUser()->username, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
+            fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
-//					(curruserdata.gender == 'M') ? "小弟" : "小女子");
-					(getSession()->currentmemo->ud.gender == 'M') ? "小弟" : "小女子");
+//     (curruserdata.gender == 'M') ? "小弟" : "小女子");
+                    (getSession()->currentmemo->ud.gender == 'M') ? "小弟" : "小女子");
 #else
-                                        "小弟");
+                    "小弟");
 #endif
 #ifndef NEWSMTH
-			move(9, 0);
-			prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
-			prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
-			getdata(11, 0, ":", buf2, 75, DOECHO, NULL, true);
-			if (buf2[0] != '\0')
-			{
-				fprintf(fout, "\n\n自我介绍:\n\n");
-				fprintf(fout, "%s\n", buf2);
-				getdata(12, 0, ":", buf2, 75, DOECHO, NULL, true);
-				if (buf2[0] != '\0')
-				{
-					fprintf(fout, "%s\n", buf2);
-					getdata(13, 0, ":", buf2, 75, DOECHO, NULL, true);
-					if (buf2[0] != '\0')
-					{
-						fprintf(fout, "%s\n", buf2);
-					}
-				}
-			}
+            move(9, 0);
+            prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
+            prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
+            getdata(11, 0, ":", buf2, 75, DOECHO, NULL, true);
+            if (buf2[0] != '\0') {
+                fprintf(fout, "\n\n自我介绍:\n\n");
+                fprintf(fout, "%s\n", buf2);
+                getdata(12, 0, ":", buf2, 75, DOECHO, NULL, true);
+                if (buf2[0] != '\0') {
+                    fprintf(fout, "%s\n", buf2);
+                    getdata(13, 0, ":", buf2, 75, DOECHO, NULL, true);
+                    if (buf2[0] != '\0') {
+                        fprintf(fout, "%s\n", buf2);
+                    }
+                }
+            }
 #endif
-			fclose(fout);
-			sprintf(buf2, "新手上路: %s", getCurrentUser()->username);
-			post_file(getCurrentUser(), "", buf, "newcomers", buf2, 0, 2, getSession());
-			unlink(buf);
-		}
-		pressanykey();
-	}
+            fclose(fout);
+            sprintf(buf2, "新手上路: %s", getCurrentUser()->username);
+            post_file(getCurrentUser(), "", buf, "newcomers", buf2, 0, 2, getSession());
+            unlink(buf);
+        }
+        pressanykey();
+    }
 #endif
     if (!strcmp(getCurrentUser()->userid, "SYSOP")) {
         getCurrentUser()->userlevel = ~0;
@@ -445,7 +432,7 @@ void check_register_info()
                (!strstr( urec->email, "@bbs.") ) &&
                (!strstr( urec->email, ".bbs@") )&&
                (!invalidaddr(urec->email))&&
-               sysconf_str( "EMAILFILE" )!=NULL) 
+               sysconf_str( "EMAILFILE" )!=NULL)
                {
                move( 15, 0 );
                prints( "您的电子信箱  尚须通过回信验证...  \n" );
@@ -462,13 +449,13 @@ void check_register_info()
                }
                fprintf(dp,"%9.9d\n",code);
                fclose(dp);
-               sprintf( genbuf, "/usr/lib/sendmail -f SYSOP.bbs@%s %s ", 
+               sprintf( genbuf, "/usr/lib/sendmail -f SYSOP.bbs@%s %s ",
                email_domain(), urec->email );
                fout = popen( genbuf, "w" );
                fin  = fopen( sysconf_str( "EMAILFILE" ), "r" );
                if ((fin != NULL) && (fout != NULL)) {
                fprintf( fout, "Reply-To: SYSOP.bbs@%s\n", email_domain());
-               fprintf( fout, "From: SYSOP.bbs@%s\n",  email_domain() ); 
+               fprintf( fout, "From: SYSOP.bbs@%s\n",  email_domain() );
                fprintf( fout, "To: %s\n", urec->email);
                fprintf( fout, "Subject: @%s@[-%9.9d-]firebird mail check.\n", urec->userid ,code);
                fprintf( fout, "X-Forwarded-By: SYSOP \n" );
@@ -485,9 +472,9 @@ void check_register_info()
                fputs( ". \n", fout );
                else fputs( genbuf, fout );
                }
-               fprintf(fout, ".\n");                                    
+               fprintf(fout, ".\n");
                fclose( fin );
-               fclose( fout );                                     
+               fclose( fout );
                }
                getdata( 20 ,0, "信已寄出, SYSOP 将等您回信哦!! 请按 <Enter> << ", ans,2,DOECHO,NULL ,true);
                }
@@ -515,10 +502,10 @@ void check_register_info()
         /* end of check if local email-addr */
         /*  above lines added by netty...  */
     }
-//    	curruserdata.realemail[STRLEN -16 - 1] = '\0';  //纠错代码
-    	getSession()->currentmemo->ud.realemail[STRLEN -16 - 1] = '\0';  //纠错代码
-//	write_userdata(getCurrentUser()->userid, &curruserdata);
-	write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+//     curruserdata.realemail[STRLEN -16 - 1] = '\0';  //纠错代码
+    getSession()->currentmemo->ud.realemail[STRLEN -16 - 1] = '\0';  //纠错代码
+// write_userdata(getCurrentUser()->userid, &curruserdata);
+    write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
     newregfile = sysconf_str("NEWREGFILE");
     /*if (getCurrentUser()->lastlogin - getCurrentUser()->firstlogin < REGISTER_WAIT_TIME && !HAS_PERM(getCurrentUser(), PERM_SYSOP) && newregfile != NULL) {
         getCurrentUser()->userlevel &= ~(perm);
@@ -527,26 +514,27 @@ void check_register_info()
 }
 
 /* 转让ID     by binxun  ... 2003.5 */
-int ConveyID(void){
+int ConveyID(void)
+{
     FILE* fn = NULL;
-	long now;
-	char buf[STRLEN],filename[STRLEN],systembuf[STRLEN];
-	int i;
+    long now;
+    char buf[STRLEN],filename[STRLEN],systembuf[STRLEN];
+    int i;
 
     //检查权限
-        if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_BOARDS) || HAS_PERM(getCurrentUser(), PERM_OBOARDS) || HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
-        || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
-        || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP) || (!HAS_PERM(getCurrentUser(), PERM_POST))
-        || HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
-        || HAS_PERM(getCurrentUser(), PERM_DENYRELAX)) {
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_BOARDS) || HAS_PERM(getCurrentUser(), PERM_OBOARDS) || HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
+            || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
+            || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP) || (!HAS_PERM(getCurrentUser(), PERM_POST))
+            || HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
+            || HAS_PERM(getCurrentUser(), PERM_DENYRELAX)) {
         clear();
         move(11, 28);
-		prints("\033[1;33m你有重任在身,不能转让ID!\033[m");
+        prints("\033[1;33m你有重任在身,不能转让ID!\033[m");
         pressanykey();
         return -1;
     }
 
-	//给出提示信息
+    //给出提示信息
 
     clear();
     move(1, 0);
@@ -573,32 +561,31 @@ int ConveyID(void){
 
         //记录备份信息
         now = time(0);
-		gettmpfilename( filename, "convey" );
+        gettmpfilename(filename, "convey");
         //sprintf(filename, "tmp/%s.tmp", getCurrentUser()->userid);
         fn = fopen(filename, "w");
-		if(fn){
-			fprintf(fn,"\033[1m %s \033[m 在 \033[1m%24.24s\033[m 转让ID了,以下是他的资料，请保留...",getCurrentUser()->userid,ctime(&now));
-			getuinfo(fn, getCurrentUser());
-			fprintf(fn, "\n                     \033[1m 系统自动发信系统留\033[m\n");
-			fclose(fn);
-			sprintf(buf, "%s 转让ID的备份资料", getCurrentUser()->userid);
-			post_file(getCurrentUser(), "", filename, "Registry", buf, 0, 1,getSession());
-			unlink(filename);
-		}
-		else{
-		    move(15,0);
-			prints("不能生成临时文件!转让ID失败,请与SYSOP联系.");
-			return -1;
-		}
+        if (fn) {
+            fprintf(fn,"\033[1m %s \033[m 在 \033[1m%24.24s\033[m 转让ID了,以下是他的资料，请保留...",getCurrentUser()->userid,ctime(&now));
+            getuinfo(fn, getCurrentUser());
+            fprintf(fn, "\n                     \033[1m 系统自动发信系统留\033[m\n");
+            fclose(fn);
+            sprintf(buf, "%s 转让ID的备份资料", getCurrentUser()->userid);
+            post_file(getCurrentUser(), "", filename, "Registry", buf, 0, 1,getSession());
+            unlink(filename);
+        } else {
+            move(15,0);
+            prints("不能生成临时文件!转让ID失败,请与SYSOP联系.");
+            return -1;
+        }
 
-		//清空所有存在的配置文件,信箱
-		setmailpath(buf,getCurrentUser()->userid);
-		sprintf(systembuf,"/bin/rm -fr %s",buf);
-		system(systembuf);
-		sethomepath(buf,getCurrentUser()->userid);
-		sprintf(systembuf,"/bin/rm %s/*",buf);
-		system(systembuf);
-		sprintf(systembuf,"/bin/rm %s/.*",buf);
+        //清空所有存在的配置文件,信箱
+        setmailpath(buf,getCurrentUser()->userid);
+        sprintf(systembuf,"/bin/rm -fr %s",buf);
+        system(systembuf);
+        sethomepath(buf,getCurrentUser()->userid);
+        sprintf(systembuf,"/bin/rm %s/*",buf);
+        system(systembuf);
+        sprintf(systembuf,"/bin/rm %s/.*",buf);
         system(systembuf);
 #ifdef NEWSMTH
         /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
@@ -606,175 +593,175 @@ int ConveyID(void){
         f_rm(buf);
 #endif
 
-		//生成转让ID文件
+        //生成转让ID文件
         sethomefile(filename,getCurrentUser()->userid,"conveyID");
-		if((fn=fopen(filename,"w")) != NULL){
-		    fprintf(fn,"Convey ID at %s",ctime(&now));
-			fclose(fn);
-		}
-		else{
-		    move(15,0);
-		    prints("不能生成转让ID文件!转让ID失败,请与SYSOP联系.");
-			return -1;
-		}
-		getCurrentUser()->userlevel = 0;
-		getCurrentUser()->userlevel |= PERM_BASIC;
+        if ((fn=fopen(filename,"w")) != NULL) {
+            fprintf(fn,"Convey ID at %s",ctime(&now));
+            fclose(fn);
+        } else {
+            move(15,0);
+            prints("不能生成转让ID文件!转让ID失败,请与SYSOP联系.");
+            return -1;
+        }
+        getCurrentUser()->userlevel = 0;
+        getCurrentUser()->userlevel |= PERM_BASIC;
 
-		getCurrentUser()->numposts = 0;
-		if(getCurrentUser()->numlogins > 10)getCurrentUser()->numlogins = 10;
-		getCurrentUser()->stay = 0;
-		strncpy(getCurrentUser()->username,getCurrentUser()->userid,IDLEN);
-		SET_UNDEFINE(getCurrentUser(),DEF_NOTMSGFRIEND);
-		SET_UNDEFINE(getCurrentUser(),DEF_SHOWREALUSERDATA);
+        getCurrentUser()->numposts = 0;
+        if (getCurrentUser()->numlogins > 10)getCurrentUser()->numlogins = 10;
+        getCurrentUser()->stay = 0;
+        strncpy(getCurrentUser()->username,getCurrentUser()->userid,IDLEN);
+        SET_UNDEFINE(getCurrentUser(),DEF_NOTMSGFRIEND);
+        SET_UNDEFINE(getCurrentUser(),DEF_SHOWREALUSERDATA);
 
         if (convcode)
             SET_UNDEFINE(getCurrentUser(),DEF_USEGB);
 
         getCurrentUser()->flags |= PAGER_FLAG;
 #ifdef HAVE_ACTIVATION
-		getCurrentUser()->flags &= ~ACTIVATED_FLAG;
+        getCurrentUser()->flags &= ~ACTIVATED_FLAG;
 #endif
         getCurrentUser()->title = 0;
-		for(i = 0; i < MAXCLUB>>5 ; i++){
-		    getCurrentUser()->club_read_rights[i] = 0;
-			getCurrentUser()->club_write_rights[i] = 0;
-		}
-		getCurrentUser()->signature = 0;
-		getCurrentUser()->usedspace = 0;
+        for (i = 0; i < MAXCLUB>>5 ; i++) {
+            getCurrentUser()->club_read_rights[i] = 0;
+            getCurrentUser()->club_write_rights[i] = 0;
+        }
+        getCurrentUser()->signature = 0;
+        getCurrentUser()->usedspace = 0;
 #ifdef NEWSMTH
         getCurrentUser() -> score_user = 0;
 #endif
 
-		//clear 用户信息
-//		bzero(&curruserdata,sizeof(struct userdata));
-		bzero(&(getSession()->currentmemo->ud),sizeof(struct userdata));
-//		strcpy(curruserdata.userid,getCurrentUser()->userid);
-		strcpy(getSession()->currentmemo->ud.userid,getCurrentUser()->userid);
-//		write_userdata(getCurrentUser()->userid,&curruserdata);
-		write_userdata(getCurrentUser()->userid,&(getSession()->currentmemo->ud));
+        //clear 用户信息
+//  bzero(&curruserdata,sizeof(struct userdata));
+        bzero(&(getSession()->currentmemo->ud),sizeof(struct userdata));
+//  strcpy(curruserdata.userid,getCurrentUser()->userid);
+        strcpy(getSession()->currentmemo->ud.userid,getCurrentUser()->userid);
+//  write_userdata(getCurrentUser()->userid,&curruserdata);
+        write_userdata(getCurrentUser()->userid,&(getSession()->currentmemo->ud));
 
         move(12,0);
-		prints("转让ID成功,马上断线了,告别这个ID吧.");
+        prints("转让ID成功,马上断线了,告别这个ID吧.");
         pressanykey();
-		//断线
+        //断线
         abort_bbs(0);
     }
     return 0;
 }
 
 /*设定ID密码保护 by binxun 2003.10 */
-int ProtectID(void){
-	char buf[STRLEN],print_buf[STRLEN];
-	struct protect_id_passwd protect;
-	FILE* fp;
-	
-	clear();
-	if(!HAS_PERM(getCurrentUser(),PERM_LOGINOK)) {
-        	move(11, 28);
-		prints("\033[1;33m你尚未通过身份认证,不能设定密码保护!\033[m");
-        	pressanykey();
-		return -1;
-        }
-	
-	sethomefile(buf,getCurrentUser()->userid,"protectID");
-	if(dashf(buf)) {
-        	move(11, 28);
-		prints("\033[1;33m你已经设定密码保护功能,不能再更改设定!\033[m");
-        	pressanykey();
-		return -1;
-	}
-	    
-	move(1, 0);
-    	prints("选择密码保护功能后,可以在遗忘密码或者密码被盗用的情况下,根据事先设定的信息");
-	move(2, 0);
-	prints("重新找回自己的密码.");
-    	move(4, 0);
-    	prints("这些设定的信息包括:\033[1;31m 姓名/生日/Email/密码提示问题/问题答案\033[m");
-    	move(6,0);
-	//prints("上面的信息设置完成, 密码保护功能一旦成功打开后, 将不能再更改这些信息,切记,切记!");
-	//move(7,0);
-	prints("找回密码时,需要 姓名/生日/问题答案 和设定完全一致,才会将新密码发往 Email .");
+int ProtectID(void)
+{
+    char buf[STRLEN],print_buf[STRLEN];
+    struct protect_id_passwd protect;
+    FILE* fp;
 
-	move(8,0);
-    	if (askyn("你确定要打开密码保护功能吗？", 0) == 0) {
-		return -1;
-	}
-	
-	clear();
-	memset(&protect, 0 , sizeof(struct protect_id_passwd));
-	//输入相关设置信息
+    clear();
+    if (!HAS_PERM(getCurrentUser(),PERM_LOGINOK)) {
+        move(11, 28);
+        prints("\033[1;33m你尚未通过身份认证,不能设定密码保护!\033[m");
+        pressanykey();
+        return -1;
+    }
 
-	move(1,0);
-	prints("请逐项修改,直接按 <ENTER> 代表使用 [] 内的资料。\n");
-	
-	sprintf(print_buf,"请输入您的真实姓名: [%s]",getSession()->currentmemo->ud.realname);
-	getdata(3, 0, print_buf, buf, NAMELEN, DOECHO, NULL, true);
-	if(buf[0])
-		strncpy(protect.name,buf,NAMELEN);
-	else
-		strncpy(protect.name,getSession()->currentmemo->ud.realname,NAMELEN);
-	
+    sethomefile(buf,getCurrentUser()->userid,"protectID");
+    if (dashf(buf)) {
+        move(11, 28);
+        prints("\033[1;33m你已经设定密码保护功能,不能再更改设定!\033[m");
+        pressanykey();
+        return -1;
+    }
+
+    move(1, 0);
+    prints("选择密码保护功能后,可以在遗忘密码或者密码被盗用的情况下,根据事先设定的信息");
+    move(2, 0);
+    prints("重新找回自己的密码.");
+    move(4, 0);
+    prints("这些设定的信息包括:\033[1;31m 姓名/生日/Email/密码提示问题/问题答案\033[m");
+    move(6,0);
+    //prints("上面的信息设置完成, 密码保护功能一旦成功打开后, 将不能再更改这些信息,切记,切记!");
+    //move(7,0);
+    prints("找回密码时,需要 姓名/生日/问题答案 和设定完全一致,才会将新密码发往 Email .");
+
+    move(8,0);
+    if (askyn("你确定要打开密码保护功能吗？", 0) == 0) {
+        return -1;
+    }
+
+    clear();
+    memset(&protect, 0 , sizeof(struct protect_id_passwd));
+    //输入相关设置信息
+
+    move(1,0);
+    prints("请逐项修改,直接按 <ENTER> 代表使用 [] 内的资料。\n");
+
+    sprintf(print_buf,"请输入您的真实姓名: [%s]",getSession()->currentmemo->ud.realname);
+    getdata(3, 0, print_buf, buf, NAMELEN, DOECHO, NULL, true);
+    if (buf[0])
+        strncpy(protect.name,buf,NAMELEN);
+    else
+        strncpy(protect.name,getSession()->currentmemo->ud.realname,NAMELEN);
+
 #ifdef HAVE_BIRTHDAY
-	move(4,0);
-	prints("请输入您的出生日期: ");
-	
-	sprintf(print_buf,"四位数公元年: [%d]",getSession()->currentmemo->ud.birthyear);
-	while (protect.birthyear > 2010 || protect.birthyear < 1900) {
-		getdata(5, 0, print_buf, buf, 5, DOECHO, NULL, true);
-		if(buf[0]) protect.birthyear = atoi(buf);
-		else
-			protect.birthyear = getSession()->currentmemo->ud.birthyear;
-	}
+    move(4,0);
+    prints("请输入您的出生日期: ");
 
-	sprintf(print_buf,"出生月: [%d]",getSession()->currentmemo->ud.birthmonth);
-	while (protect.birthmonth < 1 || protect.birthmonth > 12) {
-		getdata(6, 0, print_buf, buf, 3, DOECHO, NULL, true);
-		if(buf[0]) protect.birthmonth = atoi(buf);
-		else
-			protect.birthmonth = getSession()->currentmemo->ud.birthmonth;
-	}
-	
-	sprintf(print_buf,"出生日: [%d]",getSession()->currentmemo->ud.birthday);
-	while (protect.birthday < 1 || protect.birthday > 31) {
-		getdata(7, 0, print_buf, buf, 3, DOECHO, NULL, true);
-		if(buf[0]) protect.birthday = atoi(buf);
-		else
-			protect.birthday = getSession()->currentmemo->ud.birthday;
-	}
+    sprintf(print_buf,"四位数公元年: [%d]",getSession()->currentmemo->ud.birthyear);
+    while (protect.birthyear > 2010 || protect.birthyear < 1900) {
+        getdata(5, 0, print_buf, buf, 5, DOECHO, NULL, true);
+        if (buf[0]) protect.birthyear = atoi(buf);
+        else
+            protect.birthyear = getSession()->currentmemo->ud.birthyear;
+    }
+
+    sprintf(print_buf,"出生月: [%d]",getSession()->currentmemo->ud.birthmonth);
+    while (protect.birthmonth < 1 || protect.birthmonth > 12) {
+        getdata(6, 0, print_buf, buf, 3, DOECHO, NULL, true);
+        if (buf[0]) protect.birthmonth = atoi(buf);
+        else
+            protect.birthmonth = getSession()->currentmemo->ud.birthmonth;
+    }
+
+    sprintf(print_buf,"出生日: [%d]",getSession()->currentmemo->ud.birthday);
+    while (protect.birthday < 1 || protect.birthday > 31) {
+        getdata(7, 0, print_buf, buf, 3, DOECHO, NULL, true);
+        if (buf[0]) protect.birthday = atoi(buf);
+        else
+            protect.birthday = getSession()->currentmemo->ud.birthday;
+    }
 #endif
 
-	sprintf(print_buf,"您的Email: ");
-	do {
-		getdata(8, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
-	} while(!strchr(buf,'@'));
-	strncpy(protect.email, buf, STRLEN);
-	
-	sprintf(print_buf,"密码提示问题: ");
-	do {
-		getdata(9, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
-	} while(!buf[0]);
-	strncpy(protect.question, buf, STRLEN);
-	
-	sprintf(print_buf,"问题答案(至少四个字符): ");
-	do {
-		getdata(10, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
-	} while(strlen(buf) < 4);
-	strncpy(protect.answer, buf, STRLEN);
+    sprintf(print_buf,"您的Email: ");
+    do {
+        getdata(8, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
+    } while (!strchr(buf,'@'));
+    strncpy(protect.email, buf, STRLEN);
 
-	if (askyn("你确定要设定吗？", 0) == 1) {	
-		move(12,0);
-		sethomefile(buf,getCurrentUser()->userid,"protectID");	
-		
-		fp = fopen(buf,"w");
-		if(!fp) {
-			prints("不能打开文件,请与SYSOP联系.");	
-			return 0;
-		}
-		fwrite(&protect,sizeof(struct protect_id_passwd),1,fp);
-		fclose(fp);
-		
-		prints("密码保护已经设定");
-		pressanykey();
-	}
+    sprintf(print_buf,"密码提示问题: ");
+    do {
+        getdata(9, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
+    } while (!buf[0]);
+    strncpy(protect.question, buf, STRLEN);
+
+    sprintf(print_buf,"问题答案(至少四个字符): ");
+    do {
+        getdata(10, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
+    } while (strlen(buf) < 4);
+    strncpy(protect.answer, buf, STRLEN);
+
+    if (askyn("你确定要设定吗？", 0) == 1) {
+        move(12,0);
+        sethomefile(buf,getCurrentUser()->userid,"protectID");
+
+        fp = fopen(buf,"w");
+        if (!fp) {
+            prints("不能打开文件,请与SYSOP联系.");
+            return 0;
+        }
+        fwrite(&protect,sizeof(struct protect_id_passwd),1,fp);
+        fclose(fp);
+
+        prints("密码保护已经设定");
+        pressanykey();
+    }
     return 0;
 }

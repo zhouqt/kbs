@@ -74,7 +74,7 @@ int b_rules_edit()
     char buf1[STRLEN];
     int aborted;
     int oldmode;
-	struct stat st;
+    struct stat st;
 
     if (!chk_currBM(currBM, getCurrentUser())) {
         return 0;
@@ -82,24 +82,24 @@ int b_rules_edit()
     clear();
     makevdir(currboard->filename);
     setvfile(buf, currboard->filename, "rules");
-        oldmode = uinfo.mode;
-        modify_user_mode(EDITUFILE);
-        aborted = vedit(buf, false,NULL, NULL, 0);
-        modify_user_mode(oldmode);
+    oldmode = uinfo.mode;
+    modify_user_mode(EDITUFILE);
+    aborted = vedit(buf, false,NULL, NULL, 0);
+    modify_user_mode(oldmode);
     if (aborted == -1) {
         pressreturn();
     } else {
-		if(currboard->flag & BOARD_RULES) set_board_rule(currboard, 0);
-		if(stat(buf, &st)==-1) return FULLUPDATE;
-		sprintf(buf1, "%s提交%s治版方针:%ld", getCurrentUser()->userid, currboard->filename, st.st_mtime);
-		post_file(getCurrentUser(), "", buf, "BoardRules", buf1, 0, 2, getSession());
-		if(normal_board(currboard->filename))
-		post_file(getCurrentUser(), "", buf, "BoardManager", buf1, 0, 2, getSession());
+        if (currboard->flag & BOARD_RULES) set_board_rule(currboard, 0);
+        if (stat(buf, &st)==-1) return FULLUPDATE;
+        sprintf(buf1, "%s提交%s治版方针:%ld", getCurrentUser()->userid, currboard->filename, st.st_mtime);
+        post_file(getCurrentUser(), "", buf, "BoardRules", buf1, 0, 2, getSession());
+        if (normal_board(currboard->filename))
+            post_file(getCurrentUser(), "", buf, "BoardManager", buf1, 0, 2, getSession());
 
-		clear();
-		move(3,0);
-		prints("已经提交新的治版方针,请等待批准\n");
-		pressreturn();
+        clear();
+        move(3,0);
+        prints("已经提交新的治版方针,请等待批准\n");
+        pressreturn();
     }
     return FULLUPDATE;
 }
@@ -149,26 +149,26 @@ int b_notes_edit()
 void load_board_banner(const char * board)
 {
     int i;
-	FILE *fp;
+    FILE *fp;
     struct boardheader bh;
-	const struct boardheader *obh;
+    const struct boardheader *obh;
     char filename[STRLEN * 2];
-	char buf[512];
+    char buf[512];
     sprintf(filename, "boards/%s/banner", board);
-	obh = getbcache(board);
+    obh = getbcache(board);
     memcpy(&bh, obh, sizeof(struct boardheader));
-	i = 0;
+    i = 0;
     if (NULL != (fp = fopen(filename, "r"))) {
-		while ((!feof(fp))&&(i<MAXBANNER)) {
-			fgets(buf, 512, fp);
-			buf[BANNERSIZE-1] = 0;
-			strcpy(bh.banners[i], buf);
-			if (*banner_filter(bh.banners[i])) i++;
-		}
-		fclose(fp);
+        while ((!feof(fp))&&(i<MAXBANNER)) {
+            fgets(buf, 512, fp);
+            buf[BANNERSIZE-1] = 0;
+            strcpy(bh.banners[i], buf);
+            if (*banner_filter(bh.banners[i])) i++;
+        }
+        fclose(fp);
     }
-	bh.bannercount = i;
-	set_board(getboardnum(board, NULL), &bh, NULL);
+    bh.bannercount = i;
+    set_board(getboardnum(board, NULL), &bh, NULL);
 }
 
 int b_banner_edit()
@@ -204,7 +204,7 @@ int b_banner_edit()
     if (aborted == -1) {
         pressreturn();
     } else {
-    	load_board_banner(currboard->filename);
+        load_board_banner(currboard->filename);
         setvfile(buf, currboard->filename, "noterec");
         my_unlink(buf);
     }
@@ -254,8 +254,8 @@ int b_jury_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extra
     int aborted;
 
     if (!((HAS_PERM(getCurrentUser(), PERM_JURY)
-           && HAS_PERM(getCurrentUser(), PERM_BOARDS))
-          || HAS_PERM(getCurrentUser(), PERM_SYSOP))) {
+            && HAS_PERM(getCurrentUser(), PERM_BOARDS))
+            || HAS_PERM(getCurrentUser(), PERM_SYSOP))) {
         return 0;
     }
     clear();
@@ -411,7 +411,7 @@ int get_result_title()
     char buf[STRLEN];
 
     if (currlimit.numlogins || currlimit.numposts || currlimit.stay
-        || currlimit.day) {
+            || currlimit.day) {
         fprintf(sug, "⊙ 此次投票的允许资格为:\n");
         fprintf(sug, "1. 上站次数需大于 %d 次 .\n", currlimit.numlogins);
         fprintf(sug, "2. 文章数目需大于 %d 篇.\n", currlimit.numposts);
@@ -450,8 +450,8 @@ static int mk_result(int num)
     }
     (void) memset(result, 0, sizeof(result));
     if (apply_record
-        (fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,
-         false) == -1) {
+            (fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,
+             false) == -1) {
         bbslog("user","%s","Vote apply flag error");
     }
     fprintf(sug,
@@ -493,7 +493,7 @@ static int mk_result(int num)
         }
         for (i = 0; i < currvote.totalitems; i++) {
             /*            fprintf(sug, "(%c) %-40s  %4d 票  约占 \033[1m%d%%\033[m\n",'A'+i,
-               currvote.items[i], result[i] , (result[i]*100)/((total<=0)?1:total)); 
+               currvote.items[i], result[i] , (result[i]*100)/((total<=0)?1:total));
              */
             fprintf(sug, "(%c) %-40s  %4d 票  约占 \033[1m%d%%\033[m\n", 'A' + i,
                     currvote.items[i], result[i],
@@ -512,8 +512,7 @@ static int mk_result(int num)
     sug = NULL;
     sprintf(title, "[公告] %s 版的投票结果", currboard->filename);
     mail_file("deliver", nname, currvote.userid, title, 0, NULL);
-    if (normal_board(currboard->filename))
-    {
+    if (normal_board(currboard->filename)) {
         post_file(getCurrentUser(), "", nname, "vote", title, 0, 1, getSession());
     }
     post_file(getCurrentUser(), "", nname, currboard->filename, title, 0, 1, getSession());
@@ -539,8 +538,8 @@ int check_result(int num)
     }
     (void) memset(result, 0, sizeof(result));
     if (apply_record
-        (fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,
-         false) == -1) {
+            (fname, (APPLY_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,
+             false) == -1) {
         bbslog("user","%s","Vote apply flag error");
     }
     fprintf(sug,
@@ -604,31 +603,29 @@ struct votebal *bal;
     move(3, 0);
     prints("请依序输入可选择项, 按 ENTER 完成设定.\n");
 
-    while(1) {
-    for (num = 0; num < 32; num++) {
-        sprintf(buf, "%c) ", num + 'A');
-        getdata((num % 16) + 4, (num / 16) * 40, buf, bal->items[num], 36,
-                DOECHO, NULL, false);
-        if (strlen(bal->items[num]) == 0) {
-            if (num != 0)
-                break;
-            num = -1;
+    while (1) {
+        for (num = 0; num < 32; num++) {
+            sprintf(buf, "%c) ", num + 'A');
+            getdata((num % 16) + 4, (num / 16) * 40, buf, bal->items[num], 36,
+                    DOECHO, NULL, false);
+            if (strlen(bal->items[num]) == 0) {
+                if (num != 0)
+                    break;
+                num = -1;
+            }
         }
-    }
-    if(oldnum != -1)
-    {
-        int i;
-        for(i=num+1; i<oldnum; i++)
-        {
-            move((i % 16) + 4, (i / 16) * 40);
-            prints("                                        ");
+        if (oldnum != -1) {
+            int i;
+            for (i=num+1; i<oldnum; i++) {
+                move((i % 16) + 4, (i / 16) * 40);
+                prints("                                        ");
+            }
         }
-    }
-    oldnum = num;
-    move(20, 0);
-    getdata(21, 0, "需要再编辑选项内容吗(Y/N)? [N]: ", buf, 2, DOECHO, NULL, true);
-    if(buf[0] != 'Y' && buf[0] != 'y')
-        break;
+        oldnum = num;
+        move(20, 0);
+        getdata(21, 0, "需要再编辑选项内容吗(Y/N)? [N]: ", buf, 2, DOECHO, NULL, true);
+        if (buf[0] != 'Y' && buf[0] != 'y')
+            break;
     }
 
     bal->totalitems = num;
@@ -645,9 +642,9 @@ char *bname;
 
     setcontrolfile();
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
-            if (!chk_currBM(currBM, getCurrentUser())) {
-                return 0;
-            }
+        if (!chk_currBM(currBM, getCurrentUser())) {
+            return 0;
+        }
     stand_title("开启投票箱");
     makevdir(bname);
     for (;;) {
@@ -693,54 +690,54 @@ char *bname;
         bell();
     }
     switch (ball->type) {
-    case VOTE_YN:
-        ball->maxtkt = 0;
-        strcpy(ball->items[0], "赞成  （是的）");
-        strcpy(ball->items[1], "不赞成（不是）");
-        strcpy(ball->items[2], "没意见（不清楚）");
-        ball->maxtkt = 1;
-        ball->totalitems = 3;
-        break;
-    case VOTE_SINGLE:
-        get_vitems(ball);
-        ball->maxtkt = 1;
-        break;
-    case VOTE_MULTI:
-        get_vitems(ball);
-        for (;;) {
-            getdata(21, 0, "一个人最多几票? [1]: ", buf, 5, DOECHO, NULL,
-                    true);
-            ball->maxtkt = atoi(buf);
-            if (ball->maxtkt <= 0)
-                ball->maxtkt = 1;
-            if (ball->maxtkt > ball->totalitems)
-                continue;
+        case VOTE_YN:
+            ball->maxtkt = 0;
+            strcpy(ball->items[0], "赞成  （是的）");
+            strcpy(ball->items[1], "不赞成（不是）");
+            strcpy(ball->items[2], "没意见（不清楚）");
+            ball->maxtkt = 1;
+            ball->totalitems = 3;
             break;
-        }
-        break;
-    case VOTE_VALUE:
-        for (;;) {
-            getdata(3, 0, "输入数值最大不得超过 [100] : ", buf, 7, DOECHO,
-                    NULL, true);
-            ball->maxtkt = atoi(buf);
-            if (ball->maxtkt <= 0)
-                ball->maxtkt = 100;
+        case VOTE_SINGLE:
+            get_vitems(ball);
+            ball->maxtkt = 1;
             break;
-        }
-        break;
-    case VOTE_ASKING:
-        /*                    getdata(3,0,"此问答题作答行数之限制 :",buf,3,DOECHO,NULL,true) ;
-           ball->maxtkt = atof(buf) ;
-           if(ball->maxtkt <= 0) ball->maxtkt = 10; */
-        ball->maxtkt = 0;
-        currvote.totalitems = 0;
-        break;
+        case VOTE_MULTI:
+            get_vitems(ball);
+            for (;;) {
+                getdata(21, 0, "一个人最多几票? [1]: ", buf, 5, DOECHO, NULL,
+                        true);
+                ball->maxtkt = atoi(buf);
+                if (ball->maxtkt <= 0)
+                    ball->maxtkt = 1;
+                if (ball->maxtkt > ball->totalitems)
+                    continue;
+                break;
+            }
+            break;
+        case VOTE_VALUE:
+            for (;;) {
+                getdata(3, 0, "输入数值最大不得超过 [100] : ", buf, 7, DOECHO,
+                        NULL, true);
+                ball->maxtkt = atoi(buf);
+                if (ball->maxtkt <= 0)
+                    ball->maxtkt = 100;
+                break;
+            }
+            break;
+        case VOTE_ASKING:
+            /*                    getdata(3,0,"此问答题作答行数之限制 :",buf,3,DOECHO,NULL,true) ;
+               ball->maxtkt = atof(buf) ;
+               if(ball->maxtkt <= 0) ball->maxtkt = 10; */
+            ball->maxtkt = 0;
+            currvote.totalitems = 0;
+            break;
     }
     setvoteflag(bname, 1);
     clear();
     /*Haohmaru.99.11.17.根据投票管理员设的限制条件判断是否让该使用者投票 */
     if (HAS_PERM(getCurrentUser(), PERM_SYSOP)
-        || HAS_PERM(getCurrentUser(), PERM_JURY)) {
+            || HAS_PERM(getCurrentUser(), PERM_JURY)) {
         getdata(1, 0, "是否对投票资格进行限制(Y/N) [Y]:", buf, 3, DOECHO,
                 NULL, true);
         if (buf[0] != 'N' && buf[0] != 'n') {
@@ -798,7 +795,7 @@ char *bname;
         b_report("OPEN VOTE");
         prints("投票箱已经开启了！\n");
         range++;
-		gettmpfilename( votename, "votetmp" );
+        gettmpfilename(votename, "votetmp");
         //sprintf(votename, "tmp/votetmp.%d", getpid());
         if ((sug = fopen(votename, "w")) != NULL) {
             sprintf(buf, "[通知] %s 举办投票：%s", bname, ball->title);
@@ -829,14 +826,14 @@ int vote_flag(char *bname, char val, int mode)
 
     num = getSession()->currentuid - 1;
     switch (mode) {
-    case 2:
-        sprintf(buf, "Welcome.rec");    /*进站的 Welcome 画面 */
-        break;
-    case 1:
-        setvfile(buf, bname, "noterec");        /*讨论区备忘录的旗标 */
-        break;
-    default:
-        return -1;
+        case 2:
+            sprintf(buf, "Welcome.rec");    /*进站的 Welcome 画面 */
+            break;
+        case 1:
+            setvfile(buf, bname, "noterec");        /*讨论区备忘录的旗标 */
+            break;
+        default:
+            return -1;
     }
     if (num >= MAXUSERS) {
         bbslog("user","%s","Vote Flag, Out of User Numbers");
@@ -1013,19 +1010,19 @@ int user_vote(int num)
     int votevalue;
     int aborted = false, pos;
 
-    if(!haspostperm(getCurrentUser(),currboard->filename)
+    if (!haspostperm(getCurrentUser(),currboard->filename)
 #ifdef NEWSMTH
-        ||!check_score_level(getCurrentUser(),currboard)
+            ||!check_score_level(getCurrentUser(),currboard)
 #endif /* NEWSMTH */
-        )
-	    return -1;
+       )
+        return -1;
     move(t_lines - 2, 0);
     get_record(controlfile, &currvote, sizeof(struct votebal), num);
     sprintf(fname, "vote/%s/flag.%lu", currboard->filename, currvote.opendate);
     if ((pos =
-         search_record(fname, &uservote, sizeof(uservote),
-                       (RECORD_FUNC_ARG) cmpvuid,
-                       getCurrentUser()->userid)) <= 0) {
+                search_record(fname, &uservote, sizeof(uservote),
+                              (RECORD_FUNC_ARG) cmpvuid,
+                              getCurrentUser()->userid)) <= 0) {
         (void) memset(&uservote, 0, sizeof(uservote));
         voted_flag = false;
     } else {
@@ -1047,33 +1044,33 @@ int user_vote(int num)
     if ((currvote.type <= 0) || (currvote.type > 5))
         currvote.type = 1;
     if ((getCurrentUser()->numposts < userlimit.numposts
-         || getCurrentUser()->numlogins < userlimit.numlogins
-         || getCurrentUser()->stay < userlimit.stay * 60 * 60
-         || (time(NULL) - getCurrentUser()->firstlogin) <
-         userlimit.day * 24 * 60 * 60)) {
+            || getCurrentUser()->numlogins < userlimit.numlogins
+            || getCurrentUser()->stay < userlimit.stay * 60 * 60
+            || (time(NULL) - getCurrentUser()->firstlogin) <
+            userlimit.day * 24 * 60 * 60)) {
         prints
-            ("对不起,你不满足版主规定的此次投票所需条件,无法参加投票,谢谢参与,下次再见! :)");
+        ("对不起,你不满足版主规定的此次投票所需条件,无法参加投票,谢谢参与,下次再见! :)");
         pressanykey();
         return -1;
     }
     clrtobot();
     switch (currvote.type) {
-    case VOTE_SINGLE:
-    case VOTE_MULTI:
-    case VOTE_YN:
-        votevalue = multivote(&uservote);
-        if (votevalue == -1)
-            aborted = true;
-        break;
-    case VOTE_VALUE:
-        votevalue = valuevote(&uservote);
-        if (votevalue == -1)
-            aborted = true;
-        break;
-    case VOTE_ASKING:
-        uservote.voted = 0;
-        aborted = !getsug(&uservote);
-        break;
+        case VOTE_SINGLE:
+        case VOTE_MULTI:
+        case VOTE_YN:
+            votevalue = multivote(&uservote);
+            if (votevalue == -1)
+                aborted = true;
+            break;
+        case VOTE_VALUE:
+            votevalue = valuevote(&uservote);
+            if (votevalue == -1)
+                aborted = true;
+            break;
+        case VOTE_ASKING:
+            uservote.voted = 0;
+            aborted = !getsug(&uservote);
+            break;
     }
     clear();
     if (aborted == true) {
@@ -1125,8 +1122,8 @@ int printvote(struct votebal *ent, int idx, int *i)
     sprintf(buf, "flag.%lu", ent->opendate);
     setvfile(flagname, currboard->filename, buf);
     if (search_record
-        (flagname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG) cmpvuid,
-         getCurrentUser()->userid) <= 0) {
+            (flagname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG) cmpvuid,
+             getCurrentUser()->userid) <= 0) {
         voted_flag = false;
     } else
         voted_flag = true;
@@ -1137,10 +1134,10 @@ int printvote(struct votebal *ent, int idx, int *i)
     sprintf(buf, " %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %5d\033[m\n",
             (voted_flag == false) ? "\033[1m" : "", *i, ent->userid, date,
             ent->title, vote_type[ent->type - 1], ent->maxdays, num_voted);
-/*
-    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d\033[m\n",(voted_flag==false)?"\033[1m":"",*i,ent->userid,
-            date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
-*/
+    /*
+        sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d\033[m\n",(voted_flag==false)?"\033[1m":"",*i,ent->userid,
+                date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
+    */
     prints("%s", buf);
     return 0;
 }
@@ -1155,7 +1152,7 @@ static int dele_vote(int num)
     sprintf(buf, "vote/%s/limit.%lu", currboard->filename, currvote.opendate);    /*Haohmaru.99.11.18 */
     unlink(buf);
     if (delete_record(controlfile, sizeof(currvote), num, NULL, NULL) ==
-        -1) {
+            -1) {
         prints("发生错误，请通知站长....");
         pressanykey();
     }
@@ -1184,28 +1181,28 @@ char *bname;
 
 int b_vote_maintain(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
-	int ret;
-	int oldmode;
+    int ret;
+    int oldmode;
 #ifdef NEW_HELP
-	int oldhelpmode = helpmode;
-	helpmode = HELP_VOTE;
+    int oldhelpmode = helpmode;
+    helpmode = HELP_VOTE;
 #endif
 
     oldmode = uinfo.mode;
-	modify_user_mode(VOTING);
+    modify_user_mode(VOTING);
     ret =  vote_maintain(currboard->filename);
     modify_user_mode(oldmode);
 
 #ifdef NEW_HELP
-	helpmode = oldhelpmode;
+    helpmode = oldhelpmode;
 #endif
-	return ret;
+    return ret;
 }
 
 int vote_title()
 {
     docmdtitle("[投票箱列表]",
-                "\033[m离开[\033[1;32m←\033[m,\033[1;32me\033[m] 求助[\033[1;32mh\033[m] 进行投票[\033[1;32m→\033[m,\033[1;32mr <cr>\033[m] 上,下选择[\033[1;32m↑\033[m,\033[1;32m↓\033[m] \033[1m高亮度\033[m表示尚未投票");
+               "\033[m离开[\033[1;32m←\033[m,\033[1;32me\033[m] 求助[\033[1;32mh\033[m] 进行投票[\033[1;32m→\033[m,\033[1;32mr <cr>\033[m] 上,下选择[\033[1;32m↑\033[m,\033[1;32m↓\033[m] \033[1m高亮度\033[m表示尚未投票");
     move(2, 0);
     prints("\033[0;1;37;44m编号 开启投票箱者 开启日 投票主题                                类别 天数 人数");
     clrtoeol();
@@ -1221,90 +1218,90 @@ int allnum, pagenum;
     char buf[STRLEN];
 
     switch (ch) {
-    case 'v':
-    case 'V':
-    case '\n':
-    case '\r':
-    case 'r':
-    case KEY_RIGHT:
-        user_vote(allnum + 1);
-        deal = 1;
-        break;
-    case 'R':
-        vote_results(currboard->filename);
-        deal = 1;
-        break;
-    case 'H':
-    case 'h':
-        show_help("help/votehelp");
-        deal = 1;
-        break;
-    case 'A':
-    case 'a':
-        if (!chk_currBM(currBM, getCurrentUser()))
-            return true;
-        vote_maintain(currboard->filename);
-        deal = 1;
-        break;
-    case 'O':
-    case 'o':
-        if (!chk_currBM(currBM, getCurrentUser()))
-            return true;
-        clear();
-        deal = 1;
-        get_record(controlfile, &currvote, sizeof(struct votebal),
-                   allnum + 1);
-        prints("\033[31m警告!!\033[m\n");
-        prints("投票箱标题：\033[1m%s\033[m\n", currvote.title);
-        ans = askyn("你确定要提早结束这个投票吗", 0);
-        if (ans != 1) {
-            move(2, 0);
-            prints("取消删除行动\n");
-            pressreturn();
-            clear();
+        case 'v':
+        case 'V':
+        case '\n':
+        case '\r':
+        case 'r':
+        case KEY_RIGHT:
+            user_vote(allnum + 1);
+            deal = 1;
             break;
-        }
-        mk_result(allnum + 1);
-        sprintf(buf, "提早结束投票 %s", currvote.title);
-        /* securityreport(buf, NULL, NULL, getSession()); */
-        bbslog("user","%s",buf);
-        break;
-    case '@':
-        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
-            return true;
-        clear();
-        deal = 1;
-        get_record(controlfile, &currvote, sizeof(struct votebal),
-                   allnum + 1);
-        prints("检查投票：\x1b[1m%s\x1b[m\n", currvote.title);
-        check_result(allnum + 1);
-        break;
-    case 'D':
-    case 'd':
-        if (!chk_currBM(currBM, getCurrentUser())) {
-            return 1;
-        }
-        deal = 1;
-        get_record(controlfile, &currvote, sizeof(struct votebal),
-                   allnum + 1);
-        clear();
-        prints("\033[31m警告!!\033[m\n");
-        prints("投票箱标题：\033[1m%s\033[m\n", currvote.title);
-        ans = askyn("你确定要强制关闭这个投票吗", 0);
-        if (ans != 1) {
-            move(2, 0);
-            prints("取消删除行动\n");
-            pressreturn();
-            clear();
+        case 'R':
+            vote_results(currboard->filename);
+            deal = 1;
             break;
-        }
-        sprintf(buf, "强制关闭投票 %s", currvote.title);
-        /* securityreport(buf, NULL, NULL, getSession()); */
-        bbslog("user","%s",buf);
-        dele_vote(allnum + 1);
-        break;
-    default:
-        return 0;
+        case 'H':
+        case 'h':
+            show_help("help/votehelp");
+            deal = 1;
+            break;
+        case 'A':
+        case 'a':
+            if (!chk_currBM(currBM, getCurrentUser()))
+                return true;
+            vote_maintain(currboard->filename);
+            deal = 1;
+            break;
+        case 'O':
+        case 'o':
+            if (!chk_currBM(currBM, getCurrentUser()))
+                return true;
+            clear();
+            deal = 1;
+            get_record(controlfile, &currvote, sizeof(struct votebal),
+                       allnum + 1);
+            prints("\033[31m警告!!\033[m\n");
+            prints("投票箱标题：\033[1m%s\033[m\n", currvote.title);
+            ans = askyn("你确定要提早结束这个投票吗", 0);
+            if (ans != 1) {
+                move(2, 0);
+                prints("取消删除行动\n");
+                pressreturn();
+                clear();
+                break;
+            }
+            mk_result(allnum + 1);
+            sprintf(buf, "提早结束投票 %s", currvote.title);
+            /* securityreport(buf, NULL, NULL, getSession()); */
+            bbslog("user","%s",buf);
+            break;
+        case '@':
+            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
+                return true;
+            clear();
+            deal = 1;
+            get_record(controlfile, &currvote, sizeof(struct votebal),
+                       allnum + 1);
+            prints("检查投票：\x1b[1m%s\x1b[m\n", currvote.title);
+            check_result(allnum + 1);
+            break;
+        case 'D':
+        case 'd':
+            if (!chk_currBM(currBM, getCurrentUser())) {
+                return 1;
+            }
+            deal = 1;
+            get_record(controlfile, &currvote, sizeof(struct votebal),
+                       allnum + 1);
+            clear();
+            prints("\033[31m警告!!\033[m\n");
+            prints("投票箱标题：\033[1m%s\033[m\n", currvote.title);
+            ans = askyn("你确定要强制关闭这个投票吗", 0);
+            if (ans != 1) {
+                move(2, 0);
+                prints("取消删除行动\n");
+                pressreturn();
+                clear();
+                break;
+            }
+            sprintf(buf, "强制关闭投票 %s", currvote.title);
+            /* securityreport(buf, NULL, NULL, getSession()); */
+            bbslog("user","%s",buf);
+            dele_vote(allnum + 1);
+            break;
+        default:
+            return 0;
     }
     if (deal) {
         Show_Votes();
@@ -1321,8 +1318,8 @@ static int Show_Votes()
     i = 0;
     setcontrolfile();
     if (apply_record
-        (controlfile, (APPLY_FUNC_ARG) printvote, sizeof(struct votebal),
-         &i, 0, false) == -1) {
+            (controlfile, (APPLY_FUNC_ARG) printvote, sizeof(struct votebal),
+             &i, 0, false) == -1) {
         prints("错误，没有投票箱开启....");
         pressreturn();
         return 0;
@@ -1336,7 +1333,7 @@ int b_vote(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
     int num_of_vote;
     int voting;
 #ifdef NEW_HELP
-	int oldhelpmode = helpmode;
+    int oldhelpmode = helpmode;
 #endif
 
     if (!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
@@ -1354,23 +1351,25 @@ int b_vote(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
     setlistrange(num_of_vote);
     clear();
 #ifdef NEW_HELP
-	helpmode = HELP_VOTE;
+    helpmode = HELP_VOTE;
 #endif
     voting = choose(false, 0, vote_title, vote_key, Show_Votes, user_vote);
 #ifdef NEW_HELP
-	helpmode = oldhelpmode;
+    helpmode = oldhelpmode;
 #endif
     clear();
     return /*user_vote( currboard->filename ) */ FULLUPDATE;
 }
 
-int m_vote(void){
+int m_vote(void)
+{
     modify_user_mode(ADMIN);
     vote_maintain(DEFAULTBOARD);
     return 0;
 }
 
-int x_vote(void){
+int x_vote(void)
+{
     struct boardheader* bh;
     int bid;
     modify_user_mode(XMENU);
@@ -1382,7 +1381,8 @@ int x_vote(void){
     return 0;
 }
 
-int x_results(void){
+int x_results(void)
+{
     modify_user_mode(XMENU);
     return vote_results(DEFAULTBOARD);
 }

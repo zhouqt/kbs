@@ -53,13 +53,13 @@ char buf[256];
     struct userec douser;
     int frg, i, matchfrg, strlength;
     enum { ST_USERID, ST_USERNAME, ST_REALNAME, ST_ADDRESS, ST_EMAIL, ST_REALEMAIL, ST_IDENT, ST_RGTDAY, ST_NUMLOGINS, ST_NUMPOSTS, ST_LASTTIME, ST_LASTHOST, ST_THISTIME,
-        ST_BOARDNAME,
-        ST_STAY, ST_ALLTIME,
+           ST_BOARDNAME,
+           ST_STAY, ST_ALLTIME,
 #ifdef _DETAIL_UEXP_
-        ST_TIN, ST_EXP, ST_CEXP, ST_PERF, ST_CCPERF,
+           ST_TIN, ST_EXP, ST_CEXP, ST_PERF, ST_CCPERF,
 #endif                          /*  */
-        ST_END
-    };
+           ST_END
+         };
     char numlogins[10], numposts[10], rgtday[35];
     char lasttime[35], thistime[35], stay[10];
     char alltime[20];
@@ -76,20 +76,19 @@ char buf[256];
     time_t now;
     static char *loglst[] = { "userid", "username", "realname", "address", "email", "realemail", "ident", "rgtday", "bbslog", "pst", "lastlogin", "lasthost", "now", "bbsname", "stay", "alltime",
 #ifdef _DETAIL_UEXP_
-        "exp", "cexp", "perf", "cperf",
+                              "exp", "cexp", "perf", "cperf",
 #endif                          /*  */
-        NULL, NULL,
-    };
-	struct userdata ud;
+                              NULL, NULL,
+                            };
+    struct userdata ud;
 
     if (getCurrentUser()) {
         douser = *getCurrentUser();
 //        memcpy(&ud,&curruserdata,sizeof(curruserdata));
-		memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud) );
-    }
-    else {
+        memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
+    } else {
         bzero(&douser, sizeof(struct userec));
-	bzero(&ud, sizeof(ud));
+        bzero(&ud, sizeof(ud));
     }
     stuffstr[ST_USERID] = douser.userid;
     stuffstr[ST_USERNAME] = douser.username;
@@ -117,7 +116,7 @@ char buf[256];
 #endif                          /*  */
     now = time(0);
 
-    /*---	modified by period	hide posts/logins	2000-11-02	---*/
+    /*--- modified by period hide posts/logins 2000-11-02 ---*/
 #ifdef _DETAIL_UEXP_
     tmpnum = countexp(getCurrentUser());
     sprintf(exp, "%d", tmpnum);
@@ -133,7 +132,7 @@ char buf[256];
     sprintf(thistime, "%24.24s", ctime(&now));
     sprintf(stay, "%lu", (time(0) - login_start_time) / 60);
 
-    /*---	modified by period	hide posts/logins	2000-11-02	---*/
+    /*--- modified by period hide posts/logins 2000-11-02 ---*/
     sprintf(numlogins, "%d", douser.numlogins);
     sprintf(numposts, "%d", douser.numposts);
 

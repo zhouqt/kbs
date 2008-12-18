@@ -1,7 +1,7 @@
 /***********************************************
-	term.c for BBS without tty use
-    Copyright (C) 1999	KCN,Lin Zhou,kcn@cic.tsinghua.edu.cn
-    
+ term.c for BBS without tty use
+    Copyright (C) 1999 KCN,Lin Zhou,kcn@cic.tsinghua.edu.cn
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -28,12 +28,12 @@ void term_init()
     ibufsize = 0;
     icurrchar = 0;
 }
-void do_move(int destcol, int destline, void (*outc) (char))
+void do_move(int destcol, int destline, void (*outc)(char))
 {
     char buf[30];
     char *p;
 
     snprintf(buf,29, "\033[%d;%dH", destline + 1, destcol + 1);
     for (p = buf; *p != 0; p++)
-        (*outc) (*p);
+        (*outc)(*p);
 }

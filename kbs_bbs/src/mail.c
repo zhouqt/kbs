@@ -5,7 +5,7 @@
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
                         Guy Vega, gtvega@seabass.st.usm.edu
                         Dominic Tynes, dbtynes@seabass.st.usm.edu
- 
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -22,7 +22,7 @@
 */
 
 #include "bbs.h"
-#include "read.h" 
+#include "read.h"
 
 #define INTERNET_PRIVATE_EMAIL
 
@@ -52,12 +52,12 @@ int chkmail()
     unsigned char ch;
     char curmaildir[STRLEN];
 
-    if( CHECK_UENT(uinfo.uid) ){
+    if (CHECK_UENT(uinfo.uid)) {
         uinfo.mailcheck = utmpshm->uinfo[ getSession()->utmpent - 1 ].mailcheck;
-    }else
+    } else
         uinfo.mailcheck = 0;
 
-    if( uinfo.mailcheck & CHECK_MAIL ){
+    if (uinfo.mailcheck & CHECK_MAIL) {
         return ismail;
     }
 
@@ -71,7 +71,7 @@ int chkmail()
     }
     /*
      * ylsdd 2001.4.23: 检测文件状态应该在get_mailnum，get_sum_records之前，否则岂不是
-     * 要做大量无用的系统调用. 在这个改动中也把fstat改为stat了，节省一个open&close 
+     * 要做大量无用的系统调用. 在这个改动中也把fstat改为stat了，节省一个open&close
      */
     if (stat(curmaildir, &st) < 0)
         return (ismail = 0);
@@ -82,7 +82,7 @@ int chkmail()
 
     if (chkusermail(getCurrentUser()))
         return (ismail = 2);
-    offset = (int) ((char *) &(fh.accessed[0]) - (char *) &(fh));
+    offset = (int)((char *) &(fh.accessed[0]) - (char *) &(fh));
     if ((fd = open(curmaildir, O_RDONLY)) < 0)
         return (ismail = 0);
     lasttime = st.st_mtime;
@@ -127,7 +127,7 @@ static int mailto(struct userec *uentp, void *arg)
 
     sprintf(filename, "etc/%s.mailtoall", getCurrentUser()->userid);
     if ((uentp->userlevel == PERM_BASIC && mailmode == 1) ||
-        (!HAS_PERM(uentp, PERM_DENYMAIL) && mailmode == 2) || (uentp->userlevel & PERM_BOARDS && mailmode == 3) || (uentp->userlevel & PERM_CHATCLOAK && mailmode == 4)) {
+            (!HAS_PERM(uentp, PERM_DENYMAIL) && mailmode == 2) || (uentp->userlevel & PERM_BOARDS && mailmode == 3) || (uentp->userlevel & PERM_CHATCLOAK && mailmode == 4)) {
         mail_file(getCurrentUser()->userid, filename, uentp->userid, save_title, 0, NULL);
     }
     return 1;
@@ -139,7 +139,8 @@ static int mailtoall(POINTDIFF mode)
     return apply_users(mailto, (void *) mode);
 }
 
-int mailall(void){
+int mailall(void)
+{
     char ans[4], ans4[4], ans2[4], fname[STRLEN], title[STRLEN];
     char doc[4][STRLEN], buf[STRLEN];
     char buf2[STRLEN], include_mode = 'Y';
@@ -178,10 +179,10 @@ int mailall(void){
             }
             in_mail = true;
             /*
-             * Leeward 98.01.17 Prompt whom you are writing to 
+             * Leeward 98.01.17 Prompt whom you are writing to
              */
             /*
-             * strcpy(currentlookupuser->userid, doc[ans4[0]-'0'-1] + 4); 
+             * strcpy(currentlookupuser->userid, doc[ans4[0]-'0'-1] + 4);
              */
 
             if (getCurrentUser()->signature > getSession()->currentmemo->ud.signum)
@@ -203,7 +204,7 @@ int mailall(void){
                     move(t_lines - 1, 0);
                     clrtoeol();
                     gdataret = getdata(t_lines - 1, 0, "标题: ", buf4, 50, DOECHO, NULL, true);
-                    if(gdataret == -1) return -2;
+                    if (gdataret == -1) return -2;
                     if ((buf4[0] == '\0' || buf4[0] == '\n')) {
                         buf4[0] = ' ';
                         continue;
@@ -214,12 +215,12 @@ int mailall(void){
                 move(t_lines - 1, 0);
                 clrtoeol();
                 /*
-                 * Leeward 98.09.24 add: viewing signature(s) while setting post head 
+                 * Leeward 98.09.24 add: viewing signature(s) while setting post head
                  */
                 sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
                         (replymode) ? "，\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m改引言模式" : "");
                 gdataret = getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
-                if(gdataret == -1) return -2;
+                if (gdataret == -1) return -2;
                 ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
                 if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
                     if (atoi(ans) <= getSession()->currentmemo->ud.signum)
@@ -269,44 +270,45 @@ int mailall(void){
     }
 }
 
-int m_internet(void){
+int m_internet(void)
+{
     char receiver[STRLEN], title[STRLEN];
     int gdataret;
 
     modify_user_mode(SMAIL);
     gdataret = getdata(1, 0, "收信人: ", receiver, 70, DOECHO, NULL, true);
-    if(gdataret == -1) return -2;
+    if (gdataret == -1) return -2;
 
     gdataret = getdata(2, 0, "主题  : ", title, 70, DOECHO, NULL, true);
-    if(gdataret == -1) return -2;
+    if (gdataret == -1) return -2;
 
     if (!invalidaddr(receiver) && strchr(receiver, '@') && strlen(title) > 0) {
         clear();                /* Leeward 98.09.24fix a bug */
         switch (do_send(receiver, title, "")) { /* Leeward 98.05.11 adds "switch" */
-        case -1:
-            prints("收信者不正确\n");
-            break;
-        case -2:
-            prints("取消发信\n");
-            break;
-        case -3:
-            prints("'%s' 无法收信\n", receiver);
-            break;
-        case -4:
-            clear();
-            move(1, 0);
-            prints("%s 信箱已满,无法收信\n", receiver);
-            break;              /*Haohmaru.4.5.收信限制 */
-        case -5:
-            clear();
-            move(1, 0);
-            prints("%s 自杀中，不能收信\n", receiver);
-            break;              /*Haohmaru.99.10.26.自杀者不能收信 */
-        case -552:
-            prints("\n\033[1m\033[33m信件超长（本站限定信件长度上限为 %d 字节），取消发信操作\033[m\033[m\n", MAXMAILSIZE);
-            break;
-        default:
-            prints("信件已寄出\n");
+            case -1:
+                prints("收信者不正确\n");
+                break;
+            case -2:
+                prints("取消发信\n");
+                break;
+            case -3:
+                prints("'%s' 无法收信\n", receiver);
+                break;
+            case -4:
+                clear();
+                move(1, 0);
+                prints("%s 信箱已满,无法收信\n", receiver);
+                break;              /*Haohmaru.4.5.收信限制 */
+            case -5:
+                clear();
+                move(1, 0);
+                prints("%s 自杀中，不能收信\n", receiver);
+                break;              /*Haohmaru.99.10.26.自杀者不能收信 */
+            case -552:
+                prints("\n\033[1m\033[33m信件超长（本站限定信件长度上限为 %d 字节），取消发信操作\033[m\033[m\n", MAXMAILSIZE);
+                break;
+            default:
+                prints("信件已寄出\n");
         }
         pressreturn();
 
@@ -320,7 +322,7 @@ int m_internet(void){
 }
 
 
-/* 返回值定义: 
+/* 返回值定义:
   *   -1  收信者不存在;  -2 取消发信;
   *   -3  无法收信   -4 信箱已满
   *   -5  自杀中无法收信    -552 信件超长?
@@ -354,7 +356,7 @@ int do_send(char *userid, char *title, char *q_file)
         sprintf(userid, user -> userid);
         ret = check_mail_perm(getCurrentUser(), user);
 
-        switch(ret) {
+        switch (ret) {
             case 1:
                 return -3;
             case 2:
@@ -387,7 +389,7 @@ int do_send(char *userid, char *title, char *q_file)
          * else
          * strcat(userid,".edu.tw");}
          */
-        switch(check_mail_perm(getCurrentUser(), NULL)) {
+        switch (check_mail_perm(getCurrentUser(), NULL)) {
             case 5:
             case 6:
                 prints("\033[1m\033[33m很抱歉∶您无法发信．因为 您被封禁了Mail权限。\n\033[m");
@@ -401,7 +403,7 @@ int do_send(char *userid, char *title, char *q_file)
         internet_mail = 1;
         modify_user_mode(IMAIL);
         buf4[0] = ' ';
-        gettmpfilename(tmp_fname, "bbs-internet-gw" );
+        gettmpfilename(tmp_fname, "bbs-internet-gw");
         //sprintf(tmp_fname, "tmp/bbs-internet-gw/%05d", getpid());
         strcpy(filepath, tmp_fname);
         goto edit_mail_file;
@@ -432,7 +434,7 @@ int do_send(char *userid, char *title, char *q_file)
 #if defined(MAIL_REALNAMES)
     sprintf(genbuf, "%s (%s)", getCurrentUser()->userid, getCurrentUser()->realname);
 #else
-/*sprintf(genbuf,"%s (%s)",getCurrentUser()->userid,getCurrentUser()->username) ;*/
+    /*sprintf(genbuf,"%s (%s)",getCurrentUser()->userid,getCurrentUser()->username) ;*/
     strcpy(genbuf, getCurrentUser()->userid);        /* Leeward 98.04.14 */
 #endif
     strncpy(newmessage.owner, genbuf, OWNER_LEN);
@@ -441,7 +443,7 @@ int do_send(char *userid, char *title, char *q_file)
     setmailfile(filepath, userid, fname);
 
 #ifdef INTERNET_PRIVATE_EMAIL
-  edit_mail_file:
+edit_mail_file:
 #endif
     if (!title) {
         replymode = 0;
@@ -483,7 +485,7 @@ int do_send(char *userid, char *title, char *q_file)
             clrtoeol();
             strcpy(buf4, titlebuf);
             gdataret = getdata(t_lines - 1, 0, "标题: ", buf4, 79, DOECHO, NULL, false);
-            if(gdataret == -1) return -2;
+            if (gdataret == -1) return -2;
             if ((buf4[0] != '\0' && buf4[0] != '\n')) {
                 strcpy(titlebuf, buf4);
             } else {
@@ -494,12 +496,12 @@ int do_send(char *userid, char *title, char *q_file)
         move(t_lines - 1, 0);
         clrtoeol();
         /*
-         * Leeward 98.09.24 add: viewing signature(s) while setting post head 
+         * Leeward 98.09.24 add: viewing signature(s) while setting post head
          */
         sprintf(buf2, "按 \033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
                 (replymode) ? "，\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m改引言模式" : "");
         gdataret = getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
-        if(gdataret == -1) return -2;
+        if (gdataret == -1) return -2;
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
             if (atoi(ans) <= getSession()->currentmemo->ud.signum)
@@ -521,14 +523,12 @@ int do_send(char *userid, char *title, char *q_file)
                 clear();
                 ansimore2(buf2, false, 0, 18);
             }
-        } 
-        else if (ans[0] == 'U'&&HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+        } else if (ans[0] == 'U'&&HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
             chdir("tmp");
             if (upload != NULL) unlink(upload);
             upload = bbs_zrecvfile();
             chdir("..");
-         }
-        else {
+        } else {
             if (titlebuf[0] == '\0') {
                 strcpy(titlebuf, "没主题");
             }
@@ -553,25 +553,24 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
         }
         clear();
-      redo:
+redo:
         prints("信件即将寄给 %s \n", userid);
         prints("标题为： %s \n", titlebuf);
         prints("确定要寄出吗? (Y/N) [Y]");
         ch = igetkey();
         switch (ch) {
-        case KEY_REFRESH:
-            move(3, 0);
-            goto redo;
-        case 'N':
-        case 'n':
-            prints("%c\n", 'N');
-            prints("\n信件已取消...\n");
-            res = -2;
-            break;
-        default:
-            {
+            case KEY_REFRESH:
+                move(3, 0);
+                goto redo;
+            case 'N':
+            case 'n':
+                prints("%c\n", 'N');
+                prints("\n信件已取消...\n");
+                res = -2;
+                break;
+            default: {
                 /*
-                 * uuencode or convert to big5 option -- Add by ming, 96.10.9 
+                 * uuencode or convert to big5 option -- Add by ming, 96.10.9
                  */
                 char data[3];
                 int isbig5;
@@ -616,13 +615,13 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
         }
 
-    if(upload) {
-        char sbuf[PATHLEN];
-        strcpy(sbuf,"tmp/");
-        strcpy(sbuf+strlen(sbuf), upload);
-        newmessage.attachment = add_attach(filepath, sbuf, upload);
-    }
-    
+        if (upload) {
+            char sbuf[PATHLEN];
+            strcpy(sbuf,"tmp/");
+            strcpy(sbuf+strlen(sbuf), upload);
+            newmessage.attachment = add_attach(filepath, sbuf, upload);
+        }
+
         clear();
         /*
          * if(!chkreceiver(userid))
@@ -639,7 +638,7 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
         }
         /*
-         * 加上保存到发件箱的确认，by flyriver, 2002.9.23 
+         * 加上保存到发件箱的确认，by flyriver, 2002.9.23
          */
         /*
          * Disabled by flyriver, 2003.1.5
@@ -650,7 +649,7 @@ int do_send(char *userid, char *title, char *q_file)
          */
         if (savesent) {
             /*
-             * backup mail to sent folder 
+             * backup mail to sent folder
              */
             mail_file_sent(userid, filepath, getCurrentUser()->userid, save_title, 0, getSession());
         }
@@ -672,7 +671,7 @@ int do_send(char *userid, char *title, char *q_file)
 
 #ifdef AUTOREMAIL
         sethomefile(genbuf, userid, "autoremail");
-        if(dashf(genbuf)){
+        if (dashf(genbuf)) {
             sprintf(buf2, "[自动回复]%s的信件自动回复",userid);
             mail_file(userid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
         }
@@ -692,7 +691,7 @@ int m_send(char *userid)
     int oldmode;
 
     /*
-     * 封禁Mail Bigman:2000.8.22 
+     * 封禁Mail Bigman:2000.8.22
      */
     if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL))
         return DONOTHING;
@@ -712,30 +711,30 @@ int m_send(char *userid)
         strcpy(uident, userid);
     clear();
     switch (do_send(uident, NULL, "")) {
-    case -1:
-        prints("收信者不正确\n");
-        break;
-    case -2:
-        prints("取消发信\n");
-        break;
-    case -3:
-        prints("'%s' 无法收信\n", uident);
-        break;
-    case -4:
-        clear();
-        move(1, 0);
-        prints("%s 信箱已满,无法收信\n", uident);
-        break;                  /*Haohmaru.4.5.收信限制 */
-    case -5:
-        clear();
-        move(1, 0);
-        prints("%s 自杀中，不能收信\n", uident);
-        break;                  /*Haohmaru.99.10.26.自杀者不能收信 */
-    case -552:
-        prints("\n\033[1m\033[33m信件超长（本站限定信件长度上限为 %d 字节），取消发信操作\033[m\033[m\n", MAXMAILSIZE);
-        break;
-    default:
-        prints("信件已寄出\n");
+        case -1:
+            prints("收信者不正确\n");
+            break;
+        case -2:
+            prints("取消发信\n");
+            break;
+        case -3:
+            prints("'%s' 无法收信\n", uident);
+            break;
+        case -4:
+            clear();
+            move(1, 0);
+            prints("%s 信箱已满,无法收信\n", uident);
+            break;                  /*Haohmaru.4.5.收信限制 */
+        case -5:
+            clear();
+            move(1, 0);
+            prints("%s 自杀中，不能收信\n", uident);
+            break;                  /*Haohmaru.99.10.26.自杀者不能收信 */
+        case -552:
+            prints("\n\033[1m\033[33m信件超长（本站限定信件长度上限为 %d 字节），取消发信操作\033[m\033[m\n", MAXMAILSIZE);
+            break;
+        default:
+            prints("信件已寄出\n");
     }
     pressreturn();
     modify_user_mode(oldmode);
@@ -764,7 +763,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
     struct stat st;
 
     if (strstr(direct, ".DELETED")
-        || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL)) {
+            || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL)) {
         strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
@@ -783,17 +782,16 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         char filename[MAXPATH];
         sprintf(filename, "%s/%s", buf, fh->filename);
         if (strstr(direct, ".DELETED")
-            || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL)) {
+                || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL)) {
             if (fh->filename[0]!=0)
-            unlink(filename);
-    }
-        else {
+                unlink(filename);
+        } else {
             strcpy(buf, direct);
             t = strrchr(buf, '/') + 1;
             strcpy(t, ".DELETED");
             append_record(buf, fh, sizeof(*fh));
         }
-        setmailcheck( getCurrentUser()->userid );
+        setmailcheck(getCurrentUser()->userid);
         return 0;
     }
     return 1;
@@ -836,34 +834,34 @@ int read_new_mail(struct fileheader *fptr, int idc, char *direct)
         move(t_lines - 1, 0);
         prints("(R)回信, (D)删除, (G)继续 ? [G]: ");
         switch (igetkey()) {
-        case Ctrl('Y'):  
-            setmailfile(fname, getCurrentUser()->userid, fptr->filename);
-            zsend_file(fname, fptr->title);
-            break;
-        case 'R':
-        case 'r':
-
-            /*
-             * 封禁Mail Bigman:2000.8.22 
-             */
-            if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
-                clear();
-                move(3, 10);
-                prints("很抱歉,您目前没有Mail权限!");
-                pressreturn();
+            case Ctrl('Y'):
+                setmailfile(fname, getCurrentUser()->userid, fptr->filename);
+                zsend_file(fname, fptr->title);
                 break;
-            }
+            case 'R':
+            case 'r':
 
-            mail_reply(idc, fptr,direct);
-            /*
-             * substitute_record(currmaildir, fptr, sizeof(*fptr), dc);
-             */
-            break;
-        case 'D':
-        case 'd':
-            delete_it = true;
-        default:
-            done = true;
+                /*
+                 * 封禁Mail Bigman:2000.8.22
+                 */
+                if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
+                    clear();
+                    move(3, 10);
+                    prints("很抱歉,您目前没有Mail权限!");
+                    pressreturn();
+                    break;
+                }
+
+                mail_reply(idc, fptr,direct);
+                /*
+                 * substitute_record(currmaildir, fptr, sizeof(*fptr), dc);
+                 */
+                break;
+            case 'D':
+            case 'd':
+                delete_it = true;
+            default:
+                done = true;
         }
         if (!done)
             ansimore(fname, false);     /* re-read */
@@ -878,12 +876,13 @@ int read_new_mail(struct fileheader *fptr, int idc, char *direct)
     }
     if (substitute_record(direct, fptr, sizeof(*fptr), idc))
         return -1;
-    setmailcheck( getCurrentUser()->userid );
+    setmailcheck(getCurrentUser()->userid);
     clear();
     return 0;
 }
 
-int m_new(void){
+int m_new(void)
+{
     char direct[PATHLEN];
     clear();
     mrd = 0;
@@ -896,12 +895,12 @@ int m_new(void){
         return -1;
     }
     apply_record(direct, (APPLY_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), direct, 1, true);
-/*      
-    if (delcnt) {
-        while (delcnt--)
-            delete_record(currmaildir, sizeof(struct fileheader), delmsgs[delcnt], NULL, NULL);
-    }
-*/
+    /*
+        if (delcnt) {
+            while (delcnt--)
+                delete_record(currmaildir, sizeof(struct fileheader), delmsgs[delcnt], NULL, NULL);
+        }
+    */
     clear();
     move(0, 0);
     if (mrd)
@@ -914,7 +913,7 @@ int m_new(void){
 void mailtitle(struct _select_def* conf)
 {
     /*
-     * Leeward 98.01.19 adds below codes for statistics 
+     * Leeward 98.01.19 adds below codes for statistics
      */
     int MailSpace, numlimit;
     int UsedSpace = get_mailusedspace(getCurrentUser(), 0) / 1024;
@@ -926,7 +925,7 @@ void mailtitle(struct _select_def* conf)
     move(1, 0);
     prints("离开[←,e]  选择[↑,↓]  阅读信件[→,r]  回信[R]  砍信／清除旧信[d,D]  求助[h]\033[m\n");
     /*
-     * prints("\033[44m编号    %-20s %-49s\033[m\n","发信者","标  题") ; 
+     * prints("\033[44m编号    %-20s %-49s\033[m\n","发信者","标  题") ;
      */
     if (0 != get_mailnum(arg->direct) && 0 == UsedSpace)
         UsedSpace = 1;
@@ -954,7 +953,7 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         date = ctime(&filetime) + 4;    /* 时间 -> 英文 */
     else
         /*
-         * date = ""; char *类型变量, 可能错误, modified by dong, 1998.9.19 
+         * date = ""; char *类型变量, 可能错误, modified by dong, 1998.9.19
          */
     {
         date = ctime(&filetime) + 4;
@@ -986,7 +985,7 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             status = 'N';
     }
 
-    if(ent->accessed[1]&FILE_DEL)
+    if (ent->accessed[1]&FILE_DEL)
         status='X';
 
     if (ent->accessed[0] & FILE_REPLIED) {
@@ -1006,33 +1005,33 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
      * if (ent->accessed[0] & FILE_REPLIED)
      * reply_status = 'R';
      * else
-     * reply_status = ' '; 
+     * reply_status = ' ';
      *//*
-     * * * * * added by alex, 96.9.7 
-     */
-  if (!gShowSize) {
-    if (!strncmp("Re:", ent->title, 3)) {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%.50s\033[m", same ? c1 : "", num, reply_status, status, b2, date, attach, same ? c1 : "", ent->title);
-    } /* modified by dong, 1998.9.19 */
-    else {
-        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c★ %s%.47s\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title);
-    }                           /* modified by dong, 1998.9.19 */
-  } else {
-    int titlelen, size = 0, i;
-    char TITLE[ARTICLE_TITLE_LEN];
-    char *sign;
-    int is_original = strncmp("Re:", ent->title, 3);
-    if (ent->eff_size > 0) size = (ent->eff_size-1) / 1024 + 1;
+* * * * * added by alex, 96.9.7
+*/
+    if (!gShowSize) {
+        if (!strncmp("Re:", ent->title, 3)) {
+            sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%.50s\033[m", same ? c1 : "", num, reply_status, status, b2, date, attach, same ? c1 : "", ent->title);
+        } /* modified by dong, 1998.9.19 */
+        else {
+            sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c★ %s%.47s\033[m", same ? c2 : "", num, reply_status, status, b2, date, attach, same ? c2 : "", ent->title);
+        }                           /* modified by dong, 1998.9.19 */
+    } else {
+        int titlelen, size = 0, i;
+        char TITLE[ARTICLE_TITLE_LEN];
+        char *sign;
+        int is_original = strncmp("Re:", ent->title, 3);
+        if (ent->eff_size > 0) size = (ent->eff_size-1) / 1024 + 1;
 
-    titlelen = scr_cols > 80 ? scr_cols - 80 + 44 : 44;
-    if (is_original) titlelen -= 3;
-    if (titlelen > ARTICLE_TITLE_LEN) titlelen = ARTICLE_TITLE_LEN;
-    strnzhcpy(TITLE, ent->title, titlelen);
-    for (i=strlen(TITLE); i<titlelen-1; i++) TITLE[i] = ' ';
-    TITLE[titlelen-1] = '\0';
-    sign = same ? (is_original ? c2 : c1) : "";
-    sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%s%s%4dK\033[m", sign, num, reply_status, status, b2, date, attach, is_original?"★ ":"", sign, TITLE, size);
-  }
+        titlelen = scr_cols > 80 ? scr_cols - 80 + 44 : 44;
+        if (is_original) titlelen -= 3;
+        if (titlelen > ARTICLE_TITLE_LEN) titlelen = ARTICLE_TITLE_LEN;
+        strnzhcpy(TITLE, ent->title, titlelen);
+        for (i=strlen(TITLE); i<titlelen-1; i++) TITLE[i] = ' ';
+        TITLE[titlelen-1] = '\0';
+        sign = same ? (is_original ? c2 : c1) : "";
+        sprintf(buf, " %s%3d\033[m %c%c %-12.12s %6.6s %c%s%s%s%4dK\033[m", sign, num, reply_status, status, b2, date, attach, is_original?"★ ":"", sign, TITLE, size);
+    }
     return buf;
 }
 
@@ -1052,7 +1051,7 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     struct stat st;
 
     if (fileinfo==NULL)
-        return DONOTHING; 
+        return DONOTHING;
     clear();
     readnext = false;
     readprev = false;
@@ -1063,8 +1062,8 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     sprintf(notgenbuf, "%s/%s", buf, fileinfo->filename);
     delete_it = replied = false;
 
-    if(lstat(notgenbuf,&st) != -1){
-        if (S_ISLNK(st.st_mode)){
+    if (lstat(notgenbuf,&st) != -1) {
+        if (S_ISLNK(st.st_mode)) {
             stuffmode = 1;
         }
     }
@@ -1074,74 +1073,74 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         move(t_lines - 1, 0);
         prints("(R)回信, (D)删除, (G)继续? [G]: ");
         switch (igetkey()) {
-        case Ctrl('Y'):
-            read_zsend(conf, fileinfo, NULL);
-        break;
-        case 'R':
-        case 'r':
-
-            /*
-             * 封禁Mail Bigman:2000.8.22 
-             */
-            if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
-                clear();
-                move(3, 10);
-                prints("很抱歉,您目前没有Mail权限!");
-                pressreturn();
+            case Ctrl('Y'):
+                read_zsend(conf, fileinfo, NULL);
                 break;
-            }
-            replied = true;
-            do_mail_reply(conf, fileinfo,NULL);
-            break;
-        case ' ':
-        case 'j':
-        case KEY_RIGHT:
-        case KEY_DOWN:
-        case KEY_PGDN:
-            done = true;
-            readnext = true;
-            break;
-        /* read prev mail  .  binxun 2003.5*/
-        case KEY_UP:
-            done = true;
-            readprev = true;
-            break;
-            
-        case Ctrl('D'):
-            zsend_attach(ent, fileinfo, arg->direct);
-            done=true;
-            break;
-        case 'D':
-        case 'd':
-            delete_it = true;
-        default:
-            done = true;
-            
+            case 'R':
+            case 'r':
+
+                /*
+                 * 封禁Mail Bigman:2000.8.22
+                 */
+                if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
+                    clear();
+                    move(3, 10);
+                    prints("很抱歉,您目前没有Mail权限!");
+                    pressreturn();
+                    break;
+                }
+                replied = true;
+                do_mail_reply(conf, fileinfo,NULL);
+                break;
+            case ' ':
+            case 'j':
+            case KEY_RIGHT:
+            case KEY_DOWN:
+            case KEY_PGDN:
+                done = true;
+                readnext = true;
+                break;
+                /* read prev mail  .  binxun 2003.5*/
+            case KEY_UP:
+                done = true;
+                readprev = true;
+                break;
+
+            case Ctrl('D'):
+                zsend_attach(ent, fileinfo, arg->direct);
+                done=true;
+                break;
+            case 'D':
+            case 'd':
+                delete_it = true;
+            default:
+                done = true;
+
         }
     }
     stuffmode = 0;
     if (delete_it)
         return mail_del(conf, fileinfo,NULL);
-    else if ((fileinfo->accessed[0] & FILE_READ) != FILE_READ)
-    {
+    else if ((fileinfo->accessed[0] & FILE_READ) != FILE_READ) {
         fileinfo->accessed[0] |= FILE_READ;
         substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
-        setmailcheck( getCurrentUser()->userid );
+        setmailcheck(getCurrentUser()->userid);
     }
     if (readnext == true)
         return READ_NEXT;
 
     /* read prev mail  .  binxun 2003.5*/
-    if(readprev == true)
-    return READ_PREV;
-    
+    if (readprev == true)
+        return READ_PREV;
+
     if (!strcmp(fileinfo->owner,getCurrentUser()->userid))
         return DIRCHANGED;
     return FULLUPDATE;
 }
 
 
- /*ARGSUSED*/ static int mail_reply(int ent, struct fileheader *fileinfo,char* direct)
+/*ARGSUSED*/
+static int mail_reply(int ent, struct fileheader *fileinfo,char* direct)
 {
     char uid[STRLEN];
     char title[STRLEN];
@@ -1166,29 +1165,29 @@ int mail_read(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     strncpy(quote_user, fileinfo->owner, IDLEN);
     quote_user[IDLEN] = 0;
     switch (do_send(uid, title, q_file)) {
-    case -1:
-        prints("无法投递\n");
-        break;
-    case -2:
-        prints("取消回信\n");
-        break;
-    case -3:
-        prints("'%s' 无法收信\n", uid);
-        break;
-    case -4:
-        clear();
-        move(1, 0);
-        prints("%s 信箱已满,无法收信\n", uid);
-        break;                  /*Haohmaru.4.5.收信限制 */
-    case -5:
-        clear();
-        move(1, 0);
-        prints("%s 自杀中，不能收信\n", uid);
-        break;                  /*Haohmaru.99.10.26.自杀者不能收信 */
-    default:
-        prints("信件已寄出\n");
-        fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
-        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+        case -1:
+            prints("无法投递\n");
+            break;
+        case -2:
+            prints("取消回信\n");
+            break;
+        case -3:
+            prints("'%s' 无法收信\n", uid);
+            break;
+        case -4:
+            clear();
+            move(1, 0);
+            prints("%s 信箱已满,无法收信\n", uid);
+            break;                  /*Haohmaru.4.5.收信限制 */
+        case -5:
+            clear();
+            move(1, 0);
+            prints("%s 自杀中，不能收信\n", uid);
+            break;                  /*Haohmaru.99.10.26.自杀者不能收信 */
+        default:
+            prints("信件已寄出\n");
+            fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
+            substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
     }
     pressreturn();
     return FULLUPDATE;
@@ -1260,22 +1259,18 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
         *t = '\0';
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
-    if(lstat(genbuf,&st) != -1)
-    {
+    if (lstat(genbuf,&st) != -1) {
         if (S_ISLNK(st.st_mode))
             return DONOTHING;
-    }
-    else
+    } else
         return DONOTHING;
 
-    if(stat(genbuf,&st) != -1)
-    {
+    if (stat(genbuf,&st) != -1) {
         mode_t rwmode = S_IRUSR | S_IWUSR ;
         if ((st.st_mode & rwmode) != rwmode)
             return DONOTHING;
         before = st.st_size;
-    }
-    else
+    } else
         return DONOTHING;
 
     modify_user_mode(EDIT);
@@ -1285,7 +1280,7 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title,getSession());
 
-        if(stat(genbuf,&st) != -1) {
+        if (stat(genbuf,&st) != -1) {
             int diff = before - st.st_size;
             if (diff <= 0 || getCurrentUser()->usedspace > diff)
                 getCurrentUser()->usedspace -= diff;
@@ -1318,18 +1313,17 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
     if (arg->mode == DIR_MODE_SUPERFITER)
         return DONOTHING;
     setmailfile(genbuf,getCurrentUser()->userid,fileinfo->filename);
-    if(lstat(genbuf,&st)==-1||S_ISLNK(st.st_mode))
+    if (lstat(genbuf,&st)==-1||S_ISLNK(st.st_mode))
         return DONOTHING;
     strcpy(buf,fileinfo->title);
     getdata(t_lines-1,0,"新信件标题:",buf,50,DOECHO,NULL,false);
 
-    if(buf[0] && strcmp(buf,fileinfo->title))
-    {
+    if (buf[0] && strcmp(buf,fileinfo->title)) {
         process_control_chars(buf,NULL);
         strnzhcpy(fileinfo->title, buf, ARTICLE_TITLE_LEN);
 
         strcpy(tmp,arg->direct);
-        if((t = strrchr(tmp,'/')) != NULL)*t='\0';
+        if ((t = strrchr(tmp,'/')) != NULL)*t='\0';
         sprintf(genbuf,"%s/%s",tmp,fileinfo->filename);
         add_edit_mark(genbuf,3,buf,getSession()); /* 3 means edit mail and title */
         substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
@@ -1394,7 +1388,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct, in
 //    struct read_arg* arg=conf->arg;
     if (fileinfo==NULL)
         return DONOTHING;
-    
+
 
     if (strcmp("guest", getCurrentUser()->userid) == 0) {
         clear();
@@ -1423,26 +1417,26 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct, in
         *p = '\0';
     clear();
     switch (doforward(buf, fileinfo)) {
-    case 0:
-        prints("文章转寄完成!\n");
-	if (inmail){
-            fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.9.7 */
-	    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
-	}
-        break;
-    case -1:
-        prints("Forward failed: system error.\n");
-        break;
-    case -2:
-        prints("Forward failed: missing or invalid address.\n");
-        break;
-    case -552:
-        prints
+        case 0:
+            prints("文章转寄完成!\n");
+            if (inmail) {
+                fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.9.7 */
+                substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+            }
+            break;
+        case -1:
+            prints("Forward failed: system error.\n");
+            break;
+        case -2:
+            prints("Forward failed: missing or invalid address.\n");
+            break;
+        case -552:
+            prints
             ("\n\033[1m\033[33m信件超长（本站限定信件长度上限为 %d 字节），取消转寄操作\033[m\033[m\n\n请告知收信人（也许就是您自己吧:PP）：\n\n*1* 使用 \033[1m\033[33mWWW\033[m\033[m 方式访问本站，随时可以保存任意长度的文章到自己的计算机；\n*2* 使用 \033[1m\033[33mpop3\033[m\033[m 方式从本站用户的信箱取信，没有任何长度限制。\n*3* 如果不熟悉本站的 WWW 或 pop3 服务，请阅读 \033[1m\033[33mAnnounce\033[m\033[m 版有关公告。\n",
              MAXMAILSIZE);
-        break;
-    default:
-        prints("取消转寄...\n");
+            break;
+        default:
+            prints("取消转寄...\n");
     }
     pressreturn();
     clear();
@@ -1462,7 +1456,7 @@ int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     struct read_arg* arg=conf->arg;
     if (fileinfo==NULL)
         return DONOTHING;
-    if(arg->mode == DIR_MODE_SUPERFITER)
+    if (arg->mode == DIR_MODE_SUPERFITER)
         return DONOTHING;
     if (fileinfo->accessed[0] & FILE_MARKED)
         fileinfo->accessed[0] &= ~FILE_MARKED;
@@ -1472,9 +1466,10 @@ int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     return (PARTUPDATE);
 }
 
-int mail_token(struct _select_def *conf,struct fileheader *file,void *varg){
+int mail_token(struct _select_def *conf,struct fileheader *file,void *varg)
+{
     struct read_arg *arg=(struct read_arg*)conf->arg;
-    if(!file)
+    if (!file)
         return DONOTHING;
     if (arg->mode == DIR_MODE_SUPERFITER)
         return DONOTHING;
@@ -1515,15 +1510,15 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     sel[2].hotkey='J';
     sel[2].type=SIT_SELECT;
     sel[2].data=menu_char[2];//垃圾箱
-    for(i=0;i<((user_mail_list.mail_list_t>12)?(user_mail_list.mail_list_t-1)/2:user_mail_list.mail_list_t);i++){//分栏判断
+    for (i=0;i<((user_mail_list.mail_list_t>12)?(user_mail_list.mail_list_t-1)/2:user_mail_list.mail_list_t);i++) {//分栏判断
         sel[i+3].x=4;
         sel[i+3].y=i+8;
         sel[i+3].hotkey=user_mail_list.mail_list[i][0];
         sel[i+3].type=SIT_SELECT;
         sel[i+3].data=(void*)user_mail_list.mail_list[i];//自定义邮箱
     }
-    if(i!=user_mail_list.mail_list_t)//需要分栏
-        for(;i<user_mail_list.mail_list_t;i++){
+    if (i!=user_mail_list.mail_list_t)//需要分栏
+        for (;i<user_mail_list.mail_list_t;i++) {
             sel[i+3].x=44;
             sel[i+3].y=5+(i-(user_mail_list.mail_list_t-1)/2);
             sel[i+3].hotkey=user_mail_list.mail_list[i][0];
@@ -1541,8 +1536,8 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     sel[user_mail_list.mail_list_t+4].type=0;
     sel[user_mail_list.mail_list_t+4].data=NULL;
     i=simple_select_loop(sel,SIF_NUMBERKEY|SIF_SINGLE|SIF_ESCQUIT,0,6,NULL)-1;
-    if(!(i<0)&&i<user_mail_list.mail_list_t+3){
-        switch(i){
+    if (!(i<0)&&i<user_mail_list.mail_list_t+3) {
+        switch (i) {
             case 0:setmailfile(buf,getCurrentUser()->userid,".DIR");break;
             case 1:setmailfile(buf,getCurrentUser()->userid,".SENT");break;
             case 2:setmailfile(buf,getCurrentUser()->userid,".DELETED");break;
@@ -1550,8 +1545,8 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
                 setmailpath(buf,getCurrentUser()->userid);
                 strcat(strcat(buf,"/."),user_mail_list.mail_list[i-3]+30);
         }
-        if(strcmp(buf,arg->direct))
-            if(!delete_record(arg->direct,sizeof(*fileinfo),ent,(RECORD_FUNC_ARG)cmpname,fileinfo->filename))
+        if (strcmp(buf,arg->direct))
+            if (!delete_record(arg->direct,sizeof(*fileinfo),ent,(RECORD_FUNC_ARG)cmpname,fileinfo->filename))
                 append_record(buf,fileinfo,sizeof(*fileinfo));
     }
     free(sel);
@@ -1564,7 +1559,8 @@ int mailreadhelp(struct _select_def* conf,void* data,void* extraarg)
     return FULLUPDATE;
 }
 
-int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
+int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg)
+{
 #define MAIL_ADD_IGNORE_ITEMSZ ((IDLEN+1)*sizeof(char))
 #define MAIL_ADD_IGNORE_ECHO(s) do{prints("\033[1;32m%s\033[0;33m<ENTER>\033[m",s);WAIT_RETURN;}while(0)
 #define MAIL_ADD_IGNORE_RETURN do{saveline(t_lines-2,1,linebuf);move(y,x);return DONOTHING;}while(0)
@@ -1573,44 +1569,44 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
     int fd,y,x,ret;
     void *map;
     const void *p;
-    if(!fh||!getuser(fh->owner,NULL)||!strcasecmp(fh->owner,getCurrentUser()->userid))
+    if (!fh||!getuser(fh->owner,NULL)||!strcasecmp(fh->owner,getCurrentUser()->userid))
         return DONOTHING;
     getyx(&y,&x);
     saveline(t_lines-2,0,linebuf);
     move(t_lines-2,0);clrtoeol();
     sprintf(buf,"\033[1;32m添加用户 %s 到黑名单 [y/N]: \033[m",fh->owner);
     getdata(t_lines-2,0,buf,ans,2,DOECHO,NULL,true);
-    if(!(ans[0]=='y'||ans[0]=='Y'))
+    if (!(ans[0]=='y'||ans[0]=='Y'))
         MAIL_ADD_IGNORE_RETURN;
     move(t_lines-2,0);clrtoeol();
     sethomefile(buf,getCurrentUser()->userid,"ignores");
-    if(!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size){
-        if(!((ret=st.st_size/MAIL_ADD_IGNORE_ITEMSZ)<MAX_IGNORE)){
+    if (!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size) {
+        if (!((ret=st.st_size/MAIL_ADD_IGNORE_ITEMSZ)<MAX_IGNORE)) {
             MAIL_ADD_IGNORE_ECHO("已达到黑名单上限...");
             MAIL_ADD_IGNORE_RETURN;
         }
-        if(st.st_size%MAIL_ADD_IGNORE_ITEMSZ)
+        if (st.st_size%MAIL_ADD_IGNORE_ITEMSZ)
             truncate(buf,ret*MAIL_ADD_IGNORE_ITEMSZ);
-        if((fd=open(buf,O_RDONLY,0644))==-1)
+        if ((fd=open(buf,O_RDONLY,0644))==-1)
             MAIL_ADD_IGNORE_RETURN;
         map=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
         close(fd);
-        if(map==MAP_FAILED)
+        if (map==MAP_FAILED)
             MAIL_ADD_IGNORE_RETURN;
-        for(p=map;ret>0;vpm(p,MAIL_ADD_IGNORE_ITEMSZ),ret--)
-            if(!strcmp(p,fh->owner))
+        for (p=map;ret>0;vpm(p,MAIL_ADD_IGNORE_ITEMSZ),ret--)
+            if (!strcmp(p,fh->owner))
                 break;
         munmap(map,st.st_size);
-        if(ret){
+        if (ret) {
             MAIL_ADD_IGNORE_ECHO("该用户已经在当前黑名单中...");
             MAIL_ADD_IGNORE_RETURN;
         }
     }
-    if((fd=open(buf,O_WRONLY|O_CREAT|O_APPEND,0644))==-1)
+    if ((fd=open(buf,O_WRONLY|O_CREAT|O_APPEND,0644))==-1)
         MAIL_ADD_IGNORE_RETURN;
     ret=write(fd,fh->owner,MAIL_ADD_IGNORE_ITEMSZ);
     close(fd);
-    if(ret!=-1)
+    if (ret!=-1)
         MAIL_ADD_IGNORE_ECHO("该用户已经被添加到黑名单!");
     MAIL_ADD_IGNORE_RETURN;
 #undef MAIL_ADD_IGNORE_ITEMSZ
@@ -1618,58 +1614,59 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
 #undef MAIL_ADD_IGNORE_RETURN
 }
 
-int change_mail_mode(struct _select_def *conf,struct fileheader *fh,int mode){
+int change_mail_mode(struct _select_def *conf,struct fileheader *fh,int mode)
+{
     char ans[4];
 
-    if(!mode){
+    if (!mode) {
         move(t_lines-2,0);
         clrtoeol();
         prints("%s","切换模式到: 0)取消 ");
         move(t_lines-1,0);
         clrtoeol();
-        if(getdata(t_lines-1,12,"7)超级文章选择 [7]: ",ans,2,DOECHO,NULL,true)==-1)
+        if (getdata(t_lines-1,12,"7)超级文章选择 [7]: ",ans,2,DOECHO,NULL,true)==-1)
             return FULLUPDATE;
-        switch(ans[0]){
+        switch (ans[0]) {
             case '0':
                 return FULLUPDATE;
-            /*
-            case '1':
-                mode=DIR_MODE_DIGEST;
-                break;
-            case '2':
-                mode=DIR_MODE_THREAD;
-                break;
-            case '3':
-                mode=DIR_MODE_MARK;
-                break;
-            case '4':
-                mode=DIR_MODE_ORIGIN;
-                buf[0]=0;
-                break;
-            case '5':
-                mode=DIR_MODE_AUTHOR;
-                move(t_lines-2,0);
-                clrtoeol();
-                move(t_lines-1,0);
-                clrtoeol();
-                strcpy(buf,fh->owner);
-                getdata(t_lines-1,0,"您希望查找哪位用户的文章: ",buf,IDLEN+2,DOECHO,NULL,false);
-                if(!buf[0])
-                    return FULLUPDATE;
-                break;
-            case '6':
-                mode=DIR_MODE_TITLE;
-                move(t_lines-2,0);
-                clrtoeol();
-                move(t_lines-1,0);
-                clrtoeol();
-                strcpy(buf,title);
-                getdata(t_lines-1,0,"您希望查找的标题关键字: ",buf,32,DOECHO,NULL,false);
-                if(!buf[0])
-                    return FULLUPDATE;
-                strcpy(title,buf);
-                break;
-            */
+                /*
+                case '1':
+                    mode=DIR_MODE_DIGEST;
+                    break;
+                case '2':
+                    mode=DIR_MODE_THREAD;
+                    break;
+                case '3':
+                    mode=DIR_MODE_MARK;
+                    break;
+                case '4':
+                    mode=DIR_MODE_ORIGIN;
+                    buf[0]=0;
+                    break;
+                case '5':
+                    mode=DIR_MODE_AUTHOR;
+                    move(t_lines-2,0);
+                    clrtoeol();
+                    move(t_lines-1,0);
+                    clrtoeol();
+                    strcpy(buf,fh->owner);
+                    getdata(t_lines-1,0,"您希望查找哪位用户的文章: ",buf,IDLEN+2,DOECHO,NULL,false);
+                    if(!buf[0])
+                        return FULLUPDATE;
+                    break;
+                case '6':
+                    mode=DIR_MODE_TITLE;
+                    move(t_lines-2,0);
+                    clrtoeol();
+                    move(t_lines-1,0);
+                    clrtoeol();
+                    strcpy(buf,title);
+                    getdata(t_lines-1,0,"您希望查找的标题关键字: ",buf,32,DOECHO,NULL,false);
+                    if(!buf[0])
+                        return FULLUPDATE;
+                    strcpy(title,buf);
+                    break;
+                */
             case '7':
                 mode=DIR_MODE_SUPERFITER;
                 break;
@@ -1678,20 +1675,20 @@ int change_mail_mode(struct _select_def *conf,struct fileheader *fh,int mode){
                 break;
         }
     }
-    switch(mode){
+    switch (mode) {
         case DIR_MODE_NORMAL:
-        /*
-        case DIR_MODE_DIGEST:
-            return digest_mode(conf,fh,NULL);
-        case DIR_MODE_THREAD:
-            return title_mode(conf,fh,NULL);
-        case DIR_MODE_MARK:
-            return marked_mode(conf,fh,NULL);
-        case DIR_MODE_ORIGIN:
-        case DIR_MODE_AUTHOR:
-        case DIR_MODE_TITLE:
-            return search_mode(conf,fh,mode,buf);
-        */
+            /*
+            case DIR_MODE_DIGEST:
+                return digest_mode(conf,fh,NULL);
+            case DIR_MODE_THREAD:
+                return title_mode(conf,fh,NULL);
+            case DIR_MODE_MARK:
+                return marked_mode(conf,fh,NULL);
+            case DIR_MODE_ORIGIN:
+            case DIR_MODE_AUTHOR:
+            case DIR_MODE_TITLE:
+                return search_mode(conf,fh,mode,buf);
+            */
         case DIR_MODE_SUPERFITER:
             return super_filter(conf,fh,(int*)1);
         default:
@@ -1730,21 +1727,21 @@ struct key_command mail_comms[] = {
 #endif
     {Ctrl('N'), (READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
     {'z', (READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
-    
+
     {Ctrl('A'), (READ_KEY_FUNC)read_showauthor,NULL},
     {'~',(READ_KEY_FUNC)read_authorinfo,NULL},
-    {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
+    {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL},
     {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
 
     {Ctrl('Y'), (READ_KEY_FUNC)read_zsend,NULL},
-    {Ctrl('C'), (READ_KEY_FUNC)do_cross,NULL}, 
+    {Ctrl('C'), (READ_KEY_FUNC)do_cross,NULL},
     {Ctrl('G'), (READ_KEY_FUNC)change_mail_mode,(void*)0},   /* bad : 2002.8.8 add marked mode */
 
 #ifdef PERSONAL_CORP
     {'y', (READ_KEY_FUNC)read_importpc,NULL},
 #endif
-    {Ctrl('C'), (READ_KEY_FUNC)do_cross,NULL}, 
-    
+    {Ctrl('C'), (READ_KEY_FUNC)do_cross,NULL},
+
     {'h', (READ_KEY_FUNC)mailreadhelp,NULL},
 
     {Ctrl('D'),(READ_KEY_FUNC)mail_add_ignore,NULL},//etnlegend,2005.09.21,信件列表状态添加用户到黑名单
@@ -1753,11 +1750,12 @@ struct key_command mail_comms[] = {
 
     {'\'',(READ_KEY_FUNC)post_search,(void*)2UL},
     {'\"',(READ_KEY_FUNC)post_search,(void*)3UL},
-    
+
     {'\0', NULL},
 };
 
-int m_read(void){
+int m_read(void)
+{
     char curmaildir[STRLEN];
     int returnmode=CHANGEMODE;
     int oldmode;
@@ -1774,8 +1772,8 @@ int m_read(void){
     helpmode = HELP_MAIL;
 #endif
     while (returnmode==CHANGEMODE) {
-    returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
-    setmailfile(curmaildir, getCurrentUser()->userid, DOT_DIR);
+        returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+        setmailfile(curmaildir, getCurrentUser()->userid, DOT_DIR);
     }
 #ifdef NEW_HELP
     helpmode = oldhelpmode;
@@ -1785,7 +1783,8 @@ int m_read(void){
     return FULLUPDATE /* 0 */ ;
 }
 
-int g_send(void){
+int g_send(void)
+{
     char uident[13], tmp[3];
     int cnt, i, n, fmode = false;
     char maillists[STRLEN];
@@ -1794,7 +1793,7 @@ int g_send(void){
     int gdataret;
 
     /*
-     * 封禁Mail Bigman:2000.8.22 
+     * 封禁Mail Bigman:2000.8.22
      */
     if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL))
         return DONOTHING;
@@ -1809,7 +1808,7 @@ int g_send(void){
             prints("目前限制寄信给 \033[1m%d\033[m 人", maxrecp);
         }
         gdataret = getdata(0, 0, "(A)增加 (D)删除 (I)引入好友 (C)清除目前名单 (E)放弃 (S)寄出? [S]： ", tmp, 2, DOECHO, NULL, true);
-        if(gdataret == -1){
+        if (gdataret == -1) {
             cnt = 0;
             break;
         }
@@ -1834,101 +1833,100 @@ int g_send(void){
                 strcpy(uident, lookupuser->userid);
         }
         switch (tmp[0]) {
-        case 'A':
-        case 'a':
-            if (!(lookupuser->userlevel & PERM_BASIC)) {
-                move(2, 0);
-                prints("信件无法被寄给: \033[1m%s\033[m\n", lookupuser->userid);
+            case 'A':
+            case 'a':
+                if (!(lookupuser->userlevel & PERM_BASIC)) {
+                    move(2, 0);
+                    prints("信件无法被寄给: \033[1m%s\033[m\n", lookupuser->userid);
+                    break;
+                } else if (seek_in_file(maillists, uident)) {
+                    move(2, 0);
+                    prints("已经列为收件人之一 \n");
+                    break;
+                }
+                addtofile(maillists, uident);
+                cnt++;
                 break;
-            } else if (seek_in_file(maillists, uident)) {
-                move(2, 0);
-                prints("已经列为收件人之一 \n");
+            case 'E':
+            case 'e':
+                cnt = 0;
                 break;
-            }
-            addtofile(maillists, uident);
-            cnt++;
-            break;
-        case 'E':
-        case 'e':
-            cnt = 0;
-            break;
-        case 'D':
-        case 'd':
-            {
+            case 'D':
+            case 'd': {
                 if (seek_in_file(maillists, uident)) {
                     del_from_file(maillists, uident);
                     cnt--;
                 }
                 break;
             }
-        case 'I':
-        case 'i':
-            n = 0;
-            clear();
-            u = get_utmpent(getSession()->utmpent);
-            for (i = cnt; i < maxrecp && n < u->friendsnum; i++) {
-                int key;
+            case 'I':
+            case 'i':
+                n = 0;
+                clear();
+                u = get_utmpent(getSession()->utmpent);
+                for (i = cnt; i < maxrecp && n < u->friendsnum; i++) {
+                    int key;
 
-                move(2, 0);
-                prints("%s\n", getuserid2(u->friends_uid[n]));
-                move(4, 0);
-                clrtoeol();
-                move(3, 0);
-                n++;
-                if (!fmode) {
-                    prints("(A)剩下的全部加入 (Y)加入 (N)不加入 (Q)结束? [Y]:");
-                    /*
-                     * TODO: add KEY_REFRESH support
-                     */
-                    key = igetkey();
-                } else
-                    key = 'Y';
-                if (key == 'q' || key == 'Q')
-                    break;
-                if (key == 'A' || key == 'a') {
-                    fmode = true;
-                    key = 'Y';
-                }
-                if (key == '\0' || key == '\n' || key == 'y' || key == 'Y' || '\r' == key) {
-                    struct userec *lookupuser;
-                    char *errstr;
-                    char *touserid = getuserid2(u->friends_uid[n - 1]);
+                    move(2, 0);
+                    prints("%s\n", getuserid2(u->friends_uid[n]));
+                    move(4, 0);
+                    clrtoeol();
+                    move(3, 0);
+                    n++;
+                    if (!fmode) {
+                        prints("(A)剩下的全部加入 (Y)加入 (N)不加入 (Q)结束? [Y]:");
+                        /*
+                         * TODO: add KEY_REFRESH support
+                         */
+                        key = igetkey();
+                    } else
+                        key = 'Y';
+                    if (key == 'q' || key == 'Q')
+                        break;
+                    if (key == 'A' || key == 'a') {
+                        fmode = true;
+                        key = 'Y';
+                    }
+                    if (key == '\0' || key == '\n' || key == 'y' || key == 'Y' || '\r' == key) {
+                        struct userec *lookupuser;
+                        char *errstr;
+                        char *touserid = getuserid2(u->friends_uid[n - 1]);
 
-                    errstr = NULL;
-                    if (!touserid) {
-                        errstr = "这个使用者代号是错误的.\n";
-                    } else {
-                        strcpy(uident, getuserid2(u->friends_uid[n - 1]));
-                        if (!getuser(uident, &lookupuser)) {
+                        errstr = NULL;
+                        if (!touserid) {
                             errstr = "这个使用者代号是错误的.\n";
-                        } else if (!(lookupuser->userlevel & PERM_BASIC)) {
-                            errstr = "信件无法被寄给他\n";
-                        } else if (seek_in_file(maillists, uident)) {
+                        } else {
+                            strcpy(uident, getuserid2(u->friends_uid[n - 1]));
+                            if (!getuser(uident, &lookupuser)) {
+                                errstr = "这个使用者代号是错误的.\n";
+                            } else if (!(lookupuser->userlevel & PERM_BASIC)) {
+                                errstr = "信件无法被寄给他\n";
+                            } else if (seek_in_file(maillists, uident)) {
+                                i--;
+                                continue;
+                            }
+                        }
+                        if (errstr) {
+                            if (fmode != true) {
+                                move(4, 0);
+                                prints(errstr);
+                                pressreturn();
+                            }
                             i--;
                             continue;
                         }
+                        addtofile(maillists, uident);
+                        cnt++;
                     }
-                    if (errstr) {
-                        if (fmode != true) {
-                            move(4, 0);
-                            prints(errstr);
-                            pressreturn();
-                        }
-                        i--;
-                        continue;
-                    }
-                    addtofile(maillists, uident);
-                    cnt++;
                 }
-            }
-            fmode = false;
-            clear();
-            break;
-        case 'C':
-        case 'c':
-            unlink(maillists);
-            cnt = 0;
-            break;
+                fmode = false;
+                clear();
+                break;
+            case 'C':
+            case 'c':
+                unlink(maillists);
+                cnt = 0;
+                break;
         }
         if (tmp[0] == 'e' || tmp[0] == 'E')
             break;
@@ -1943,17 +1941,17 @@ int g_send(void){
     if (cnt > 0) {
         G_SENDMODE = 2;
         switch (do_gsend(NULL, NULL, cnt)) {
-        case -1:
-            prints("信件目录错误\n");
-            break;
-        case -2:
-            prints("取消发信\n");
-            break;
-        case -4:
-            prints("信箱已经超出限额\n");
-            break;
-        default:
-            prints("信件已寄出\n");
+            case -1:
+                prints("信件目录错误\n");
+                break;
+            case -2:
+                prints("取消发信\n");
+                break;
+            case -4:
+                prints("信箱已经超出限额\n");
+                break;
+            default:
+                prints("信件已寄出\n");
         }
         G_SENDMODE = 0;
         pressreturn();
@@ -1975,7 +1973,7 @@ int do_gsend(char *userid[], char *title, int num)
     int oldmode;
 
     /*
-     * 添加在好友寄信时的发信上限限制 Bigman 2000.12.11 
+     * 添加在好友寄信时的发信上限限制 Bigman 2000.12.11
      */
     if (chkusermail(getCurrentUser()) >= 2) {
         move(1, 0);
@@ -1991,7 +1989,7 @@ int do_gsend(char *userid[], char *title, int num)
     sprintf(genbuf, "%s (%s)", getCurrentUser()->userid, getCurrentUser()->realname);
 #else
     /*
-     * sprintf(genbuf,"%s (%s)",getCurrentUser()->userid,getCurrentUser()->username) ; 
+     * sprintf(genbuf,"%s (%s)",getCurrentUser()->userid,getCurrentUser()->username) ;
      */
     strcpy(genbuf, getCurrentUser()->userid);        /* Leeward 98.04.14 */
 #endif
@@ -2007,7 +2005,7 @@ int do_gsend(char *userid[], char *title, int num)
     gettmpfilename(tmpfile, "bbs-gsend");
     //sprintf(tmpfile, "tmp/bbs-gsend/%05d", getpid());
     /*
-     * Leeward 98.01.17 Prompt whom you are writing to 
+     * Leeward 98.01.17 Prompt whom you are writing to
      * if (1 == G_SENDMODE)
      * strcpy(lookupuser->userid, "好友名单");
      * else if (2 == G_SENDMODE)
@@ -2043,7 +2041,7 @@ int do_gsend(char *userid[], char *title, int num)
         move(t_lines - 1, 0);
         clrtoeol();
         /*
-         * Leeward 98.09.24 add: viewing signature(s) while setting post head 
+         * Leeward 98.09.24 add: viewing signature(s) while setting post head
          */
         sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
                 (replymode) ? "，\033[1;32mY\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m改引言模式" : "");
@@ -2074,10 +2072,10 @@ int do_gsend(char *userid[], char *title, int num)
     }
 
     /*
-     * Bigman:2000.8.13 群体发信为什么要引用文章呢 
+     * Bigman:2000.8.13 群体发信为什么要引用文章呢
      */
     /*
-     * do_quote( tmpfile,include_mode ); 
+     * do_quote( tmpfile,include_mode );
      */
 
     strcpy(quote_title, save_title);
@@ -2163,12 +2161,12 @@ int do_gsend(char *userid[], char *title, int num)
         } else {
             mail_file(getCurrentUser()->userid, tmpfile, uid, save_title, 0, NULL);
 #ifdef AUTOREMAIL
-        sethomefile(genbuf, uid, "autoremail");
-        if(dashf(genbuf)){
-            sprintf(buf2, "[自动回复]%s的信件自动回复",uid);
-            mail_file(uid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
-        }
-        setmailcheck(getCurrentUser()->userid);
+            sethomefile(genbuf, uid, "autoremail");
+            if (dashf(genbuf)) {
+                sprintf(buf2, "[自动回复]%s的信件自动回复",uid);
+                mail_file(uid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
+            }
+            setmailcheck(getCurrentUser()->userid);
 #endif
         }
     }
@@ -2181,12 +2179,13 @@ int do_gsend(char *userid[], char *title, int num)
 }
 
 /*Add by SmallPig*/
-int ov_send(void){
+int ov_send(void)
+{
     int all, i;
     struct user_info *u;
 
     /*
-     * 封禁Mail Bigman:2000.8.22 
+     * 封禁Mail Bigman:2000.8.22
      */
     if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL))
         return DONOTHING;
@@ -2220,17 +2219,17 @@ int ov_send(void){
     }
     pressanykey();
     switch (do_gsend(NULL, NULL, all)) {
-    case -1:
-        prints("信件目录错误\n");
-        break;
-    case -2:
-        prints("信件取消\n");
-        break;
-    case -4:
-        prints("信箱已经超出限额\n");
-        break;
-    default:
-        prints("信件已寄出\n");
+        case -1:
+            prints("信件目录错误\n");
+            break;
+        case -2:
+            prints("信件取消\n");
+            break;
+        case -4:
+            prints("信箱已经超出限额\n");
+            break;
+        default:
+            prints("信件已寄出\n");
     }
     pressreturn();
     G_SENDMODE = 0;
@@ -2279,7 +2278,7 @@ int doforward(char *direct, struct fileheader *fh)
     prints("把 %s 的《%s》转寄给:", fh->owner, fh->title);
     sprintf(genbuf, "[%s]: ", address);
     gdataret = getdata(3, 0, genbuf, receiver, 70, DOECHO, NULL, true);
-    if(gdataret == -1)
+    if (gdataret == -1)
         return 1;
     if (receiver[0] != '\0') {
         strncpy(address, receiver, STRLEN);
@@ -2308,7 +2307,7 @@ int doforward(char *direct, struct fileheader *fh)
     if (ptrX && (ptrX > receiver) && '@' == *(ptrX - 1))
         *(ptrX - 1) = 0;
 
-    
+
     mailout = (strstr(receiver, "@") || strstr(receiver, "."));
     if (!mailout) {
         /* F 到站外不检查信件是否超额 atppp 20060424 */
@@ -2338,21 +2337,18 @@ int doforward(char *direct, struct fileheader *fh)
         int oldmode = uinfo.mode;
         long attachpos = fh->attachment;
         modify_user_mode(SMAIL);
-	/* fancyrabbit Jun 5 2007 取消修改增加提示 */
-	if (vedit(fname, false, NULL, &attachpos, 0) == -1)
-	{
-	    if (!askyn("取消修改, 是否仍然转寄?", 0)) {
-		unlink(fname);
-		modify_user_mode(oldmode);
-		return 1;
-	    }
-	}
-	else
-	{
-	    fh->attachment = attachpos;
-	    if (ADD_EDITMARK)
-		add_edit_mark(fname, 1, fh->title,getSession());
-	}
+        /* fancyrabbit Jun 5 2007 取消修改增加提示 */
+        if (vedit(fname, false, NULL, &attachpos, 0) == -1) {
+            if (!askyn("取消修改, 是否仍然转寄?", 0)) {
+                unlink(fname);
+                modify_user_mode(oldmode);
+                return 1;
+            }
+        } else {
+            fh->attachment = attachpos;
+            if (ADD_EDITMARK)
+                add_edit_mark(fname, 1, fh->title,getSession());
+        }
         modify_user_mode(oldmode);
         y = 2;
         newbbslog(BBSLOG_USER, "修改被转贴的文章或信件: %s", title);    /*Haohmaru.00.05.01 */
@@ -2379,7 +2375,7 @@ int doforward(char *direct, struct fileheader *fh)
 
             /*
              * if(!chkreceiver(receiver,NULL))Haohamru.99.4.05
-             * FIXME NULL -> lookupuser，在 zixia.net 上是这么改的... 有没有问题？ 
+             * FIXME NULL -> lookupuser，在 zixia.net 上是这么改的... 有没有问题？
              */
             if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && lookupuser->userlevel & PERM_SUICIDE) {
                 prints("%s 自杀中，不能收信\n", receiver);
@@ -2403,22 +2399,22 @@ int doforward(char *direct, struct fileheader *fh)
                 return -4;
             }
             return_no = mail_file(getCurrentUser()->userid, fname, lookupuser->userid, title, BBSPOST_COPY, fh);
-	    /* fancyrabbit Jun 5 2007 转寄信件保存到发件箱，F 判断太多就不判断了，按设置来吧 ...*/
-	    if (HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL) && strcmp(lookupuser -> userid, getCurrentUser() -> userid))
-		mail_file_sent(lookupuser -> userid, fname, getCurrentUser()->userid, title, BBSPOST_COPY, getSession());
+            /* fancyrabbit Jun 5 2007 转寄信件保存到发件箱，F 判断太多就不判断了，按设置来吧 ...*/
+            if (HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL) && strcmp(lookupuser -> userid, getCurrentUser() -> userid))
+                mail_file_sent(lookupuser -> userid, fname, getCurrentUser()->userid, title, BBSPOST_COPY, getSession());
 #ifdef AUTOREMAIL
-        sethomefile(genbuf, lookupuser->userid, "autoremail");
-        if(dashf(genbuf)){
-            char buf2[256];
-            sprintf(buf2, "[自动回复]%s的信件自动回复",lookupuser->userid);
-            mail_file(lookupuser->userid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
-        }
-        setmailcheck(getCurrentUser()->userid);
+            sethomefile(genbuf, lookupuser->userid, "autoremail");
+            if (dashf(genbuf)) {
+                char buf2[256];
+                sprintf(buf2, "[自动回复]%s的信件自动回复",lookupuser->userid);
+                mail_file(lookupuser->userid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
+            }
+            setmailcheck(getCurrentUser()->userid);
 #endif
         }
     } else {
         /*
-         * Add by ming, 96.10.9 
+         * Add by ming, 96.10.9
          */
         char data[3];
         int isbig5;
@@ -2427,16 +2423,15 @@ int doforward(char *direct, struct fileheader *fh)
         char *ptr;
         ptr = strchr(receiver, '@');
 #ifdef SECONDSITE
-        if(strcasecmp(ptr, "@bbs.newsmth.net") == 0) {
+        if (strcasecmp(ptr, "@bbs.newsmth.net") == 0)
 #else
-        if(strcasecmp(ptr, "@2.newsmth.net") == 0) {
+        if (strcasecmp(ptr, "@2.newsmth.net") == 0)
 #endif
+        {
             noansi = 0;
             isbig5 = 0;
-        }
-        else 
+        } else {
 #endif /* NEWSMTH */
-        {
             data[0] = 0;
             prints("若您要将信件转寄到台湾请输入 Y 或 y\n");
             getdata(7, 0, "转成BIG5码? [N]: ", data, 2, DOECHO, 0, 0);
@@ -2451,7 +2446,9 @@ int doforward(char *direct, struct fileheader *fh)
                 noansi = 0;
             else
                 noansi = 1;
+#ifdef NEWSMTH
         }
+#endif
 
         prints("转寄信件给 %s, 请稍候....\n", receiver);
 
@@ -2470,7 +2467,7 @@ int doforward(char *direct, struct fileheader *fh)
 struct command_def {
     char *prompt;
     int permission;
-    int (*func) ();
+    int (*func)();
     void *arg;
 };
 
@@ -2498,20 +2495,21 @@ static int m_clean()
     num = get_num_records(buf, sizeof(struct fileheader));
     if (num && askyn("清除发件箱么?", 0))
         delete_range_base(getCurrentUser()->userid,mail_sysbox[1],mail_sysbox[2],1,num,
-            (DELETE_RANGE_BASE_MODE_MAIL|DELETE_RANGE_BASE_MODE_RANGE),NULL,NULL);
+                          (DELETE_RANGE_BASE_MODE_MAIL|DELETE_RANGE_BASE_MODE_RANGE),NULL,NULL);
     move(0, 0);
     setmailfile(buf, getCurrentUser()->userid, mail_sysbox[2]);
     num = get_num_records(buf, sizeof(struct fileheader));
     if (num && askyn("清除垃圾箱么?", 0))
         delete_range_base(getCurrentUser()->userid,mail_sysbox[2],NULL,1,num,
-            (DELETE_RANGE_BASE_MODE_MAIL|DELETE_RANGE_BASE_MODE_RANGE),NULL,NULL);
+                          (DELETE_RANGE_BASE_MODE_MAIL|DELETE_RANGE_BASE_MODE_RANGE),NULL,NULL);
     uinfo.mode = savemode;
     return 0;
 }
 
-int m_sendnull(void){
-    if(HAS_PERM(getCurrentUser(),PERM_LOGINOK))
-       m_send(NULL);
+int m_sendnull(void)
+{
+    if (HAS_PERM(getCurrentUser(),PERM_LOGINOK))
+        m_send(NULL);
     return FULLUPDATE;
 }
 
@@ -2555,7 +2553,7 @@ static int maillist_refresh(struct _select_def *conf)
 
     move(2, 0);
     prints("%s", "\x1b[1;44;37m──功能选单─────────────┬────自定义邮箱───────");
-    for(i=0;i<scr_cols/2-36;i++)
+    for (i=0;i<scr_cols/2-36;i++)
         prints("─");
     for (i = 3; i < scr_lns - 1; i++) {
         move(i, 38);
@@ -2584,9 +2582,9 @@ static int maillist_show(struct _select_def *conf, int pos)
         int sel;
 
         sel = pos - arg->cmdnum - 1;
-    if (arg->flag)
+        if (arg->flag)
             outs(mail_sysbox[sel]+1);
-    else
+        else
             outs(mail_sysboxtitle[sel]);
 
         setmailfile(buf, getCurrentUser()->userid, mail_sysbox[sel]);
@@ -2602,9 +2600,9 @@ static int maillist_show(struct _select_def *conf, int pos)
         if (sel < 10)
             outc(' ');
         sprintf(dirbstr, ".%s", user_mail_list.mail_list[sel - 1] + 30);
-    if (arg->flag)
+        if (arg->flag)
             prints("%d) %s", sel, user_mail_list.mail_list[sel - 1] + 30);
-    else
+        else
             prints("%d) %s", sel, user_mail_list.mail_list[sel - 1]);
         setmailfile(buf, getCurrentUser()->userid, dirbstr);
         prints("(%d)", getmailnum(buf));
@@ -2626,7 +2624,7 @@ static int maillist_onselect(struct _select_def *conf)
         /*
          * 邮箱命令
          */
-        (*mail_cmds[arg->cmdptr[conf->pos - 1]].func) ();
+        (*mail_cmds[arg->cmdptr[conf->pos - 1]].func)();
     } else if (conf->pos <= arg->sysboxnum + arg->cmdnum) {
         int sel;
 
@@ -2636,10 +2634,10 @@ static int maillist_onselect(struct _select_def *conf)
 #ifdef NEW_HELP
         helpmode = HELP_MAIL;
 #endif
-    while (returnmode==CHANGEMODE) {
-        returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
-        setmailfile(curmaildir, getCurrentUser()->userid, mail_sysbox[sel]);
-    }
+        while (returnmode==CHANGEMODE) {
+            returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+            setmailfile(curmaildir, getCurrentUser()->userid, mail_sysbox[sel]);
+        }
 #ifdef NEW_HELP
         helpmode = oldhelpmode;
 #endif
@@ -2660,10 +2658,10 @@ static int maillist_onselect(struct _select_def *conf)
 #ifdef NEW_HELP
         helpmode = HELP_MAIL;
 #endif
-    while (returnmode==CHANGEMODE) {
-        returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
-        setmailfile(curmaildir, getCurrentUser()->userid, buf);
-    }
+        while (returnmode==CHANGEMODE) {
+            returnmode = new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+            setmailfile(curmaildir, getCurrentUser()->userid, buf);
+        }
 #ifdef NEW_HELP
         helpmode = oldhelpmode;
 #endif
@@ -2729,7 +2727,7 @@ static int maillist_key(struct _select_def *conf, int command)
     }
 
     if (toupper(command) == 'Z') {
-    arg->flag=!arg->flag;
+        arg->flag=!arg->flag;
         return SHOW_REFRESH;
     }
     if (toupper(command) == 'A') {
@@ -2871,7 +2869,8 @@ static int maillist_key(struct _select_def *conf, int command)
     return SHOW_CONTINUE;
 }
 
-int MailProc(void){
+int MailProc(void)
+{
     struct _select_def maillist_conf;
     struct mail_proc_arg arg;
     POINT *pts;
@@ -3052,17 +3051,17 @@ typedef struct {
 } mailgroup_arg;
 
 const static struct key_translate mail_key_table[]= {
-        {'$',KEY_END},
-        {'q',KEY_LEFT},
-        {'e',KEY_LEFT},
-        {'k',KEY_UP},
-        {'j',KEY_DOWN},
-        {'N',KEY_PGDN},
-        {Ctrl('F'),KEY_PGDN},
-        {' ',KEY_PGDN},
-        {'p',KEY_PGDN},
-        {Ctrl('B'),KEY_PGUP},
-        {-1,-1}
+    {'$',KEY_END},
+    {'q',KEY_LEFT},
+    {'e',KEY_LEFT},
+    {'k',KEY_UP},
+    {'j',KEY_DOWN},
+    {'N',KEY_PGDN},
+    {Ctrl('F'),KEY_PGDN},
+    {' ',KEY_PGDN},
+    {'p',KEY_PGDN},
+    {Ctrl('B'),KEY_PGUP},
+    {-1,-1}
 };
 
 static int set_mailgroup_select(struct _select_def *conf)
@@ -3091,110 +3090,110 @@ static int set_mailgroup_key(struct _select_def *conf, int key)
     int oldmode;
 
     switch (key) {
-    case 'a':                  /* add new user */
-        if (arg->mgl->groups[arg->entry].users_num < MAX_MAILGROUP_USERS) {
-            mailgroup_t user;
+        case 'a':                  /* add new user */
+            if (arg->mgl->groups[arg->entry].users_num < MAX_MAILGROUP_USERS) {
+                mailgroup_t user;
 
-            bzero(&user, sizeof(user));
-            clear();
-            move(1, 0);
-            usercomplete("请输入要增加的用户代号: ", user.id);
-            if (user.id[0] != '\0') {
-                if (searchuser(user.id) <= 0) {
-                    move(2, 0);
-                    prints(MSG_ERR_USERID);
-                    pressanykey();
-                } else {
-                    move(2, 0);
-                    getdata(2, 0, "请输入用户说明: ", user.exp, sizeof(user.exp), DOECHO, NULL, true);
-                    add_mailgroup_user(arg->mgl, arg->entry, arg->users, &user);
+                bzero(&user, sizeof(user));
+                clear();
+                move(1, 0);
+                usercomplete("请输入要增加的用户代号: ", user.id);
+                if (user.id[0] != '\0') {
+                    if (searchuser(user.id) <= 0) {
+                        move(2, 0);
+                        prints(MSG_ERR_USERID);
+                        pressanykey();
+                    } else {
+                        move(2, 0);
+                        getdata(2, 0, "请输入用户说明: ", user.exp, sizeof(user.exp), DOECHO, NULL, true);
+                        add_mailgroup_user(arg->mgl, arg->entry, arg->users, &user);
+                    }
                 }
+                return SHOW_DIRCHANGE;
             }
-            return SHOW_DIRCHANGE;
-        }
-        break;
-    case 'd':                  /* delete existed user */
-        if (arg->mgl->groups[arg->entry].users_num > 0) {
-            char ans[3];
+            break;
+        case 'd':                  /* delete existed user */
+            if (arg->mgl->groups[arg->entry].users_num > 0) {
+                char ans[3];
 
-            getdata(t_lines - 1, 0, "确实要从组中删除该用户吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
-            if (ans[0] == 'Y' || ans[0] == 'y') {
-                delete_mailgroup_user(arg->mgl, arg->entry, arg->users, conf->pos - 1);
+                getdata(t_lines - 1, 0, "确实要从组中删除该用户吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
+                if (ans[0] == 'Y' || ans[0] == 'y') {
+                    delete_mailgroup_user(arg->mgl, arg->entry, arg->users, conf->pos - 1);
+                }
+                return SHOW_DIRCHANGE;
             }
-            return SHOW_DIRCHANGE;
-        }
-        break;
-    case 'T':                  /* modify existed user */
-        if (arg->mgl->groups[arg->entry].users_num > 0) {
-            mailgroup_t user;
+            break;
+        case 'T':                  /* modify existed user */
+            if (arg->mgl->groups[arg->entry].users_num > 0) {
+                mailgroup_t user;
 
-            memcpy(&user, &(arg->users[conf->pos - 1]), sizeof(user));
-            getdata(0, 0, "请输入新用户说明: ", user.exp, sizeof(user.exp), DOECHO, NULL, true);
-            if (strlen(user.exp) > 0)
-                modify_mailgroup_user(arg->users, conf->pos - 1, &user);
-            return SHOW_DIRCHANGE;
-        }
-        break;
-    case 'm':                  /* send mail to a user */
-        if (arg->mgl->groups[arg->entry].users_num > 0) {
-            oldmode = uinfo.mode;
-            modify_user_mode(FRIEND);   /* FIXME: A temporary workaround for 
+                memcpy(&user, &(arg->users[conf->pos - 1]), sizeof(user));
+                getdata(0, 0, "请输入新用户说明: ", user.exp, sizeof(user.exp), DOECHO, NULL, true);
+                if (strlen(user.exp) > 0)
+                    modify_mailgroup_user(arg->users, conf->pos - 1, &user);
+                return SHOW_DIRCHANGE;
+            }
+            break;
+        case 'm':                  /* send mail to a user */
+            if (arg->mgl->groups[arg->entry].users_num > 0) {
+                oldmode = uinfo.mode;
+                modify_user_mode(FRIEND);   /* FIXME: A temporary workaround for
                                          * the buggy m_send() function. */
-            m_send(arg->users[conf->pos - 1].id);
+                m_send(arg->users[conf->pos - 1].id);
+                modify_user_mode(oldmode);
+                return SHOW_REFRESH;
+            }
+            break;
+        case 'z':                  /* send message to a user */
+            if (arg->mgl->groups[arg->entry].users_num > 0) {
+                struct user_info *uin;
+
+                if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
+                    break;
+                oldmode = uinfo.mode;
+                clear();
+                uin = (struct user_info *) t_search(arg->users[conf->pos - 1].id, 0);
+                if (!uin || !canmsg(getCurrentUser(), uin))
+                    do_sendmsg(NULL, NULL, 0);
+                else {
+                    strcpy(getSession()->MsgDesUid, uin->userid);
+                    do_sendmsg(uin, NULL, 0);
+                }
+                modify_user_mode(oldmode);
+                return SHOW_REFRESH;
+            }
+            break;
+        case Ctrl('Z'):
+            oldmode = uinfo.mode;
+            r_lastmsg();
             modify_user_mode(oldmode);
             return SHOW_REFRESH;
-        }
-        break;
-    case 'z':                  /* send message to a user */
-        if (arg->mgl->groups[arg->entry].users_num > 0) {
-            struct user_info *uin;
-
+        case 'L':
+        case 'l':
+            oldmode = uinfo.mode;
+            show_allmsgs();
+            modify_user_mode(oldmode);
+            return SHOW_REFRESH;
+        case 'W':
+        case 'w':
+            oldmode = uinfo.mode;
             if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
                 break;
-            oldmode = uinfo.mode;
-            clear();
-            uin = (struct user_info *) t_search(arg->users[conf->pos - 1].id, 0);
-            if (!uin || !canmsg(getCurrentUser(), uin))
-                do_sendmsg(NULL, NULL, 0);
-            else {
-                strcpy(getSession()->MsgDesUid, uin->userid);
-                do_sendmsg(uin, NULL, 0);
-            }
+            s_msg();
             modify_user_mode(oldmode);
             return SHOW_REFRESH;
-        }
-        break;
-    case Ctrl('Z'):
-        oldmode = uinfo.mode;
-        r_lastmsg();
-        modify_user_mode(oldmode);
-        return SHOW_REFRESH;
-    case 'L':
-    case 'l':
-        oldmode = uinfo.mode;
-        show_allmsgs();
-        modify_user_mode(oldmode);
-        return SHOW_REFRESH;
-    case 'W':
-    case 'w':
-        oldmode = uinfo.mode;
-        if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
-            break;
-        s_msg();
-        modify_user_mode(oldmode);
-        return SHOW_REFRESH;
-    case Ctrl('A'):
-        clear();
-        t_query(arg->users[conf->pos - 1].id);
-        return SHOW_REFRESH;
-    case 'u':
-        oldmode = uinfo.mode;
-        clear();
-        modify_user_mode(QUERY);
-        t_query(NULL);
-        modify_user_mode(oldmode);
-        clear();
-        return SHOW_REFRESH;
+        case Ctrl('A'):
+            clear();
+            t_query(arg->users[conf->pos - 1].id);
+            return SHOW_REFRESH;
+        case 'u':
+            oldmode = uinfo.mode;
+            clear();
+            modify_user_mode(QUERY);
+            t_query(NULL);
+            modify_user_mode(oldmode);
+            clear();
+            return SHOW_REFRESH;
     }
 
     return SHOW_CONTINUE;
@@ -3284,7 +3283,7 @@ int set_mailgroup(mailgroup_list_t * mgl, int entry, mailgroup_t * users)
     group_conf.key_table = (struct key_translate*)mail_key_table;
     group_conf.item_per_page = BBS_PAGESIZE;
     /*
-     * 加上 LF_VSCROLL 才能用 LEFT 键退出 
+     * 加上 LF_VSCROLL 才能用 LEFT 键退出
      */
     group_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     group_conf.prompt = "◆";
@@ -3337,126 +3336,126 @@ static int set_mailgroup_list_key(struct _select_def *conf, int key)
     int oldmode;
 
     switch (key) {
-    case 'a':                  /* add new mailgroup */
-        if (arg->mail_group.groups_num < MAX_MAILGROUP_NUM) {
-            mailgroup_list_item item;
-            char ans[3];
-            char filename[STRLEN];
-            int y = 0;
-            int initialized = 0;
+        case 'a':                  /* add new mailgroup */
+            if (arg->mail_group.groups_num < MAX_MAILGROUP_NUM) {
+                mailgroup_list_item item;
+                char ans[3];
+                char filename[STRLEN];
+                int y = 0;
+                int initialized = 0;
 
-            clear();
-            sethomefile(filename, getCurrentUser()->userid, "friends");
-            if (dashf(filename)) {
-                getdata(y, 0, "是否导入好友名单(Y/N)? [Y]: ", ans, sizeof(ans), DOECHO, NULL, true);
-                y++;
-                if (ans[0] == '\0' || ans[0] == 'Y' || ans[0] == 'y') {
-                    move(y, 0);
-                    prints("导入好友名单... ");
-                    import_friends_mailgroup(getCurrentUser()->userid, &(arg->mail_group));
-                    initialized++;
-                    prints("[\033[0;1;32m成功\033[m]\n");
+                clear();
+                sethomefile(filename, getCurrentUser()->userid, "friends");
+                if (dashf(filename)) {
+                    getdata(y, 0, "是否导入好友名单(Y/N)? [Y]: ", ans, sizeof(ans), DOECHO, NULL, true);
                     y++;
+                    if (ans[0] == '\0' || ans[0] == 'Y' || ans[0] == 'y') {
+                        move(y, 0);
+                        prints("导入好友名单... ");
+                        import_friends_mailgroup(getCurrentUser()->userid, &(arg->mail_group));
+                        initialized++;
+                        prints("[\033[0;1;32m成功\033[m]\n");
+                        y++;
+                    }
                 }
-            }
-            if (initialized == 0) {
-                bzero(&item, sizeof(item));
-                getdata(y, 0, "请输入新群体信件组的名称: ", item.group_desc, sizeof(item.group_desc), DOECHO, NULL, true);
-                add_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group), &item);
-            }
-            pressanykey();
-            return SHOW_DIRCHANGE;
-        }
-        break;
-    case 'd':                  /* delete existed mailgroup */
-        if (arg->mail_group.groups_num > 0) {
-            char ans[3];
-
-            getdata(t_lines - 1, 0, "确实要删除该群体信件组吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
-            if (ans[0] == 'Y' || ans[0] == 'y') {
-                delete_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group), conf->pos - 1);
-                if (conf->item_count == 0) {
-                    add_default_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group),getSession());
+                if (initialized == 0) {
+                    bzero(&item, sizeof(item));
+                    getdata(y, 0, "请输入新群体信件组的名称: ", item.group_desc, sizeof(item.group_desc), DOECHO, NULL, true);
+                    add_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group), &item);
                 }
+                pressanykey();
+                return SHOW_DIRCHANGE;
             }
-            return SHOW_DIRCHANGE;
-        }
-        break;
-    case 'T':                  /* modify existed mailgroup */
-        if (arg->mail_group.groups_num > 0) {
-            mailgroup_list_item item;
-
-            memcpy(&item, &(arg->mail_group.groups[conf->pos - 1]), sizeof(item));
-            getdata(0, 0, "请输入新群体信件组的名称: ", item.group_desc, sizeof(item.group_desc), DOECHO, NULL, true);
-            if (strlen(item.group_desc) > 0)
-                modify_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group), conf->pos - 1, &item);
-            return SHOW_DIRCHANGE;
-        }
-        break;
-    case 'm':
-        if (arg->mail_group.groups_num > 0 && arg->mail_group.groups[conf->pos - 1].users_num > 0) {
-            char **mg_users;
-            int cnt;
-            int i;
-
-            if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
-                break;
-            }
-
-            cnt = arg->mail_group.groups[conf->pos - 1].users_num;
-            mg_users = (char **) malloc(cnt * sizeof(char *));
-            if (mg_users == NULL)
-                break;
-            load_mailgroup(getCurrentUser()->userid, arg->mail_group.groups[conf->pos - 1].group_name, arg->users, cnt);
-            for (i = 0; i < cnt; i++)
-                mg_users[i] = arg->users[i].id;
-            clear();
-            G_SENDMODE = 0;
-            switch (do_gsend(mg_users, NULL, cnt)) {
-            case -1:
-                prints("信件目录错误\n");
-                break;
-            case -2:
-                prints("取消发信\n");
-                break;
-            case -4:
-                prints("信箱已经超出限额\n");
-                break;
-            default:
-                prints("信件已寄出\n");
-            }
-            free(mg_users);
-            pressreturn();
-            return SHOW_REFRESH;
-        }
-        break;
-    case Ctrl('Z'):
-        oldmode = uinfo.mode;
-        r_lastmsg();
-        modify_user_mode(oldmode);
-        return SHOW_REFRESH;
-    case 'L':
-    case 'l':
-        oldmode = uinfo.mode;
-        show_allmsgs();
-        modify_user_mode(oldmode);
-        return SHOW_REFRESH;
-    case 'W':
-    case 'w':
-        oldmode = uinfo.mode;
-        if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
             break;
-        s_msg();
-        modify_user_mode(oldmode);
-        return SHOW_REFRESH;
-    case 'u':
-        oldmode = uinfo.mode;
-        clear();
-        modify_user_mode(QUERY);
-        t_query(NULL);
-        modify_user_mode(oldmode);
-        clear();
-        return SHOW_REFRESH;
+        case 'd':                  /* delete existed mailgroup */
+            if (arg->mail_group.groups_num > 0) {
+                char ans[3];
+
+                getdata(t_lines - 1, 0, "确实要删除该群体信件组吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
+                if (ans[0] == 'Y' || ans[0] == 'y') {
+                    delete_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group), conf->pos - 1);
+                    if (conf->item_count == 0) {
+                        add_default_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group),getSession());
+                    }
+                }
+                return SHOW_DIRCHANGE;
+            }
+            break;
+        case 'T':                  /* modify existed mailgroup */
+            if (arg->mail_group.groups_num > 0) {
+                mailgroup_list_item item;
+
+                memcpy(&item, &(arg->mail_group.groups[conf->pos - 1]), sizeof(item));
+                getdata(0, 0, "请输入新群体信件组的名称: ", item.group_desc, sizeof(item.group_desc), DOECHO, NULL, true);
+                if (strlen(item.group_desc) > 0)
+                    modify_mailgroup_item(getCurrentUser()->userid, &(arg->mail_group), conf->pos - 1, &item);
+                return SHOW_DIRCHANGE;
+            }
+            break;
+        case 'm':
+            if (arg->mail_group.groups_num > 0 && arg->mail_group.groups[conf->pos - 1].users_num > 0) {
+                char **mg_users;
+                int cnt;
+                int i;
+
+                if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
+                    break;
+                }
+
+                cnt = arg->mail_group.groups[conf->pos - 1].users_num;
+                mg_users = (char **) malloc(cnt * sizeof(char *));
+                if (mg_users == NULL)
+                    break;
+                load_mailgroup(getCurrentUser()->userid, arg->mail_group.groups[conf->pos - 1].group_name, arg->users, cnt);
+                for (i = 0; i < cnt; i++)
+                    mg_users[i] = arg->users[i].id;
+                clear();
+                G_SENDMODE = 0;
+                switch (do_gsend(mg_users, NULL, cnt)) {
+                    case -1:
+                        prints("信件目录错误\n");
+                        break;
+                    case -2:
+                        prints("取消发信\n");
+                        break;
+                    case -4:
+                        prints("信箱已经超出限额\n");
+                        break;
+                    default:
+                        prints("信件已寄出\n");
+                }
+                free(mg_users);
+                pressreturn();
+                return SHOW_REFRESH;
+            }
+            break;
+        case Ctrl('Z'):
+            oldmode = uinfo.mode;
+            r_lastmsg();
+            modify_user_mode(oldmode);
+            return SHOW_REFRESH;
+        case 'L':
+        case 'l':
+            oldmode = uinfo.mode;
+            show_allmsgs();
+            modify_user_mode(oldmode);
+            return SHOW_REFRESH;
+        case 'W':
+        case 'w':
+            oldmode = uinfo.mode;
+            if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
+                break;
+            s_msg();
+            modify_user_mode(oldmode);
+            return SHOW_REFRESH;
+        case 'u':
+            oldmode = uinfo.mode;
+            clear();
+            modify_user_mode(QUERY);
+            t_query(NULL);
+            modify_user_mode(oldmode);
+            clear();
+            return SHOW_REFRESH;
     }
 
     return SHOW_CONTINUE;
@@ -3561,7 +3560,7 @@ int set_mailgroup_list()
     }
     grouplist_conf.item_per_page = BBS_PAGESIZE;
     /*
-     * 加上 LF_VSCROLL 才能用 LEFT 键退出 
+     * 加上 LF_VSCROLL 才能用 LEFT 键退出
      */
     grouplist_conf.key_table=(struct key_translate*)mail_key_table;
     grouplist_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;

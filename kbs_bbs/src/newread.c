@@ -25,9 +25,9 @@ int getPos(int mode,char* direct,struct boardheader* bh)
 {
     struct _read_pos* ptr;
     char* key;
-    
+
     ptr=read_pos_head;
-    if(mode==DIR_MODE_MAIL||mode==DIR_MODE_TOP10)
+    if (mode==DIR_MODE_MAIL||mode==DIR_MODE_TOP10)
         key=direct;
     else if (mode==DIR_MODE_FRIEND)
         key=NULL;
@@ -52,9 +52,9 @@ void savePos(int mode,char* direct,int pos,struct boardheader* bh)
 {
     struct _read_pos*ptr;
     char* key;
-    
+
     ptr=read_pos_head;
-    if(mode==DIR_MODE_MAIL||mode==DIR_MODE_TOP10)
+    if (mode==DIR_MODE_MAIL||mode==DIR_MODE_TOP10)
         key=direct;
     else if (mode==DIR_MODE_FRIEND)
         key=NULL;
@@ -74,8 +74,8 @@ void savePos(int mode,char* direct,int pos,struct boardheader* bh)
     }
     ptr->mode=mode;
     if (key!=NULL) {
-    ptr->key=(char*)malloc(strlen(key)+1);
-    strcpy(ptr->key,key);
+        ptr->key=(char*)malloc(strlen(key)+1);
+        strcpy(ptr->key,key);
     } else
         ptr->key=NULL;
     ptr->pos=pos;
@@ -85,10 +85,9 @@ static void read_setusermode(enum BBS_DIR_MODE cmdmode)
 {
     if (cmdmode==DIR_MODE_MAIL) {
         modify_user_mode(RMAIL);
-     }
-    else {
+    } else {
         modify_user_mode(READING);
-    } //todo: other mode 
+    } //todo: other mode
 }
 
 static int read_search_articles(struct _select_def* conf, char *query, bool up, int aflag);
@@ -104,7 +103,7 @@ int find_nextnew(struct _select_def* conf,int begin)
     if (begin<=0)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, &data, &size) ) {
+        if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, &data, &size)) {
             pFh = (struct fileheader*)data;
             nowFh=pFh+begin-1;
             found=false;
@@ -137,26 +136,26 @@ int fileheader_thread_read(struct _select_def* conf, struct fileheader* fh,int e
 #ifdef HAVE_BRC_CONTROL
             if (read_arg->mode==DIR_MODE_MAIL) {
                 if (!(fh->accessed[0] & FILE_READ)) {
-                conf->new_pos=ent;
-                if (mode==SR_FIRSTNEW)
-                    return APPLY_CONTINUE;
-                if (mode==SR_FIRSTNEWDOWNSEARCH)
-                    return APPLY_QUIT;
+                    conf->new_pos=ent;
+                    if (mode==SR_FIRSTNEW)
+                        return APPLY_CONTINUE;
+                    if (mode==SR_FIRSTNEWDOWNSEARCH)
+                        return APPLY_QUIT;
                 }
             } else {
-            if (brc_unread(fh->id, getSession())) {
-                conf->new_pos=ent;
-                if (mode==SR_FIRSTNEW)
-                    return APPLY_CONTINUE;
-                if (mode==SR_FIRSTNEWDOWNSEARCH)
-                    return APPLY_QUIT;
+                if (brc_unread(fh->id, getSession())) {
+                    conf->new_pos=ent;
+                    if (mode==SR_FIRSTNEW)
+                        return APPLY_CONTINUE;
+                    if (mode==SR_FIRSTNEWDOWNSEARCH)
+                        return APPLY_QUIT;
+                }
             }
-            }
-/* readed */
+            /* readed */
             if (mode==SR_FIRSTNEW)
-                    return APPLY_CONTINUE;
+                return APPLY_CONTINUE;
             else
-            if (mode==SR_FIRSTNEWDOWNSEARCH)
+                if (mode==SR_FIRSTNEWDOWNSEARCH)
                     return APPLY_CONTINUE;
             break;
 #endif
@@ -181,7 +180,7 @@ static int read_key(struct _select_def *conf, int command)
     int mode=DONOTHING;
     struct fileheader* currfh;
 
-    switch (command) {    
+    switch (command) {
         case 'L':
         case 'l':                  /* Luzi 1997.10.31 */
             if (uinfo.mode != LOOKMSGS) {
@@ -210,24 +209,24 @@ static int read_key(struct _select_def *conf, int command)
             break;
         case 'O':
         case 'o':                  /* Luzi 1997.10.31 */
-            {                       /* Leeward 98.10.26 fix a bug by saving old mode */
-                int savemode = uinfo.mode;
+        {                       /* Leeward 98.10.26 fix a bug by saving old mode */
+            int savemode = uinfo.mode;
 
-                if (!HAS_PERM(getCurrentUser(), PERM_BASIC))
-                    break;
-                t_friends();
-                modify_user_mode(savemode);
-                mode=FULLUPDATE;
+            if (!HAS_PERM(getCurrentUser(), PERM_BASIC))
                 break;
-            }
+            t_friends();
+            modify_user_mode(savemode);
+            mode=FULLUPDATE;
+            break;
+        }
     }
     if (conf->pos!=0)
         currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
     else
-    currfh=NULL;
+        currfh=NULL;
     for (i = 0; arg->rcmdlist[i].fptr != NULL; i++) {
         if (arg->rcmdlist[i].key == command) {
-            mode = (*(arg->rcmdlist[i].fptr)) (conf, currfh, arg->rcmdlist[i].arg);
+            mode = (*(arg->rcmdlist[i].fptr))(conf, currfh, arg->rcmdlist[i].arg);
             break;
         }
     }
@@ -237,47 +236,46 @@ static int read_key(struct _select_def *conf, int command)
             arg->returnvalue=CHANGEMODE;
             ret=SHOW_QUIT;
             break;
-        case FULLUPDATE:/*要检查一下时间*/
-        {
-         struct stat st;
-         if (fstat(arg->fd,&st)!=-1) {
-          if (st.st_mtime!=arg->lastupdatetime) {
-              ret=SHOW_DIRCHANGE;
-              break;
-          }
-             }
+        case FULLUPDATE: { /*要检查一下时间*/
+            struct stat st;
+            if (fstat(arg->fd,&st)!=-1) {
+                if (st.st_mtime!=arg->lastupdatetime) {
+                    ret=SHOW_DIRCHANGE;
+                    break;
+                }
+            }
         }
         case PARTUPDATE:
             clear();
             ret=SHOW_REFRESH;
             break;
         case NEWDIRECT: {
-                int newfd,lastpos;
-                if ((newfd = open(arg->direct, O_RDWR, 0)) != -1) {
-                    close(arg->fd);
-                    arg->fd=newfd;
-                }
-/*其实这里有个问题，在savePos的时候，arg->direct其实已经被改动成新的direct了
-  正确的做法是类似newmode的写法，在这里保存原来的。
-  但是，因为返回NEWDIRECT的只有阅读的时候，而阅读的时候只用当前版面作为key,
-  所以，其实arg->direct是无用的。
-  另一个问题，在这里，conf->pos没法设定成filecount,因为此时还没有getdata
-*/
-                savePos(arg->mode,arg->direct,conf->pos,arg->board);
-                arg->board=currboard;
-                arg->bid=currboardent;
-                arg->boardstatus=getbstatus(arg->bid);
-                read_getdata(conf,-1,conf->item_per_page);
-                lastpos=getPos(arg->newmode,arg->direct,currboard);
-                if(lastpos==0)
-                    conf->pos=((arg->newmode!=DIR_MODE_TOP10)?arg->filecount:1);
-                else if(lastpos>arg->filecount||lastpos<0)
-                    conf->pos=arg->filecount;
-                else
-                    conf->pos=lastpos;
-                arg->mode=arg->newmode;
-                arg->newmode=-1;
+            int newfd,lastpos;
+            if ((newfd = open(arg->direct, O_RDWR, 0)) != -1) {
+                close(arg->fd);
+                arg->fd=newfd;
             }
+            /*其实这里有个问题，在savePos的时候，arg->direct其实已经被改动成新的direct了
+              正确的做法是类似newmode的写法，在这里保存原来的。
+              但是，因为返回NEWDIRECT的只有阅读的时候，而阅读的时候只用当前版面作为key,
+              所以，其实arg->direct是无用的。
+              另一个问题，在这里，conf->pos没法设定成filecount,因为此时还没有getdata
+            */
+            savePos(arg->mode,arg->direct,conf->pos,arg->board);
+            arg->board=currboard;
+            arg->bid=currboardent;
+            arg->boardstatus=getbstatus(arg->bid);
+            read_getdata(conf,-1,conf->item_per_page);
+            lastpos=getPos(arg->newmode,arg->direct,currboard);
+            if (lastpos==0)
+                conf->pos=((arg->newmode!=DIR_MODE_TOP10)?arg->filecount:1);
+            else if (lastpos>arg->filecount||lastpos<0)
+                conf->pos=arg->filecount;
+            else
+                conf->pos=lastpos;
+            arg->mode=arg->newmode;
+            arg->newmode=-1;
+        }
         case DIRCHANGED:
         case NEWSCREEN:
             ret=SHOW_DIRCHANGE;
@@ -304,11 +302,11 @@ static int read_key(struct _select_def *conf, int command)
                 }
             } else  if (arg->readmode==READ_THREAD) { /* 处理同主题阅读*/
                 int findthread=apply_thread(conf,
-                    currfh,
-                    fileheader_thread_read,
-                    false,
-                    true,
-                    (void*)SR_NEXT);
+                                            currfh,
+                                            fileheader_thread_read,
+                                            false,
+                                            true,
+                                            (void*)SR_NEXT);
                 if (findthread!=0) {
                     list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
@@ -319,16 +317,16 @@ static int read_key(struct _select_def *conf, int command)
                     ret=SHOW_SELCHANGE;
                 }
             }
-            
+
             if (ret==SHOW_REFRESH) {
                 arg->readmode=READ_NORMAL;
-        if (arg->oldpos!=0) {
-                /*恢复到原来的位置*/
-                list_select_add_key(conf,KEY_REFRESH); //先刷新一下
-        conf->new_pos=arg->oldpos;
-                ret=SHOW_SELCHANGE;
-                arg->oldpos=0;
-               }
+                if (arg->oldpos!=0) {
+                    /*恢复到原来的位置*/
+                    list_select_add_key(conf,KEY_REFRESH); //先刷新一下
+                    conf->new_pos=arg->oldpos;
+                    ret=SHOW_SELCHANGE;
+                    arg->oldpos=0;
+                }
             }
             break;
         case READ_PREV:
@@ -341,41 +339,38 @@ static int read_key(struct _select_def *conf, int command)
                     list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
                 } else ret= SHOW_REFRESH;
-            }
-            else if (arg->readmode==READ_THREAD) {/* 处理同主题阅读*/
+            } else if (arg->readmode==READ_THREAD) {/* 处理同主题阅读*/
                 int findthread=apply_thread(conf,
-                    (struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize),
-                    fileheader_thread_read,
-                    false,
-                    false,
-                    (void*)SR_PREV);
+                                            (struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize),
+                                            fileheader_thread_read,
+                                            false,
+                                            false,
+                                            (void*)SR_PREV);
                 if (findthread!=0) {
                     list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
-                }
-                else ret=SHOW_REFRESH;
+                } else ret=SHOW_REFRESH;
             } else { //处理同作者阅读
                 if (read_search_articles(conf,currfh->owner,true,1)==1) {
                     list_select_add_key(conf,'r'); //SEL change的下一条指令是read
                     ret=SHOW_SELCHANGE;
-                }
-                else ret = SHOW_REFRESH; /* fancy Jan 3 2008, PREV 这部分干吗还非和 NEXT 要拧着逻辑 ... */
+                } else ret = SHOW_REFRESH; /* fancy Jan 3 2008, PREV 这部分干吗还非和 NEXT 要拧着逻辑 ... */
             }
             if (ret==SHOW_REFRESH) {
                 arg->readmode=READ_NORMAL;
-        if (arg->oldpos!=0) {
-                /*恢复到原来的位置*/
-                list_select_add_key(conf,KEY_REFRESH); //先刷新一下
-                ret=SHOW_SELCHANGE;
-        conf->new_pos=arg->oldpos;
-                arg->oldpos=0;
-               }
+                if (arg->oldpos!=0) {
+                    /*恢复到原来的位置*/
+                    list_select_add_key(conf,KEY_REFRESH); //先刷新一下
+                    ret=SHOW_SELCHANGE;
+                    conf->new_pos=arg->oldpos;
+                    arg->oldpos=0;
+                }
             }
             break;
         case SELCHANGE:
             ret=SHOW_SELCHANGE;
             break;
-    } 
+    }
     if ((ret!=SHOW_SELCHANGE)&&!list_select_has_key(conf)) /*返回非顺序阅读模式*/
         arg->readmode=READ_NORMAL;
     return ret;
@@ -394,39 +389,38 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
 
     if (arg->data==NULL)
         arg->data=calloc(conf->item_per_page,arg->ssize);
-    
+
     if (fstat(arg->fd,&st)!=-1) {
         int entry=0;
         int dingcount=0;
         int n;
-    arg->lastupdatetime=st.st_mtime;
+        arg->lastupdatetime=st.st_mtime;
         count=st.st_size/arg->ssize;
         arg->filecount=count;
         if ((arg->mode==DIR_MODE_NORMAL)||
-            (arg->mode==DIR_MODE_MARK))
-        { //需要检查置顶
+                (arg->mode==DIR_MODE_MARK)) { //需要检查置顶
             dingcount=arg->boardstatus->toptitle;
         }
 
-    if (count+dingcount==0) {
-        conf->item_count=0;
-        return SHOW_CONTINUE;
+        if (count+dingcount==0) {
+            conf->item_count=0;
+            return SHOW_CONTINUE;
         }
         if (pos>count+dingcount) {
             conf->new_pos=count+dingcount-conf->item_per_page+1;
-        if (conf->new_pos<=0) conf->new_pos=1;
+            if (conf->new_pos<=0) conf->new_pos=1;
             list_select_add_key(conf,KEY_DIRCHANGE);
-        newbbslog(BBSLOG_DEBUG,"%s pos %d count %d",arg->board->filename,pos,count+dingcount);
+            newbbslog(BBSLOG_DEBUG,"%s pos %d count %d",arg->board->filename,pos,count+dingcount);
             return SHOW_SELCHANGE;
-    }
-    if ((pos!=-1)&&(pos<=count)) {
-          if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
-            if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {
-                entry=(n / arg->ssize);
+        }
+        if ((pos!=-1)&&(pos<=count)) {
+            if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
+                if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {
+                    entry=(n / arg->ssize);
+                }
             }
-          }
-    }
-        
+        }
+
         /* 获得置顶的数据*/
         if (dingcount&&pos!=-1) {
             if (entry!=len) { //需要读入.DING
@@ -460,7 +454,7 @@ static int read_title(struct _select_def *conf)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
     clear();
-    (*arg->dotitle) (conf);
+    (*arg->dotitle)(conf);
     return SHOW_CONTINUE;
 }
 
@@ -477,7 +471,7 @@ static int read_showcontent(struct _select_def* conf,int newpos)
     /* tmp fix by atppp 20061022 */
     if (newpos <= 0) newpos = conf->item_count;
     else if (newpos > conf->item_count) newpos = 1;
-    
+
     if ((newpos-conf->page_pos)>=0&&(newpos-conf->page_pos<conf->item_per_page)) {
         h = (struct fileheader*)(arg->data+(newpos-conf->page_pos) * arg->ssize);
         sprintf(genbuf, "%s/%s", buf, h->filename);
@@ -499,31 +493,31 @@ static int read_endline(struct _select_def *conf)
         char lbuf[11];
 
 #ifdef FLOWBANNER
-    allstay = (DEFINE(getCurrentUser(), DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
-    if (allstay) {
-        if (allstay & 1) {  //显示系统浮动信息
-            struct public_data *publicshm = get_publicshm();
-            if (publicshm->bannercount) 
-                snprintf(pntbuf, 256, "\033[33;44m%s\033[m", publicshm->banners[(time(0)>>1)%publicshm->bannercount]);
-            else allstay=0;
-        } else {    //显示版面浮动信息
-            if (currboard->bannercount) 
-                snprintf(pntbuf, 256, "\033[33;44m%s\033[m", currboard->banners[(time(0)>>1)%currboard->bannercount]);
-            else allstay=0;
+        allstay = (DEFINE(getCurrentUser(), DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
+        if (allstay) {
+            if (allstay & 1) {  //显示系统浮动信息
+                struct public_data *publicshm = get_publicshm();
+                if (publicshm->bannercount)
+                    snprintf(pntbuf, 256, "\033[33;44m%s\033[m", publicshm->banners[(time(0)>>1)%publicshm->bannercount]);
+                else allstay=0;
+            } else {    //显示版面浮动信息
+                if (currboard->bannercount)
+                    snprintf(pntbuf, 256, "\033[33;44m%s\033[m", currboard->banners[(time(0)>>1)%currboard->bannercount]);
+                else allstay=0;
+            }
         }
-    }
-    if (!allstay) {
+        if (!allstay) {
 #endif
-        snprintf(lbuf,11,"%d",conf->tmpnum);
+            snprintf(lbuf,11,"%d",conf->tmpnum);
 
-        allstay = (time(0) - login_start_time) / 60;
-        snprintf(pntbuf, 256, "\033[33;44m转到∶[\033[36m%9.9s\033[33m]" "  呼叫器[好友:%3s∶一般:%3s] 使用者[\033[36m%.12s\033[33m]%s停留[%3d:%2d]\033[m", 
-            lbuf, (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", getCurrentUser()->userid,      /*13-strlen(getCurrentUser()->userid)
+            allstay = (time(0) - login_start_time) / 60;
+            snprintf(pntbuf, 256, "\033[33;44m转到∶[\033[36m%9.9s\033[33m]" "  呼叫器[好友:%3s∶一般:%3s] 使用者[\033[36m%.12s\033[33m]%s停留[%3d:%2d]\033[m",
+                     lbuf, (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", getCurrentUser()->userid,      /*13-strlen(getCurrentUser()->userid)
                                                                                                                                                                                                                                                                                          * TODO:这个地方有问题，他想对齐，但是代码不对
                                                                                                                                                                                                                                                                                          * , */ nullbuf,
-                 (allstay / 60) % 1000, allstay % 60);
+                     (allstay / 60) % 1000, allstay % 60);
 #ifdef FLOWBANNER
-    }
+        }
 #endif
         move(t_lines - 1, 0);
         prints(pntbuf);
@@ -538,20 +532,19 @@ static int read_prekey(struct _select_def *conf, int *command)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
     switch (*command) {
-        case 'j':
-        {
+        case 'j': {
             struct fileheader * currfh;
             int ent;
             *command = KEY_DOWN;
 
-            if(arg->mode == DIR_MODE_DIGEST && HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
+            if (arg->mode == DIR_MODE_DIGEST && HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
                 if (conf->pos<=0)
                     return SHOW_CONTINUE;
                 currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
                 if (currfh->id <= 0)
                     return SHOW_CONTINUE;
                 ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board->filename);
-                if(ent <= 0){
+                if (ent <= 0) {
                     del_post(conf,currfh,(void*)(ARG_NOPROMPT_FLAG)) ;
                 }
             }
@@ -560,11 +553,11 @@ static int read_prekey(struct _select_def *conf, int *command)
         case 'q':
             *command=KEY_LEFT;
 
-            if(in_mail) return SHOW_CONTINUE;
+            if (in_mail) return SHOW_CONTINUE;
 
-            switch(arg->mode){
-                const struct fileheader *currfh;
-                int ent;
+            switch (arg->mode) {
+                    const struct fileheader *currfh;
+                    int ent;
                 case DIR_MODE_DIGEST:
                 case DIR_MODE_THREAD:
                 case DIR_MODE_MARK:
@@ -573,13 +566,13 @@ static int read_prekey(struct _select_def *conf, int *command)
                 case DIR_MODE_TITLE:
                 case DIR_MODE_SUPERFITER:
                 case DIR_MODE_TOP10:
-                    if(!(conf->pos>0))
+                    if (!(conf->pos>0))
                         break;
                     currfh=(const struct fileheader*)(arg->data+(conf->pos-conf->page_pos)*arg->ssize);
-                    if(!(currfh->id>0))
+                    if (!(currfh->id>0))
                         break;
                     ent=get_ent_from_id(DIR_MODE_NORMAL,currfh->id,arg->board->filename);
-                    if(!(ent>0))
+                    if (!(ent>0))
                         break;
                     savePos(DIR_MODE_NORMAL,NULL,ent,arg->board);
                     break;
@@ -595,22 +588,22 @@ static int read_prekey(struct _select_def *conf, int *command)
         case 'P': //翻页控制使用arg->filecount，不到达置顶
         case KEY_PGUP:
         case Ctrl('B'):
-        if (conf->pos-conf->item_per_page>0)
+            if (conf->pos-conf->item_per_page>0)
                 conf->new_pos= conf->page_pos - conf->item_per_page;
-        else
-            conf->new_pos=1;
+            else
+                conf->new_pos=1;
             *command=KEY_INVALID;
             return SHOW_SELCHANGE;
         case KEY_PGDN:
         case 'N':
         case Ctrl('F'):
         case ' ':
-        if (conf->page_pos+conf->item_per_page<=conf->item_count)
+            if (conf->page_pos+conf->item_per_page<=conf->item_count)
                 conf->new_pos= conf->page_pos + conf->item_per_page;
-        else
-            conf->new_pos=conf->item_count;
-        *command=KEY_INVALID;
-        return SHOW_SELCHANGE;
+            else
+                conf->new_pos=conf->item_count;
+            *command=KEY_INVALID;
+            return SHOW_SELCHANGE;
     }
     return SHOW_CONTINUE;
 }
@@ -619,7 +612,7 @@ static int read_show(struct _select_def *conf, int pos)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
     char foroutbuf[512];
-    prints("%s",(*arg->doentry) (foroutbuf, pos, arg->data+(pos-conf->page_pos) * arg->ssize,arg->readdata,conf));
+    prints("%s",(*arg->doentry)(foroutbuf, pos, arg->data+(pos-conf->page_pos) * arg->ssize,arg->readdata,conf));
     clrtoeol();
     return SHOW_CONTINUE;
 }
@@ -639,33 +632,33 @@ static int read_onsize(struct _select_def* conf)
         conf->item_pos[i].y = i + 3;
     };
     if (per_page!=conf->item_per_page) {
-    if (arg->data!=NULL) {
-        free(arg->data);
-        arg->data=NULL;
-    }
-    if (TDEFINE(TDEF_SPLITSCREEN))
-        conf->on_selchange=read_showcontent;
-    else conf->on_selchange=NULL;
-    return SHOW_DIRCHANGE;
+        if (arg->data!=NULL) {
+            free(arg->data);
+            arg->data=NULL;
+        }
+        if (TDEFINE(TDEF_SPLITSCREEN))
+            conf->on_selchange=read_showcontent;
+        else conf->on_selchange=NULL;
+        return SHOW_DIRCHANGE;
     }
     return DONOTHING;
 }
 
-int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct _select_def*), READ_ENT_FUNC doentry, struct key_command *rcmdlist, int ssize)
+int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle)(struct _select_def*), READ_ENT_FUNC doentry, struct key_command *rcmdlist, int ssize)
 {
     struct _select_def read_conf;
     struct read_arg arg;
     int lastpos;
     const static struct key_translate ktab[]= {
-            {'\n','r'},
-            {'\r','r'},
-            {KEY_RIGHT,'r'},
-            {'$',KEY_END},
+        {'\n','r'},
+        {'\r','r'},
+        {KEY_RIGHT,'r'},
+        {'$',KEY_END},
 //            {'q',KEY_LEFT},
-            {'e',KEY_LEFT},
-            {'k',KEY_UP},
+        {'e',KEY_LEFT},
+        {'k',KEY_UP},
 //            {'j',KEY_DOWN},
-            {-1,-1}
+        {-1,-1}
     };
 
 
@@ -687,7 +680,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
     arg.bid=currboardent;
     arg.boardstatus=getbstatus(arg.bid);
     if ((arg.mode==DIR_MODE_NORMAL)||
-        ((arg.mode>=DIR_MODE_THREAD)&&(arg.mode<=DIR_MODE_WEB_THREAD))) {
+            ((arg.mode>=DIR_MODE_THREAD)&&(arg.mode<=DIR_MODE_WEB_THREAD))) {
         char ding_direct[PATHLEN];
         //设置置顶的.DIR direct TODO:用tmpfs
         sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
@@ -725,9 +718,9 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
 
         lastpos=getPos(cmdmode,direct,currboard);
 
-        if(lastpos==0)
+        if (lastpos==0)
             read_conf.pos=((cmdmode!=DIR_MODE_TOP10)?arg.filecount:1);
-        else if(lastpos>arg.filecount||lastpos<0)
+        else if (lastpos>arg.filecount||lastpos<0)
             read_conf.pos=arg.filecount;
         else
             read_conf.pos=lastpos;
@@ -738,10 +731,10 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         close(arg.fd);
         savePos(arg.mode,direct,read_conf.pos,arg.board);
         if (read_conf.item_pos!=NULL)
-           free(read_conf.item_pos);
+            free(read_conf.item_pos);
     } else {
 
-       if (cmdmode == DIR_MODE_MAIL) {
+        if (cmdmode == DIR_MODE_MAIL) {
             prints("没有任何信件...");
             pressreturn();
             clear();
@@ -762,7 +755,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         clear();
     }
     if (arg.data!=NULL)
-        free(arg.data);    
+        free(arg.data);
     if (arg.readdata!=NULL)
         free(arg.readdata);
     if (arg.dingdirect!=NULL)
@@ -841,15 +834,15 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     init=false;
     now = conf->pos;
 
-/*    refresh();*/
+    /*    refresh();*/
     match = 0;
     BBS_TRY {
         if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, &data, &size) == 0)
             BBS_RETURN(0);
         pFh = (struct fileheader*)data;
         arg->filecount=size/sizeof(struct fileheader);
-        if(now > arg->filecount){
-    /*在置顶文章前搜索*/
+        if (now > arg->filecount) {
+            /*在置顶文章前搜索*/
             now = arg->filecount;
         }
         if (now <= arg->filecount) {
@@ -887,8 +880,8 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
 
                     if ((*ptr == 'R' || *ptr == 'r')
 
-                        && (*(ptr + 1) == 'E' || *(ptr + 1) == 'e') && (*(ptr + 2) == ':')
-                        && (*(ptr + 3) == ' ')) {
+                            && (*(ptr + 1) == 'E' || *(ptr + 1) == 'e') && (*(ptr + 2) == ':')
+                            && (*(ptr + 3) == ' ')) {
                         ptr2 = ptr + 4;
                     }
                     if (bm_strcasestr_rp(ptr2,query,bm_search,&init)) {
@@ -899,7 +892,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                     strncpy(ptr, pFh1->owner, STRLEN - 1);
                     ptr[STRLEN - 1] = 0;
                     /*
-                     * 同作者查询改成完全匹配 by dong, 1998.9.12 
+                     * 同作者查询改成完全匹配 by dong, 1998.9.12
                      */
                     if (!strcasecmp(ptr, upper_query)) {
                         match = 1;
@@ -916,7 +909,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     end_mmapfile(data, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
-    if(match) {
+    if (match) {
         conf->new_pos=now;
         return 1;
     }
@@ -938,7 +931,7 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     if (!strcmp(getCurrentUser()->userid, "guest")) {
         return FULLUPDATE;
     }
-    
+
     clear();
     prints("                  超强文章选择\n\n");
     move(4,0);
@@ -961,9 +954,9 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
            "      我要查询标题里包含hehe并且位置在最后的文章:\n"
            "              sub('hehe',title)==len(title)-3    标题包含hehe是标题的长度减3\n"
            "      我要查询......自己动手查吧,hehe"
-    );
+          );
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", query, sizeof(query), 20, 0, 0);
-    if(!query[0]) 
+    if (!query[0])
         return FULLUPDATE;
     if (!inmail && (arg->mode==DIR_MODE_AUTHOR||arg->mode==DIR_MODE_TITLE)) {
         unlink(arg->direct);
@@ -975,14 +968,14 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     q_arg.array = NULL;
     q_arg.array_size = 0;
 
-    if(inmail){
+    if (inmail) {
         q_arg.boardname = getCurrentUser()->userid;
         setmailfile(newdirect,getCurrentUser()->userid, ".SUPERFILTER");
         q_arg.isbm = 1;
-    }else{
+    } else {
         q_arg.boardname = currboard->filename;
         setbdir(DIR_MODE_SUPERFITER, newdirect, currboard->filename);
-        q_arg.isbm = 
+        q_arg.isbm =
 #ifdef NEWSMTH
             check_board_delete_read_perm(getCurrentUser(), currboard, 0)
 #else
@@ -1013,8 +1006,7 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
         refresh();
         sleep(1);
         return FULLUPDATE;
-    }
-    else if(count==0) {
+    } else if (count==0) {
         move(3, 0);
         clrtoeol();
         prints("一个都没有找到....");
@@ -1022,26 +1014,26 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
         sleep(1);
         return FULLUPDATE;
     }
-/*    else if (chk_currBM(currBM, getCurrentUser())) {
-        char ans[4];
-        int i,j,k;
-        int fflag;
-        int y,x;
-        move(3, 0);
-        clrtoeol();
-        prints("找到 %d 篇文章(0-退出, 1-保留标记m, 2-删除标记t, 3-不可回复标记;) [0]", count);
-        getyx(&y, &x);
-        getdata(y, x, 0, ans, 3, 1, 0, 1);
-        if(ans[0]>='1'&&ans[0]<='3') {
-            struct fileheader f;
-            k=ans[0]-'0';
-            if(ans[0]=='1') fflag=FILE_MARK_FLAG;
-            else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
-            else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
-            for(i=0;i<count;i++)
-                change_post_flag(currBM, getCurrentUser(), digestmode, currboard, i+1, &f, currdirect, fflag, 0);
-        }
-    }*/
+    /*    else if (chk_currBM(currBM, getCurrentUser())) {
+            char ans[4];
+            int i,j,k;
+            int fflag;
+            int y,x;
+            move(3, 0);
+            clrtoeol();
+            prints("找到 %d 篇文章(0-退出, 1-保留标记m, 2-删除标记t, 3-不可回复标记;) [0]", count);
+            getyx(&y, &x);
+            getdata(y, x, 0, ans, 3, 1, 0, 1);
+            if(ans[0]>='1'&&ans[0]<='3') {
+                struct fileheader f;
+                k=ans[0]-'0';
+                if(ans[0]=='1') fflag=FILE_MARK_FLAG;
+                else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
+                else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
+                for(i=0;i<count;i++)
+                    change_post_flag(currBM, getCurrentUser(), digestmode, currboard, i+1, &f, currdirect, fflag, 0);
+            }
+        }*/
     strcpy(arg->direct, newdirect);
     arg->newmode=DIR_MODE_SUPERFITER;
     return NEWDIRECT;
@@ -1099,7 +1091,7 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
     end_mmapfile(data, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
-    if(now > 0) {
+    if (now > 0) {
         conf->new_pos = now;
         return SELCHANGE;
     }
@@ -1125,9 +1117,8 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
             int ret = jumpSuperFilter(conf, fh, !up, inmail, query + 1);
             if (ret != DONOTHING)
                 return ret;
-        } else if (!inmail){
-            if (read_search_articles(conf, query, up, -1) == 1)
-            {
+        } else if (!inmail) {
+            if (read_search_articles(conf, query, up, -1) == 1) {
                 conf->show_endline(conf);   /* add by pig2532 on 2005.12.4 */
                 return SELCHANGE;
             }
@@ -1143,7 +1134,7 @@ int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     char currauth[STRLEN];
     bool up=(bool)extraarg;
     int ret = DONOTHING;
-    
+
     if (fh==NULL) return DONOTHING;
     strcpy(currauth, fh->owner);
     snprintf(pmt, STRLEN, "%s搜寻作者: ", up ?  "↑" : "↓");
@@ -1172,8 +1163,7 @@ int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg
     getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, false);
     if (*ans != '\0') {
         strcpy(title, ans);
-        if (read_search_articles(conf, title, up, 0) == 1)
-        {
+        if (read_search_articles(conf, title, up, 0) == 1) {
             conf->show_endline(conf);   /* add by pig2532 on 2005.12.4 */
             return SELCHANGE;
         }
@@ -1207,7 +1197,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
     count=0;
     now = conf->pos;
     BBS_TRY {
-        if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, &data, &size) ) {
+        if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, &data, &size)) {
             bool needmove;
             pFh = (struct fileheader*)data;
             recordcount=size/sizeof(struct fileheader);
@@ -1231,13 +1221,12 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
                     }
                 }
                 needmove=true;
-                
+
                 /* 判断是不是同一主题,不是直接continue*/
                 if ((read_arg->mode==DIR_MODE_NORMAL)||
-                     ((read_arg->mode>=DIR_MODE_THREAD)&&(read_arg->mode<=DIR_MODE_WEB_THREAD)))
-                { /*使用groupid*/
+                        ((read_arg->mode>=DIR_MODE_THREAD)&&(read_arg->mode<=DIR_MODE_WEB_THREAD))) { /*使用groupid*/
                     if (fh->groupid!=nowFh->groupid)
-                    continue;
+                        continue;
                 } else {
                     if (!isThreadTitle(fh->title,nowFh->title))
                         continue;
@@ -1254,7 +1243,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
                         recordcount--;
                         read_arg->filecount--;
                         needmove=false;
-                    } else 
+                    } else
                         needmove=true;
                 }
             }
@@ -1344,20 +1333,21 @@ int read_sendmsgtoauthor(struct _select_def* conf, struct fileheader* fh, void* 
 
 int read_showauthor(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    if(!fh)
+    if (!fh)
         return DONOTHING;
     t_query(fh->owner);
     return FULLUPDATE;
 }
 
 /* etnlegend, 2006.09.21, 阅读状态查阅或修改用户资料... */
-int read_authorinfo(struct _select_def *conf,struct fileheader *fh,void *arg){
+int read_authorinfo(struct _select_def *conf,struct fileheader *fh,void *arg)
+{
 #ifdef HAVE_STRICT_USERINFO
 #define RAI_PERM    (PERM_ADMIN)
 #else /* HAVE_STRICT_USERINFO */
 #define RAI_PERM    (PERM_SYSOP|PERM_ADMIN)
 #endif /* HAVE_STRICT_USERINFO */
-    if(!HAS_PERM(getCurrentUser(),RAI_PERM))
+    if (!HAS_PERM(getCurrentUser(),RAI_PERM))
         return DONOTHING;
     modify_userinfo(searchuser(fh->owner),(HAS_PERM(getCurrentUser(),PERM_ADMIN)?1:2));
     return FULLUPDATE;
@@ -1367,17 +1357,17 @@ int read_authorinfo(struct _select_def *conf,struct fileheader *fh,void *arg){
 /* etnlegend, 2005.10.16, 查询版主更新 */
 /* fancy Jan 4 2008, 查询俱乐部权限挤进来 ... */
 
-int read_showauthorBM(struct _select_def *conf,struct fileheader *fh,void *arg){
+int read_showauthorBM(struct _select_def *conf,struct fileheader *fh,void *arg)
+{
     int key;
     struct userec *user;
-    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
+    if (!HAS_PERM(getCurrentUser(),PERM_SYSOP))
         return DONOTHING;
     clear();
     move(0, 0);
     prints("\033[1;32m[综合查询功能]\033[m");
     move(1, 0);
-    if (!getuser(fh -> owner, &user))
-    {
+    if (!getuser(fh -> owner, &user)) {
         prints("\033[1;31m非法用户...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;
         return FULLUPDATE;
@@ -1385,8 +1375,7 @@ int read_showauthorBM(struct _select_def *conf,struct fileheader *fh,void *arg){
     prints("查询用户: \033[1;37m%s\033[m\n\n", user -> userid);
     prints("  [0] 退出\n  [1] 任职版面\n  [2] 俱乐部读权限清单\n  [3] 俱乐部写权限清单\n\n请选择: ");
     key = igetch();
-    switch (key)
-    {
+    switch (key) {
         case '1':
             return query_bm_core(fh->owner,false);
             break;

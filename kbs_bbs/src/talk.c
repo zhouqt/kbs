@@ -22,7 +22,7 @@
 #ifdef lint
 #include <sys/uio.h>
 #endif                          /* 
-                                 */
+*/
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -41,7 +41,7 @@ void do_log();
 int talkrec = -1;
 char partner[IDLEN + 1];
 #endif
-                                 
+
 struct talk_win {
 
     int curcol, curln;
@@ -56,7 +56,7 @@ char save_page_requestor[STRLEN];
 
 /* end - jjyang */
 
-/*---	changed to isidhidden by period	2000-10-20	---*
+/*--- changed to isidhidden by period 2000-10-20 ---*
 int
 ishidden(user)
 char *user;
@@ -105,7 +105,8 @@ void creat_list()
     apply_ulist_addr((APPLY_UTMP_FUNC) listcuent, 0);
 }
 
-int t_pager(void){
+int t_pager(void)
+{
     if (uinfo.pager & ALL_PAGER) {
         uinfo.pager &= ~ALL_PAGER;
         if (DEFINE(getCurrentUser(), DEF_FRIENDCALL))
@@ -137,13 +138,13 @@ int show_user_plan(char userid[IDLEN], char *fix)
 
     sethomefile(pfile, userid, "plans");
     if ((pf = fopen(pfile, "r")) == NULL) {
-       	prints("\033[36m没有个人说明档\033[m %s\n", fix?fix:"");
-/*fclose(pf); *//*
- * * * Leeward 98.04.20 
- */
+        prints("\033[36m没有个人说明档\033[m %s\n", fix?fix:"");
+        /*fclose(pf); *//*
+         * * * Leeward 98.04.20
+         */
         return false;
     } else {
-       	prints("\033[36m个人说明档如下：\033[m %s\n", fix?fix:"");//added by bad
+        prints("\033[36m个人说明档如下：\033[m %s\n", fix?fix:"");//added by bad
         getyx(&minln, &i);
         for (i = 1; i <= scr_lns-8; i++) {
             if (fgets(pbuf, sizeof(pbuf), pf))
@@ -168,12 +169,12 @@ int t_printstatus(struct user_info *uentp, struct _tag_printstatus *arg, int pos
     (arg->seecount)++;
 
     p = idle_str(buf3,uentp);
-    if(p[0]==' '&&p[1]==' ') buf2[0]=0;
+    if (p[0]==' '&&p[1]==' ') buf2[0]=0;
     else sprintf(buf2, "[%s]", p);
-    sprintf(buf, "%s\033[1m%s\033[m%s ", 
-			uentp->invisible?(uentp->pid==1?"\033[33m":"\033[32m"):(uentp->pid==1?"\033[36m":""), 
-			modestring(buf3,uentp->mode, uentp->destuid, 0,   /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
-                                          (uentp->in_chat ? uentp->chatid : NULL)), buf2);
+    sprintf(buf, "%s\033[1m%s\033[m%s ",
+            uentp->invisible?(uentp->pid==1?"\033[33m":"\033[32m"):(uentp->pid==1?"\033[36m":""),
+                    modestring(buf3,uentp->mode, uentp->destuid, 0,   /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+                               (uentp->in_chat ? uentp->chatid : NULL)), buf2);
     strcat(arg->statusbuf, buf);
 
     if ((arg->seecount) % 8 == 0)
@@ -190,18 +191,18 @@ struct _tag_talk_showstatus {
 int talk_showstatus(struct user_info *uentp, struct _tag_talk_showstatus *arg, int pos)
 {
     char buf[80],buf2[80];
-	struct userec *lookupuser;
+    struct userec *lookupuser;
 
     if (uentp->invisible && !HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
         return 0;
-    if( getuser(uentp->userid, &lookupuser) == 0 ){
-		return 0;
-    }                                  
+    if (getuser(uentp->userid, &lookupuser) == 0) {
+        return 0;
+    }
     arg->pos[arg->count++] = pos;
 
     sprintf(buf, "(%d) 目前状态: %s, 来自: %s \n", arg->count, modestring(buf2,uentp->mode, uentp->destuid, 0,       /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
-                                                                          uentp->in_chat ? uentp->chatid : NULL), 
-			SHOW_USERIP(lookupuser, uentp->from));
+            uentp->in_chat ? uentp->chatid : NULL),
+            SHOW_USERIP(lookupuser, uentp->from));
     strcat(genbuf, buf);
     return COUNT;
 }
@@ -215,73 +216,73 @@ int t_cmpuids(int uid, struct user_info *up)
 static char   * horoscope(month, day)
 unsigned char    month, day;
 {
-	char   *name[12] = {
-		"摩羯", "水瓶", "双鱼", "牡羊", "金牛", "双子",
-		"巨蟹", "狮子", "处女", "天秤", "天蝎", "射手"
-	};
-	switch (month) {
-	case 1:
-		if (day < 21)
-			return (name[0]);
-		else
-			return (name[1]);
-	case 2:
-		if (day < 19)
-			return (name[1]);
-		else
-			return (name[2]);
-	case 3:
-		if (day < 21)
-			return (name[2]);
-		else
-			return (name[3]);
-	case 4:
-		if (day < 21)
-			return (name[3]);
-		else
-			return (name[4]);
-	case 5:
-		if (day < 21)
-			return (name[4]);
-		else
-			return (name[5]);
-	case 6:
-		if (day < 22)
-			return (name[5]);
-		else
-			return (name[6]);
-	case 7:
-		if (day < 23)
-			return (name[6]);
-		else
-			return (name[7]);
-	case 8:
-		if (day < 23)
-			return (name[7]);
-		else
-			return (name[8]);
-	case 9:
-		if (day < 23)
-			return (name[8]);
-		else
-			return (name[9]);
-	case 10:
-		if (day < 24)
-			return (name[9]);
-		else
-			return (name[10]);
-	case 11:
-		if (day < 23)
-			return (name[10]);
-		else
-			return (name[11]);
-	case 12:
-		if (day < 22)
-			return (name[11]);
-		else
-			return (name[0]);
-	}
-	return ("不详");
+    char   *name[12] = {
+        "摩羯", "水瓶", "双鱼", "牡羊", "金牛", "双子",
+        "巨蟹", "狮子", "处女", "天秤", "天蝎", "射手"
+    };
+    switch (month) {
+        case 1:
+            if (day < 21)
+                return (name[0]);
+            else
+                return (name[1]);
+        case 2:
+            if (day < 19)
+                return (name[1]);
+            else
+                return (name[2]);
+        case 3:
+            if (day < 21)
+                return (name[2]);
+            else
+                return (name[3]);
+        case 4:
+            if (day < 21)
+                return (name[3]);
+            else
+                return (name[4]);
+        case 5:
+            if (day < 21)
+                return (name[4]);
+            else
+                return (name[5]);
+        case 6:
+            if (day < 22)
+                return (name[5]);
+            else
+                return (name[6]);
+        case 7:
+            if (day < 23)
+                return (name[6]);
+            else
+                return (name[7]);
+        case 8:
+            if (day < 23)
+                return (name[7]);
+            else
+                return (name[8]);
+        case 9:
+            if (day < 23)
+                return (name[8]);
+            else
+                return (name[9]);
+        case 10:
+            if (day < 24)
+                return (name[9]);
+            else
+                return (name[10]);
+        case 11:
+            if (day < 23)
+                return (name[10]);
+            else
+                return (name[11]);
+        case 12:
+            if (day < 22)
+                return (name[11]);
+            else
+                return (name[0]);
+    }
+    return ("不详");
 }
 #endif
 
@@ -336,108 +337,108 @@ int t_query(char* q_id)
 #ifdef NEWSMTH
     seecount = display_userinfo(lookupuser);
 #else
-  { /* start of default display_userinfo */
-    int logincount;
-    time_t exit_time, temp /*Haohmaru.98.12.04 */ ;
-    char exittime[40];
-    char qry_mail_dir[STRLEN];
-    char permstr[USER_TITLE_LEN];
-    int exp, perf;              /*Add by SmallPig */
-    char *newline;
-    char statusbuf[512] = {'\0'};
+    { /* start of default display_userinfo */
+        int logincount;
+        time_t exit_time, temp /*Haohmaru.98.12.04 */ ;
+        char exittime[40];
+        char qry_mail_dir[STRLEN];
+        char permstr[USER_TITLE_LEN];
+        int exp, perf;              /*Add by SmallPig */
+        char *newline;
+        char statusbuf[512] = {'\0'};
 
 #if defined(FREE) || defined(ZIXIA)
-	move(0, 0);
+        move(0, 0);
 #else
-    move(1, 0);
+        move(1, 0);
 #endif
-    clrtobot();
-    setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
-    exp = countexp(lookupuser);
-    perf = countperf(lookupuser);
+        clrtobot();
+        setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
+        exp = countexp(lookupuser);
+        perf = countperf(lookupuser);
 
 #ifdef FREE
-	{
-		char horobuf[50];
-		char buf1[256];
-		int clr;
-		struct userdata udata;
+        {
+            char horobuf[50];
+            char buf1[256];
+            int clr;
+            struct userdata udata;
 
-		if( ! DEFINE(lookupuser, DEF_SHOWDETAILUSERDATA) || read_userdata(uident,&udata) ){
-			clr=2;
-			strcpy(horobuf," ");
-		}else{
-			clr = (udata.gender == 'F') ? 5 : 6 ;
-			sprintf(horobuf, "[\033[1;3%dm%s\033[m]", clr, horoscope(udata.birthmonth, udata.birthday) );
-		}
+            if (! DEFINE(lookupuser, DEF_SHOWDETAILUSERDATA) || read_userdata(uident,&udata)) {
+                clr=2;
+                strcpy(horobuf," ");
+            } else {
+                clr = (udata.gender == 'F') ? 5 : 6 ;
+                sprintf(horobuf, "[\033[1;3%dm%s\033[m]", clr, horoscope(udata.birthmonth, udata.birthday));
+            }
 
-		sprintf(buf1,"\033[1;37m%s \033[m(\033[1;33m%s\033[m) 共上站 \033[1;32m%d\033[m 次  %s", lookupuser->userid, lookupuser->username, lookupuser->numlogins, horobuf);
+            sprintf(buf1,"\033[1;37m%s \033[m(\033[1;33m%s\033[m) 共上站 \033[1;32m%d\033[m 次  %s", lookupuser->userid, lookupuser->username, lookupuser->numlogins, horobuf);
 
-		prints(buf1);
+            prints(buf1);
 
-	}
+        }
 #else
         prints("%s (%s) 共上站 %d 次，发表过 %d 篇文章", lookupuser->userid, lookupuser->username, lookupuser->numlogins, lookupuser->numposts);
 #endif
-    {
-        struct _tag_printstatus tp;
-        tp.seecount = 0; tp.statusbuf = statusbuf;
-        logincount = apply_utmp((APPLY_UTMP_FUNC) t_printstatus, 10, lookupuser->userid, &tp);
-        seecount = tp.seecount;
-    }
-    /*
-     * 获得离线时间 Luzi 1998/10/23 
-     */
-    exit_time = get_exit_time(lookupuser, exittime);
-    if ((newline = strchr(exittime, '\n')) != NULL)
-        *newline = '\0';
-    if (exit_time <= lookupuser->lastlogin) {
-        if (logincount != seecount) {
-            temp = lookupuser->lastlogin + ((lookupuser->numlogins + lookupuser->numposts) % 100) + 60;
-            strcpy(exittime, ctime(&temp));     /*Haohmaru.98.12.04.让隐身用户看上去离线时间比上线时间晚60到160秒钟 */
-            if ((newline = strchr(exittime, '\n')) != NULL)
-                *newline = '\0';
-        } else
+        {
+            struct _tag_printstatus tp;
+            tp.seecount = 0; tp.statusbuf = statusbuf;
+            logincount = apply_utmp((APPLY_UTMP_FUNC) t_printstatus, 10, lookupuser->userid, &tp);
+            seecount = tp.seecount;
+        }
+        /*
+         * 获得离线时间 Luzi 1998/10/23
+         */
+        exit_time = get_exit_time(lookupuser, exittime);
+        if ((newline = strchr(exittime, '\n')) != NULL)
+            *newline = '\0';
+        if (exit_time <= lookupuser->lastlogin) {
+            if (logincount != seecount) {
+                temp = lookupuser->lastlogin + ((lookupuser->numlogins + lookupuser->numposts) % 100) + 60;
+                strcpy(exittime, ctime(&temp));     /*Haohmaru.98.12.04.让隐身用户看上去离线时间比上线时间晚60到160秒钟 */
+                if ((newline = strchr(exittime, '\n')) != NULL)
+                    *newline = '\0';
+            } else
 #ifdef FREE
-            strcpy(exittime, "       正在线上       ");
+                strcpy(exittime, "       正在线上       ");
 #else
             strcpy(exittime, "因在线上或非常断线不详");
 #endif
-    }
+        }
 #if defined(FREE)
-	prints("\n上 次 在: [\033[1;32m%s\033[m] 从 [\033[1;32m%s\033[m] 到本站一游。\n", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ( (!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP) ) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost)) ) );
-	prints("离站时间: [\033[1;32m%s\033[m] ", exittime);
+        prints("\n上 次 在: [\033[1;32m%s\033[m] 从 [\033[1;32m%s\033[m] 到本站一游。\n", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ((!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost))));
+        prints("离站时间: [\033[1;32m%s\033[m] ", exittime);
 #else
-    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ( (!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP) ) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost)) ),    /*Haohmaru.99.12.18. hide ip */
-           exittime);
+        prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ((!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost))),       /*Haohmaru.99.12.18. hide ip */
+               exittime);
 #endif
 
 #if defined(FREE)
-	prints("经验值：[\033[1;32m%d\033[m](\033[1;33m%s\033[m) 信箱：[\033[1;5;32m%2s\033[m]\n"
-	      , exp,c_exp(exp), (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ");
-	prints("文章数: [\033[1;32m%d\033[m] 银行存款: [\033[1;32m%d元\033[m] 奖章数: [\033[1;32m%d\033[m] 生命力: [\033[1;32m%d\033[m]\n",
-	      lookupuser->numposts,lookupuser->money, lookupuser->score,
-		  compute_user_value(lookupuser) );
+        prints("经验值：[\033[1;32m%d\033[m](\033[1;33m%s\033[m) 信箱：[\033[1;5;32m%2s\033[m]\n"
+               , exp,c_exp(exp), (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ");
+        prints("文章数: [\033[1;32m%d\033[m] 银行存款: [\033[1;32m%d元\033[m] 奖章数: [\033[1;32m%d\033[m] 生命力: [\033[1;32m%d\033[m]\n",
+               lookupuser->numposts,lookupuser->money, lookupuser->score,
+               compute_user_value(lookupuser));
 #elif defined(ZIXIA)
-    uleveltochar(permstr, lookupuser);
-    prints(" 信箱：[\033[5m%2s\033[m]  生命力：[%d] \n",
-           (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser));
-    prints("修炼道行[\033[1;32m%d点\033[m]    身份: [\033[1;32m%s\033[m]%s\n",
-		//(lookupuser->userlevel & (PERM_OBOARDS | PERM_SYSOP | PERM_ADMIN))? 9999 : lookupuser->altar, 
-		lookupuser->altar,permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
+        uleveltochar(permstr, lookupuser);
+        prints(" 信箱：[\033[5m%2s\033[m]  生命力：[%d] \n",
+               (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser));
+        prints("修炼道行[\033[1;32m%d点\033[m]    身份: [\033[1;32m%s\033[m]%s\n",
+               //(lookupuser->userlevel & (PERM_OBOARDS | PERM_SYSOP | PERM_ADMIN))? 9999 : lookupuser->altar,
+               lookupuser->altar,permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #else
-    uleveltochar(permstr, lookupuser);
-    prints("信箱：[\033[5m%2s\033[m] 生命力：[%d] 身份: [%s]%s\n",
-           (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
+        uleveltochar(permstr, lookupuser);
+        prints("信箱：[\033[5m%2s\033[m] 生命力：[%d] 身份: [%s]%s\n",
+               (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #endif
 
-    if (seecount) {
-        prints("目前在站上，状态如下：\n");
-        prints(statusbuf);
-        prints("\n");
-    }
-    show_user_plan(lookupuser->userid,NULL);
-  } /* end of default display_userinfo */
+        if (seecount) {
+            prints("目前在站上，状态如下：\n");
+            prints(statusbuf);
+            prints("\n");
+        }
+        show_user_plan(lookupuser->userid,NULL);
+    } /* end of default display_userinfo */
 #endif /* NEWSMTH */
 
 
@@ -449,16 +450,14 @@ int t_query(char* q_id)
         if (seecount) {
             t1 = "聊天[\x1b[1;32mt\x1b[m\x1b[0;44m]";
             t2 = "送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m]";
-        }
-        else {
+        } else {
             t1 = "       ";
             t2 = "         ";
         }
 #ifdef PERSONAL_CORP
         if (lookupuser->flags & PCORP_FLAG) {
             t3 = "BLOG[\x1b[1;32mx\x1b[m\x1b[0;44m]";
-        }
-        else
+        } else
 #endif
         {
             t3 = "       ";
@@ -468,7 +467,7 @@ int t_query(char* q_id)
         clrtoeol();
         resetcolor();
         ch = igetkey();
-        switch(toupper(ch)) {
+        switch (toupper(ch)) {
 #ifdef PERSONAL_CORP
             case 'X':
                 if (lookupuser->flags & PCORP_FLAG) {
@@ -482,13 +481,13 @@ int t_query(char* q_id)
                 if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
                     break;
                 uin = t_search(uident, false);
-                if(uin==NULL) break;
+                if (uin==NULL) break;
                 ttt_talk(uin);
                 break;
             case 'S':
                 if (!seecount) break;
                 if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
-	                break;
+                    break;
                 uin = t_search(uident, false);
                 if (!uin || !canmsg(getCurrentUser(), uin))
                     break;
@@ -497,7 +496,7 @@ int t_query(char* q_id)
                 break;
             case 'M':
                 if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
-                	||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
+                        ||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
                     break;
                 m_send(uident);
                 break;
@@ -508,15 +507,14 @@ int t_query(char* q_id)
                 addtooverride(uident);
                 break;
             case 'L':
-                do{
+                do {
                     struct stat st;
                     sethomefile(buf,lookupuser->userid,"plans");
-                    if(!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size){
+                    if (!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size) {
                         ansimore(buf,true);
                         move(0,0);
                     }
-                }
-                while(0);
+                } while (0);
                 break;
             case 'D':
                 if (!strcmp("guest", getCurrentUser()->userid))
@@ -632,7 +630,7 @@ int ttt_talk(struct user_info *userinfo)
         if (ucount > 1) {
             char buf[6];
 
-          list:move(5, 0);
+list:move(5, 0);
             prints("(0) 算了算了，不聊了。\n");
             prints(genbuf);
             clrtobot();
@@ -655,7 +653,7 @@ int ttt_talk(struct user_info *userinfo)
             search_ulist(&uin, t_cmpuids, tuid);
     } else {
         /*
-         * memcpy(&uin,userinfo,sizeof(uin)); 
+         * memcpy(&uin,userinfo,sizeof(uin));
          */
         uin = *userinfo;
         tuid = uin.uid;
@@ -665,7 +663,7 @@ int ttt_talk(struct user_info *userinfo)
         prints("跟谁聊天: %s", uin.userid);
     }
     /*
-     * check if pager on/off       --gtv 
+     * check if pager on/off       --gtv
      */
     if (!canpage(hisfriend(getSession()->currentuid,&uin), uin.pager)) {
         move(2, 0);
@@ -676,7 +674,7 @@ int ttt_talk(struct user_info *userinfo)
         return -1;
     }
     /*
-     * modified by Excellent 
+     * modified by Excellent
      */
     if (uin.mode == ULDL || uin.mode == IRCCHAT || uin.mode == BBSNET || uin.mode == FOURM || uin.mode == EXCE_BIG2 || uin.mode == EXCE_MJ || uin.mode == EXCE_CHESS || uin.mode == TETRIS || uin.mode==WINMINE) {
         move(2, 0);
@@ -732,11 +730,11 @@ int ttt_talk(struct user_info *userinfo)
             perror("socket err\n");
             return -1;
         }
-		bzero(&server, sizeof(server));
+        bzero(&server, sizeof(server));
         server.sin_family = AF_INET;
-/*        server.sin_addr.s_addr = INADDR_ANY ;
-我想应该用INADDR_LOOPBACK比较好 KCN
-*/
+        /*        server.sin_addr.s_addr = INADDR_ANY ;
+        我想应该用INADDR_LOOPBACK比较好 KCN
+        */
         server.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         server.sin_port = 0;
         if (bind(sock, (struct sockaddr *) &server, sizeof server) < 0) {
@@ -773,7 +771,7 @@ int ttt_talk(struct user_info *userinfo)
                     prints("对方已离线\n");
                     pressreturn();
                     /*
-                     * Add by SmallPig 2 lines 
+                     * Add by SmallPig 2 lines
                      */
                     uinfo.sockactive = false;
                     uinfo.destuid = 0;
@@ -806,22 +804,22 @@ int ttt_talk(struct user_info *userinfo)
         UPDATE_UTMP(sockactive, uinfo);
         UPDATE_UTMP(destuid, uinfo);
         /*
-         * uinfo.destuid = 0 ; 
+         * uinfo.destuid = 0 ;
          */
         read(msgsock, &c, sizeof c);
         clear();
         if (c == 'y' || c == 'Y') {
             sprintf(save_page_requestor, "%s (%s)", uin.userid, uin.username);
             /*
-             * Bigman 2000.9.15 增加Talk记录 
+             * Bigman 2000.9.15 增加Talk记录
              */
 #ifdef TALK_LOG
             strcpy(partner, uin.userid);
 #endif                          /* 
-                                 */
+            */
             do_talk(msgsock);
             /*
-             * Add by SmallPig 
+             * Add by SmallPig
              */
         } else if (c == 'n' || c == 'N') {
             prints("%s (%s)说：抱歉，我现在很忙，不能跟你聊。\n", uin.userid, uin.username);
@@ -848,23 +846,24 @@ int ttt_talk(struct user_info *userinfo)
         } else {
             sprintf(save_page_requestor, "%s (%s)", uin.userid, uin.username);
             /*
-             * Bigman 2000.9.15 增加Talk记录 
+             * Bigman 2000.9.15 增加Talk记录
              */
 #ifdef TALK_LOG
             strcpy(partner, uin.userid);
 #endif                          /* 
-                                 */
+            */
             do_talk(msgsock);
         }
-	if (talkrequest)
-	    talkreply();
+        if (talkrequest)
+            talkreply();
         close(msgsock);
         clear();
     }
     return 0;
 }
 
-int t_talk(void){
+int t_talk(void)
+{
     int netty_talk;
     netty_talk = ttt_talk(NULL);
     clear();
@@ -922,12 +921,12 @@ int servicepage(int line, char *mesg)
     if (!talkrequest) {
         if (page_requestor[0]) {
             switch (uinfo.mode) {
-            case TALK:
-                move(line, 0);
-                printdash(mesg);
-                break;
-            default:           /* a chat mode */
-                sprintf(mesg, "** %s 已停止呼叫.", page_requestor);
+                case TALK:
+                    move(line, 0);
+                    printdash(mesg);
+                    break;
+                default:           /* a chat mode */
+                    sprintf(mesg, "** %s 已停止呼叫.", page_requestor);
             }
             memset(page_requestor, 0, STRLEN);
             last_check = 0;
@@ -937,17 +936,17 @@ int servicepage(int line, char *mesg)
         now = time(0);
         if (now - last_check > P_INT) {
             last_check = now;
-            if (!page_requestor[0] && setpagerequest(0 /*For Talk */ ))
+            if (!page_requestor[0] && setpagerequest(0 /*For Talk */))
                 return false;
             else
                 switch (uinfo.mode) {
-                case TALK:
-                    move(line, 0);
-                    sprintf(buf, "** %s 正在呼叫你", page_requestor);
-                    printdash(buf);
-                    break;
-                default:       /* chat */
-                    sprintf(mesg, "** %s 正在呼叫你", page_requestor);
+                    case TALK:
+                        move(line, 0);
+                        sprintf(buf, "** %s 正在呼叫你", page_requestor);
+                        printdash(buf);
+                        break;
+                    default:       /* chat */
+                        sprintf(mesg, "** %s 正在呼叫你", page_requestor);
                 }
         }
     }
@@ -963,21 +962,21 @@ int talkreply()
     char inbuf[STRLEN * 2];
 
     talkrequest = false;
-    if (setpagerequest(0 /*For Talk */ ))
+    if (setpagerequest(0 /*For Talk */))
         return 0;
     /*
-     * added by netty  
+     * added by netty
      */
     set_alarm(0, 0, NULL, NULL);
     clear();
     /*
-     * to show plan -cuteyu 
+     * to show plan -cuteyu
      */
     move(5, 0);
     clrtobot();
     show_user_plan(page_requestorid,NULL);
     /*
-     * Add by SmallPig 
+     * Add by SmallPig
      */
     move(1, 0);
     prints("(N)【抱歉，我现在很忙，不能跟你聊。】(B)【我现在很烦，不想跟别人聊天。 】\n");
@@ -987,12 +986,12 @@ int talkreply()
     sprintf(inbuf, "你想跟 %s 聊聊天吗? (Y N B C D E F)[Y]: ", page_requestor);
     strcpy(save_page_requestor, page_requestor);
     /*
-     * 2000.9.15 Bigman 添加Talk记录 
+     * 2000.9.15 Bigman 添加Talk记录
      */
 #ifdef TALK_LOG
     strcpy(partner, page_requestorid);
 #endif                          /* 
-                                 */
+    */
     memset(page_requestor, 0, sizeof(page_requestor));
     memset(page_requestorid, 0, sizeof(page_requestorid));
     getdata(0, 0, inbuf, buf, STRLEN, DOECHO, NULL, true);
@@ -1015,7 +1014,7 @@ int talkreply()
         return 0;
     }
     if (buf[0] != 'n' && buf[0] != 'N' && buf[0] != 'B' && buf[0] != 'b'
-        && buf[0] != 'C' && buf[0] != 'c' && buf[0] != 'D' && buf[0] != 'd' && buf[0] != 'e' && buf[0] != 'E' && buf[0] != 'f' && buf[0] != 'F' && buf[0] != 'm' && buf[0] != 'M')
+            && buf[0] != 'C' && buf[0] != 'c' && buf[0] != 'D' && buf[0] != 'd' && buf[0] != 'e' && buf[0] != 'E' && buf[0] != 'f' && buf[0] != 'F' && buf[0] != 'm' && buf[0] != 'M')
         buf[0] = 'y';
     if (buf[0] == 'M' || buf[0] == 'm') {
         move(1, 0);
@@ -1050,41 +1049,41 @@ char *buf;
     if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible)
         return -1;
     switch (uentp->mode) {
-    case ULDL:
-        mch = 'U';
-        break;
-    case TALK:
-        mch = 'T';
-        break;
-    case CHAT1:
-    case CHAT2:
-    case CHAT3:
-    case CHAT4:
-        mch = 'C';
-        break;
-    case IRCCHAT:
-        mch = 'I';
-        break;
-    case FOURM:
-        mch = '4';
-        break;
-    case BBSNET:
-        mch = 'B';
-        break;
-    case READNEW:
-    case READING:
-        mch = 'R';
-        break;
-    case POSTING:
-        mch = 'P';
-        break;
-    case SMAIL:
-    case RMAIL:
-    case MAIL:
-        mch = 'M';
-        break;
-    default:
-        mch = '-';
+        case ULDL:
+            mch = 'U';
+            break;
+        case TALK:
+            mch = 'T';
+            break;
+        case CHAT1:
+        case CHAT2:
+        case CHAT3:
+        case CHAT4:
+            mch = 'C';
+            break;
+        case IRCCHAT:
+            mch = 'I';
+            break;
+        case FOURM:
+            mch = '4';
+            break;
+        case BBSNET:
+            mch = 'B';
+            break;
+        case READNEW:
+        case READING:
+            mch = 'R';
+            break;
+        case POSTING:
+            mch = 'P';
+            break;
+        case SMAIL:
+        case RMAIL:
+        case MAIL:
+            mch = 'M';
+            break;
+        default:
+            mch = '-';
     }
     sprintf(buf, "%s%s(%c), ", uentp->invisible ? "*" : "", uentp->userid, mch);
     return 0;
@@ -1110,7 +1109,7 @@ struct talk_win *twin;
      * if( curln != twin->eline ) {
      * move( curln + 1, 0 );
      * clrtoeol();
-     * } 
+     * }
      */
     move(twin->curln, 0);
     clrtoeol();
@@ -1133,25 +1132,25 @@ int ch;
         return;
     }
     switch (ch) {
-    case Ctrl('H'):
-    case '\177':
-        if (twin->curcol == 0) {
+        case Ctrl('H'):
+        case '\177':
+            if (twin->curcol == 0) {
+                return;
+            }
+            (twin->curcol)--;
+            move(twin->curln, twin->curcol);
+            prints(" ");
+            move(twin->curln, twin->curcol);
             return;
-        }
-        (twin->curcol)--;
-        move(twin->curln, twin->curcol);
-        prints(" ");
-        move(twin->curln, twin->curcol);
-        return;
-    case Ctrl('M'):
-    case Ctrl('J'):
-        do_talk_nextline(twin);
-        return;
-    case Ctrl('G'):
-        bell();
-        return;
-    default:
-        break;
+        case Ctrl('M'):
+        case Ctrl('J'):
+            do_talk_nextline(twin);
+            return;
+        case Ctrl('G'):
+            bell();
+            return;
+        default:
+            break;
     }
     return;
 }
@@ -1251,7 +1250,7 @@ static int do_talk(int fd)
 
     mywords[0] = itswords[0] = '\0';
 #endif                          /* 
-                                 */
+    */
     endmsg(NULL);
     previous_mode = uinfo.mode;
     modify_user_mode(TALK);
@@ -1276,7 +1275,7 @@ static int do_talk(int fd)
             page_pending = servicepage((t_lines - 1) / 2, mid_line);
         ch = igetkey();
         if (ch>255&&ch<0)
-        	continue;
+            continue;
         talkidletime = 0;
         if (ch == I_OTHERDATA) {
             char data[80];
@@ -1296,7 +1295,7 @@ static int do_talk(int fd)
                  * Bigman 2000.9.15 添加TALK记录
                  */
                 /*
-                 * existing do_log() overflow problem       
+                 * existing do_log() overflow problem
                  */
                 else if (isprint2(data[i])) {
                     if (ilen >= 80) {
@@ -1320,7 +1319,7 @@ static int do_talk(int fd)
         } else {
             if (ch == Ctrl('D') || ch == Ctrl('C'))
                 break;
-            if (isprint2(ch) || ch == Ctrl('H') || ch == '\177' || ch == Ctrl('G') /* || ch == Ctrl('M') */ ) {
+            if (isprint2(ch) || ch == Ctrl('H') || ch == '\177' || ch == Ctrl('G') /* || ch == Ctrl('M') */) {
                 talkobuf[talkobuflen++] = ch;
                 if (talkobuflen == 80)
                     talkflush();
@@ -1338,10 +1337,10 @@ static int do_talk(int fd)
                     mlen = 0;
                 }
 #endif                          /* 
-                                 */
+                */
                 do_talk_char(&mywin, ch);
                 /*
-                 * } else if (ch == '\n') {   Bigman 2000.9.15 
+                 * } else if (ch == '\n') {   Bigman 2000.9.15
                  */
             } else if (ch == '\n' || ch == Ctrl('M') || ch == '\r') {
 #ifdef TALK_LOG
@@ -1351,7 +1350,7 @@ static int do_talk(int fd)
                     mlen = 0;
                 }
 #endif                          /* 
-                                 */
+                */
                 talkobuf[talkobuflen++] = '\r';
                 talkflush();
                 do_talk_char(&mywin, '\r');
@@ -1361,7 +1360,7 @@ static int do_talk(int fd)
                  * strcpy(ct,ctime(&now));
                  * do_talk_string( &mywin, ct);
                  * } else if (ch == Ctrl('U') || ch == Ctrl('W')) {
-                 * dotalkuserlist( &mywin ); 
+                 * dotalkuserlist( &mywin );
                  */
             } else if (ch >= KEY_UP && ch <= KEY_LEFT) {
                 moveto(ch - KEY_UP + 1, &mywin);
@@ -1388,7 +1387,7 @@ static int do_talk(int fd)
     modify_user_mode(previous_mode);
 #ifdef TALK_LOG
     /*
-     * 2000.9.15 Bigman 添加Talk记录 
+     * 2000.9.15 Bigman 添加Talk记录
      */
     mywords[mlen] = '\0';
     itswords[ilen] = '\0';
@@ -1400,18 +1399,18 @@ static int do_talk(int fd)
     sprintf(buf, "\n\033[1;34m通话结束, 时间: %s \033[m\n", Cdate(now));
     write(talkrec, buf, strlen(buf));
     close(talkrec);
-    /*---	这句有用吗?	commented by period	---*/
+    /*--- 这句有用吗? commented by period ---*/
     /*
-     * sethomefile(genbuf, getCurrentUser()->userid, "talklog");  
+     * sethomefile(genbuf, getCurrentUser()->userid, "talklog");
      */
-    /*---	changed by period	2000-09-18	---*/
+    /*--- changed by period 2000-09-18 ---*/
     *genbuf = 0;
     move(t_lines - 1, 0);
     if (askyn("是否寄回聊天纪录 ", false) == true) {
-        /*---						---*
-            getdata(23, 0, "是否寄回聊天纪录 [Y/n]: ", genbuf, 2, DOECHO, NULL, true); 
+        /*---      ---*
+            getdata(23, 0, "是否寄回聊天纪录 [Y/n]: ", genbuf, 2, DOECHO, NULL, true);
             if (genbuf[0] != 'N' || genbuf[0] != 'n')  {
-         *---	also '||' used above is wrong...	---*/
+         *--- also '||' used above is wrong... ---*/
         sethomefile(buf, getCurrentUser()->userid, "talklog");
         sprintf(mywords, "跟 %s 的聊天记录 [%12.12s]", partner, Ctime(now) + 6);
         mail_file(getCurrentUser()->userid, buf, getCurrentUser()->userid, mywords, 0, NULL);
@@ -1419,7 +1418,7 @@ static int do_talk(int fd)
     sethomefile(buf, getCurrentUser()->userid, "talklog");
     unlink(buf);
 #endif                          /* 
-                                 */
+    */
     return 0;
 }
 
@@ -1430,7 +1429,7 @@ struct user_info *uentp;
     int pageusers = 60;
     extern struct user_info *user_record[];
     extern int range;
-	char buf[80];
+    char buf[80];
     if (ulistpage > ((range - 1) / pageusers))
         ulistpage = 0;
     if (ulistpage < 0)
@@ -1449,9 +1448,9 @@ struct user_info *uentp;
             ovv = true;
         else
             ovv = false;
-        sprintf(ubuf, "%s%-12.12s %s%-10.10s\033[m", (ovv) ? "\033[32m．" : "  ", user_record[i]->userid, 
-                (user_record[i]->invisible == true)? (user_record[i]->pid==1?"\033[33m":"\033[34m") : (user_record[i]->pid==1?"\033[1;36m":""), 
-                modestring(buf,user_record[i]->mode, user_record[i]->destuid, 0, NULL));
+        sprintf(ubuf, "%s%-12.12s %s%-10.10s\033[m", (ovv) ? "\033[32m．" : "  ", user_record[i]->userid,
+                (user_record[i]->invisible == true)? (user_record[i]->pid==1?"\033[33m":"\033[34m") : (user_record[i]->pid==1?"\033[1;36m":""),
+                        modestring(buf,user_record[i]->mode, user_record[i]->destuid, 0, NULL));
         prints("%s", ubuf);
         if ((i + 1) % 3 == 0)
             prints("\n");
@@ -1475,14 +1474,14 @@ char *modestr;
         chkmailflag = chkmail();
         if (chkmailflag == 2)
             /*
-             * Haohmaru.99.4.4.对收信也加限制 
+             * Haohmaru.99.4.4.对收信也加限制
              */
             showtitle(modestr, "[您的信箱超过容量,不能再收信!]");
         else if (chkmailflag)
             showtitle(modestr, "[您有信件]");
         else
             showtitle(modestr, BBS_FULL_NAME);
-	update_endline();
+        update_endline();
     }
     move(2, 0);
     clrtoeol();
@@ -1493,7 +1492,7 @@ char *modestr;
      * prints("No Users Exist\n") ;
      * return 0;
      * }
-     * count = shortulist(NULL); 
+     * count = shortulist(NULL);
      */
     count = shortulist(NULL);
     if (uinfo.mode == MONITOR) {
@@ -1505,7 +1504,8 @@ char *modestr;
     return 0;
 }
 
-int t_list(void){
+int t_list(void)
+{
     modify_user_mode(LUSERS);
     bbslog("user","%s","t_list");
     do_list("使用者状态");
@@ -1526,11 +1526,12 @@ void sig_catcher(void *data)
     UNUSED_ARG(data);
 }
 
-int t_monitor(void){
+int t_monitor(void)
+{
     int i;
     set_alarm(0, 0, NULL, NULL);
     /*
-     * idle_monitor_time = 0; 
+     * idle_monitor_time = 0;
      */
     bbslog("user","%s","monitor");
     modify_user_mode(MONITOR);
@@ -1543,34 +1544,31 @@ int t_monitor(void){
         if (i==KEY_REFRESH)
             do_list("探视民情");
         else
-        if (Ctrl('Z') == i)
-            r_lastmsg();        /* Leeward 98.07.30 support msgX */
-        else
-        if (i == 'f' || i == 'F' ) {
-            if (friendmode == true)
-                friendmode = false;
+            if (Ctrl('Z') == i)
+                r_lastmsg();        /* Leeward 98.07.30 support msgX */
             else
-                friendmode = true;
-            fill_userlist();
-            do_list("探视民情");
-        }
-        else
-        if (i == KEY_DOWN) {
-            ulistpage++;
-            do_list("探视民情");
-        }
-        else
-        if (i == KEY_UP) {
-            ulistpage--;
-            do_list("探视民情");
-        }
-        else
-        if (i == Ctrl('D') || i == Ctrl('C') || i == KEY_LEFT)
-            break;
+                if (i == 'f' || i == 'F') {
+                    if (friendmode == true)
+                        friendmode = false;
+                    else
+                        friendmode = true;
+                    fill_userlist();
+                    do_list("探视民情");
+                } else
+                    if (i == KEY_DOWN) {
+                        ulistpage++;
+                        do_list("探视民情");
+                    } else
+                        if (i == KEY_UP) {
+                            ulistpage--;
+                            do_list("探视民情");
+                        } else
+                            if (i == Ctrl('D') || i == Ctrl('C') || i == KEY_LEFT)
+                                break;
         /*
          * else if (i == -1) {
          * if (errno != EINTR) { perror("read"); exit(1); }
-         * } else idle_monitor_time = 0; 
+         * } else idle_monitor_time = 0;
          */
     }
     move(2, 0);
@@ -1596,11 +1594,11 @@ char *fname;
         return 0;
     }
     while (fgets(genbuf, STRLEN, fp) != NULL) {
-	genbuf[STRLEN]=0;
+        genbuf[STRLEN]=0;
         strtok(genbuf, " \n\r\t");
         strcpy(u_buf, genbuf);
         AddNameList(u_buf);
-	if (showline==0) continue;
+        if (showline==0) continue;
         nick = (char *) strtok(NULL, "\n\r\t");
         if (nick != NULL) {
             while (*nick == ' ')
@@ -1617,7 +1615,7 @@ char *fname;
             max = len;
         if (x + len > 78)
             line[78 - x] = '\0';
-        if( showline ) prints("%s", line);
+        if (showline) prints("%s", line);
         cnt++;
         if ((++y) >= t_lines - 1) {
             y = 3;
@@ -1625,7 +1623,7 @@ char *fname;
             max = 0;
             if (x > 68)
                 showline = 0;
-   //           break;
+            //           break;
         }
         move(y, x);
     }
@@ -1660,14 +1658,14 @@ char *uident;
 
     strcpy(tmp.id, uident);
 
-    if (myfriend(uid, NULL,getSession())){
+    if (myfriend(uid, NULL,getSession())) {
         move(2, 0);
         clrtoeol();
 
-				prints("用户【%s】已经在您的好友名单中!\n", tmp.id);
-				pressanykey();
+        prints("用户【%s】已经在您的好友名单中!\n", tmp.id);
+        pressanykey();
         return -1;
-      }
+    }
     if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND) {
         move(2, 0);
         clrtoeol();
@@ -1675,13 +1673,12 @@ char *uident;
         char ans[3];
         sprintf(buf, "确实要增加用户【%s】为好友吗?(Y/N) [N]: ", tmp.id);
         getdata(0, 0, buf, ans, sizeof(ans), DOECHO, NULL, true);
-				if (ans[0] == 'Y' || ans[0] == 'y'){
-	        sprintf(genbuf, "请输入给好友【%s】的说明: ", tmp.id);
-	        getdata(2, 0, genbuf, tmp.exp, 15, DOECHO, NULL, true);
-				}
-				else{
-				  return -1;
-				}
+        if (ans[0] == 'Y' || ans[0] == 'y') {
+            sprintf(genbuf, "请输入给好友【%s】的说明: ", tmp.id);
+            getdata(2, 0, genbuf, tmp.exp, 15, DOECHO, NULL, true);
+        } else {
+            return -1;
+        }
     } else {
         move(t_lines - 2, 0);
         clrtoeol();
@@ -1721,7 +1718,7 @@ void friend_title(struct _select_def* conf)
     chkmailflag = chkmail();
     if (chkmailflag == 2)
         /*
-         * Haohmaru.99.4.4.对收信也加限制 
+         * Haohmaru.99.4.4.对收信也加限制
          */
         strcpy(genbuf, "[您的信箱超过容量,不能再收信!]");
     else if (chkmailflag)
@@ -1833,31 +1830,31 @@ int friend_query(struct _select_def* conf,struct friends *fh,void* extraarg)
     prints("\033[44m\033[31m[读取好友说明档]\033[33m 寄信给好友 m │ 结束 Q,← │上一位 ↑│下一位 <Space>,↓      \033[m");
     ch = igetkey();
     switch (ch) {
-    case Ctrl('Z'):
-        r_lastmsg();            /* Leeward 98.07.30 support msgX */
-        break;
-    case KEY_REFRESH:
-    case 'N':
-    case 'Q':
-    case 'n':
-    case 'q':
-    case KEY_LEFT:
-        break;
-    case 'm':
-    case 'M':
-        m_send(fh->id);
-        break;
-    case ' ':
-    case 'j':
-    case KEY_RIGHT:
-    case KEY_DOWN:
-    case KEY_PGDN:
-        return READ_NEXT;
-    case KEY_UP:
-    case KEY_PGUP:
-        return READ_PREV;
-    default:
-        break;
+        case Ctrl('Z'):
+            r_lastmsg();            /* Leeward 98.07.30 support msgX */
+            break;
+        case KEY_REFRESH:
+        case 'N':
+        case 'Q':
+        case 'n':
+        case 'q':
+        case KEY_LEFT:
+            break;
+        case 'm':
+        case 'M':
+            m_send(fh->id);
+            break;
+        case ' ':
+        case 'j':
+        case KEY_RIGHT:
+        case KEY_DOWN:
+        case KEY_PGDN:
+            return READ_NEXT;
+        case KEY_UP:
+        case KEY_PGUP:
+            return READ_PREV;
+        default:
+            break;
     }
     return FULLUPDATE;
 }
@@ -1876,7 +1873,8 @@ struct key_command friend_list[] = {
     {'\0', NULL},
 };
 
-int t_override(void){
+int t_override(void)
+{
     char genbuf[PATHLEN];
     sethomefile(genbuf, getCurrentUser()->userid, "friends");
     new_i_read(DIR_MODE_FRIEND, genbuf, friend_title, (READ_ENT_FUNC) friend_doentry, friend_list, sizeof(struct friends));
@@ -1890,7 +1888,8 @@ struct friends *a, *b;
     return strncasecmp(a->id, b->id, IDLEN);
 }
 
-int wait_friend(void){
+int wait_friend(void)
+{
     FILE *fp;
     int tuid, oldmode;
     char buf[STRLEN];
@@ -1950,7 +1949,7 @@ char *fname;
     clear();
     move(y, x);
     /*
-     * clrtoeol(); 
+     * clrtoeol();
      */
     if ((fp = fopen(fname, "r")) == NULL) {
         prints("\033[1;33m*** 尚未设定黑名单 ***\033[m");
@@ -1988,7 +1987,8 @@ void clear_press()
     clrtoeol();
 }
 
-int badlist(void){
+int badlist(void)
+{
     char userid[IDLEN + 1], tmp[3];
     int cnt, nIdx;
     char ignoreuser[IDLEN + 1], path[40];
@@ -2036,10 +2036,10 @@ int badlist(void){
                     } else {
                         if (append_record(path, userid, IDLEN + 1) == 0) {
                             /*
-                             * prints("已经成功添加到黑名单中"); 
+                             * prints("已经成功添加到黑名单中");
                              */
                             /*
-                             * cnt=list_ignore(path); 
+                             * cnt=list_ignore(path);
                              */
                         } else {
                             prints("*** 系统错误 , 请与SYSOP联系***");
@@ -2054,10 +2054,10 @@ int badlist(void){
                         if (delete_record(path, IDLEN + 1, nIdx, NULL, NULL) == 0) {
                             ;
                             /*
-                             * prints("已经成功从黑名单中删除"); 
+                             * prints("已经成功从黑名单中删除");
                              */
                             /*
-                             * cnt=list_ignore(path); 
+                             * cnt=list_ignore(path);
                              */
                         } else {
                             prints("*** 系统错误 , 请与SYSOP联系***");
@@ -2071,7 +2071,7 @@ int badlist(void){
             if (tmp[0] == 'y' || tmp[0] == 'Y') {
                 unlink(path);
                 /*
-                 * cnt=list_ignore(path); 
+                 * cnt=list_ignore(path);
                  */
             } else {
                 move(1, 0);
@@ -2098,7 +2098,7 @@ void do_log(char *msg, int who)
     if (strlen(msg) < 1 || msg[0] == '\r' || msg[0] == '\n')
         return;
     /*
-     * 只帮自己做 
+     * 只帮自己做
      */
     sethomefile(buf, getCurrentUser()->userid, "talklog");
     if (!dashf(buf) || talkrec == -1) {

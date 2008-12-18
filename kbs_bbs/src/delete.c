@@ -25,7 +25,8 @@
 
 #include "bbs.h"
 
-int d_board(void){
+int d_board(void)
+{
     char bname[STRLEN+1];
     char buf[STRLEN];
     const struct boardheader *bh;
@@ -52,7 +53,7 @@ int d_board(void){
         clear();
         return 0;
     }
-    
+
     memcpy(&oldbh, bh, sizeof(struct boardheader));
     move(1, 0);
     prints("删除讨论区 '%s'.", bh->filename);
@@ -67,18 +68,17 @@ int d_board(void){
     }
 
     getdata(3, 0, "移除精华区 [y/N]: ", genbuf, 4, DOECHO, NULL, true);
-    if (genbuf[0] == 'Y' || genbuf[0] == 'y')
-    {
+    if (genbuf[0] == 'Y' || genbuf[0] == 'y') {
         edit_group(&oldbh, NULL);
     }
 
     if (delete_board(bid, getSession()) != 0)
         return 0;
 #if 0
-        sprintf(genbuf, "boards/%s", bname);
-        f_rm(genbuf);
-        sprintf(genbuf, "vote/%s", bname);
-        f_rm(genbuf);
+    sprintf(genbuf, "boards/%s", bname);
+    f_rm(genbuf);
+    sprintf(genbuf, "vote/%s", bname);
+    f_rm(genbuf);
 #endif
 
     /* this should be in delete_board function ? */
@@ -93,7 +93,8 @@ int d_board(void){
 }
 
 #ifndef SECONDSITE
-int suicide(void){
+int suicide(void)
+{
     char buf[STRLEN];
     FILE *fn;
     time_t now;
@@ -105,10 +106,10 @@ int suicide(void){
 
     modify_user_mode(OFFLINE);
     if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_BOARDS) || HAS_PERM(getCurrentUser(), PERM_OBOARDS) || HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
-        || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
-        || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP) || (!HAS_PERM(getCurrentUser(), PERM_POST))
-        || HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
-        || HAS_PERM(getCurrentUser(), PERM_DENYRELAX)) {
+            || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
+            || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP) || (!HAS_PERM(getCurrentUser(), PERM_POST))
+            || HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
+            || HAS_PERM(getCurrentUser(), PERM_DENYRELAX)) {
         clear();
         move(11, 28);
         prints("\033[1m\033[33m你有重任在身，不能自杀！\033[m");
@@ -172,17 +173,19 @@ int suicide(void){
 }
 #endif /* SECONDSITE */
 
-int giveupnet(void){
-/*
-    PERM_BASIC      上站
-    PERM_POST       发表
-    PERM_CHAT       聊天
-    PERM_PAGE       呼叫
-    PERM_DENYMAIL   发信
-    PERM_DENYRELAX  娱乐
-*/
+int giveupnet(void)
+{
+    /*
+        PERM_BASIC      上站
+        PERM_POST       发表
+        PERM_CHAT       聊天
+        PERM_PAGE       呼叫
+        PERM_DENYMAIL   发信
+        PERM_DENYRELAX  娱乐
+    */
     static const char *desc[GIVEUPINFO_PERM_COUNT]={
-        "登录上站权限","发表文章权限","聊天广场权限","站内信息权限", "站内信件权限","休闲娱乐权限"};
+        "登录上站权限","发表文章权限","聊天广场权限","站内信息权限", "站内信件权限","休闲娱乐权限"
+    };
     FILE *fn;
     char buf[STRLEN], genbuf[PATHLEN];
     char ans[3], day[10];
@@ -199,8 +202,8 @@ int giveupnet(void){
     }
 
     if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_BOARDS) || HAS_PERM(getCurrentUser(), PERM_OBOARDS) || HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
-        || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
-        || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP)) {
+            || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
+            || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP)) {
         clear();
         move(11, 28);
         prints("\033[1m\033[33m你有重任在身，不能戒网！\033[m");
@@ -208,20 +211,20 @@ int giveupnet(void){
         return -1;
     }
 
-    if(get_giveupinfo(getCurrentUser(),s)){
-        for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
-            if(s[i])
+    if (get_giveupinfo(getCurrentUser(),s)) {
+        for (i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+            if (s[i])
                 break;
-        if(i<GIVEUPINFO_PERM_COUNT){
+        if (i<GIVEUPINFO_PERM_COUNT) {
             clear();
             move(0,0);
             prints("\033[1;33m[当前戒网及有期封禁状态]\033[m\n\n");
-            for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
-                if(!s[i])
+            for (i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+                if (!s[i])
                     continue;
-                else{
+                else {
                     sprintf(genbuf,"%-16.16s%-8.8s目前剩余 %4d 天\n",desc[i],(s[i]>0?"戒网":"封禁"),
-                        (int)((s[i]>0?s[i]:(-s[i]))-(time(NULL)/86400)));
+                            (int)((s[i]>0?s[i]:(-s[i]))-(time(NULL)/86400)));
                     prints("%s",genbuf);
                 }
             pressanykey();
@@ -233,7 +236,7 @@ int giveupnet(void){
     prints("请选择戒网种类:");
     move(3, 0);
     prints("(0) - 结束");
-    for(i=0; i<6; i++) {
+    for (i=0; i<6; i++) {
         move(i + 4, 0);
         prints("(%d) - %s", i + 1, desc[i]);
     }
@@ -244,24 +247,24 @@ int giveupnet(void){
     }
     k = 1;
     switch (ans[0]) {
-    case '1':
-        k = k && (getCurrentUser()->userlevel & PERM_BASIC);
-        break;
-    case '2':
-        k = k && (getCurrentUser()->userlevel & PERM_POST);
-        break;
-    case '3':
-        k = k && (getCurrentUser()->userlevel & PERM_CHAT);
-        break;
-    case '4':
-        k = k && (getCurrentUser()->userlevel & PERM_PAGE);
-        break;
-    case '5':
-        k = k && !(getCurrentUser()->userlevel & PERM_DENYMAIL);
-        break;
-    case '6':
-        k = k && !(getCurrentUser()->userlevel & PERM_DENYRELAX);
-        break;
+        case '1':
+            k = k && (getCurrentUser()->userlevel & PERM_BASIC);
+            break;
+        case '2':
+            k = k && (getCurrentUser()->userlevel & PERM_POST);
+            break;
+        case '3':
+            k = k && (getCurrentUser()->userlevel & PERM_CHAT);
+            break;
+        case '4':
+            k = k && (getCurrentUser()->userlevel & PERM_PAGE);
+            break;
+        case '5':
+            k = k && !(getCurrentUser()->userlevel & PERM_DENYMAIL);
+            break;
+        case '6':
+            k = k && !(getCurrentUser()->userlevel & PERM_DENYRELAX);
+            break;
     }
 
     if (!k) {
@@ -299,30 +302,30 @@ int giveupnet(void){
             return -1;
         }
         switch (ans[0]) {
-        case '1':
-            getCurrentUser()->userlevel &= ~PERM_BASIC;
-            break;
-        case '2':
-            getCurrentUser()->userlevel &= ~PERM_POST;
-            break;
-        case '3':
-            getCurrentUser()->userlevel &= ~PERM_CHAT;
-            break;
-        case '4':
-            getCurrentUser()->userlevel &= ~PERM_PAGE;
-            break;
-        case '5':
-            getCurrentUser()->userlevel |= PERM_DENYMAIL;
-            break;
-        case '6':
-            getCurrentUser()->userlevel |= PERM_DENYRELAX;
-            break;
+            case '1':
+                getCurrentUser()->userlevel &= ~PERM_BASIC;
+                break;
+            case '2':
+                getCurrentUser()->userlevel &= ~PERM_POST;
+                break;
+            case '3':
+                getCurrentUser()->userlevel &= ~PERM_CHAT;
+                break;
+            case '4':
+                getCurrentUser()->userlevel &= ~PERM_PAGE;
+                break;
+            case '5':
+                getCurrentUser()->userlevel |= PERM_DENYMAIL;
+                break;
+            case '6':
+                getCurrentUser()->userlevel |= PERM_DENYRELAX;
+                break;
         }
 
         s[ans[0]-49]=j;
         save_giveupinfo(getCurrentUser(),s);
 
-        gettmpfilename( genbuf, "giveup" );
+        gettmpfilename(genbuf, "giveup");
         if ((fn = fopen(genbuf, "w")) != NULL) {
             fprintf(fn, "\033[1m%s\033[m 戒 %s %d 天", getCurrentUser()->userid, desc[ans[0] - '1'], iDays);
             getuinfo(fn, getCurrentUser());
@@ -334,8 +337,7 @@ int giveupnet(void){
 
         prints("\n\n你已经开始戒网了");
         pressanykey();
-        if (ans[0] == '1')
-        {
+        if (ans[0] == '1') {
             //abort_bbs(0);
             kick_user_utmp(getSession() -> currentuid, NULL, 0);
         }
@@ -381,15 +383,15 @@ void offline()
 #endif
 
 int d_user(cid)
-    char cid[IDLEN];
+char cid[IDLEN];
 {
     int uid, fd;
     char tmpbuf[30];
     char userid[IDLEN + 2];
     struct userec *lookupuser;
-       /* 增加显示用户信息 Bigman:2003.5.11*/
-        struct userec uinfo1;
-	/*struct userdata ud;*/
+    /* 增加显示用户信息 Bigman:2003.5.11*/
+    struct userec uinfo1;
+    /*struct userdata ud;*/
 
     if (uinfo.mode != OFFLINE) {
 #ifdef SOURCE_PERM_CHECK
@@ -423,7 +425,7 @@ int d_user(cid)
         clear();
         return 0;
     }
-     /* 增加显示用户信息 Bigman:2003.5.11*/
+    /* 增加显示用户信息 Bigman:2003.5.11*/
     uinfo1 = *lookupuser;
     clrtobot();
 
@@ -436,8 +438,8 @@ int d_user(cid)
         prints("删除使用者 '%s'.", userid);
     else
         prints(" %s 将离开这里", cid);
-/*    clrtoeol(); */
-    
+    /*    clrtoeol(); */
+
     getdata(24, 0, "(Yes, or No) [No](注意要输入全单词和大小写): ", genbuf, 5, DOECHO, NULL, true);
     if (strcmp(genbuf,"Yes")) { /* if not yes quit */
         move(24, 0);
@@ -493,11 +495,11 @@ int d_user(cid)
     /*strcpy(lookupuser->address, "");*/
     strcpy(lookupuser->username, "");
     /*strcpy(lookupuser->realname, "");*/
-	/*read_userdata(lookupuser->userid, &ud);
-	strcpy(ud.address, "");
-	strcpy(ud.realname, "");
-	write_userdata(lookupuser->userid, &ud);*/
-/*    lookupuser->userid[0] = '\0' ; */
+    /*read_userdata(lookupuser->userid, &ud);
+    strcpy(ud.address, "");
+    strcpy(ud.realname, "");
+    write_userdata(lookupuser->userid, &ud);*/
+    /*    lookupuser->userid[0] = '\0' ; */
     move(24, 0);
     prints("%s 已经已经和本家庭失去联络....\n", userid);
     pressreturn();
@@ -506,7 +508,8 @@ int d_user(cid)
     return 1;
 }
 
-int kick_user(int uid, char *userid, struct user_info *userinfo) {
+int kick_user(int uid, char *userid, struct user_info *userinfo)
+{
     newbbslog(BBSLOG_USER, "kicked %s", userid);
     if (strcmp(getCurrentUser()->userid, userid)) {
         char buf[STRLEN];
@@ -516,7 +519,8 @@ int kick_user(int uid, char *userid, struct user_info *userinfo) {
     return kick_user_utmp(uid, userinfo, 0);
 }
 
-int kick_user_menu(void){
+int kick_user_menu(void)
+{
     char userid[STRLEN], ans[10];
     int uid;
     struct userec *u;

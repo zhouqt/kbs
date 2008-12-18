@@ -34,7 +34,8 @@ static int mark_on;
 
 void msgline();
 
-inline static void CLEAR_MARK() {
+inline static void CLEAR_MARK()
+{
     mark_on = 0;
     mark_begin = mark_end = NULL;
 }
@@ -63,11 +64,11 @@ void display_buffer()
                     if (ch) ch = 0;
                     else if (p->data[i]<0) ch = 1;
                     if (auto_newline)
-                    if (j >= scr_cols || (j >= scr_cols-1 && ch)) {
-                        outc('\n');
-                        y++;
-                        j = 0;
-                    }
+                        if (j >= scr_cols || (j >= scr_cols-1 && ch)) {
+                            outc('\n');
+                            y++;
+                            j = 0;
+                        }
                     if (p == currline && i == currpnt) {
                         myy = y; myx = j;
                     }
@@ -82,8 +83,7 @@ void display_buffer()
                             setfcolor(YELLOW, 0);
                             outc('*');
                             resetcolor();
-                        }
-                        else outc(p->data[i]);
+                        } else outc(p->data[i]);
                         j++;
                     }
                 }
@@ -171,7 +171,7 @@ void msgline()
     /*strcat(buf," \033[31mCtrl-Z\033[33m 求救         "); */
     strcat(buf, " \033[31mCtrl-Q\033[33m 求救    ");
     sprintf(buf2, " 状态 [\033[32m%s\033[33m][\033[32m%d\033[33m,\033[32m%d\033[33m][\033[32m%c\033[33m][\033[32m%c\033[33m]     时间", insert_character ? "插入" : "替换", currln + 1, currpnt + 1,
-        show_eof?'~':' ', auto_newline?' ':'X');
+            show_eof?'~':' ', auto_newline?' ':'X');
     strcat(buf, buf2);
     sprintf(buf2, "\033[33m\033[44m【\033[32m%.16s\033[33m】", ctime(&now));
     strcat(buf, buf2);
@@ -205,8 +205,7 @@ void indigestion(int i)
 }
 
 /* 向前num 行,同时计算真实移动行数放入moveln*/
-struct textline *back_line(struct textline *pos,int num)
-{
+struct textline *back_line(struct textline *pos,int num) {
     moveln = 0;
     while (num-- > 0)
         if (pos && pos->prev) {
@@ -218,8 +217,7 @@ struct textline *back_line(struct textline *pos,int num)
 }
 
 /* 向后num 行,同时计算真实移动行数放入moveln*/
-struct textline *forward_line(struct textline * pos, int num)
-{
+struct textline *forward_line(struct textline * pos, int num) {
     moveln = 0;
     while (num-- > 0)
         if (pos && pos->next) {
@@ -262,8 +260,7 @@ char *killsp(char * s)
     return s;
 }
 
-struct textline *alloc_line()
-{
+struct textline *alloc_line() {
     struct textline *p;
 
     p = (struct textline *) malloc(sizeof(*p));
@@ -281,8 +278,7 @@ struct textline *alloc_line()
     return p;
 }
 
-struct textline *alloc_line_w(int w)
-{
+struct textline *alloc_line_w(int w) {
     struct textline *p;
 
     p = (struct textline *) malloc(sizeof(*p));
@@ -306,7 +302,7 @@ struct textline *alloc_line_w(int w)
  */
 
 void goline(n)
-    int n;
+int n;
 {
     struct textline *p = firstline;
     int count;
@@ -366,7 +362,7 @@ void go()
 
 
 void searchline(text)
-    char text[STRLEN];
+char text[STRLEN];
 {
     int tmpline;
     int addr;
@@ -418,7 +414,7 @@ void search()
 {
     char tmp[STRLEN];
 
-	tmp[0]='\0';
+    tmp[0]='\0';
     set_alarm(0, 0, NULL, NULL);
     getdata(t_lines-1, 0, "搜寻字串: ", tmp, 65, DOECHO, NULL, 0);
     domsg();
@@ -444,7 +440,7 @@ void append(struct textline * p, struct textline * line)
 }
 
 /*
-  delete_line deletes 'line' from the list and maintains the lastline, and 
+  delete_line deletes 'line' from the list and maintains the lastline, and
   firstline pointers.
  */
 
@@ -487,7 +483,7 @@ void split(struct textline * line, int pos)
     if (moveln>MAX_EDIT_LINE) {
         return;
     }
-        
+
     if (pos > line->len) {
         return;
     }
@@ -509,7 +505,7 @@ void split(struct textline * line, int pos)
 
 /*
   join connects 'line' and the next line.  It returns true if:
-  
+
   1) lines were joined and one was deleted
   2) lines could not be joined
   3) next line is empty
@@ -638,9 +634,9 @@ long insert_from_fp(FILE *fp, long * attach_length)
     int matched;
     char* ptr;
     off_t size;
-	long ret=0;
+    long ret=0;
 
-	if( attach_length ) *attach_length=0;
+    if (attach_length) *attach_length=0;
     matched=0;
     BBS_TRY {
         if (safe_mmapfile_handle(fileno(fp), PROT_READ, MAP_SHARED, &ptr, & size) == 1) {
@@ -652,15 +648,15 @@ long insert_from_fp(FILE *fp, long * attach_length)
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
                         int d;
-						long attsize;
-						char *sstart = data;
+                        long attsize;
+                        char *sstart = data;
                         data++; not++;
-						if(ret == 0)
-							ret = data - ptr - ATTACHMENT_SIZE + 1;
-                        while(*data){
-							data++;
-							not++;
-						}
+                        if (ret == 0)
+                            ret = data - ptr - ATTACHMENT_SIZE + 1;
+                        while (*data) {
+                            data++;
+                            not++;
+                        }
                         data++;
                         not++;
                         memcpy(&d, data, 4);
@@ -668,24 +664,22 @@ long insert_from_fp(FILE *fp, long * attach_length)
                         data+=4+attsize-1;
                         not+=4+attsize-1;
                         matched = 0;
-						if( attach_length) *attach_length += data - sstart + ATTACHMENT_SIZE;
+                        if (attach_length) *attach_length += data - sstart + ATTACHMENT_SIZE;
                     }
                     continue;
                 }
                 insertch_from_fp(*data);
             }
+        } else {
+            BBS_RETURN(-1);
         }
-	else
-	{
-		BBS_RETURN(-1);
-	}
     }
     BBS_CATCH {
     }
     BBS_END;
     end_mmapfile((void *) ptr, size, -1);
 
-    if(ret <= 0) return 0;
+    if (ret <= 0) return 0;
     return ret;
 }
 
@@ -693,7 +687,7 @@ long read_file(char *filename,long *attach_length)
 {
     FILE *fp;
     long ret = 0;
-	struct stat fs;
+    struct stat fs;
 
     if (currline == NULL)
         vedit_init();
@@ -705,9 +699,9 @@ long read_file(char *filename,long *attach_length)
         indigestion(4);
         abort_bbs(0);
     }
-	fstat(fileno(fp), &fs);
-	if (fs.st_size != 0)
-    	ret=insert_from_fp(fp, attach_length);
+    fstat(fileno(fp), &fs);
+    if (fs.st_size != 0)
+        ret=insert_from_fp(fp, attach_length);
     fclose(fp);
     return ret;
 }
@@ -715,12 +709,12 @@ long read_file(char *filename,long *attach_length)
 #define KEEP_EDITING -2
 
 int valid_article(pmt, abort)
-    char *pmt, *abort;
+char *pmt, *abort;
 {
     struct textline *p = firstline;
     char ch;
     int total, lines, len, sig, y;
-	int gdataret;
+    int gdataret;
     int temp=0;
 
     if (uinfo.mode == POSTING) {
@@ -744,7 +738,7 @@ int valid_article(pmt, abort)
             prints("\t本篇文章的引言与签名档行数远超过本文长度.\n");
             y += 1;
         }
-        if (total!=lines) 
+        if (total!=lines)
             lines--; /*如果是re文和签名档，应该减掉一行*/
         temp = 0;
         if (len < 8 || lines==0 || (lines<=2 && (len/lines) < 16)) {
@@ -763,10 +757,10 @@ int valid_article(pmt, abort)
             strcpy(pmt, "(L)站内, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
     }
     gdataret = getdata(0, 0, pmt, abort, 2, DOECHO, NULL, true);
-	if(gdataret == -1){
-		abort[0]='a';
-		abort[1]='\0';
-	}
+    if (gdataret == -1) {
+        abort[0]='a';
+        abort[1]='\0';
+    }
     return temp;
 }
 
@@ -777,13 +771,13 @@ void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Ano
     noidboard = (anonymousboard(currboard) && Anony);   /* etc/anonymous文件中 是匿名版版名 */
     color = (user->numlogins % 7) + 31; /* 颜色随机变化 */
     if ((getSession()->currentmemo->ud.signum == 0) ||        /* 判断是否已经 存在 签名档 */
-        user->signature == 0 || noidboard) {
+            user->signature == 0 || noidboard) {
         fputs("\n--\n", fp);
     } else {                    /*Bigman 2000.8.10修改,减少代码 */
         fprintf(fp, "\n");
     }
     /*
-     * 由Bigman增加:2000.8.10 Announce版匿名发文问题 
+     * 由Bigman增加:2000.8.10 Announce版匿名发文问题
      */
     if (!strcmp(currboard, "Announce") || !strcmp(currboard, "Penalty"))
         fprintf(fp, "\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, BBS_FULL_NAME);
@@ -795,30 +789,31 @@ void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Ano
 /*etnlegend, 2005.09.26, 编辑文章时提供操作附件接口*/
 #define EA_PER_PAGE 10                              //显示附件列表时分页大小
 #define EA_TMP_DIR "tmp"                            //临时文件目录
-static long edit_attach(char *fn){
+static long edit_attach(char *fn)
+{
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
     struct stat st;
     char buf[256],fn_tmp[64],ans[4],*filename;
     unsigned char loop,b_attach,u_sysop,changed;
     int fd,fd_origin,count,page,n,choice;
     long ret,size,offset;
-    if(!fn||!*fn)
+    if (!fn||!*fn)
         return -1;
     clear();
     move(0,0);prints("\033[1;32m[操作附件]\033[m");
-    if(stat(fn,&st)||!S_ISREG(st.st_mode)){         //获取文件信息
+    if (stat(fn,&st)||!S_ISREG(st.st_mode)) {       //获取文件信息
         move(3,0);prints("\033[1;31m获取文件信息时发生错误...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();
         return -2;
     }
     sprintf(fn_tmp,"%s/edit_attach.%d",EA_TMP_DIR,(int)getpid());
-    if((fd=open(fn_tmp,O_RDWR|O_CREAT|O_TRUNC,0644))==-1){
+    if ((fd=open(fn_tmp,O_RDWR|O_CREAT|O_TRUNC,0644))==-1) {
         move(3,0);prints("\033[1;31m创建临时文件时发生错误...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();
         return -3;
     }
     writew_lock(fd, 0, SEEK_SET, 0);
-    if((fd_origin=open(fn,O_RDWR,0644))==-1){
+    if ((fd_origin=open(fn,O_RDWR,0644))==-1) {
         close(fd);unlink(fn_tmp);
         move(3,0);prints("\033[1;31m打开文件时发生错误...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();
@@ -827,99 +822,99 @@ static long edit_attach(char *fn){
     readw_lock(fd_origin, 0, SEEK_SET, 0);          //共享锁定
     ret=ea_dump(fd_origin,fd,0);                    //复制文件
     un_lock(fd_origin, 0, SEEK_SET, 0);             //解除锁定
-    if(ret==-1){                                    //发生错误
+    if (ret==-1) {                                  //发生错误
         close(fd);close(fd_origin);unlink(fn_tmp);
         move(3,0);prints("\033[1;31m复制文件时发生错误...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();
         return -5;
     }
     ret=ea_locate(fd,ai);                           //获取附件信息
-    if(ret==-1){
+    if (ret==-1) {
         close(fd);close(fd_origin);unlink(fn_tmp);
         move(3,0);prints("\033[1;31m读取文件时发生错误...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();
         return -6;
     }
     offset=ret;                                     //附件起始位置
-    for(size=0,count=0;count<MAXATTACHMENTCOUNT&&ai[count].name[0];count++)
+    for (size=0,count=0;count<MAXATTACHMENTCOUNT&&ai[count].name[0];count++)
         size+=ai[count].size;
     b_attach=((currboard->flag&BOARD_ATTACH)?1:0);  //当前版面是否允许上传附件
     u_sysop=((getCurrentUser()->userlevel&PERM_SYSOP)?1:0);
-    if(!count&&!b_attach&&!u_sysop){
+    if (!count&&!b_attach&&!u_sysop) {
         close(fd);close(fd_origin);unlink(fn_tmp);
         move(3,0);prints("\033[1;33m当前文章无附件且当前版面不允许上传附件...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();
         return -7;
     }
     page=0;loop=1;changed=0;
-    while(loop){                                    //主循环
+    while (loop) {                                  //主循环
         move(3,0);clrtobot();
-        if(!(count>EA_PER_PAGE))
+        if (!(count>EA_PER_PAGE))
             sprintf(buf,
-                "\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%ld\033[1;36m 字节\033[m",
-                count,size);
+                    "\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%ld\033[1;36m 字节\033[m",
+                    count,size);
         else
             sprintf(buf,
-                "\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%ld\033[1;36m 字节/第 \033[1;37m%d\033[1;36m 页\033[m",
-                count,size,page+1);
+                    "\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%ld\033[1;36m 字节/第 \033[1;37m%d\033[1;36m 页\033[m",
+                    count,size,page+1);
         prints("\033[1;36m[当前文章附件列表: %s\033[1;36m]\033[m",buf);
-        for(n=0;n<EA_PER_PAGE&&(page*EA_PER_PAGE+n)<count;n++){
+        for (n=0;n<EA_PER_PAGE&&(page*EA_PER_PAGE+n)<count;n++) {
             sprintf(buf,"\033[1;37m[%02d]: %-60.60s %7dB\033[m",page*EA_PER_PAGE+n+1,
-                ai[page*EA_PER_PAGE+n].name,ai[page*EA_PER_PAGE+n].size);
+                    ai[page*EA_PER_PAGE+n].name,ai[page*EA_PER_PAGE+n].size);
             move(5+n,0);prints("%s",buf);           //显示当前分页的附件信息
         }
         sprintf(buf,                                //高亮显示可用选项
-            "\033[%d;33m(A)增加 \033[%d;33m(D)删除 \033[%d;33m(P|N)翻页 \033[1;33m(E)结束 \033[1;37m[E]: \033[m",
-            (!(count<MAXATTACHMENTCOUNT&&(b_attach||u_sysop))?0:1),(!count?0:1),(!(count>EA_PER_PAGE)?0:1));
+                "\033[%d;33m(A)增加 \033[%d;33m(D)删除 \033[%d;33m(P|N)翻页 \033[1;33m(E)结束 \033[1;37m[E]: \033[m",
+                (!(count<MAXATTACHMENTCOUNT&&(b_attach||u_sysop))?0:1),(!count?0:1),(!(count>EA_PER_PAGE)?0:1));
         getdata(6+n,0,buf,ans,2,DOECHO,NULL,true);
-        switch(ans[0]){
+        switch (ans[0]) {
             case 'a':                               //增加附件
             case 'A':
-                if(!(count<MAXATTACHMENTCOUNT&&(b_attach||u_sysop))){
+                if (!(count<MAXATTACHMENTCOUNT&&(b_attach||u_sysop))) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;36m当前文章无法增加附件...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
-                if(chdir(EA_TMP_DIR)==-1){          //切换工作目录到临时目录
+                if (chdir(EA_TMP_DIR)==-1) {        //切换工作目录到临时目录
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m切换到临时目录失败...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
                 filename=bbs_zrecvfile();           //上传附件
-                if(chdir(BBSHOME)==-1){             //切换工作目录回 BBS 主目录
+                if (chdir(BBSHOME)==-1) {           //切换工作目录回 BBS 主目录
                     close(fd);close(fd_origin);
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m致命错误: 切换到 BBS 主目录失败...\033[m");
                     abort_bbs(0);                   //断线
                 }
-                if(!filename||!*filename){
+                if (!filename||!*filename) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;33m取消...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
                 sprintf(buf,"%s/%s",EA_TMP_DIR,filename);
                 *filename=0;                        //解决一个显示问题
-                if(stat(buf,&st)||!S_ISREG(st.st_mode)){
+                if (stat(buf,&st)||!S_ISREG(st.st_mode)) {
                     unlink(buf);
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m附件文件上传失败...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
-                if((size+st.st_size)>MAXATTACHMENTSIZE&&!u_sysop){
+                if ((size+st.st_size)>MAXATTACHMENTSIZE&&!u_sysop) {
                     unlink(buf);
                     move(6+n,0);clrtoeol();
                     prints("\033[1;33m该附件超出当前文章附件大小限制...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
                 ret=ea_append(fd,ai,buf,buf);
-                if(ret==-2){
+                if (ret==-2) {
                     close(fd);close(fd_origin);unlink(fn_tmp);
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m致命错误: 截取文件失败...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;clear();
                     return -8;
                 }
-                if(ret==-1||ret!=st.st_size){
+                if (ret==-1||ret!=st.st_size) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m写入文件时发生错误...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
@@ -932,36 +927,36 @@ static long edit_attach(char *fn){
                 break;
             case 'd':                               //删除附件
             case 'D':
-                if(!count){
+                if (!count) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;36m当前文章无法删除附件...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
                 sprintf(buf,
-                    "\033[1;33m请输入欲删除的附件序号 \033[1;31m[%02d]: \033[m",
-                    count);                         //默认为删除最后一个附件
+                        "\033[1;33m请输入欲删除的附件序号 \033[1;31m[%02d]: \033[m",
+                        count);                         //默认为删除最后一个附件
                 getdata(6+n,0,buf,ans,3,DOECHO,NULL,true);
                 choice=(!ans[0]?count:atoi(ans));
-                if(!(choice>0)||choice>count){
+                if (!(choice>0)||choice>count) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m输入非法...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
                 sprintf(buf,
-                    "\033[1;33m删除 \033[1;31m[%02d] %s \033[1;37m[N]: \033[m",
-                    choice,ai[choice-1].name);
+                        "\033[1;33m删除 \033[1;31m[%02d] %s \033[1;37m[N]: \033[m",
+                        choice,ai[choice-1].name);
                 getdata(6+n,0,buf,ans,2,DOECHO,NULL,true);
-                if(!(ans[0]=='y'||ans[0]=='Y'))     //取消
+                if (!(ans[0]=='y'||ans[0]=='Y'))    //取消
                     break;
                 ret=ea_delete(fd,ai,choice);
-                if(ret==-2){
+                if (ret==-2) {
                     close(fd);close(fd_origin);unlink(fn_tmp);
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m致命错误: 截取文件失败...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;clear();
                     return -9;
                 }
-                if(ret==-1){
+                if (ret==-1) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;31m写入文件时发生错误...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
@@ -970,13 +965,13 @@ static long edit_attach(char *fn){
                 prints("\033[1;32m删除成功!\033[1;37m<Enter>\033[m");
                 WAIT_RETURN;
                 size-=ret;count--;
-                if(page>0&&!(count>page*EA_PER_PAGE))
+                if (page>0&&!(count>page*EA_PER_PAGE))
                     page--;                         //自动调整分页
                 changed++;
                 break;
             case 'p':                               //向前翻页
             case 'P':
-                if(!page){
+                if (!page) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;36m当前位置无法向前翻页...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
@@ -985,7 +980,7 @@ static long edit_attach(char *fn){
                 break;
             case 'n':                               //向后翻页
             case 'N':
-                if(!(count>(page+1)*EA_PER_PAGE)){
+                if (!(count>(page+1)*EA_PER_PAGE)) {
                     move(6+n,0);clrtoeol();
                     prints("\033[1;36m当前位置无法向后翻页...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
@@ -997,10 +992,10 @@ static long edit_attach(char *fn){
                 break;
         }
     }
-    if(changed){
+    if (changed) {
         writew_lock(fd_origin, 0, SEEK_SET, 0);     //独享锁定
         ret=ea_dump(fd,fd_origin,0);                //回写
-        if(ret==-1){
+        if (ret==-1) {
             close(fd);close(fd_origin);unlink(fn_tmp);
             move(8+n,0);prints("\033[1;31m写入文件时发生错误...\033[1;37m<Enter>\033[m");
             WAIT_RETURN;clear();
@@ -1057,31 +1052,31 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
                    "        请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。");
 #else
             prints
-                ("请注意：本站站规规定：同样内容的文章严禁在 5 (含)个以上讨论区内重复张贴。\n\n违反者除所贴文章会被删除之外，还将被剥夺继续发表文章的权力。详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n");
+            ("请注意：本站站规规定：同样内容的文章严禁在 5 (含)个以上讨论区内重复张贴。\n\n违反者除所贴文章会被删除之外，还将被剥夺继续发表文章的权力。详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n");
 #endif
         } else if (uinfo.mode == SMAIL)
             strcpy(p_buf, "(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");
         else if (uinfo.mode == IMAIL)
             sprintf(p_buf, "%s Internet 信笺：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", BBS_FULL_NAME);      /* Leeward 98.01.17 Prompt whom you are writing to */
-        /*    sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser->userid ); 
+        /*    sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser->userid );
            Leeward 98.01.17 Prompt whom you are writing to */
-        else if(uinfo.mode==EDIT)
+        else if (uinfo.mode==EDIT)
             sprintf(p_buf,"%s","(S)储存档案, (F)自动换行发表, (A)放弃编辑, (E)继续编辑, (C)操作附件? [S]: ");
-            /*
-             *  etnlegend, 2005.09.26, 编辑文章时提供操作附件接口
-             *  输入 C 的情况在本函数其后的处理中完全等同于输入 S 的情况
-             *  即对文章的文本内容的修改将保存并产生修改标记(如果定义了的话)
-             *  仅在函数末尾时调用 edit_attach 函数来实现附件的操作
-             */
-        else if(uinfo.mode==POSTCROSS)
+        /*
+         *  etnlegend, 2005.09.26, 编辑文章时提供操作附件接口
+         *  输入 C 的情况在本函数其后的处理中完全等同于输入 S 的情况
+         *  即对文章的文本内容的修改将保存并产生修改标记(如果定义了的话)
+         *  仅在函数末尾时调用 edit_attach 函数来实现附件的操作
+         */
+        else if (uinfo.mode==POSTCROSS)
             sprintf(p_buf,"%s","(S)保存编辑 (F)自动换行保存编辑 (E)继续编辑 (A)取消操作 [S]: ");
-            /* etnlegend, 2006.10.25, 转载文章时修改内容... 这地方用 READING 貌似不太鲁棒... */
+        /* etnlegend, 2006.10.25, 转载文章时修改内容... 这地方用 READING 貌似不太鲁棒... */
         else
             strcpy(p_buf, "(S)储存档案, (F)自动换行存储, (A)放弃编辑, (E)继续编辑? [S]: ");
 
         ret = valid_article(p_buf, abort);
 
-        if((uinfo.mode==EDIT)&&(abort[0]=='c'||abort[0]=='C')){
+        if ((uinfo.mode==EDIT)&&(abort[0]=='c'||abort[0]=='C')) {
             do_edit_attach=1;
             abort[0]=0;
         }
@@ -1099,16 +1094,16 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
 
 #ifdef FILTER
     if (((abort[0] != 'a')&&(abort[0] != 'e'))&& filtrate &&
-        (uinfo.mode==EDIT)) {
-    while (p != NULL) {
-        if(check_badword_str(p->data, strlen(p->data), getSession())) {
-            abort[0] = 'e';
-            filter = 1;
-            break;
+            (uinfo.mode==EDIT)) {
+        while (p != NULL) {
+            if (check_badword_str(p->data, strlen(p->data), getSession())) {
+                abort[0] = 'e';
+                filter = 1;
+                break;
+            }
+            p = p->next;
         }
-        p = p->next;
-    }
-    p = firstline;
+        p = firstline;
     }
 #endif
     if (abort[0] == 'a' || abort[0] == 'A') {
@@ -1127,20 +1122,20 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
 #ifdef FILTER
         if (filter) {
             clear();
-            move (3, 0);
-            prints ("\n\n            很抱歉，本文可能含有不适宜内容，请重新编辑...\n");
+            move(3, 0);
+            prints("\n\n            很抱歉，本文可能含有不适宜内容，请重新编辑...\n");
             pressreturn();
         }
 #endif
         domsg();
         return KEEP_EDITING;
-    } else if ( (abort[0] == 't' || abort[0] == 'T') && uinfo.mode == POSTING) {
+    } else if ((abort[0] == 't' || abort[0] == 'T') && uinfo.mode == POSTING) {
         char buf[STRLEN];
 
         buf[0] = 0;             /* Leeward 98.08.14 */
         move(1, 0);
         prints("旧标题: %s", save_title);
-		strcpy(buf,save_title);
+        strcpy(buf,save_title);
         getdata(2, 0, "新标题: ", buf, STRLEN, DOECHO, NULL, 0);
         if (buf[0]!=0) {
             /* if (strcmp(save_title, buf))
@@ -1169,18 +1164,18 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
                 if ((fdst = open(buf, O_WRONLY|O_CREAT , 0600)) >= 0) {
                     char* src=(char*)malloc(10240);
                     long ret;
-					long lsize = attach_length;
-					long ndread;
+                    long lsize = attach_length;
+                    long ndread;
                     lseek(fsrc,*pattachpos-1,SEEK_SET);
                     do {
-						if( lsize > 10240 )
-							ndread = 10240;
-						else
-							ndread = lsize;
+                        if (lsize > 10240)
+                            ndread = 10240;
+                        else
+                            ndread = lsize;
                         ret = read(fsrc, src, ndread);
                         if (ret <= 0)
                             break;
-						lsize -= ret;
+                        lsize -= ret;
                     } while (write(fdst, src, ret) > 0 && lsize > 0);
                     close(fdst);
                     free(src);
@@ -1192,7 +1187,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
             indigestion(5);
             abort_bbs(0);
         }
-    /* 增加转信标记 czz 020819 */
+        /* 增加转信标记 czz 020819 */
         if (saveheader) {
             if (local_article == 1)
                 write_header(fp, getCurrentUser(), in_mail, quote_board, quote_title, Anony, 0, getSession());
@@ -1207,7 +1202,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
     while (p != NULL) {
         struct textline *v = p->next;
 
-        if( (!aborted)&&(aborted!=-1)) {
+        if ((!aborted)&&(aborted!=-1)) {
 //            long_flag = (strlen(p->data) >= WRAPMARGIN -2 );
             long_flag = 0;
             if (p->next != NULL || p->data[0] != '\0') {
@@ -1215,19 +1210,19 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
                     temp=1;
                 if (effsize) {
                     if (!strcmp(p->data,"--")) {
-/*注意处理
---
-fsdfa
---
-的情况*/
+                        /*注意处理
+                        --
+                        fsdfa
+                        --
+                        的情况*/
                         *effsize+=sign_size;
                         sign_size=2;
-                    } else if( strncmp(p->data,"\xa1\xbe \xd4\xda",5) && strncmp(p->data,": ",2)){
-                    /*如果不是签名档分隔符*/
+                    } else if (strncmp(p->data,"\xa1\xbe \xd4\xda",5) && strncmp(p->data,": ",2)) {
+                        /*如果不是签名档分隔符*/
                         if (sign_size!=0) /*在可能的签名档中*/
                             sign_size+=strlen(p->data);
                         else
-                              *effsize+=strlen(p->data);
+                            *effsize+=strlen(p->data);
                     }
                 }
                 if (!temp&&(abort[0] == 'f' || abort[0] == 'F')) {       /* Leeward 98.07.27 支持自动换行 */
@@ -1293,22 +1288,22 @@ fsdfa
                     if (':' == p->data[0] && ':' != *pp) //处理剩余的字符
                         fprintf(fp, ": ");
                     fprintf(fp, "%s", pp);
-                    if (long_flag){	/* 如果当前串是系统自动截断的一个超长串 */
-                    	    LLL = LLL - strlen((char *)pp); //将下一行的允许长度减短
-			}else{
-			    fprintf(fp,"\n");
-			}
+                    if (long_flag) { /* 如果当前串是系统自动截断的一个超长串 */
+                        LLL = LLL - strlen((char *)pp); //将下一行的允许长度减短
+                    } else {
+                        fprintf(fp,"\n");
+                    }
                 } else
                     fprintf(fp, "%s\n", p->data);
-                }
             }
+        }
         free(p->data);
         free(p);
         p = v;
     }
     if (!aborted) {
-		if(add_loginfo)
-			bbsmain_add_loginfo(fp, getCurrentUser(), quote_board, Anony);
+        if (add_loginfo)
+            bbsmain_add_loginfo(fp, getCurrentUser(), quote_board, Anony);
         fclose(fp);
         if (pattachpos && *pattachpos) {
             char buf[MAXPATH];
@@ -1318,13 +1313,13 @@ fsdfa
             *pattachpos=st.st_size+1;
             f_catfile(buf,filename);
             f_rm(buf);
-				/*
-            struct stat st;
-            stat(filename,&st);
-            *pattachpos=st.st_size+1;
-            f_catfile(tmpattachfile,filename);
-            f_rm(tmpattachfile);
-			*/
+            /*
+                    struct stat st;
+                    stat(filename,&st);
+                    *pattachpos=st.st_size+1;
+                    f_catfile(tmpattachfile,filename);
+                    f_rm(tmpattachfile);
+            */
         }
     }
     currline = NULL;
@@ -1343,10 +1338,10 @@ fsdfa
         if (temp_numposts > 20)
             Net_Sleep((temp_numposts - 20) * 1 + 1);
     }
-    if(do_edit_attach && askyn("\n\n文章列表状态按 Ctrl+Q 可以显示 web 方式编辑附件的地址，\n您确定想使用落后的 zmodem 方式编辑附件吗", 0)){
+    if (do_edit_attach && askyn("\n\n文章列表状态按 Ctrl+Q 可以显示 web 方式编辑附件的地址，\n您确定想使用落后的 zmodem 方式编辑附件吗", 0)) {
         long offset;
         offset=edit_attach(filename);
-        if(!(offset<0)&&pattachpos)
+        if (!(offset<0)&&pattachpos)
             *pattachpos=offset;
     }
     return aborted;
@@ -1374,7 +1369,7 @@ void keep_fail_post()
         free(p);
         p = v;
     }
-	fclose(fp);
+    fclose(fp);
     return;
 }
 
@@ -1396,7 +1391,7 @@ static int Origin(struct textline *text)
 }
 
 int vedit_process_ESC(arg)
-    int arg;                    /* ESC + x */
+int arg;                    /* ESC + x */
 {
     int ch2, action;
 
@@ -1413,100 +1408,100 @@ int vedit_process_ESC(arg)
 #define CHOOSE_ERROR    "选项错误"
 
     switch (arg) {
-    case 'Z':
-    case 'z':
-        if (uinfo.mode == POSTING && (currboard->flag&BOARD_ATTACH || HAS_PERM(getCurrentUser(),PERM_SYSOP))) {
-            struct ea_attach_info ai[MAXATTACHMENTCOUNT];
-            int nUpload = 0;
-            char ans[8];
-            ans[0]='\0';
-            nUpload = process_upload(nUpload, 15, ans, ai);
-            while(1) {
-                getdata(t_lines - 1, 0, "请输入操作：", ans, 4, DOECHO, NULL, true);
-                switch(ans[0]) {
-                    case 'u':
-                    case 'U':
-                        nUpload = process_upload(nUpload, 15, ans, ai);
-                        continue;
-                    default:
-                        break;
+        case 'Z':
+        case 'z':
+            if (uinfo.mode == POSTING && (currboard->flag&BOARD_ATTACH || HAS_PERM(getCurrentUser(),PERM_SYSOP))) {
+                struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+                int nUpload = 0;
+                char ans[8];
+                ans[0]='\0';
+                nUpload = process_upload(nUpload, 15, ans, ai);
+                while (1) {
+                    getdata(t_lines - 1, 0, "请输入操作：", ans, 4, DOECHO, NULL, true);
+                    switch (ans[0]) {
+                        case 'u':
+                        case 'U':
+                            nUpload = process_upload(nUpload, 15, ans, ai);
+                            continue;
+                        default:
+                            break;
+                    }
+                    break;
                 }
-                break;
             }
-        }
-        return 0;
-    case 'A':
-    case 'a':
-        show_eof = !show_eof;
-        return 0;
-    case 'M':
-    case 'm':
-        ch2 = ask(CHOOSE_MARK);
-        action = 'M';
-        break;
-    case 'I':
-    case 'i':                  /* import */
-        ch2 = ask(FROM_WHICH_PAGE);
-        action = 'I';
-        break;
-    case 'E':
-    case 'e':                  /* export */
-        ch2 = ask(mark_on ? SAVE_PART_TO : SAVE_ALL_TO);
-        action = 'E';
-        break;
-    case 'S':
-    case 's':                  /* signature */
-        ch2 = '0';
-        action = 'S';
-        break;
-    case 'F':
-    case 'f':
-        ch2 = ask(CHOOSE_FG);
-        action = 'F';
-        break;
-    case 'B':
-    case 'b':
-        ch2 = ask(CHOOSE_BG);
-        action = 'B';
-        break;
-    case 'R':
-    case 'r':
-        ch2 = '0';              /* not used */
-        action = 'R';
-        break;
-    case 'D':
-    case 'd':
-        ch2 = '4';
-        action = 'M';
-        break;
-    case 'N':
-    case 'n':
-        ch2 = '0';
-        action = 'N';
-        break;
-    case 'G':
-    case 'g':
-        ch2 = '1';
-        action = 'G';
-        break;
-    case 'L':
-    case 'l':
-        ch2 = '0';              /* not used */
-        action = 'L';
-        break;
-    case 'C':
-    case 'c':
-        ch2 = '0';              /* not used */
-        action = 'C';
-        break;
-    case 'Q':
-    case 'q':                  /* Leeward 98.07.30 Change hot key for msgX */
-        marknum = 0;
-        ch2 = '0';              /* not used */
-        action = 'M';
-        break;
-    default:
-        return 0;
+            return 0;
+        case 'A':
+        case 'a':
+            show_eof = !show_eof;
+            return 0;
+        case 'M':
+        case 'm':
+            ch2 = ask(CHOOSE_MARK);
+            action = 'M';
+            break;
+        case 'I':
+        case 'i':                  /* import */
+            ch2 = ask(FROM_WHICH_PAGE);
+            action = 'I';
+            break;
+        case 'E':
+        case 'e':                  /* export */
+            ch2 = ask(mark_on ? SAVE_PART_TO : SAVE_ALL_TO);
+            action = 'E';
+            break;
+        case 'S':
+        case 's':                  /* signature */
+            ch2 = '0';
+            action = 'S';
+            break;
+        case 'F':
+        case 'f':
+            ch2 = ask(CHOOSE_FG);
+            action = 'F';
+            break;
+        case 'B':
+        case 'b':
+            ch2 = ask(CHOOSE_BG);
+            action = 'B';
+            break;
+        case 'R':
+        case 'r':
+            ch2 = '0';              /* not used */
+            action = 'R';
+            break;
+        case 'D':
+        case 'd':
+            ch2 = '4';
+            action = 'M';
+            break;
+        case 'N':
+        case 'n':
+            ch2 = '0';
+            action = 'N';
+            break;
+        case 'G':
+        case 'g':
+            ch2 = '1';
+            action = 'G';
+            break;
+        case 'L':
+        case 'l':
+            ch2 = '0';              /* not used */
+            action = 'L';
+            break;
+        case 'C':
+        case 'c':
+            ch2 = '0';              /* not used */
+            action = 'C';
+            break;
+        case 'Q':
+        case 'q':                  /* Leeward 98.07.30 Change hot key for msgX */
+            marknum = 0;
+            ch2 = '0';              /* not used */
+            action = 'M';
+            break;
+        default:
+            return 0;
     }
 
     if (strchr("IES", action) && (ch2 == '\n' || ch2 == '\r'))
@@ -1559,77 +1554,77 @@ int mark_block()
 }
 
 void process_MARK_action(arg, msg)
-    int arg;                    /* operation of MARK */
-    char *msg;                  /* message to return */
+int arg;                    /* operation of MARK */
+char *msg;                  /* message to return */
 {
     struct textline *p;
     int dele_1line;
 
     switch (arg) {
-    case '0':                  /* cancel */
-        for (p = firstline; p != NULL; p = p->next)
-            p->attr &= ~(M_MARK);
-        CLEAR_MARK();
-        break;
-    case '1':                  /* mark begin */
-        mark_begin = currline;
-        mark_on = mark_block();
-        if (mark_on)
-            strcpy(msg, "标记已设定完成");
-        else
-            strcpy(msg, "已设定开头标记, 尚无结尾标记");
-        break;
-    case '2':                  /* mark end */
-        mark_end = currline;
-        mark_on = mark_block();
-        if (mark_on)
-            strcpy(msg, "标记已设定完成");
-        else
-            strcpy(msg, "已设定结尾标记, 尚无开头标记");
-        break;
-    case '3':                  /* copy mark */
-        if (mark_on && !(currline->attr & M_MARK)) {
+        case '0':                  /* cancel */
+            for (p = firstline; p != NULL; p = p->next)
+                p->attr &= ~(M_MARK);
+            CLEAR_MARK();
+            break;
+        case '1':                  /* mark begin */
+            mark_begin = currline;
+            mark_on = mark_block();
+            if (mark_on)
+                strcpy(msg, "标记已设定完成");
+            else
+                strcpy(msg, "已设定开头标记, 尚无结尾标记");
+            break;
+        case '2':                  /* mark end */
+            mark_end = currline;
+            mark_on = mark_block();
+            if (mark_on)
+                strcpy(msg, "标记已设定完成");
+            else
+                strcpy(msg, "已设定结尾标记, 尚无开头标记");
+            break;
+        case '3':                  /* copy mark */
+            if (mark_on && !(currline->attr & M_MARK)) {
+                for (p = firstline; p != NULL; p = p->next) {
+                    if (p->attr & M_MARK) {
+                        ve_insert_str(p->data);
+                        split(currline, currpnt);
+                    }
+                }
+            } else
+                bell();
+            strcpy(msg, "标记复制完成");
+            break;
+        case '4':                  /* delete mark */
+            dele_1line = 0;
+            if (mark_on && (currline->attr & M_MARK)) {
+                if (currline == firstline)
+                    dele_1line = 1;
+                else
+                    dele_1line = 2;
+            }
             for (p = firstline; p != NULL; p = p->next) {
                 if (p->attr & M_MARK) {
-                    ve_insert_str(p->data);
-                    split(currline, currpnt);
-                }
-            }
-        } else
-            bell();
-        strcpy(msg, "标记复制完成");
-        break;
-    case '4':                  /* delete mark */
-        dele_1line = 0;
-        if (mark_on && (currline->attr & M_MARK)) {
-            if (currline == firstline)
-                dele_1line = 1;
-            else
-                dele_1line = 2;
-        }
-        for (p = firstline; p != NULL; p = p->next) {
-            if (p->attr & M_MARK) {
-                currline = p;
-                p=p->prev;
-                vedit_key(Ctrl('Y'));
-                if (p==NULL) {
-                    p=firstline;
-                    if (p==NULL);
+                    currline = p;
+                    p=p->prev;
+                    vedit_key(Ctrl('Y'));
+                    if (p==NULL) {
+                        p=firstline;
+                        if (p==NULL);
                         break;
+                    }
                 }
             }
-        }
-        process_ESC_action('M', '0');
-        marknum = 0;
-        if (dele_1line == 0 || dele_1line == 2) {
-            if (first_mark_line == 0)
-                first_mark_line = 1;
-            goline(first_mark_line);
-        } else
-            goline(1);
-        break;
-    default:
-        strcpy(msg, CHOOSE_ERROR);
+            process_ESC_action('M', '0');
+            marknum = 0;
+            if (dele_1line == 0 || dele_1line == 2) {
+                if (first_mark_line == 0)
+                    first_mark_line = 1;
+                goline(first_mark_line);
+            } else
+                goline(1);
+            break;
+        default:
+            strcpy(msg, CHOOSE_ERROR);
     }
     strcpy(msg, "\0");
 }
@@ -1645,67 +1640,67 @@ static int process_ESC_action(int action, int arg)
 
     msg[0] = '\0';
     switch (action) {
-    case 'L':
-        if (ismsgline >= 1) {
-            ismsgline = 0;
-            move(t_lines - 1, 0);
-            clrtoeol();
-        } else
-            ismsgline = 1;
-        break;
-    case 'M':
-        process_MARK_action(arg, msg);
-        break;
-    case 'I':
-        sprintf(filename, "tmp/clip/%s.%c", getCurrentUser()->userid, arg);
-        if ((fp = fopen(filename, "r")) != NULL) {
-            insert_from_fp(fp,NULL);
-            fclose(fp);
-            sprintf(msg, "已取出剪贴簿第 %c 页", arg);
-        } else
-            sprintf(msg, "无法取出剪贴簿第 %c 页", arg);
-        break;
-    case 'G':
-        go();
-        break;
-    case 'E':
-        sprintf(filename, "tmp/clip/%s.%c", getCurrentUser()->userid, arg);
-        if ((fp = fopen(filename, "w")) != NULL) {
-            if (mark_on) {
-                struct textline *p;
-
-                for (p = firstline; p != NULL; p = p->next)
-                    if (p->attr & M_MARK)
-                        fprintf(fp, "%s\n", p->data);
+        case 'L':
+            if (ismsgline >= 1) {
+                ismsgline = 0;
+                move(t_lines - 1, 0);
+                clrtoeol();
             } else
-                insert_to_fp(fp);
-            fclose(fp);
-            sprintf(msg, "已贴至剪贴簿第 %c 页", arg);
-        } else
-            sprintf(msg, "无法贴至剪贴簿第 %c 页", arg);
-        break;
-    case 'N':
-        searchline(searchtext);
-        break;
-    case 'S':
-        search();
-        break;
-    case 'F':
-        sprintf(buf, "%c[3%cm", 27, arg);
-        ve_insert_str(buf);
-        break;
-    case 'B':
-        sprintf(buf, "%c[4%cm", 27, arg);
-        ve_insert_str(buf);
-        break;
-    case 'R':
-        ve_insert_str(ANSI_RESET);
-        break;
-    case 'C':
-        editansi = showansi = 1;
-        clear();
-        display_buffer();
-        strcpy(msg, "已显示彩色编辑成果，即将切回单色模式");
+                ismsgline = 1;
+            break;
+        case 'M':
+            process_MARK_action(arg, msg);
+            break;
+        case 'I':
+            sprintf(filename, "tmp/clip/%s.%c", getCurrentUser()->userid, arg);
+            if ((fp = fopen(filename, "r")) != NULL) {
+                insert_from_fp(fp,NULL);
+                fclose(fp);
+                sprintf(msg, "已取出剪贴簿第 %c 页", arg);
+            } else
+                sprintf(msg, "无法取出剪贴簿第 %c 页", arg);
+            break;
+        case 'G':
+            go();
+            break;
+        case 'E':
+            sprintf(filename, "tmp/clip/%s.%c", getCurrentUser()->userid, arg);
+            if ((fp = fopen(filename, "w")) != NULL) {
+                if (mark_on) {
+                    struct textline *p;
+
+                    for (p = firstline; p != NULL; p = p->next)
+                        if (p->attr & M_MARK)
+                            fprintf(fp, "%s\n", p->data);
+                } else
+                    insert_to_fp(fp);
+                fclose(fp);
+                sprintf(msg, "已贴至剪贴簿第 %c 页", arg);
+            } else
+                sprintf(msg, "无法贴至剪贴簿第 %c 页", arg);
+            break;
+        case 'N':
+            searchline(searchtext);
+            break;
+        case 'S':
+            search();
+            break;
+        case 'F':
+            sprintf(buf, "%c[3%cm", 27, arg);
+            ve_insert_str(buf);
+            break;
+        case 'B':
+            sprintf(buf, "%c[4%cm", 27, arg);
+            ve_insert_str(buf);
+            break;
+        case 'R':
+            ve_insert_str(ANSI_RESET);
+            break;
+        case 'C':
+            editansi = showansi = 1;
+            clear();
+            display_buffer();
+            strcpy(msg, "已显示彩色编辑成果，即将切回单色模式");
     }
 
     if (msg[0] != '\0') {
@@ -1780,19 +1775,19 @@ void input_tools()
         return;
 
     switch (ch) {
-    case '1':
-        show = ansi1;
-        break;
-    case '2':
-        show = ansi2;
-        break;
-    case '3':
-        show = ansi3;
-        break;
-    case '4':
-    default:
-        show = ansi4;
-        break;
+        case '1':
+            show = ansi1;
+            break;
+        case '2':
+            show = ansi2;
+            break;
+        case '3':
+            show = ansi3;
+            break;
+        case '4':
+        default:
+            show = ansi4;
+            break;
     }
 
     page = 0;
@@ -1856,266 +1851,235 @@ void vedit_key(int ch)
             insert_char(ch);
     } else
         switch (ch) {
-        case Ctrl('Z'):
-            r_lastmsg();        /* Leeward 98.07.30 support msgX */
-            break;
-        case Ctrl('I'):
-            NO_ANSI_MODIFY;
-            do {
-                insert_char(' ');
-            } while ((currpnt & 0x7) && (currpnt <= MAX_EDIT_LINE));
-            break;
-        case '\r':
-        case '\n':
-            NO_ANSI_MODIFY;
-            split(currline, currpnt);
-            break;
-        case Ctrl('G'):        /* redraw screen */
-            go();
-            break;
-            /* Leeward 98.07.30 Change hot key for msgX */
-            /*case Ctrl('Z'):  call help screen */
-        case Ctrl('N'):
-            show_eof = !show_eof;
-            break;
-        case Ctrl('P'):
-            auto_newline = !auto_newline;
-            break;
-        case Ctrl('Q'):        /* call help screen */
-            show_help("help/edithelp");
-            break;
-        case Ctrl('R'):
+            case Ctrl('Z'):
+                r_lastmsg();        /* Leeward 98.07.30 support msgX */
+                break;
+            case Ctrl('I'):
+                NO_ANSI_MODIFY;
+                do {
+                    insert_char(' ');
+                } while ((currpnt & 0x7) && (currpnt <= MAX_EDIT_LINE));
+                break;
+            case '\r':
+            case '\n':
+                NO_ANSI_MODIFY;
+                split(currline, currpnt);
+                break;
+            case Ctrl('G'):        /* redraw screen */
+                go();
+                break;
+                /* Leeward 98.07.30 Change hot key for msgX */
+                /*case Ctrl('Z'):  call help screen */
+            case Ctrl('N'):
+                show_eof = !show_eof;
+                break;
+            case Ctrl('P'):
+                auto_newline = !auto_newline;
+                break;
+            case Ctrl('Q'):        /* call help screen */
+                show_help("help/edithelp");
+                break;
+            case Ctrl('R'):
 #ifdef CHINESE_CHARACTER
-            SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
-            break;
-#endif            
-        case KEY_LEFT:         /* backward character */
-            if (currpnt > 0) {
-                currpnt--;
-            } else if (currline->prev) {
-                curr_window_line--;
-                currln--;
-                currline = currline->prev;
-                currpnt = currline->len;
-            }
-#ifdef CHINESE_CHARACTER
-            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-                int i,j=0;
-                for(i=0;i<currpnt;i++)
-                    if(j) j=0;
-                    else if(currline->data[i]<0) j=1;
-                if(j)
-                    if (currpnt > 0)
-                        currpnt--;
-            }
+                SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
+                break;
 #endif
-            break;
-            /*case Ctrl('Q'):  Leeward 98.07.30 Change hot key for msgX
-               process_ESC_action('M', '0');
-               marknum=0;            
-               break; */
-        case Ctrl('C'):
-            process_ESC_action('M', '3');
-            break;
-        case Ctrl('U'):
-            if (marknum == 0) {
-                marknum = 1;
-                process_ESC_action('M', '1');
-            } else
-                process_ESC_action('M', '2');
-            clear();
-            break;
-        case KEY_RIGHT:        /* forward character */
-            if (currline->len != currpnt) {
-                currpnt++;
-            } else if (currline->next) {
-                currpnt = 0;
-                curr_window_line++;
-                currln++;
-                currline = currline->next;
-                if (Origin(currline)) {
+            case KEY_LEFT:         /* backward character */
+                if (currpnt > 0) {
+                    currpnt--;
+                } else if (currline->prev) {
                     curr_window_line--;
                     currln--;
                     currline = currline->prev;
+                    currpnt = currline->len;
                 }
-            }
 #ifdef CHINESE_CHARACTER
-            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-                int i,j=0;
-                for(i=0;i<currpnt;i++)
-                    if(j) j=0;
-                    else if(currline->data[i]<0) j=1;
-                if(j)
-                    if (currline->len != currpnt)
-                        currpnt++;
-            }
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currpnt;i++)
+                        if (j) j=0;
+                        else if (currline->data[i]<0) j=1;
+                    if (j)
+                        if (currpnt > 0)
+                            currpnt--;
+                }
 #endif
-            break;
-        case KEY_UP:           /* Previous line */
-            if (currline->prev) {
-                currln--;
-                curr_window_line--;
-                currline = currline->prev;
-                currpnt = (currline->len > lastindent) ? lastindent : currline->len;
-            }
-#ifdef CHINESE_CHARACTER
-            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-                int i,j=0;
-                for(i=0;i<currpnt;i++)
-                    if(j) j=0;
-                    else if(currline->data[i]<0) j=1;
-                if(j)
-                    if (currpnt > 0)
-                        currpnt--;
-            }
-#endif
-            break;
-        case KEY_DOWN:         /* Next line */
-            if (currline->next) {
-                currline = currline->next;
-                curr_window_line++;
-                currln++;
-                if (Origin(currline)) {
-                    currln--;
-                    curr_window_line--;
-                    currline = currline->prev;
-                }
-                currpnt = (currline->len > lastindent) ? lastindent : currline->len;
-            }
-#ifdef CHINESE_CHARACTER
-            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-                int i,j=0;
-                for(i=0;i<currpnt;i++)
-                    if(j) j=0;
-                    else if(currline->data[i]<0) j=1;
-                if(j)
-                    if (currpnt > 0)
-                        currpnt--;
-            }
-#endif
-            break;
-        case Ctrl('B'):
-        case KEY_PGUP:         /* previous page */
-            top_of_win = back_line(top_of_win, 22);
-            currline = back_line(currline, 22);
-            currln -= moveln;
-            curr_window_line = getlineno();
-            if (currpnt > currline->len)
-                currpnt = currline->len;
-            break;
-        case Ctrl('F'):
-        case KEY_PGDN:         /* next page */
-            top_of_win = forward_line(top_of_win, 22);
-            currline = forward_line(currline, 22);
-            currln += moveln;
-            curr_window_line = getlineno();
-            if (currpnt > currline->len)
-                currpnt = currline->len;
-            if (Origin(currline->prev)) {
-                currln -= 2;
-                curr_window_line = 0;
-                currline = currline->prev->prev;
-                top_of_win = lastline->prev->prev;
-            }
-            if (Origin(currline)) {
-                currln--;
-                curr_window_line--;
-                currline = currline->prev;
-            }
-            break;
-        case Ctrl('A'):
-        case KEY_HOME:         /* begin of line */
-            currpnt = 0;
-            break;
-        case Ctrl('E'):
-        case KEY_END:          /* end of line */
-            currpnt = currline->len;
-            break;
-        case Ctrl('S'):        /* start of file */
-            top_of_win = firstline;
-            currline = top_of_win;
-            currpnt = 0;
-            curr_window_line = 0;
-            currln = 0;
-            break;
-        case Ctrl('T'):        /* tail of file */
-            top_of_win = back_line(lastline, 22);
-            countline();
-            currln = moveln;
-            currline = lastline;
-            curr_window_line = getlineno();
-            currpnt = 0;
-            if (Origin(currline->prev)) {
-                currline = currline->prev->prev;
-                currln -= 2;
-                curr_window_line -= 2;
-            }
-            break;
-        case Ctrl('O'):
-            input_tools();
-            break;
-        case KEY_INS:          /* Toggle insert/overwrite */
-            insert_character = !insert_character;
-            break;
-        case Ctrl('H'):
-        case '\177':           /* backspace */
-            NO_ANSI_MODIFY;
-            if (currpnt == 0) {
-                struct textline *p;
-
-                if (!currline->prev) {
-                    break;
-                }
-                currln--;
-                curr_window_line--;
-                currline = currline->prev;
-                currpnt = currline->len;
-
-                /* Modified by cityhunter on 1999.10.22 */
-                /* for the bug of edit two page article */
-
-                if (curr_window_line < 0) {     /*top_of_win = top_of_win->next; */
-                    top_of_win = currline;
-                    curr_window_line = 0;
-                }
-
-                /* end of this modification             */
-                if (*killsp(currline->next->data) == '\0') {
-                    delete_line(currline->next);
-                    break;
-                }
-                p = currline;
-                while (!join(p)) {
-                    p = p->next;
-                    if (p == NULL) {
-                        indigestion(2);
-                        abort_bbs(0);
+                break;
+                /*case Ctrl('Q'):  Leeward 98.07.30 Change hot key for msgX
+                   process_ESC_action('M', '0');
+                   marknum=0;
+                   break; */
+            case Ctrl('C'):
+                process_ESC_action('M', '3');
+                break;
+            case Ctrl('U'):
+                if (marknum == 0) {
+                    marknum = 1;
+                    process_ESC_action('M', '1');
+                } else
+                    process_ESC_action('M', '2');
+                clear();
+                break;
+            case KEY_RIGHT:        /* forward character */
+                if (currline->len != currpnt) {
+                    currpnt++;
+                } else if (currline->next) {
+                    currpnt = 0;
+                    curr_window_line++;
+                    currln++;
+                    currline = currline->next;
+                    if (Origin(currline)) {
+                        curr_window_line--;
+                        currln--;
+                        currline = currline->prev;
                     }
                 }
-                break;
-            }
-            currpnt--;
-            delete_char();
 #ifdef CHINESE_CHARACTER
-            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-                int i,j=0;
-                for(i=0;i<currpnt;i++)
-                    if(j) j=0;
-                    else if(currline->data[i]<0) j=1;
-                if(j) {
-                    currpnt--;
-                    delete_char();
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currpnt;i++)
+                        if (j) j=0;
+                        else if (currline->data[i]<0) j=1;
+                    if (j)
+                        if (currline->len != currpnt)
+                            currpnt++;
                 }
-            }
 #endif
-            break;
-        case Ctrl('D'):
-        case KEY_DEL:          /* delete current character */
-            NO_ANSI_MODIFY;
-            if (currline->len == currpnt) {
-                struct textline *p = currline;
+                break;
+            case KEY_UP:           /* Previous line */
+                if (currline->prev) {
+                    currln--;
+                    curr_window_line--;
+                    currline = currline->prev;
+                    currpnt = (currline->len > lastindent) ? lastindent : currline->len;
+                }
+#ifdef CHINESE_CHARACTER
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currpnt;i++)
+                        if (j) j=0;
+                        else if (currline->data[i]<0) j=1;
+                    if (j)
+                        if (currpnt > 0)
+                            currpnt--;
+                }
+#endif
+                break;
+            case KEY_DOWN:         /* Next line */
+                if (currline->next) {
+                    currline = currline->next;
+                    curr_window_line++;
+                    currln++;
+                    if (Origin(currline)) {
+                        currln--;
+                        curr_window_line--;
+                        currline = currline->prev;
+                    }
+                    currpnt = (currline->len > lastindent) ? lastindent : currline->len;
+                }
+#ifdef CHINESE_CHARACTER
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currpnt;i++)
+                        if (j) j=0;
+                        else if (currline->data[i]<0) j=1;
+                    if (j)
+                        if (currpnt > 0)
+                            currpnt--;
+                }
+#endif
+                break;
+            case Ctrl('B'):
+            case KEY_PGUP:         /* previous page */
+                top_of_win = back_line(top_of_win, 22);
+                currline = back_line(currline, 22);
+                currln -= moveln;
+                curr_window_line = getlineno();
+                if (currpnt > currline->len)
+                    currpnt = currline->len;
+                break;
+            case Ctrl('F'):
+            case KEY_PGDN:         /* next page */
+                top_of_win = forward_line(top_of_win, 22);
+                currline = forward_line(currline, 22);
+                currln += moveln;
+                curr_window_line = getlineno();
+                if (currpnt > currline->len)
+                    currpnt = currline->len;
+                if (Origin(currline->prev)) {
+                    currln -= 2;
+                    curr_window_line = 0;
+                    currline = currline->prev->prev;
+                    top_of_win = lastline->prev->prev;
+                }
+                if (Origin(currline)) {
+                    currln--;
+                    curr_window_line--;
+                    currline = currline->prev;
+                }
+                break;
+            case Ctrl('A'):
+            case KEY_HOME:         /* begin of line */
+                currpnt = 0;
+                break;
+            case Ctrl('E'):
+            case KEY_END:          /* end of line */
+                currpnt = currline->len;
+                break;
+            case Ctrl('S'):        /* start of file */
+                top_of_win = firstline;
+                currline = top_of_win;
+                currpnt = 0;
+                curr_window_line = 0;
+                currln = 0;
+                break;
+            case Ctrl('T'):        /* tail of file */
+                top_of_win = back_line(lastline, 22);
+                countline();
+                currln = moveln;
+                currline = lastline;
+                curr_window_line = getlineno();
+                currpnt = 0;
+                if (Origin(currline->prev)) {
+                    currline = currline->prev->prev;
+                    currln -= 2;
+                    curr_window_line -= 2;
+                }
+                break;
+            case Ctrl('O'):
+                input_tools();
+                break;
+            case KEY_INS:          /* Toggle insert/overwrite */
+                insert_character = !insert_character;
+                break;
+            case Ctrl('H'):
+            case '\177':           /* backspace */
+                NO_ANSI_MODIFY;
+                if (currpnt == 0) {
+                    struct textline *p;
 
-                if (!Origin(currline->next)) {
+                    if (!currline->prev) {
+                        break;
+                    }
+                    currln--;
+                    curr_window_line--;
+                    currline = currline->prev;
+                    currpnt = currline->len;
+
+                    /* Modified by cityhunter on 1999.10.22 */
+                    /* for the bug of edit two page article */
+
+                    if (curr_window_line < 0) {     /*top_of_win = top_of_win->next; */
+                        top_of_win = currline;
+                        curr_window_line = 0;
+                    }
+
+                    /* end of this modification             */
+                    if (*killsp(currline->next->data) == '\0') {
+                        delete_line(currline->next);
+                        break;
+                    }
+                    p = currline;
                     while (!join(p)) {
                         p = p->next;
                         if (p == NULL) {
@@ -2123,97 +2087,128 @@ void vedit_key(int ch)
                             abort_bbs(0);
                         }
                     }
-                } else if (currpnt == 0)
-                    vedit_key(Ctrl('K'));
-                break;
-            }
+                    break;
+                }
+                currpnt--;
+                delete_char();
 #ifdef CHINESE_CHARACTER
-            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-                int i,j=0;
-                for(i=0;i<currpnt+1;i++)
-                    if(j) j=0;
-                    else if(currline->data[i]<0) j=1;
-                if(j)
-                    delete_char();
-            }
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currpnt;i++)
+                        if (j) j=0;
+                        else if (currline->data[i]<0) j=1;
+                    if (j) {
+                        currpnt--;
+                        delete_char();
+                    }
+                }
 #endif
-            delete_char();
-            break;
-        case Ctrl('Y'):        /* delete current line */
-            /* STONGLY coupled with Ctrl-K */
-            no_touch = 0;       /* ANSI_MODIFY hack */
-            currpnt = 0;
-            if (currline->next) {
-                if (Origin(currline->next) && !currline->prev) {
-                    currline->data[0] = '\0';
-                    currline->len = 0;
-                    break;
-                }
-            } else if (currline->prev != NULL) {
-                currline->len = 0;
-            } else {
-                currline->len = 0;
-                currline->data[0] = '\0';
                 break;
-            }
-            currline->len = 0;
-            vedit_key(Ctrl('K'));
-            break;
-        case Ctrl('K'):        /* delete to end of line */
-            NO_ANSI_MODIFY;
-            if (currline->prev == NULL && currline->next == NULL) {
-                currline->data[0] = '\0';
-                currpnt = 0;
-                break;
-            }
-            if (currline->next) {
-                if (Origin(currline->next) && currpnt == currline->len && currpnt != 0)
-                    break;
-                if (Origin(currline->next) && currline->prev == NULL) {
-                    vedit_key(Ctrl('Y'));
-                    break;
-                }
-            }
-            if (currline->len == 0) {
-                struct textline *p = currline->next;
+            case Ctrl('D'):
+            case KEY_DEL:          /* delete current character */
+                NO_ANSI_MODIFY;
+                if (currline->len == currpnt) {
+                    struct textline *p = currline;
 
-                if (!p) {
-                    p = currline->prev;
-                    if (!p) {
+                    if (!Origin(currline->next)) {
+                        while (!join(p)) {
+                            p = p->next;
+                            if (p == NULL) {
+                                indigestion(2);
+                                abort_bbs(0);
+                            }
+                        }
+                    } else if (currpnt == 0)
+                        vedit_key(Ctrl('K'));
+                    break;
+                }
+#ifdef CHINESE_CHARACTER
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currpnt+1;i++)
+                        if (j) j=0;
+                        else if (currline->data[i]<0) j=1;
+                    if (j)
+                        delete_char();
+                }
+#endif
+                delete_char();
+                break;
+            case Ctrl('Y'):        /* delete current line */
+                /* STONGLY coupled with Ctrl-K */
+                no_touch = 0;       /* ANSI_MODIFY hack */
+                currpnt = 0;
+                if (currline->next) {
+                    if (Origin(currline->next) && !currline->prev) {
+                        currline->data[0] = '\0';
+                        currline->len = 0;
                         break;
                     }
-                    if (curr_window_line > 0)
-                        curr_window_line--;
-                    currln--;
+                } else if (currline->prev != NULL) {
+                    currline->len = 0;
+                } else {
+                    currline->len = 0;
+                    currline->data[0] = '\0';
+                    break;
                 }
-                if (currline == top_of_win)
-                    top_of_win = p;
-                delete_line(currline);
-                currline = p;
-                if (Origin(currline)) {
-                    currline = currline->prev;
-                    curr_window_line--;
-                    currln--;
-                }
+                currline->len = 0;
+                vedit_key(Ctrl('K'));
                 break;
-            }
-            if (currline->len == currpnt) {
-                struct textline *p = currline;
-
-                while (!join(p)) {
-                    p = p->next;
-                    if (p == NULL) {
-                        indigestion(2);
-                        abort_bbs(0);
+            case Ctrl('K'):        /* delete to end of line */
+                NO_ANSI_MODIFY;
+                if (currline->prev == NULL && currline->next == NULL) {
+                    currline->data[0] = '\0';
+                    currpnt = 0;
+                    break;
+                }
+                if (currline->next) {
+                    if (Origin(currline->next) && currpnt == currline->len && currpnt != 0)
+                        break;
+                    if (Origin(currline->next) && currline->prev == NULL) {
+                        vedit_key(Ctrl('Y'));
+                        break;
                     }
                 }
+                if (currline->len == 0) {
+                    struct textline *p = currline->next;
+
+                    if (!p) {
+                        p = currline->prev;
+                        if (!p) {
+                            break;
+                        }
+                        if (curr_window_line > 0)
+                            curr_window_line--;
+                        currln--;
+                    }
+                    if (currline == top_of_win)
+                        top_of_win = p;
+                    delete_line(currline);
+                    currline = p;
+                    if (Origin(currline)) {
+                        currline = currline->prev;
+                        curr_window_line--;
+                        currln--;
+                    }
+                    break;
+                }
+                if (currline->len == currpnt) {
+                    struct textline *p = currline;
+
+                    while (!join(p)) {
+                        p = p->next;
+                        if (p == NULL) {
+                            indigestion(2);
+                            abort_bbs(0);
+                        }
+                    }
+                    break;
+                }
+                currline->len = currpnt;
+                currline->data[currpnt] = '\0';
                 break;
-            }
-            currline->len = currpnt;
-            currline->data[currpnt] = '\0';
-            break;
-        default:
-            break;
+            default:
+                break;
         }
 
     if (curr_window_line < 0) {
@@ -2247,7 +2242,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
 
     if (pattachpos != NULL) {
         ret=read_file(filename,&attach_length);
-	    *pattachpos=ret;
+        *pattachpos=ret;
     } else {
         // TODO: add zmodem upload
         ret=read_file(filename,NULL);
@@ -2274,34 +2269,34 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
     while (1) {
         newch = '\0';
         switch (ch) {
-        case EOF:
-        case Ctrl('W'):
-        case Ctrl('X'):        /* Save and exit */
-            if (headlines) {
-                st_tmp->next = firstline;       /* 退出时候恢复原链表 */
-                firstline->prev = st_tmp;
-                firstline = st_tmp2;
-            }
-            foo = write_file(filename, saveheader, eff_size,pattachpos,attach_length, add_loginfo, filtrate);
-            if (foo != KEEP_EDITING)
-                return foo;
-            if (headlines) {
-                firstline = st_tmp->next;       /* 继续编辑则再次修改第一行的指针 */
-                firstline->prev = NULL;
-            }
-            break;
-        case KEY_ESC:
-            if (KEY_ESC_arg == KEY_ESC)
-                insert_char(KEY_ESC);
-            else {
-                newch = vedit_process_ESC(KEY_ESC_arg);
-                clear();
-            }
-            break;
-        case KEY_REFRESH:
-            break;
-        default:
-            vedit_key(ch);
+            case EOF:
+            case Ctrl('W'):
+            case Ctrl('X'):        /* Save and exit */
+                if (headlines) {
+                    st_tmp->next = firstline;       /* 退出时候恢复原链表 */
+                    firstline->prev = st_tmp;
+                    firstline = st_tmp2;
+                }
+                foo = write_file(filename, saveheader, eff_size,pattachpos,attach_length, add_loginfo, filtrate);
+                if (foo != KEEP_EDITING)
+                    return foo;
+                if (headlines) {
+                    firstline = st_tmp->next;       /* 继续编辑则再次修改第一行的指针 */
+                    firstline->prev = NULL;
+                }
+                break;
+            case KEY_ESC:
+                if (KEY_ESC_arg == KEY_ESC)
+                    insert_char(KEY_ESC);
+                else {
+                    newch = vedit_process_ESC(KEY_ESC_arg);
+                    clear();
+                }
+                break;
+            case KEY_REFRESH:
+                break;
+            default:
+                vedit_key(ch);
         }
         if (newch==0&&ibufsize == icurrchar) {
             display_buffer();
@@ -2317,7 +2312,7 @@ int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos,int add_
     int ans, t;
     long attachpos=0;
 #ifdef NEW_HELP
-	int oldhelpmode=helpmode;
+    int oldhelpmode=helpmode;
 #endif
 
     t = showansi;
@@ -2325,11 +2320,11 @@ int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos,int add_
     ismsgline = (DEFINE(getCurrentUser(), DEF_EDITMSG)) ? 1 : 0;
     domsg();
 #ifdef NEW_HELP
-	helpmode = HELP_EDIT;
+    helpmode = HELP_EDIT;
 #endif
     ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos, add_loginfo, 1);
 #ifdef NEW_HELP
-	helpmode = oldhelpmode;
+    helpmode = oldhelpmode;
 #endif
     showansi = t;
     return ans;

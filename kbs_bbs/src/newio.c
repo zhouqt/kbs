@@ -1,6 +1,6 @@
 /*
 底层的I/O库。
-		KCN重写
+  KCN重写
 */
 
 #include "bbs.h"
@@ -60,11 +60,11 @@ void oflush()
                 abort_bbs(0);
         } else
 #ifdef SSHBBS
-        if (ssh_write(0, outbuf, obufsize) < 0)
+            if (ssh_write(0, outbuf, obufsize) < 0)
 #else
-        if (write(0, outbuf, obufsize) < 0)
+            if (write(0, outbuf, obufsize) < 0)
 #endif
-            abort_bbs(0);
+                abort_bbs(0);
     }
     obufsize = 0;
 }
@@ -76,7 +76,7 @@ void ochar(char c)
     }
     outbuf[obufsize++] = c;
     /*
-     * need to change IAC to IAC IAC 
+     * need to change IAC to IAC IAC
      */
     if (((unsigned char) c) == IAC) {
         if (obufsize > OBUFSIZE - 1) {  /* doin a oflush */
@@ -96,22 +96,22 @@ int raw_write(int fd,const char *buf, int len)
 #endif
 
 #ifdef ZMODEM_RATE
-        nowcounter = time(0);
-        if (lastcounter == nowcounter) {
-            if (bufcounter >= ZMODEM_RATE) {
-                sleep(1);
-                nowcounter = time(0);
-                bufcounter = len;
-            } else
-                bufcounter += len;
-        } else {
-            /*
-             * time clocked, clear bufcounter 
-             */
+    nowcounter = time(0);
+    if (lastcounter == nowcounter) {
+        if (bufcounter >= ZMODEM_RATE) {
+            sleep(1);
+            nowcounter = time(0);
             bufcounter = len;
-        }
-        lastcounter = nowcounter;
-#endif    
+        } else
+            bufcounter += len;
+    } else {
+        /*
+         * time clocked, clear bufcounter
+         */
+        bufcounter = len;
+    }
+    lastcounter = nowcounter;
+#endif
 #ifdef SSHBBS
     return ssh_write(fd, buf, len);
 #else
@@ -144,16 +144,16 @@ int raw_read(int fd, char *buf, int len)
 #else
     int i,j,retlen=0;
     retlen = read(fd,buf,len);
-    for(i=0;i<retlen;i++) {
-        if(i>0&&((unsigned char)buf[i-1]==0xff)&&((unsigned char)buf[i]==0xff)) {
+    for (i=0;i<retlen;i++) {
+        if (i>0&&((unsigned char)buf[i-1]==0xff)&&((unsigned char)buf[i]==0xff)) {
             retlen--;
-            for(j=i;j<retlen;j++)
+            for (j=i;j<retlen;j++)
                 buf[j]=buf[j+1];
             continue;
         }
-        if(i>0&&buf[i-1]==0x0d&&buf[i]==0x00) {
+        if (i>0&&buf[i-1]==0x0d&&buf[i]==0x00) {
             retlen--;
-            for(j=i;j<retlen;j++)
+            for (j=i;j<retlen;j++)
                 buf[j]=buf[j+1];
             continue;
         }
@@ -175,11 +175,11 @@ void output(const char *s, int len)
      * obufsize = 0 ;
      * }
      * memcpy(outbuf+obufsize, s, len) ;
-     * obufsize+=len ; 
+     * obufsize+=len ;
      */
     int i;
 
-    while(obufsize+len>OBUFSIZE - 1) {
+    while (obufsize+len>OBUFSIZE - 1) {
         i=OBUFSIZE-obufsize;
         memcpy(outbuf+obufsize, s, i);
         obufsize += i;
@@ -194,12 +194,12 @@ void output(const char *s, int len)
 
 
 int i_newfd = 0;
-static void (*flushf) () = NULL;
+static void (*flushf)() = NULL;
 
 int i_timeout = 0;
 static int i_timeoutusec = 0;
 static time_t i_begintimeout;
-static void (*i_timeout_func) (void *);
+static void (*i_timeout_func)(void *);
 static struct timeval i_to, *i_top = NULL;
 static void *timeout_data;
 
@@ -214,12 +214,12 @@ void add_io(int fd, int timeout)
         i_top = NULL;
 }
 
-void add_flush(void (*flushfunc) ())
+void add_flush(void (*flushfunc)())
 {
     flushf = flushfunc;
 }
 
-void set_alarm(int set_timeout, int set_timeoutusec,void (*timeout_func) (void *), void *data)
+void set_alarm(int set_timeout, int set_timeoutusec,void (*timeout_func)(void *), void *data)
 {
     i_timeout = set_timeout;
     i_timeoutusec=set_timeoutusec;
@@ -230,7 +230,7 @@ void set_alarm(int set_timeout, int set_timeoutusec,void (*timeout_func) (void *
 
 int num_in_buf()
 {
-    return icurrchar - ibufsize ; 
+    return icurrchar - ibufsize ;
 }
 
 int telnet_state = 0;
@@ -240,73 +240,72 @@ int naw_col, naw_ln, naw_changed=0;
 static int telnet_machine(unsigned char ch)
 {
     switch (telnet_state) {
-    case 255:                  /* after the first IAC */
-        switch (ch) {
-        case DO:
-        case DONT:
-        case WILL:
-        case WONT:
-            telnet_state = 1;
-            break;
-        case SB:               /* loop forever looking for the SE */
-            telnet_state = 2;
-            break;
-        case IAC:
-            return IAC;
-        default:
-            telnet_state = 0;   /* other telnet command */
-        }
-        break;
-    case 1:                    /* Get the DO,DONT,WILL,WONT */
-        telnet_state = 0;       /* the ch is the telnet option */
-        break;
-    case 2:                    /* the telnet suboption */
-        if (ch == 31)
-            telnet_state = 5;   /* wait for windows size */
-        else if (ch == IAC)
-            telnet_state = 3;   /* wait for SE */
-        else
-            telnet_state = 4;   /* filter telnet SB data */
-        break;
-    case 3:                    /* wait for se */
-        if (ch == SE) {
-            telnet_state = 0;
-            if(naw_changed) {
-                naw_changed = 0;
-                do_naws(naw_ln, naw_col);
+        case 255:                  /* after the first IAC */
+            switch (ch) {
+                case DO:
+                case DONT:
+                case WILL:
+                case WONT:
+                    telnet_state = 1;
+                    break;
+                case SB:               /* loop forever looking for the SE */
+                    telnet_state = 2;
+                    break;
+                case IAC:
+                    return IAC;
+                default:
+                    telnet_state = 0;   /* other telnet command */
             }
-        }
-        else
-            telnet_state = 4;
-        break;
-    case 4:                    /* telnet SB data */
-        if (ch == IAC)
-            telnet_state = 3;   /* wait for SE */
-        break;
-    case 5:
-        naw_changed = 1;
-        telnet_state = 6;
-        break;
-    case 6:
-        naw_col = ch;
-        if (ch == IAC)
-            telnet_state = 4;
-        else
-            telnet_state = 7;
-        break;
-    case 7:
-        if (ch == IAC)
-            telnet_state = 4;
-        else
-            telnet_state = 8;
-        break;
-    case 8:
-        naw_ln = ch;
-        if (ch == IAC)
-            telnet_state = 4;
-        else
-            telnet_state = 2;
-        break;
+            break;
+        case 1:                    /* Get the DO,DONT,WILL,WONT */
+            telnet_state = 0;       /* the ch is the telnet option */
+            break;
+        case 2:                    /* the telnet suboption */
+            if (ch == 31)
+                telnet_state = 5;   /* wait for windows size */
+            else if (ch == IAC)
+                telnet_state = 3;   /* wait for SE */
+            else
+                telnet_state = 4;   /* filter telnet SB data */
+            break;
+        case 3:                    /* wait for se */
+            if (ch == SE) {
+                telnet_state = 0;
+                if (naw_changed) {
+                    naw_changed = 0;
+                    do_naws(naw_ln, naw_col);
+                }
+            } else
+                telnet_state = 4;
+            break;
+        case 4:                    /* telnet SB data */
+            if (ch == IAC)
+                telnet_state = 3;   /* wait for SE */
+            break;
+        case 5:
+            naw_changed = 1;
+            telnet_state = 6;
+            break;
+        case 6:
+            naw_col = ch;
+            if (ch == IAC)
+                telnet_state = 4;
+            else
+                telnet_state = 7;
+            break;
+        case 7:
+            if (ch == IAC)
+                telnet_state = 4;
+            else
+                telnet_state = 8;
+            break;
+        case 8:
+            naw_ln = ch;
+            if (ch == IAC)
+                telnet_state = 4;
+            else
+                telnet_state = 2;
+            break;
     }
     return 0;
 }
@@ -363,7 +362,7 @@ int igetch()
     if ((uinfo.mode == CHAT1 || uinfo.mode == TALK || uinfo.mode == PAGE) && RMSG == true)
         hasaddio = 0;
 
-  igetagain:
+igetagain:
     if (ibufsize == icurrchar) {
         fd_set readfds, xds;
         struct timeval to;
@@ -379,20 +378,20 @@ int igetch()
             if (hifd <= i_newfd)
                 hifd = i_newfd + 1;
         }
-	//TODO: igetkey重入问题
+        //TODO: igetkey重入问题
         if ((uinfo.mode != POSTING && uinfo.mode != SMAIL && uinfo.mode != EDIT) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
-        if (scrint&&!inremsg) {
-            while (msg_count) {
-                inremsg = true;
-                msg_count--;
-                r_msg();
-                refresh();
-                inremsg = false;
+            if (scrint&&!inremsg) {
+                while (msg_count) {
+                    inremsg = true;
+                    msg_count--;
+                    r_msg();
+                    refresh();
+                    inremsg = false;
+                }
             }
-        }
-        if(kicked) return KEY_TIMEOUT;
+        if (kicked) return KEY_TIMEOUT;
 #ifdef SSHBBS
-	sr = ssh_select(hifd, &readfds, NULL, NULL, &to);
+        sr = ssh_select(hifd, &readfds, NULL, NULL, &to);
 #else
         sr = select(hifd, &readfds, NULL, NULL, &to);
 #endif
@@ -400,22 +399,22 @@ int igetch()
             if (talkrequest)
                 return KEY_TALK;
             if ((uinfo.mode != POSTING && uinfo.mode != SMAIL && uinfo.mode != EDIT) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
-            if (scrint&&!inremsg) {
-                while (msg_count) {
-                    inremsg = true;
-                    msg_count--;
-                    r_msg();
-                    inremsg = false;
+                if (scrint&&!inremsg) {
+                    while (msg_count) {
+                        inremsg = true;
+                        msg_count--;
+                        r_msg();
+                        inremsg = false;
+                    }
+                    goto igetagain;
                 }
-                goto igetagain;
-            }
         }
         if (sr < 0 && errno != EINTR)
             abort_bbs(0);
         if (sr == 0) {
             refresh();
             if (flushf)
-                (*flushf) ();
+                (*flushf)();
 
             while (1) {
                 int alarm_timeout;
@@ -437,14 +436,14 @@ int igetch()
                     while ((i_timeout != 0)||(i_timeoutusec!=0)) {
                         to.tv_sec = i_timeout - (time(0) - i_begintimeout);
                         to.tv_usec = i_timeoutusec;
-                        if ((to.tv_sec < 0) ||((to.tv_sec==0)&&(i_timeoutusec==0))){
+                        if ((to.tv_sec < 0) ||((to.tv_sec==0)&&(i_timeoutusec==0))) {
                             i_timeout = 0;
                             i_timeoutusec=0;
                             if (i_timeout_func)
-                            	(*i_timeout_func) (timeout_data);
+                                (*i_timeout_func)(timeout_data);
                             else
-                            	return KEY_TIMEOUT;
-                            if(kicked) return KEY_TIMEOUT;
+                                return KEY_TIMEOUT;
+                            if (kicked) return KEY_TIMEOUT;
                             continue;
                         };
                         alarm_timeout = 1;
@@ -454,7 +453,7 @@ int igetch()
                         to.tv_sec = IDLE_TIMEOUT;
                 }
 #ifdef SSHBBS
-		sr = ssh_select(hifd, &readfds, NULL, &xds, &to);
+                sr = ssh_select(hifd, &readfds, NULL, &xds, &to);
 #else
                 sr = select(hifd, &readfds, NULL, &xds, &to);
 #endif
@@ -462,26 +461,26 @@ int igetch()
                     if (talkrequest)
                         return KEY_TALK;
                 }
-                if(kicked) return KEY_TIMEOUT;
+                if (kicked) return KEY_TIMEOUT;
                 if ((uinfo.mode != POSTING && uinfo.mode != SMAIL && uinfo.mode != EDIT) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
-                if (!inremsg) {
-		      int saveerrno=errno;
-                    while (msg_count) {
-                        inremsg = true;
-                        msg_count--;
-                        r_msg();
-                        refresh();
-                        inremsg = false;
+                    if (!inremsg) {
+                        int saveerrno=errno;
+                        while (msg_count) {
+                            inremsg = true;
+                            msg_count--;
+                            r_msg();
+                            refresh();
+                            inremsg = false;
+                        }
+                        if (sr<0&&saveerrno==EINTR)continue;
                     }
-                    if (sr<0&&saveerrno==EINTR)continue;
-                }
                 if (sr == 0 && alarm_timeout) {
                     i_timeout = 0;
                     i_timeoutusec=0;
                     if (i_timeout_func)
-                    	(*i_timeout_func) (timeout_data);
+                        (*i_timeout_func)(timeout_data);
                     else
-                    	return KEY_TIMEOUT;
+                        return KEY_TIMEOUT;
                     continue;
                 }
                 if (sr >= 0)
@@ -518,7 +517,7 @@ int igetch()
         }
 
         /*
-         * add by KCN for GB/BIG5 encode 
+         * add by KCN for GB/BIG5 encode
          */
         if (convcode) {
             inbuf = big2gb(inbuffer + 1, &ibufsize, 0, getSession());
@@ -529,7 +528,7 @@ int igetch()
         } else
             inbuf = inbuffer + 1;
         /*
-         * end 
+         * end
          */
         icurrchar = 0;
         if (ibufsize > IBUFSIZE) {
@@ -543,14 +542,14 @@ int igetch()
         goto igetagain;
     }
     if (((inbuf[icurrchar] == '\n') && (lastch == '\r'))
-        || ((inbuf[icurrchar] == '\r') && (lastch == '\n'))) {
+            || ((inbuf[icurrchar] == '\r') && (lastch == '\n'))) {
         lastch = 0;
         goto igetagain;
     }
 
     else if (icurrchar != ibufsize) {
         if (((inbuf[icurrchar] == '\n') && (inbuf[icurrchar + 1] == '\r'))
-            || ((inbuf[icurrchar] == '\r') && (inbuf[icurrchar + 1] == '\n'))) {
+                || ((inbuf[icurrchar] == '\r') && (inbuf[icurrchar + 1] == '\n'))) {
             icurrchar++;
             lastch = 0;
         }
@@ -561,28 +560,28 @@ int igetch()
     c = inbuf[icurrchar];
 
     switch (c) {
-    case Ctrl('@'):
-    case Ctrl('L'):
-        redoscr();
-        icurrchar++;
-    	now = time(0);
-        uinfo.freshtime = now;
-        if (now - old > 60) {
-           UPDATE_UTMP(freshtime, uinfo);
-           old = now;
-        }
-        goto igetagain;
-    case Ctrl('Z'):
-        if(scrint&&uinfo.mode!=LOCKSCREEN&&uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&uinfo.mode!=WINMINE&&!inremsg) {
+        case Ctrl('@'):
+        case Ctrl('L'):
+            redoscr();
             icurrchar++;
-            inremsg = true;
-            r_msg();
-            inremsg = false;
+            now = time(0);
+            uinfo.freshtime = now;
+            if (now - old > 60) {
+                UPDATE_UTMP(freshtime, uinfo);
+                old = now;
+            }
             goto igetagain;
-        }
-        break;
-    default:
-        break;
+        case Ctrl('Z'):
+            if (scrint&&uinfo.mode!=LOCKSCREEN&&uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&uinfo.mode!=WINMINE&&!inremsg) {
+                icurrchar++;
+                inremsg = true;
+                r_msg();
+                inremsg = false;
+                goto igetagain;
+            }
+            break;
+        default:
+            break;
     }
     icurrchar++;
     while ((icurrchar != ibufsize) && (inbuf[icurrchar] == 0))
@@ -591,7 +590,7 @@ int igetch()
     if (Ctrl('T') != c)
         uinfo.freshtime = now;
     /*
-     * add by KCN , decrease temp_numposts 
+     * add by KCN , decrease temp_numposts
      */
     if (lasttime + 60 * 60 * 8 < now) {
         lasttime = now;
@@ -616,13 +615,12 @@ int ingetdata=false;
 
 extern void mailscr();
 
-int igetkey()
-{
+int igetkey() {
     int mode;
     int ch, last, llast;
     int ret=0;
 
-    if(keybuffer_count) {
+    if (keybuffer_count) {
         ret = *keybuffer;
         keybuffer++;
         keybuffer_count--;
@@ -633,20 +631,20 @@ int igetkey()
 //        refresh();
     while (1) {
         ch = igetch();
-        if(kicked) return KEY_TIMEOUT;
+        if (kicked) return KEY_TIMEOUT;
 
-        if(check_calltime()){
-			mode = 0;
-			continue;
-		}
+        if (check_calltime()) {
+            mode = 0;
+            continue;
+        }
 
 #if defined(SMTH) || defined(FREE)
-	if (scrint&&ch==Ctrl('V')) {
-            if (getCurrentUser()&&HAS_PERM(getCurrentUser(),PERM_BASIC)&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=LOCKSCREEN&&!dicting){
-				dicting=1;
-	            exec_mbem("@mod:service/libdict.so#dict_main");
-				dicting=0;
-			}
+        if (scrint&&ch==Ctrl('V')) {
+            if (getCurrentUser()&&HAS_PERM(getCurrentUser(),PERM_BASIC)&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=LOCKSCREEN&&!dicting) {
+                dicting=1;
+                exec_mbem("@mod:service/libdict.so#dict_main");
+                dicting=0;
+            }
             continue;
         }
 #endif
@@ -659,8 +657,8 @@ int igetkey()
         }
         if (mode == 0) {
             if (ch == KEY_ESC) {
-                if(ibufsize==icurrchar) {
-                    switch(uinfo.mode){
+                if (ibufsize==icurrchar) {
+                    switch (uinfo.mode) {
                         case POSTING:
                         case SMAIL:
                         case EDITUFILE:
@@ -678,8 +676,7 @@ int igetkey()
                     }
                 }
                 mode = 1;
-            }
-            else {
+            } else {
                 ret = ch;
                 break;      /* Normal Key */
             }
@@ -694,14 +691,12 @@ int igetkey()
             }
         } else if (mode == 2) { /* Cursor key */
             if (ch >= 'A' && ch <= 'D') {
-               ret = KEY_UP + (ch - 'A');
-               break;
-            }
-            else if (ch >= 'P' && ch <= 'S') {
+                ret = KEY_UP + (ch - 'A');
+                break;
+            } else if (ch >= 'P' && ch <= 'S') {
                 ret = KEY_F1+ch-'P';
                 break;
-            }
-            else if (ch >= '1' && ch <= '6')
+            } else if (ch >= '1' && ch <= '6')
                 mode = 3;
             else {
                 ret = ch;
@@ -711,8 +706,7 @@ int igetkey()
             if (ch == '~') {
                 ret = KEY_HOME + (last - '1');
                 break;
-            }
-            else if (ch >= '0' && ch <= '9')
+            } else if (ch >= '0' && ch <= '9')
                 mode = 4;
             else {
                 ret = ch;
@@ -721,29 +715,26 @@ int igetkey()
         } else if (mode == 4) {
             if (ch == '~') {
                 int k=(llast-'1')*10+(last-'1');
-                if(k<=3) ret = KEY_F1+k;
+                if (k<=3) ret = KEY_F1+k;
                 else ret = KEY_F1+k-1;
-        	if (scrint&&ret==KEY_F10&&!incalendar) {
-        	      mode=0;
+                if (scrint&&ret==KEY_F10&&!incalendar) {
+                    mode=0;
                     if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=LOCKSCREEN)
-                    exec_mbem("@mod:service/libcalendar.so#calendar_main");
+                        exec_mbem("@mod:service/libcalendar.so#calendar_main");
+                    continue;
+                } else if (scrint&&ret==KEY_F6) {
+                    mode=0;
+                    auto_chinese();
+                    continue;
+                } else if (scrint&&ret==KEY_F9) {
+                    mode=0;
+                    if (getCurrentUser()&& (check_mail_perm(getCurrentUser(),NULL) == 0))
+                        mailscr();
                     continue;
                 }
-        	else if(scrint&&ret==KEY_F6) {
-        	    mode=0;
-        	    auto_chinese();
-        	    continue;
-        	}
-            else if (scrint&&ret==KEY_F9){
-                mode=0;
-                if (getCurrentUser()&& (check_mail_perm(getCurrentUser(),NULL) == 0))
-                    mailscr();
-                continue;
-            }
 
                 break;
-            }
-            else {
+            } else {
                 ret = ch;
                 break;
             }
@@ -753,33 +744,33 @@ int igetkey()
     }
 
 #ifdef NEW_HELP
-	if(scrint && ret == KEY_F1 && uinfo.mode != LOCKSCREEN && !f1ing){
-		int oldmode = uinfo.mode;
+    if (scrint && ret == KEY_F1 && uinfo.mode != LOCKSCREEN && !f1ing) {
+        int oldmode = uinfo.mode;
 
-		modify_user_mode(HELP);
-		f1ing=1;
-		newhelp(helpmode);
-		f1ing=0;
-		modify_user_mode(oldmode);
+        modify_user_mode(HELP);
+        f1ing=1;
+        newhelp(helpmode);
+        f1ing=0;
+        modify_user_mode(oldmode);
 
-		return igetkey();
-	}
+        return igetkey();
+    }
 #endif
 
-    if(scrint&&keymem_total&&!skip_key&&!ingetdata) {
+    if (scrint&&keymem_total&&!skip_key&&!ingetdata) {
         int i,j,p;
-        for(i=0;i<keymem_total;i++) {
+        for (i=0;i<keymem_total;i++) {
             p=!keymem[i].status[0];
-            if(keymem[i].status[0]==-1) continue;
+            if (keymem[i].status[0]==-1) continue;
             j=0;
-            while(keymem[i].status[j]&&j<10) {
-                if(keymem[i].status[j]==uinfo.mode) p=1;
+            while (keymem[i].status[j]&&j<10) {
+                if (keymem[i].status[j]==uinfo.mode) p=1;
                 j++;
             }
-            if(p&&ret==keymem[i].key) {
+            if (p&&ret==keymem[i].key) {
                 j=0;
-                while(keymem[i].mapped[j]&&j<10) j++;
-                if(j==0) continue;
+                while (keymem[i].mapped[j]&&j<10) j++;
+                if (j==0) continue;
                 ret = keymem[i].mapped[0];
                 keybuffer_count = j-1;
                 keybuffer = keymem[i].mapped+1;
@@ -787,7 +778,7 @@ int igetkey()
             }
         }
     }
-    
+
     return ret;
 }
 
@@ -796,8 +787,7 @@ bool enableESC=false;
 /*
  * ret:  -1: user cancel input
  */
-int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel)
-{
+int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel) {
     int ch, clen = 0, curr = 0, x, y;
     bool init=true;
     char tmp[STRLEN],save[STRLEN];
@@ -811,7 +801,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     if (prompt) prints("%s", prompt);
     if (scrint) getyx(&y, &x);
     clen = strlen(buf);
-    if(clen>=len) clen = len - 1;
+    if (clen>=len) clen = len - 1;
     curr = clen;
     buf[curr] = '\0';
     strncpy(save, buf, STRLEN);
@@ -821,9 +811,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         prints("%s", buf);
         while ((ch = igetkey()) != '\r') {
             /*
-             * TODO: add KEY_REFRESH support 
+             * TODO: add KEY_REFRESH support
              */
-	    if (ch == '\n')
+            if (ch == '\n')
                 break;
             if (ch == '\177' || ch == Ctrl('H')) {
                 if (clen == 0)
@@ -853,9 +843,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     while (1) {
         int i;
         move(y, x);
-        if(init) prints("\x1b[4m");
-        for(i=0;i<clen;i++)
-            if(!echo||buf[i]==KEY_ESC||!isprint2(buf[i])) outc('*');
+        if (init) prints("\x1b[4m");
+        for (i=0;i<clen;i++)
+            if (!echo||buf[i]==KEY_ESC||!isprint2(buf[i])) outc('*');
             else outc(buf[i]);
         resetcolor();
         clrtoeol();
@@ -863,7 +853,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
         ch = igetkey();
 
-        if(kicked) {
+        if (kicked) {
             ingetdata = false;
             return 0;
         }
@@ -876,7 +866,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             return -ch;
         }
 #if 0 //#ifdef NINE_BUILD
-	if (true == RMSG && ch == Ctrl('Z') && clen == 0) break;
+        if (true == RMSG && ch == Ctrl('Z') && clen == 0) break;
 #endif
         if (ch == '\n' || ch == '\r')
             break;
@@ -886,9 +876,9 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             init=false;
             continue;
         }
-#endif        	
+#endif
         if (ch == '\177' || ch == Ctrl('H')) {
-            if(init) {
+            if (init) {
                 init=false;
                 buf[0]=0;
                 curr=0;
@@ -902,10 +892,10 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for(i=0;i<curr;i++)
-                    if(j) j=0;
-                    else if(buf[i]<0) j=1;
-                if(j) {
+                for (i=0;i<curr;i++)
+                    if (j) j=0;
+                    else if (buf[i]<0) j=1;
+                if (j) {
                     buf[--curr] = '\0';
                     clen--;
                 }
@@ -916,7 +906,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             continue;
         }
 
-        if(ch == KEY_ESC&&!enableESC) {
+        if (ch == KEY_ESC&&!enableESC) {
             strncpy(buf, save, Min(len,STRLEN));
             buf[Min(len,STRLEN-1)]=0;
             curr = strlen(buf);
@@ -924,15 +914,15 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             init=true;
             continue;
         }
-		if(ch == Ctrl('C')){
-			buf[0]='\0';
-			outc('\n');
-			ingetdata = false;
-			return -1;
-		}
-        
+        if (ch == Ctrl('C')) {
+            buf[0]='\0';
+            outc('\n');
+            ingetdata = false;
+            return -1;
+        }
+
         if (ch == KEY_DEL) {
-            if(init) {
+            if (init) {
                 init=false;
                 buf[0]=0;
                 curr=0;
@@ -946,10 +936,10 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for(i=0;i<curr+1;i++)
-                    if(j) j=0;
-                    else if(buf[i]<0) j=1;
-                if(j) {
+                for (i=0;i<curr+1;i++)
+                    if (j) j=0;
+                    else if (buf[i]<0) j=1;
+                if (j) {
                     strcpy(tmp, &buf[curr + 2]);
                     clen--;
                 }
@@ -969,10 +959,10 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for(i=0;i<curr;i++)
-                    if(j) j=0;
-                    else if(buf[i]<0) j=1;
-                if(j) curr--;
+                for (i=0;i<curr;i++)
+                    if (j) j=0;
+                    else if (buf[i]<0) j=1;
+                if (j) curr--;
             }
 #endif
             move(y, x + curr);
@@ -1000,10 +990,10 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for(i=0;i<curr;i++)
-                    if(j) j=0;
-                    else if(buf[i]<0) j=1;
-                if(j) curr++;
+                for (i=0;i<curr;i++)
+                    if (j) j=0;
+                    else if (buf[i]<0) j=1;
+                if (j) curr++;
             }
 #endif
             move(y, x + curr);
@@ -1017,7 +1007,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             if (!init) continue;
         }
 
-        if(init) {
+        if (init) {
             init=false;
             buf[0]=0;
             curr=0;
@@ -1043,20 +1033,19 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
 bool UPDOWN=false;
 
-int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode)
-{
+int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode) {
     int ch, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
     char savebuffer[25][LINELEN*3];
     bool init=true;
     char tmp[1024];
     extern int RMSG;
 
-	/*************stiger************
-	 * textmode 0 :  ctrl+q换行，enter发表
-	 * textmode 1 :  enter换行，ctrl+w发送
-	 *********************************/
+    /*************stiger************
+     * textmode 0 :  ctrl+q换行，enter发表
+     * textmode 1 :  enter换行，ctrl+w发送
+     *********************************/
 
-    if(uinfo.mode!=MSGING && uinfo.mode != POSTTMPL )
+    if (uinfo.mode!=MSGING && uinfo.mode != POSTTMPL)
         ingetdata = true;
     if (clearlabel == true) {
         buf[0] = 0;
@@ -1066,7 +1055,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         prints("%s", prompt);
     getyx(&starty, &startx);
     now = strlen(buf);
-    for(i=0;i<=24;i++)
+    for (i=0;i<=24;i++)
         saveline(i, 0, savebuffer[i]);
     strncpy(tmp, buf, 1024);
     tmp[1023]=0;
@@ -1077,20 +1066,20 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         y = starty; x = startx;
         move(y, x);
         chk = 0;
-        if(now==0) {
+        if (now==0) {
             cursory = y;
             cursorx = x;
         }
-        for(i=0; i<strlen(buf); i++) {
-            if(chk) chk=0;
-            else if(buf[i]<0) chk=1;
-            if(chk&&x>=maxcol) x++;
-            if(buf[i]!=13&&buf[i]!=10) {
-                if(x>maxcol) {
+        for (i=0; i<strlen(buf); i++) {
+            if (chk) chk=0;
+            else if (buf[i]<0) chk=1;
+            if (chk&&x>=maxcol) x++;
+            if (buf[i]!=13&&buf[i]!=10) {
+                if (x>maxcol) {
                     clrtoeol();
                     x = 0;
                     y++;
-                    if(y>=scr_lns) {
+                    if (y>=scr_lns) {
                         scroll();
                         starty--;
                         cursory--;
@@ -1098,16 +1087,15 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     }
                     move(y, x);
                 }
-                if(init) prints("\x1b[4m");
+                if (init) prints("\x1b[4m");
                 prints("%c", buf[i]);
                 resetcolor();
                 x++;
-            }
-            else {
+            } else {
                 clrtoeol();
                 x = 0;
                 y++;
-                if(y>=scr_lns) {
+                if (y>=scr_lns) {
                     scroll();
                     starty--;
                     cursory--;
@@ -1115,7 +1103,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 move(y, x);
             }
-            if(i==now-1) {
+            if (i==now-1) {
                 cursory = y;
                 cursorx = x;
             }
@@ -1123,14 +1111,14 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         clrtoeol();
         move(cursory, cursorx);
         ch = igetkey();
-		if(textmode == 0){
-        	if ((ch == '\n' || ch == '\r'))
-            	break;
-		}else{
-			if (ch == Ctrl('W'))
-				break;
-		}
-        for(i=starty;i<=y;i++)
+        if (textmode == 0) {
+            if ((ch == '\n' || ch == '\r'))
+                break;
+        } else {
+            if (ch == Ctrl('W'))
+                break;
+        }
+        for (i=starty;i<=y;i++)
             saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0])) {
             ingetdata = false;
@@ -1152,110 +1140,108 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
             continue;
         }
-#endif        	
-        switch(ch) {
+#endif
+        switch (ch) {
             case KEY_ESC:
                 init=true;
                 strncpy(buf, tmp, Min(len,STRLEN));
                 buf[Min(len,1024-1)]=0;
                 now=strlen(buf);
                 break;
-			case Ctrl('W'):
+            case Ctrl('W'):
             case Ctrl('Q'):
             case '\n':
             case '\r':
-                if(init) {
+                if (init) {
                     init=false;
                     buf[0]=0;
                     now=0;
                 }
-                if(UPDOWN) break;
-                if(y-starty+1<maxline) {
-                    for(i=strlen(buf)+1;i>now;i--)
+                if (UPDOWN) break;
+                if (y-starty+1<maxline) {
+                    for (i=strlen(buf)+1;i>now;i--)
                         buf[i]=buf[i-1];
                     buf[now++]='\n';
                 }
                 break;
             case KEY_UP:
                 init=false;
-                if(cursory>starty) {
+                if (cursory>starty) {
                     y = starty; x = startx;
                     chk = 0;
-                    if(y==cursory-1&&x<=cursorx)
+                    if (y==cursory-1&&x<=cursorx)
                         now=0;
-                    for(i=0; i<strlen(buf); i++) {
-                        if(chk) chk=0;
-                        else if(buf[i]<0) chk=1;
-                        if(chk&&x>=maxcol) x++;
-                        if(buf[i]!=13&&buf[i]!=10) {
-                            if(x>maxcol) {
+                    for (i=0; i<strlen(buf); i++) {
+                        if (chk) chk=0;
+                        else if (buf[i]<0) chk=1;
+                        if (chk&&x>=maxcol) x++;
+                        if (buf[i]!=13&&buf[i]!=10) {
+                            if (x>maxcol) {
                                 x = col;
                                 y++;
                             }
                             x++;
-                        }
-                        else {
+                        } else {
                             x = col;
                             y++;
                         }
 #ifdef CHINESE_CHARACTER
                         if (!DEFINE(getCurrentUser(), DEF_CHCHAR)||!chk)
 #endif
-                        if(y==cursory-1&&x<=cursorx)
-                            now=i+1;
+                            if (y==cursory-1&&x<=cursorx)
+                                now=i+1;
                     }
                 }
                 break;
             case KEY_DOWN:
                 init=false;
-                if(cursory<y) {
+                if (cursory<y) {
                     y = starty; x = startx;
                     chk = 0;
-                    if(y==cursory+1&&x<=cursorx)
+                    if (y==cursory+1&&x<=cursorx)
                         now=0;
-                    for(i=0; i<strlen(buf); i++) {
-                        if(chk) chk=0;
-                        else if(buf[i]<0) chk=1;
-                        if(chk&&x>=maxcol) x++;
-                        if(buf[i]!=13&&buf[i]!=10) {
-                            if(x>maxcol) {
+                    for (i=0; i<strlen(buf); i++) {
+                        if (chk) chk=0;
+                        else if (buf[i]<0) chk=1;
+                        if (chk&&x>=maxcol) x++;
+                        if (buf[i]!=13&&buf[i]!=10) {
+                            if (x>maxcol) {
                                 x = col;
                                 y++;
                             }
                             x++;
-                        }
-                        else {
+                        } else {
                             x = col;
                             y++;
                         }
 #ifdef CHINESE_CHARACTER
                         if (!DEFINE(getCurrentUser(), DEF_CHCHAR)||!chk)
 #endif
-                        if(y==cursory+1&&x<=cursorx)
-                            now=i+1;
+                            if (y==cursory+1&&x<=cursorx)
+                                now=i+1;
                     }
                 }
                 break;
             case '\177':
             case Ctrl('H'):
-                if(init) {
+                if (init) {
                     init=false;
                     buf[0]=0;
                     now=0;
                 }
-                if(now>0) {
-                    for(i=now-1;i<strlen(buf);i++)
+                if (now>0) {
+                    for (i=now-1;i<strlen(buf);i++)
                         buf[i]=buf[i+1];
                     now--;
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for(i=0;i<now;i++) {
-                            if(chk) chk=0;
-                            else if(buf[i]<0) chk=1;
+                        for (i=0;i<now;i++) {
+                            if (chk) chk=0;
+                            else if (buf[i]<0) chk=1;
                         }
-                        if(chk) {
-                            for(i=now-1;i<strlen(buf);i++)
+                        if (chk) {
+                            for (i=now-1;i<strlen(buf);i++)
                                 buf[i]=buf[i+1];
                             now--;
                         }
@@ -1264,56 +1250,56 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 break;
             case KEY_DEL:
-                if(init) {
+                if (init) {
                     init=false;
                     buf[0]=0;
                     now=0;
                 }
-                if(now<strlen(buf)) {
+                if (now<strlen(buf)) {
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for(i=0;i<now+1;i++) {
-                            if(chk) chk=0;
-                            else if(buf[i]<0) chk=1;
+                        for (i=0;i<now+1;i++) {
+                            if (chk) chk=0;
+                            else if (buf[i]<0) chk=1;
                         }
-                        if(chk)
-                            for(i=now;i<strlen(buf);i++)
+                        if (chk)
+                            for (i=now;i<strlen(buf);i++)
                                 buf[i]=buf[i+1];
                     }
 #endif
-                    for(i=now;i<strlen(buf);i++)
+                    for (i=now;i<strlen(buf);i++)
                         buf[i]=buf[i+1];
                 }
                 break;
             case KEY_LEFT:
                 init=false;
-                if(now>0) {
+                if (now>0) {
                     now--;
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for(i=0;i<now;i++) {
-                            if(chk) chk=0;
-                            else if(buf[i]<0) chk=1;
+                        for (i=0;i<now;i++) {
+                            if (chk) chk=0;
+                            else if (buf[i]<0) chk=1;
                         }
-                        if(chk) now--;
+                        if (chk) now--;
                     }
 #endif
                 }
                 break;
             case KEY_RIGHT:
                 init=false;
-                if(now<strlen(buf)) {
+                if (now<strlen(buf)) {
                     now++;
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for(i=0;i<now;i++) {
-                            if(chk) chk=0;
-                            else if(buf[i]<0) chk=1;
+                        for (i=0;i<now;i++) {
+                            if (chk) chk=0;
+                            else if (buf[i]<0) chk=1;
                         }
-                        if(chk) now++;
+                        if (chk) now++;
                     }
 #endif
                 }
@@ -1322,13 +1308,13 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             case Ctrl('A'):
                 init=false;
                 now--;
-                while(now>=0&&buf[now]!='\n'&&buf[now]!='\r') now--;
+                while (now>=0&&buf[now]!='\n'&&buf[now]!='\r') now--;
                 now++;
                 break;
             case KEY_END:
             case Ctrl('E'):
                 init=false;
-                while(now<strlen(buf)&&buf[now]!='\n'&&buf[now]!='\r') now++;
+                while (now<strlen(buf)&&buf[now]!='\n'&&buf[now]!='\r') now++;
                 break;
             case KEY_PGUP:
                 init=false;
@@ -1339,82 +1325,80 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 now = strlen(buf);
                 break;
             case Ctrl('Y'):
-                if(init) {
+                if (init) {
                     init=false;
                     buf[0]=0;
                     now=0;
                 }
                 i0 = strlen(buf);
                 i=now-1;
-                while(i>=0&&buf[i]!='\n'&&buf[i]!='\r') i--;
+                while (i>=0&&buf[i]!='\n'&&buf[i]!='\r') i--;
                 i++;
-                if(!buf[i]) break;
+                if (!buf[i]) break;
                 j=now;
-                while(j<i0-1&&buf[j]!='\n'&&buf[j]!='\r') j++;
-                if(j>=i0-1) j=i0-1;
+                while (j<i0-1&&buf[j]!='\n'&&buf[j]!='\r') j++;
+                if (j>=i0-1) j=i0-1;
                 j=j-i+1;
-                if(j<0) j=0;
-                for(k=0;k<i0-i-j+1;k++)
+                if (j<0) j=0;
+                for (k=0;k<i0-i-j+1;k++)
                     buf[i+k]=buf[i+j+k];
 
                 y = starty; x = startx;
                 chk = 0;
-                if(y==cursory&&x<=cursorx)
+                if (y==cursory&&x<=cursorx)
                     now=0;
-                for(i=0; i<strlen(buf); i++) {
-                    if(chk) chk=0;
-                    else if(buf[i]<0) chk=1;
-                    if(chk&&x>=maxcol) x++;
-                    if(buf[i]!=13&&buf[i]!=10) {
-                        if(x>maxcol) {
+                for (i=0; i<strlen(buf); i++) {
+                    if (chk) chk=0;
+                    else if (buf[i]<0) chk=1;
+                    if (chk&&x>=maxcol) x++;
+                    if (buf[i]!=13&&buf[i]!=10) {
+                        if (x>maxcol) {
                             x = col;
                             y++;
                         }
                         x++;
-                    }
-                    else {
+                    } else {
                         x = col;
                         y++;
                     }
 #ifdef CHINESE_CHARACTER
                     if (!DEFINE(getCurrentUser(), DEF_CHCHAR)||!chk)
 #endif
-                    if(y==cursory&&x<=cursorx)
-                        now=i+1;
+                        if (y==cursory&&x<=cursorx)
+                            now=i+1;
                 }
 
-                if(now>strlen(buf)) now=strlen(buf);
+                if (now>strlen(buf)) now=strlen(buf);
                 break;
             default:
-                if(isprint2(ch)&&strlen(buf)<len-1) {
-                    if(init) {
+                if (isprint2(ch)&&strlen(buf)<len-1) {
+                    if (init) {
                         init=false;
                         buf[0]=0;
                         now=0;
                     }
-                    for(i=strlen(buf)+1;i>now;i--)
+                    for (i=strlen(buf)+1;i>now;i--)
                         buf[i]=buf[i-1];
                     buf[now++]=ch;
                     y = starty; x = startx;
                     chk = 0;
-                    for(i=0; i<strlen(buf); i++) {
-                        if(chk) chk=0;
-                        else if(buf[i]<0) chk=1;
-                        if(chk&&x>=maxcol) x++;
-                        if(buf[i]!=13&&buf[i]!=10) {
-                            if(x>maxcol) {
+                    for (i=0; i<strlen(buf); i++) {
+                        if (chk) chk=0;
+                        else if (buf[i]<0) chk=1;
+                        if (chk&&x>=maxcol) x++;
+                        if (buf[i]!=13&&buf[i]!=10) {
+                            if (x>maxcol) {
                                 x = col;
                                 y++;
                             }
                             x++;
-                        }
-                        else {
+                        } else {
                             x = col;
                             y++;
                         }
                     }
-                    if(y-starty+1>maxline) {
-                        for(i=now-1;i<strlen(buf);i++)
+                    if (y-starty+1>maxline) {
+                        for (i=now-1;i<strlen(buf);i++)
                             buf[i]=buf[i+1];
                         now--;
                     }
@@ -1428,7 +1412,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     return y-starty+1;
 }
 
-int lock_scr(void){                             /* Leeward 98.02.22 */
+int lock_scr(void) {                            /* Leeward 98.02.22 */
     char passbuf[STRLEN];
 
     if (!strcmp(getCurrentUser()->userid, "guest"))
@@ -1437,7 +1421,7 @@ int lock_scr(void){                             /* Leeward 98.02.22 */
     modify_user_mode(LOCKSCREEN);
     clear();
     /*
-     * lock_monitor(); 
+     * lock_monitor();
      */
     while (1) {
         move(19, 32);
@@ -1453,7 +1437,7 @@ int lock_scr(void){                             /* Leeward 98.02.22 */
         } else {
             prints("\033[1m\033[31m屏幕现在已经解除锁定\033[m\n");
             /*
-             * pressanykey(); 
+             * pressanykey();
              */
             break;
         }
@@ -1461,8 +1445,7 @@ int lock_scr(void){                             /* Leeward 98.02.22 */
     return 0;
 }
 
-void printdash(char *mesg)
-{
+void printdash(char *mesg) {
     char buf[80], *ptr;
     int len;
 
@@ -1480,10 +1463,9 @@ void printdash(char *mesg)
     prints("%s\n", buf);
 }
 
-void bell()
-{
+void bell() {
     /*
-     * change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ; 
+     * change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;
      */
     char sound;
 
@@ -1492,8 +1474,7 @@ void bell()
 
 }
 
-int pressreturn()
-{
+int pressreturn() {
     extern int showansi;
     char buf[3];
 
@@ -1525,8 +1506,7 @@ int defa;
     return defa;
 }
 
-int pressanykey()
-{
+int pressanykey() {
     extern int showansi;
 
     showansi = 1;

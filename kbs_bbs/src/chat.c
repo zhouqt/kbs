@@ -5,7 +5,7 @@
     Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
                         Guy Vega, gtvega@seabass.st.usm.edu
                         Dominic Tynes, dbtynes@seabass.st.usm.edu
-  
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 1, or (at your option)
@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-    
+
     2002/08/05 checked global variable.
     2001/5/6 modified by wwj
 */
@@ -25,7 +25,7 @@
 #ifdef lint
 #include <sys/uio.h>
 #endif                          /* 
-                                 */
+*/
 /********************snow*/
 #include <stdio.h>
 #include <sys/socket.h>
@@ -245,38 +245,38 @@ int chat_parse(chatcontext * pthis)
         len = -len + 1;         /* skip 0 */
         if (*bptr == '/') {     /* 处理server传来的命令 */
             switch (bptr[1]) {
-            case 'p':
-                /* add by KCN for list long emote */
-                /* chat_waitkey(pthis);  removed by wwj */
-                break;
-            case 'c':
-                chat_clear(pthis);
-                break;
-            case 'n':
-                strncpy(pthis->chatid, bptr + 2, 8);
-                pthis->chatid[8] = 0;
-                print_chatid(pthis);
-                clrtoeol();
-                uinfo.in_chat = true;
-                strcpy(uinfo.chatid, pthis->chatid);
-                UPDATE_UTMP_STR(chatid, uinfo);
-                break;
-            case 'r':
-                strncpy(pthis->chatroom, bptr + 2, IDLEN - 1);
-                break;
-            case 'z':
-                strncpy(pthis->chatroom, bptr + 2, IDLEN - 1);
-                /* fall throw */
-            case 't':
-                move(0, 0);
-                clrtoeol();
-                if (bptr[1] == 't')
-                    strcpy(pthis->topic, bptr + 2);
-                prints
+                case 'p':
+                    /* add by KCN for list long emote */
+                    /* chat_waitkey(pthis);  removed by wwj */
+                    break;
+                case 'c':
+                    chat_clear(pthis);
+                    break;
+                case 'n':
+                    strncpy(pthis->chatid, bptr + 2, 8);
+                    pthis->chatid[8] = 0;
+                    print_chatid(pthis);
+                    clrtoeol();
+                    uinfo.in_chat = true;
+                    strcpy(uinfo.chatid, pthis->chatid);
+                    UPDATE_UTMP_STR(chatid, uinfo);
+                    break;
+                case 'r':
+                    strncpy(pthis->chatroom, bptr + 2, IDLEN - 1);
+                    break;
+                case 'z':
+                    strncpy(pthis->chatroom, bptr + 2, IDLEN - 1);
+                    /* fall throw */
+                case 't':
+                    move(0, 0);
+                    clrtoeol();
+                    if (bptr[1] == 't')
+                        strcpy(pthis->topic, bptr + 2);
+                    prints
                     ("\033[44m\033[33m 房间： \033[36m%-10s  \033[33m话题：\033[36m%-51s\033[31m%2s\033[m",
                      pthis->chatroom, pthis->topic,
                      (pthis->rec) ? "录" : "  ");
-                break;
+                    break;
             }
         } else {
             printchatline(pthis, bptr);
@@ -300,7 +300,7 @@ int chat_checkparse(chatcontext * pthis)
 
     cnt = 0;
     if (pthis->bufptr
-        || ((result = ioctl(pthis->cfd, FIONREAD, &cnt)) == 0 && cnt)) {
+            || ((result = ioctl(pthis->cfd, FIONREAD, &cnt)) == 0 && cnt)) {
         do {
             if (chat_parse(pthis) == -1)
                 return 0;
@@ -312,11 +312,13 @@ int chat_checkparse(chatcontext * pthis)
 }
 
 /* KCN add chat 2 */
-int ent_chat2(void){
+int ent_chat2(void)
+{
     return ent_chat(2);
 }
 
-int ent_chat1(void){
+int ent_chat1(void)
+{
     return ent_chat(1);
 }
 
@@ -330,9 +332,9 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
     memset(&sin, 0, sizeof sin);
     sin.sin_family = PF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-/*
-    sin.sin_addr.s_addr = inet_addr("166.111.8.237");
-*/
+    /*
+        sin.sin_addr.s_addr = inet_addr("166.111.8.237");
+    */
     if (chatnum == 1)
         sin.sin_port = htons(CHATPORT3);
     else
@@ -341,21 +343,21 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
     if (connect(pthis->cfd, (struct sockaddr *) &sin, sizeof sin)) {    /*如果连接 chatd 失败，则启动chatd */
         close(pthis->cfd);
         switch (ch = fork()) {
-        case -1 /*fork failure */ :
-            bbslog("chatd", "fork error");
-            break;
-        case 0 /*fork success */ :
-            bbslog("chatd", "fork success");
-            prints("开启聊天室...");
-            if (chatnum == 1)
-                system("bin/chatd");
-            else
-                system("bin/chatd 2");
-            exit(1);
-        default:
-            bbslog("chatd", "fork par-proc");
-            /* The chat daemon forks so we can wait on it here. */
-            waitpid(ch, NULL, 0);
+            case -1 /*fork failure */ :
+                bbslog("chatd", "fork error");
+                break;
+            case 0 /*fork success */ :
+                bbslog("chatd", "fork success");
+                prints("开启聊天室...");
+                if (chatnum == 1)
+                    system("bin/chatd");
+                else
+                    system("bin/chatd 2");
+                exit(1);
+            default:
+                bbslog("chatd", "fork par-proc");
+                /* The chat daemon forks so we can wait on it here. */
+                waitpid(ch, NULL, 0);
         }
         pthis->cfd = socket(sin.sin_family, SOCK_STREAM, 0);
         if ((connect(pthis->cfd, (struct sockaddr *) &sin, sizeof sin))) {
@@ -369,12 +371,12 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
     clrtoeol();
     move(4, 0);                 /* Leave line 3 for error message while entering chat room */
     prints
-        ("输入字符 \033[1m\033[37m*\033[m 再按 \033[1m\033[37mEnter\033[m 可以取消进入聊天室。                                    ");
+    ("输入字符 \033[1m\033[37m*\033[m 再按 \033[1m\033[37mEnter\033[m 可以取消进入聊天室。                                    ");
     clrtoeol();
     move(5, 0);
     clrtoeol();                 /* Clear line 5 for good looking */
     while (1) {
-		int gdataret;
+        int gdataret;
         gdataret = getdata(2, 0, "请输入聊天代号：", inbuf, 9, DOECHO, NULL, true);
         if (gdataret == -1 || '*' == inbuf[0]) {  /* Leeward 98.04.26 */
             close(pthis->cfd);
@@ -420,7 +422,7 @@ static int ent_chat(int chatnum)
     int page_pending = false;
     int chatting = true;
 #ifdef NEW_HELP
-	int oldhelpmode=helpmode;
+    int oldhelpmode=helpmode;
 #endif
 
     if (!strcmp(getCurrentUser()->userid, "guest"))
@@ -436,7 +438,7 @@ static int ent_chat(int chatnum)
         return ch;
     }
 #ifdef NEW_HELP
-	helpmode=HELP_CHAT;
+    helpmode=HELP_CHAT;
 #endif
     add_io(pthis->cfd, 0);
     modified = newmail = cmdpos = currchar = 0;
@@ -465,8 +467,8 @@ static int ent_chat(int chatnum)
             int talkpage = servicepage(0, pthis->buf);
 
             if (talkpage != page_pending) {
-            	bell();
-            	oflush();
+                bell();
+                oflush();
                 printchatline(pthis, pthis->buf);
                 page_pending = talkpage;
             }
@@ -476,93 +478,92 @@ static int ent_chat(int chatnum)
         if (ch == I_OTHERDATA)
             continue;
         switch (ch) {
-        case KEY_UP:
-        case KEY_DOWN:
-            if (cmdpos == pthis->cmdpos) {
-                strcpy(pthis->lastcmd[cmdpos], inbuf);
-                modified = 0;
-            }
-            if (ch == KEY_UP) {
-                if (cmdpos != (pthis->cmdpos + 1) % MAXLASTCMD) {
-                    int i = (cmdpos + MAXLASTCMD - 1) % MAXLASTCMD;
-
-                    if (pthis->lastcmd[i][0])
-                        cmdpos = i;
+            case KEY_UP:
+            case KEY_DOWN:
+                if (cmdpos == pthis->cmdpos) {
+                    strcpy(pthis->lastcmd[cmdpos], inbuf);
+                    modified = 0;
                 }
-            }
-            if (ch == KEY_DOWN) {
-                if (cmdpos != pthis->cmdpos)
-                    cmdpos = (cmdpos + 1) % MAXLASTCMD;
-            }
-            strcpy(inbuf, pthis->lastcmd[cmdpos]);
-            if (cmdpos == pthis->cmdpos) {
+                if (ch == KEY_UP) {
+                    if (cmdpos != (pthis->cmdpos + 1) % MAXLASTCMD) {
+                        int i = (cmdpos + MAXLASTCMD - 1) % MAXLASTCMD;
+
+                        if (pthis->lastcmd[i][0])
+                            cmdpos = i;
+                    }
+                }
+                if (ch == KEY_DOWN) {
+                    if (cmdpos != pthis->cmdpos)
+                        cmdpos = (cmdpos + 1) % MAXLASTCMD;
+                }
+                strcpy(inbuf, pthis->lastcmd[cmdpos]);
+                if (cmdpos == pthis->cmdpos) {
+                    modified = 1;
+                }
+                move(b_lines, 10);
+                clrtoeol();
+                ch = inbuf[69];
+                inbuf[69] = 0;
+                outs(inbuf);
+                inbuf[69] = ch;
+                currchar = strlen(inbuf);
+                continue;
+#ifdef CHINESE_CHARACTER
+            case Ctrl('R'):
+                SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
+                continue;
+#endif
+            case KEY_LEFT:
+                if (currchar)
+                    --currchar;
+#ifdef CHINESE_CHARACTER
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currchar;i++)
+                        if (j) j=0;
+                        else if (inbuf[i]<0) j=1;
+                    if (j) {
+                        currchar--;
+                    }
+                }
+#endif
+                continue;
+            case KEY_RIGHT:
+                if (inbuf[currchar])
+                    ++currchar;
+#ifdef CHINESE_CHARACTER
+                if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                    int i,j=0;
+                    for (i=0;i<currchar;i++)
+                        if (j) j=0;
+                        else if (inbuf[i]<0) j=1;
+                    if (j) {
+                        if (inbuf[currchar])
+                            ++currchar;
+                    }
+                }
+#endif
+                continue;
+            case KEY_ESC:
+            case Ctrl('X'):
+                inbuf[0] = 0;
+                currchar = 0;
+                move(b_lines, currchar + 10);
+                clrtoeol();
                 modified = 1;
-            }
-            move(b_lines, 10);
-            clrtoeol();
-            ch = inbuf[69];
-            inbuf[69] = 0;
-            outs(inbuf);
-            inbuf[69] = ch;
-            currchar = strlen(inbuf);
-            continue;
-#ifdef CHINESE_CHARACTER
-        case Ctrl('R'):
-			SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
-        	continue;
-#endif        	
-        case KEY_LEFT:
-            if (currchar)
-                --currchar;
-#ifdef CHINESE_CHARACTER
-			if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currchar;i++)
-					if(j) j=0;
-					else if(inbuf[i]<0) j=1;
-				if(j) {
-					currchar--;
-				}
-			}
-#endif
-            continue;
-        case KEY_RIGHT:
-            if (inbuf[currchar])
-                ++currchar;
-#ifdef CHINESE_CHARACTER
-			if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currchar;i++)
-					if(j) j=0;
-					else if(inbuf[i]<0) j=1;
-				if(j) {
-		            if (inbuf[currchar])
-        		        ++currchar;
-				}
-			}
-#endif
-            continue;
-        case KEY_ESC:
-        case Ctrl('X'):
-            inbuf[0] = 0;
-            currchar = 0;
-            move(b_lines, currchar + 10);
-            clrtoeol();
-            modified = 1;
-            continue;
-        case Ctrl('A'):
-            currchar = 0;
-            continue;
-        case Ctrl('E'):
-            currchar = strlen(inbuf);
-            continue;
+                continue;
+            case Ctrl('A'):
+                currchar = 0;
+                continue;
+            case Ctrl('E'):
+                currchar = strlen(inbuf);
+                continue;
         }
         if (!newmail && chkmail(0)) {   /* check mail */
             newmail = 1;
             printchatline(pthis, "\033[32m*** \033[31m当！你有新信来啦...\033[m");
         }
-        if (isprint2(ch))
-        {
+        if (isprint2(ch)) {
             if (currchar < 126) {       /* 未满一行,print it */
                 modified = 1;
                 if (inbuf[currchar]) {  /* insert */
@@ -637,24 +638,24 @@ static int ent_chat(int chatnum)
                 inbuf[69] = ch;
             }
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
-				int i,j=0;
-				for(i=0;i<currchar;i++)
-					if(j) j=0;
-					else if(inbuf[i]<0) j=1;
-				if(j) {
-	                currchar--;
-	                inbuf[127] = '\0';
-	                memcpy(&inbuf[currchar], &inbuf[currchar + 1],
-	                       127 - currchar);
-	                move(b_lines, currchar + 10);
-	                clrtoeol();
-	                ch = inbuf[69]; /* save the end of line */
-	                inbuf[69] = 0;
-	                outs(&inbuf[currchar]);
-	                inbuf[69] = ch;
-				}
-			}
+            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
+                int i,j=0;
+                for (i=0;i<currchar;i++)
+                    if (j) j=0;
+                    else if (inbuf[i]<0) j=1;
+                if (j) {
+                    currchar--;
+                    inbuf[127] = '\0';
+                    memcpy(&inbuf[currchar], &inbuf[currchar + 1],
+                           127 - currchar);
+                    move(b_lines, currchar + 10);
+                    clrtoeol();
+                    ch = inbuf[69]; /* save the end of line */
+                    inbuf[69] = 0;
+                    outs(&inbuf[currchar]);
+                    inbuf[69] = ch;
+                }
+            }
 #endif
             continue;
         }
@@ -666,7 +667,7 @@ static int ent_chat(int chatnum)
             clrtoeol();
             continue;
         }
-        if (ch == Ctrl('C') /*|| ch == Ctrl('D') */ ) { /* ^C 退出 */
+        if (ch == Ctrl('C') /*|| ch == Ctrl('D') */) {  /* ^C 退出 */
             chat_send(pthis, "/b");
             if (pthis->rec)
                 set_rec(pthis,NULL);
@@ -674,7 +675,7 @@ static int ent_chat(int chatnum)
         }
     }
     /* chat end */
-    if(pthis->rec)set_rec(pthis,NULL);
+    if (pthis->rec)set_rec(pthis,NULL);
     close(pthis->cfd);
     add_io(0, 0);
     uinfo.in_chat = false;
@@ -684,7 +685,7 @@ static int ent_chat(int chatnum)
     clear();
     free(pthis);
 #ifdef NEW_HELP
-	helpmode=oldhelpmode;
+    helpmode=oldhelpmode;
 #endif
     return 0;
 }
@@ -739,13 +740,13 @@ int print_friend_ent(struct user_info *uentp, chatcontext * pthis, int pos)
     if (kill(uentp->pid, 0) == -1)
         return 0;
 #endif                          /* 
-                                 */
+    */
     if (!myfriend(uentp->uid, NULL,getSession()))
         return 0;
     sprintf(pline, " %-13s%c%-10s", uentp->userid,
             uentp->invisible ? '#' : ' ', modestring(buf,uentp->mode,
-                                                     uentp->destuid, 0,
-                                                     NULL));
+                    uentp->destuid, 0,
+                    NULL));
     if (pthis->apply_count < 2)
         strcat(pline, "│");
     strcat(pthis->apply_buf, pline);
@@ -897,8 +898,8 @@ int chat_status(struct user_info *uentp, chatcontext * pthis)
     char tmpstr[31],buf[80],buf2[80];
     char *lpTmp;
 
-    if (strlen(genbuf)>t_columns) 
-    	return QUIT;
+    if (strlen(genbuf)>t_columns)
+        return QUIT;
     if (uentp->invisible == 1) {
         if (HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) {
             sprintf(genbuf + strlen(genbuf), "\x1b[32m#\x1b[m");
@@ -926,8 +927,8 @@ int chat_status(struct user_info *uentp, chatcontext * pthis)
         }
     }
     sprintf(genbuf, "%s%-8s", genbuf, modestring(buf2,uentp->mode, uentp->destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
-                                                 (uentp->in_chat ? uentp->
-                                                  chatid : NULL)));
+            (uentp->in_chat ? uentp->
+             chatid : NULL)));
     if (lpTmp[0] != ' ')
         sprintf(genbuf + strlen(genbuf), "[%s];", lpTmp);
     else
@@ -947,7 +948,7 @@ static void query_user(chatcontext * pthis, const char *userid)
         return;
     }
     setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
-    /*---	modified by period	2000-11-02	hide posts/logins	---*/
+    /*--- modified by period 2000-11-02 hide posts/logins ---*/
 
     sprintf(genbuf, "%s (%s):      %s", lookupuser->userid,
             lookupuser->username,
@@ -966,13 +967,13 @@ static void query_user(chatcontext * pthis, const char *userid)
     if (apply_utmpuid((APPLY_UTMP_FUNC) chat_status, tuid, (char *) pthis)) {
         char buf[1024];
 
-	lookupuser->lasthost[IPLEN-1] = '\0';
+        lookupuser->lasthost[IPLEN-1] = '\0';
         sprintf(buf, "目前正在线上: 来自 %s 上线时间 %s" /*\n" */ ,
                 (lookupuser->lasthost[0] == '\0' /* || DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /*Haohmaru.99.12.18 */
         printchatline(pthis, buf);
         printchatline(pthis, genbuf);
     } else {
-        lookupuser->lasthost[IPLEN-1] = '\0';  
+        lookupuser->lasthost[IPLEN-1] = '\0';
         sprintf(genbuf, "上次上线来自  %s 时间为 %s " /*\n" */ ,
                 (lookupuser->lasthost[0] == '\0' /* || DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /* Haohmaru.99.12.18 */
         printchatline(pthis, genbuf);
@@ -1005,11 +1006,11 @@ static void query_user(chatcontext * pthis, const char *userid)
         printchatline(pthis, genbuf);
     }
 #endif                          /* 
-                                 */
+    */
 }
 void call_query(chatcontext * pthis, const char *arg)
-                                                            /* by alex, 1996.9.5 */
- /* by Luzi, 1997.11.30 */
+/* by alex, 1996.9.5 */
+/* by Luzi, 1997.11.30 */
 {
     if (!*arg) {
         printchatline(pthis, "*** 请输入要查询的ID ***");
@@ -1098,8 +1099,8 @@ void set_rec(chatcontext * pthis, const char *arg)
         move(0, 0);
         clrtoeol();
         prints
-            ("\033[44m\033[33m 房间： \033[36m%-10s  \033[33m话题：\033[36m%-51s\033[31m%2s\033[m",
-             pthis->chatroom, pthis->topic, (pthis->rec) ? "录" : "  ");
+        ("\033[44m\033[33m 房间： \033[36m%-10s  \033[33m话题：\033[36m%-51s\033[31m%2s\033[m",
+         pthis->chatroom, pthis->topic, (pthis->rec) ? "录" : "  ");
         fprintf(pthis->rec,
                 "发信人: %s (%s) 房间: %s\n话  题: %s\x1b[m\n\n",
                 getCurrentUser()->userid, getCurrentUser()->username,
@@ -1111,8 +1112,8 @@ void set_rec(chatcontext * pthis, const char *arg)
         move(0, 0);
         clrtoeol();
         prints
-            ("\033[44m\033[33m 房间： \033[36m%-10s  \033[33m话题：\033[36m%-51s\033[31m%2s\033[m",
-             pthis->chatroom, pthis->topic, (pthis->rec) ? "录" : "  ");
+        ("\033[44m\033[33m 房间： \033[36m%-10s  \033[33m话题：\033[36m%-51s\033[31m%2s\033[m",
+         pthis->chatroom, pthis->topic, (pthis->rec) ? "录" : "  ");
         fprintf(pthis->rec,
                 "发信人: %s (%s) 房间: %s\n话  题: %s\x1b[m\n\n",
                 getCurrentUser()->userid, getCurrentUser()->username,
@@ -1123,7 +1124,7 @@ void set_rec(chatcontext * pthis, const char *arg)
         pthis->rec = NULL;
         mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid,
                   "录音结果", 1, NULL);
-	my_unlink(fname);
+        my_unlink(fname);
         bbslog("user", "stop record room %s", pthis->chatroom);
     }
 }
@@ -1351,7 +1352,7 @@ void call_mail(chatcontext * pthis, const char *arg)
     FILE *fpin;
     char b2[STRLEN];
     char *t;
-	char direct[PATHLEN];
+    char direct[PATHLEN];
 
     if (chkmail() == 0) {       /* check mail */
         printchatline(pthis, "\033[32m*** 没有新的信件 ***\033[m");
@@ -1376,9 +1377,9 @@ void call_mail(chatcontext * pthis, const char *arg)
     fclose(fpin);
 }
 
-/* 
+/*
  2001/5/6  modified by wwj
- 聊天室看msg的函数 
+ 聊天室看msg的函数
  */
 void chat_show_allmsgs(chatcontext * pthis, const char *arg)
 {
@@ -1393,19 +1394,18 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
         line = screen_lines - 1;
     if (line > 300)
         line = 300;
-	gettmpfilename( fname, "chatmsg" );
+    gettmpfilename(fname, "chatmsg");
     //sprintf(fname, "tmp/%s.msg", getCurrentUser()->userid);
     fp = fopen(fname, "w");
     count = get_msgcount(0, getCurrentUser()->userid);
-    for(i=0;i<count;i++) 
-    if(i>=count-line)
-    {
-        j++;
-        load_msghead(0, getCurrentUser()->userid, i, &head);
-        load_msgtext(getCurrentUser()->userid, &head, buf);
-        translate_msg(buf, &head, showmsg,getSession());
-        fprintf(fp, "%s", showmsg);
-    }
+    for (i=0;i<count;i++)
+        if (i>=count-line) {
+            j++;
+            load_msghead(0, getCurrentUser()->userid, i, &head);
+            load_msgtext(getCurrentUser()->userid, &head, buf);
+            translate_msg(buf, &head, showmsg,getSession());
+            fprintf(fp, "%s", showmsg);
+        }
     fclose(fp);
     if (count) {
         fp = fopen(fname, "rb");
@@ -1442,7 +1442,7 @@ static const struct chat_command chat_cmdtbl[] = {
     {"ignore", call_ignore, 6}, /* added by Luzi 1997.11.28 */
     {"listen", call_listen, 6}, /* added by Luzi 1997.11.28 */
     {"mail", call_mail, 4},     /* added by Luzi 1997.12.22 */
-/*    {"alias",call_alias,5},    added by Luzi 1998.01.25 */
+    /*    {"alias",call_alias,5},    added by Luzi 1998.01.25 */
     {NULL, NULL, 1}
 };
 int chat_cmd_match(const char *buf, const char *str, short nLenth)
@@ -1464,7 +1464,7 @@ int chat_cmd(chatcontext * pthis, char *buf)
         return 0;
     for (i = 0; chat_cmdtbl[i].cmdname; i++) {
         if (chat_cmd_match
-            (buf, chat_cmdtbl[i].cmdname, chat_cmdtbl[i].nCmdLenth))
+                (buf, chat_cmdtbl[i].cmdname, chat_cmdtbl[i].nCmdLenth))
             break;
     }
     if (!chat_cmdtbl[i].cmdname)

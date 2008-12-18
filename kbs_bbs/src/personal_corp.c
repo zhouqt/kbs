@@ -7,7 +7,7 @@
 struct pc_users *pc_u = NULL;
 
 /*******
- * pc_dirmode: 
+ * pc_dirmode:
  *   1: 公开区
  *   2: 好友
  *   3: 私人
@@ -25,7 +25,8 @@ static int pc_read_dir(int first);
 static int pc_read_comment();
 
 
-int pc_choose_user(void){
+int pc_choose_user(void)
+{
     pc_sec();
     return 0;
 }
@@ -45,7 +46,8 @@ static int pc_sel_user()
 
 }
 
-int pc_add_user(void){
+int pc_add_user(void)
+{
     char ans[201];
     char sql[100];
     struct userec *lookupuser;
@@ -313,34 +315,34 @@ static int pc_sec_prekey(struct _select_def *conf, int *key)
         return SHOW_SELCHANGE;
     }
     switch (*key) {
-    case '*':
-        conf->new_pos = 1;
-        return SHOW_SELCHANGE;
-    case KEY_RIGHT:
-        if (conf->pos < 15) {
-            conf->new_pos += 14;
+        case '*':
+            conf->new_pos = 1;
             return SHOW_SELCHANGE;
-        } else {
-            *key = '\n';
-        }
-        break;
-    case KEY_LEFT:
-        if (conf->pos > 14) {
-            conf->new_pos -= 14;
-            return SHOW_SELCHANGE;
-        }
-        break;
-    case 'q':
-        *key = KEY_LEFT;
-        break;
-    case 'p':
-    case 'k':
-        *key = KEY_UP;
-        break;
-    case 'n':
-    case 'j':
-        *key = KEY_DOWN;
-        break;
+        case KEY_RIGHT:
+            if (conf->pos < 15) {
+                conf->new_pos += 14;
+                return SHOW_SELCHANGE;
+            } else {
+                *key = '\n';
+            }
+            break;
+        case KEY_LEFT:
+            if (conf->pos > 14) {
+                conf->new_pos -= 14;
+                return SHOW_SELCHANGE;
+            }
+            break;
+        case 'q':
+            *key = KEY_LEFT;
+            break;
+        case 'p':
+        case 'k':
+            *key = KEY_UP;
+            break;
+        case 'n':
+        case 'j':
+            *key = KEY_DOWN;
+            break;
     }
     return SHOW_CONTINUE;
 }
@@ -384,7 +386,7 @@ static int pc_sec()
     struct _select_def group_conf;
     POINT *pts;
     int i;
-    
+
     modify_user_mode(PC);
     clear();
 
@@ -434,20 +436,20 @@ struct _pc_selusr *pc_s;
 static int pc_seldir_prekey(struct _select_def *conf, int *key)
 {
     switch (*key) {
-    case KEY_RIGHT:
-        *key = '\n';
-        break;
-    case 'q':
-        *key = KEY_LEFT;
-        break;
-    case 'p':
-    case 'k':
-        *key = KEY_UP;
-        break;
-    case 'n':
-    case 'j':
-        *key = KEY_DOWN;
-        break;
+        case KEY_RIGHT:
+            *key = '\n';
+            break;
+        case 'q':
+            *key = KEY_LEFT;
+            break;
+        case 'p':
+        case 'k':
+            *key = KEY_UP;
+            break;
+        case 'n':
+        case 'j':
+            *key = KEY_DOWN;
+            break;
     }
     return SHOW_CONTINUE;
 }
@@ -592,24 +594,24 @@ static int pc_perm(char *userid)
 static int pc_seldir_show(struct _select_def *conf, int i)
 {
     switch (i) {
-    case 1:
-        prints(" 公开区");
-        break;
-    case 2:
-        prints(" 好友区");
-        break;
-    case 3:
-        prints(" 私人区");
-        break;
-    case 4:
-        prints(" 收藏区");
-        break;
-    case 5:
-        prints(" 删除区");
-        break;
-    default:
-        prints(" NULL ");
-        break;
+        case 1:
+            prints(" 公开区");
+            break;
+        case 2:
+            prints(" 好友区");
+            break;
+        case 3:
+            prints(" 私人区");
+            break;
+        case 4:
+            prints(" 收藏区");
+            break;
+        case 5:
+            prints(" 删除区");
+            break;
+        default:
+            prints(" NULL ");
+            break;
     }
 
     return SHOW_CONTINUE;
@@ -644,7 +646,7 @@ int pc_read(char *userid)
 
     if (pc_u)
         return 0; //reentry
-    
+
     pc_u = (struct pc_users *) malloc(sizeof(struct pc_users));
     if (pc_u == NULL)
         return 0;
@@ -652,7 +654,7 @@ int pc_read(char *userid)
     strncpy(pc_select_user, userid, IDLEN + 2);
     pc_select_user[IDLEN] = 0;
 
-  startuser:
+startuser:
     clear();
     if (getuser(pc_select_user, &lookupuser) == 0) {
         clear();
@@ -952,65 +954,65 @@ static int pc_conv_node_to_file(unsigned long nid, char *fname)
             PUTS("(本文包含HTML标记，终端模式下可能无法正确浏览)\n");
             do {
                 switch (*ptr) {
-                case '<':
-                    ptr++;
-                    GET_TAG((*ptr != '>') && (*ptr != ' '));
-                    for (nd = 0; nd < 11; nd++)
-                        if (!strcasecmp(tag, TAG_NEWLN[nd])) {
-                            PUTS("\n");
-                            break;
-                        }
-                    for (nd = 0; nd < 3; nd++)
-                        if (!strcasecmp(tag, TAG_SPACE[nd])) {
-                            PUTC(' ');
-                            break;
-                        }
-                    for (nd = 0; nd < 6; nd++) {
-                        if (!strcasecmp(tag, TAG_LINK[nd][0]) && (*ptr == ' ')) {
-                            do {
-                                while (*ptr == ' ')
+                    case '<':
+                        ptr++;
+                        GET_TAG((*ptr != '>') && (*ptr != ' '));
+                        for (nd = 0; nd < 11; nd++)
+                            if (!strcasecmp(tag, TAG_NEWLN[nd])) {
+                                PUTS("\n");
+                                break;
+                            }
+                        for (nd = 0; nd < 3; nd++)
+                            if (!strcasecmp(tag, TAG_SPACE[nd])) {
+                                PUTC(' ');
+                                break;
+                            }
+                        for (nd = 0; nd < 6; nd++) {
+                            if (!strcasecmp(tag, TAG_LINK[nd][0]) && (*ptr == ' ')) {
+                                do {
+                                    while (*ptr == ' ')
+                                        ptr++;
+                                    GET_TAG((*ptr != '\"') && (*ptr != '/') && (*ptr != '>'));
+                                    if (*ptr != '\"') {
+                                        if (*ptr)
+                                            ptr++;
+                                        continue;
+                                    }
                                     ptr++;
-                                GET_TAG((*ptr != '\"') && (*ptr != '/') && (*ptr != '>'));
-                                if (*ptr != '\"') {
-                                    if (*ptr)
-                                        ptr++;
-                                    continue;
-                                }
-                                ptr++;
-                                if (!strcasecmp(tag, TAG_LINK[nd][1])) {
-                                    GET_TAG(*ptr != '\"');
-                                    PUTS(" [ ");
-                                    PUTS(tag);
-                                    PUTS(" ] ");
-                                    if (*ptr)
-                                        ptr++;
-                                } else {
-                                    GET_TAG(*ptr != '\"');
-                                    if (*ptr)
-                                        ptr++;
-                                }
-                            } while (*ptr == ' ');
-                            break;
+                                    if (!strcasecmp(tag, TAG_LINK[nd][1])) {
+                                        GET_TAG(*ptr != '\"');
+                                        PUTS(" [ ");
+                                        PUTS(tag);
+                                        PUTS(" ] ");
+                                        if (*ptr)
+                                            ptr++;
+                                    } else {
+                                        GET_TAG(*ptr != '\"');
+                                        if (*ptr)
+                                            ptr++;
+                                    }
+                                } while (*ptr == ' ');
+                                break;
+                            }
                         }
-                    }
-                    while ((*ptr) && (*ptr != '>'))
+                        while ((*ptr) && (*ptr != '>'))
+                            ptr++;
+                        if (*ptr == '>')
+                            ptr++;
+                        break;
+                    case '&':
                         ptr++;
-                    if (*ptr == '>')
+                        GET_TAG((*ptr >= 'a') && (*ptr <= 'z'));
+                        for (tagp = 0; tagp < 5; tagp++)
+                            if (!strcasecmp(tag, TAG_SPECL[tagp][0])) {
+                                PUTC(TAG_SPECL[tagp][1][0]);
+                                break;
+                            }
                         ptr++;
-                    break;
-                case '&':
-                    ptr++;
-                    GET_TAG((*ptr >= 'a') && (*ptr <= 'z'));
-                    for (tagp = 0; tagp < 5; tagp++)
-                        if (!strcasecmp(tag, TAG_SPECL[tagp][0])) {
-                            PUTC(TAG_SPECL[tagp][1][0]);
-                            break;
-                        }
-                    ptr++;
-                    break;
-                default:
-                    PUTC(*ptr);
-                    ptr++;
+                        break;
+                    default:
+                        PUTC(*ptr);
+                        ptr++;
                 }
                 if (ret <= 0) {
                     close(fd);
@@ -1190,21 +1192,21 @@ static int pc_dir_title(struct _select_def *conf)
     } else {
         prints("\033[0;1;44m  %s的个人文集 -- %-44s ", pc_u->username, pc_u->corpusname);
         switch (pc_dirmode) {
-        case 2:
-            prints("[好友区]\033[m");
-            break;
-        case 3:
-            prints("[私人区]\033[m");
-            break;
-        case 4:
-            prints("[收藏区]\033[m");
-            break;
-        case 5:
-            prints("[删除区]\033[m");
-            break;
-        default:
-            prints("[公开区]\033[m");
-            break;
+            case 2:
+                prints("[好友区]\033[m");
+                break;
+            case 3:
+                prints("[私人区]\033[m");
+                break;
+            case 4:
+                prints("[收藏区]\033[m");
+                break;
+            case 5:
+                prints("[删除区]\033[m");
+                break;
+            default:
+                prints("[公开区]\033[m");
+                break;
         }
     }
 
@@ -1213,7 +1215,7 @@ static int pc_dir_title(struct _select_def *conf)
         prints("               退出[\033[1;32mq\033[m] 增加[\033[1;32ma\033[m] 删除[\033[1;32md\033[m] 修改[\033[1;32me\033[m] 拷贝[\033[1;32mc\033[m] 粘贴[\033[1;32mp\033[m]");
     else
         prints
-            ("退出[\033[1;32mq\033[m] 增加[\033[1;32ma\033[m] 删除[\033[1;32md\033[m] 修改[\033[1;32me\033[m] 拷贝[\033[1;32mc\033[m] 粘贴[\033[1;32mp\033[m] 修改好友[\033[1;32mo\033[m] 导入好友[\033[1;32mi\033[m]");
+        ("退出[\033[1;32mq\033[m] 增加[\033[1;32ma\033[m] 删除[\033[1;32md\033[m] 修改[\033[1;32me\033[m] 拷贝[\033[1;32mc\033[m] 粘贴[\033[1;32mp\033[m] 修改好友[\033[1;32mo\033[m] 导入好友[\033[1;32mi\033[m]");
     move(2, 0);
     prints("\033[0;1;44m  %-4s %-6s %-38s %-4s %-4s %-12s\033[m", "序号", "类别", "标题", "评论", "访问", "文章发表时间");
     update_endline();
@@ -1229,7 +1231,7 @@ static int pc_dir_select(struct _select_def *conf)
 
     //pc_add_visitcount(pc_n[conf->pos - conf->page_pos].nid);
     pc_n[conf->pos - conf->page_pos].visitcount++;
-        /**如果是目录***/
+    /**如果是目录***/
     if (pc_dirmode == 4 && pc_n[conf->pos - conf->page_pos].type == 1) {
         unsigned long old_fav_dir = pc_fav_dir;
 
@@ -1245,7 +1247,7 @@ static int pc_dir_select(struct _select_def *conf)
         return SHOW_DIRCHANGE;
     }
 
-        /***先显示文章正文*****/
+    /***先显示文章正文*****/
     gettmpfilename(fpath, "pc.node");
     unlink(fpath);
     if (!pc_conv_node_to_file(pc_n[conf->pos - conf->page_pos].nid, fpath)) {
@@ -1265,12 +1267,12 @@ static int pc_dir_select(struct _select_def *conf)
     }
 
     switch (ch) {
-    case 'r':
-        pc_now_node_ent = conf->pos - conf->page_pos;
-        pc_read_comment();
-        return SHOW_DIRCHANGE;
-    default:
-        break;
+        case 'r':
+            pc_now_node_ent = conf->pos - conf->page_pos;
+            pc_read_comment();
+            return SHOW_DIRCHANGE;
+        default:
+            break;
     }
 
     unlink(fpath);
@@ -1293,21 +1295,20 @@ static int pc_dir_key(struct _select_def *conf, int key)
 {
     char ans[4];
     switch (key) {
-    case 'a':
-        if (!pc_is_owner(pc_u->username))
-            return SHOW_CONTINUE;
-        if (conf->item_count > pc_u->nodelimit) {
-            clear();
-            prints("文章数目达到限制");
-            pressreturn();
+        case 'a':
+            if (!pc_is_owner(pc_u->username))
+                return SHOW_CONTINUE;
+            if (conf->item_count > pc_u->nodelimit) {
+                clear();
+                prints("文章数目达到限制");
+                pressreturn();
+                return SHOW_REFRESH;
+            }
+            if (pc_add_a_node(0))
+                return SHOW_DIRCHANGE;
             return SHOW_REFRESH;
-        }
-        if (pc_add_a_node(0))
-            return SHOW_DIRCHANGE;
-        return SHOW_REFRESH;
-        break;
-    case 'i':
-        {
+            break;
+        case 'i': {
             char ans[4];
 
             if (!pc_is_owner(pc_u->username) || pc_dirmode != 2)
@@ -1346,60 +1347,59 @@ static int pc_dir_key(struct _select_def *conf, int key)
                 return SHOW_REFRESH;
             }
         }
-    case 'o':
-        if (!pc_is_owner(pc_u->username) || pc_dirmode != 2)
-            return SHOW_CONTINUE;
-        pc_change_friend();
-        return SHOW_REFRESH;
-        break;
-    case 'g':
-        if (!pc_is_owner(pc_u->username) || pc_dirmode != 4 || pc_fav_dir == 0)
-            return SHOW_CONTINUE;
-        if (conf->item_count > pc_u->dirlimit) {
-            clear();
-            prints("目录数目达到限制");
-            pressreturn();
-            return SHOW_REFRESH;
-        }
-        if (pc_add_a_dir(0))
-            return SHOW_DIRCHANGE;
-        return SHOW_REFRESH;
-        break;
-    case 'd':
-        if (!pc_is_admin(pc_u->username))
-            return SHOW_CONTINUE;
-
-        move(2,0);
-        clrtoeol();
-        ans[0]=0;
-        getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
-        if (ans[0] != 'y' && ans[0]!='Y') {
-            // KCN 普度众生
-        } else if (pc_dirmode == 5) {
-            if (del_pc_nodes(pc_n[conf->pos - conf->page_pos].nid, pc_n[conf->pos - conf->page_pos].access, pc_u->uid)) {
-                return SHOW_DIRCHANGE;
-            }
-        } else if (pc_dirmode == 4) {
-            struct pc_nodes pn;
-
-            if (get_pc_nodes(&pn, pc_u->uid, pc_n[conf->pos - conf->page_pos].nid, -1, 3, 0, 1, 0) > 0) {
-                move(t_lines - 1, 0);
-                clrtoeol();
-                prints("不能删除非空目录,按任意键继续");
-                igetkey();
-                update_endline();
+        case 'o':
+            if (!pc_is_owner(pc_u->username) || pc_dirmode != 2)
                 return SHOW_CONTINUE;
+            pc_change_friend();
+            return SHOW_REFRESH;
+            break;
+        case 'g':
+            if (!pc_is_owner(pc_u->username) || pc_dirmode != 4 || pc_fav_dir == 0)
+                return SHOW_CONTINUE;
+            if (conf->item_count > pc_u->dirlimit) {
+                clear();
+                prints("目录数目达到限制");
+                pressreturn();
+                return SHOW_REFRESH;
             }
-            if (del_pc_node_junk(pc_n[conf->pos - conf->page_pos].nid, pc_n[conf->pos - conf->page_pos].access, pc_u->uid))
+            if (pc_add_a_dir(0))
                 return SHOW_DIRCHANGE;
-        } else {
-            if (del_pc_node_junk(pc_n[conf->pos - conf->page_pos].nid, pc_n[conf->pos - conf->page_pos].access, pc_u->uid))
-                return SHOW_DIRCHANGE;
-        }
-        return SHOW_REFRESH;
-        break;
-    case 'D':
-        {
+            return SHOW_REFRESH;
+            break;
+        case 'd':
+            if (!pc_is_admin(pc_u->username))
+                return SHOW_CONTINUE;
+
+            move(2,0);
+            clrtoeol();
+            ans[0]=0;
+            getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
+            if (ans[0] != 'y' && ans[0]!='Y') {
+                // KCN 普度众生
+            } else if (pc_dirmode == 5) {
+                if (del_pc_nodes(pc_n[conf->pos - conf->page_pos].nid, pc_n[conf->pos - conf->page_pos].access, pc_u->uid)) {
+                    return SHOW_DIRCHANGE;
+                }
+            } else if (pc_dirmode == 4) {
+                struct pc_nodes pn;
+
+                if (get_pc_nodes(&pn, pc_u->uid, pc_n[conf->pos - conf->page_pos].nid, -1, 3, 0, 1, 0) > 0) {
+                    move(t_lines - 1, 0);
+                    clrtoeol();
+                    prints("不能删除非空目录,按任意键继续");
+                    igetkey();
+                    update_endline();
+                    return SHOW_CONTINUE;
+                }
+                if (del_pc_node_junk(pc_n[conf->pos - conf->page_pos].nid, pc_n[conf->pos - conf->page_pos].access, pc_u->uid))
+                    return SHOW_DIRCHANGE;
+            } else {
+                if (del_pc_node_junk(pc_n[conf->pos - conf->page_pos].nid, pc_n[conf->pos - conf->page_pos].access, pc_u->uid))
+                    return SHOW_DIRCHANGE;
+            }
+            return SHOW_REFRESH;
+            break;
+        case 'D': {
             char ans[4];
 
             if (!pc_is_owner(pc_u->username))
@@ -1415,69 +1415,68 @@ static int pc_dir_key(struct _select_def *conf, int key)
 
             return SHOW_DIRCHANGE;
         }
-    case 'e':
-        if (!pc_is_owner(pc_u->username))
-            return SHOW_CONTINUE;
-        if (pc_dirmode == 4 && pc_n[conf->pos - conf->page_pos].type == 1) {
-            if (pc_add_a_dir(pc_n[conf->pos - conf->page_pos].nid))
+        case 'e':
+            if (!pc_is_owner(pc_u->username))
+                return SHOW_CONTINUE;
+            if (pc_dirmode == 4 && pc_n[conf->pos - conf->page_pos].type == 1) {
+                if (pc_add_a_dir(pc_n[conf->pos - conf->page_pos].nid))
+                    return SHOW_DIRCHANGE;
+                return SHOW_REFRESH;
+            }
+            if (pc_add_a_node(pc_n[conf->pos - conf->page_pos].nid))
                 return SHOW_DIRCHANGE;
             return SHOW_REFRESH;
-        }
-        if (pc_add_a_node(pc_n[conf->pos - conf->page_pos].nid))
-            return SHOW_DIRCHANGE;
-        return SHOW_REFRESH;
-        break;
-    case 'c':
-        if (pc_n[conf->pos - conf->page_pos].type == 1) {
+            break;
+        case 'c':
+            if (pc_n[conf->pos - conf->page_pos].type == 1) {
+                move(t_lines - 1, 0);
+                clrtoeol();
+                prints("不能复制目录,按任意键继续");
+                igetkey();
+                update_endline();
+                return SHOW_CONTINUE;
+            }
+            pc_pasteboard = pc_n[conf->pos - conf->page_pos].nid;
             move(t_lines - 1, 0);
             clrtoeol();
-            prints("不能复制目录,按任意键继续");
+            prints("已经复制该条目到剪贴板中,按任意键继续");
             igetkey();
             update_endline();
             return SHOW_CONTINUE;
-        }
-        pc_pasteboard = pc_n[conf->pos - conf->page_pos].nid;
-        move(t_lines - 1, 0);
-        clrtoeol();
-        prints("已经复制该条目到剪贴板中,按任意键继续");
-        igetkey();
-        update_endline();
-        return SHOW_CONTINUE;
-        break;
-    case 'p':
-        if (!pc_is_owner(pc_u->username))
+            break;
+        case 'p':
+            if (!pc_is_owner(pc_u->username))
+                return SHOW_CONTINUE;
+            if (conf->item_count > pc_u->nodelimit) {
+                clear();
+                prints("文章数目达到限制");
+                pressreturn();
+                return SHOW_REFRESH;
+            }
+            if (pc_pasteboard <= 0) {
+                move(t_lines - 1, 0);
+                clrtoeol();
+                prints("剪贴板没有内容,按任意键继续");
+                igetkey();
+                update_endline();
+                return SHOW_DIRCHANGE;
+            }
+            if (pc_paste_node(pc_pasteboard, pc_u->uid, pc_dirmode - 1, pc_dirmode == 4 ? pc_fav_dir : 0)) {
+                move(t_lines - 1, 0);
+                clrtoeol();
+                prints("粘贴成功,按任意键继续");
+                igetkey();
+                update_endline();
+                return SHOW_DIRCHANGE;
+            }
+            move(t_lines - 1, 0);
+            clrtoeol();
+            prints("粘贴失败,按任意键继续");
+            igetkey();
+            update_endline();
             return SHOW_CONTINUE;
-        if (conf->item_count > pc_u->nodelimit) {
-            clear();
-            prints("文章数目达到限制");
-            pressreturn();
-            return SHOW_REFRESH;
-        }
-        if (pc_pasteboard <= 0) {
-            move(t_lines - 1, 0);
-            clrtoeol();
-            prints("剪贴板没有内容,按任意键继续");
-            igetkey();
-            update_endline();
-            return SHOW_DIRCHANGE;
-        }
-        if (pc_paste_node(pc_pasteboard, pc_u->uid, pc_dirmode - 1, pc_dirmode == 4 ? pc_fav_dir : 0)) {
-            move(t_lines - 1, 0);
-            clrtoeol();
-            prints("粘贴成功,按任意键继续");
-            igetkey();
-            update_endline();
-            return SHOW_DIRCHANGE;
-        }
-        move(t_lines - 1, 0);
-        clrtoeol();
-        prints("粘贴失败,按任意键继续");
-        igetkey();
-        update_endline();
-        return SHOW_CONTINUE;
-        break;
-    case 's':
-        {
+            break;
+        case 's': {
             char ans[20];
             struct userec *lookupuser;
 
@@ -1501,10 +1500,10 @@ static int pc_dir_key(struct _select_def *conf, int key)
 
             break;
         }
-    case 'v':
-        i_read_mail();
-        return SHOW_REFRESH;
-        break;
+        case 'v':
+            i_read_mail();
+            return SHOW_REFRESH;
+            break;
     }
 
     return SHOW_CONTINUE;
@@ -1553,15 +1552,15 @@ static int pc_dir_getdata(struct _select_def *conf, int pos, int len)
 static int pc_dir_prekey(struct _select_def *conf, int *key)
 {
     switch (*key) {
-    case 'q':
-        *key = KEY_LEFT;
-        break;
-    case 'k':
-        *key = KEY_UP;
-        break;
-    case 'j':
-        *key = KEY_DOWN;
-        break;
+        case 'q':
+            *key = KEY_LEFT;
+            break;
+        case 'k':
+            *key = KEY_UP;
+            break;
+        case 'j':
+            *key = KEY_DOWN;
+            break;
     }
     return SHOW_CONTINUE;
 }
@@ -1708,14 +1707,14 @@ struct pc_comments *pc_c = NULL;
 
 //int pc_com_start=0;
 
-static int pc_can_com(int comlevel , unsigned long pcuid )
+static int pc_can_com(int comlevel , unsigned long pcuid)
 {
     if (comlevel == 0)
         return 0;
     if (comlevel == 1 && !strcmp(getCurrentUser()->userid, "guest"))
         return 0;
-    if (pc_in_blacklist( getCurrentUser()->userid , pcuid ) )
-    	return 0;
+    if (pc_in_blacklist(getCurrentUser()->userid , pcuid))
+        return 0;
     return 1;
 }
 
@@ -1805,21 +1804,21 @@ static int pc_com_title(struct _select_def *conf)
     } else {
         prints("\033[0;1;44m  %s的个人文集评论 -- %-42s ", pc_u->username, pc_u->corpusname);
         switch (pc_dirmode) {
-        case 2:
-            prints("[好友区]\033[m");
-            break;
-        case 3:
-            prints("[私人区]\033[m");
-            break;
-        case 4:
-            prints("[收藏区]\033[m");
-            break;
-        case 5:
-            prints("[删除区]\033[m");
-            break;
-        default:
-            prints("[公开区]\033[m");
-            break;
+            case 2:
+                prints("[好友区]\033[m");
+                break;
+            case 3:
+                prints("[私人区]\033[m");
+                break;
+            case 4:
+                prints("[收藏区]\033[m");
+                break;
+            case 5:
+                prints("[删除区]\033[m");
+                break;
+            default:
+                prints("[公开区]\033[m");
+                break;
         }
     }
     move(1, 0);
@@ -1843,17 +1842,17 @@ static int pc_com_show(struct _select_def *conf, int i)
 static int pc_com_prekey(struct _select_def *conf, int *key)
 {
     switch (*key) {
-    case 'q':
-        *key = KEY_LEFT;
-        break;
-    case 'p':
-    case 'k':
-        *key = KEY_UP;
-        break;
-    case 'n':
-    case 'j':
-        *key = KEY_DOWN;
-        break;
+        case 'q':
+            *key = KEY_LEFT;
+            break;
+        case 'p':
+        case 'k':
+            *key = KEY_UP;
+            break;
+        case 'n':
+        case 'j':
+            *key = KEY_DOWN;
+            break;
     }
     return SHOW_CONTINUE;
 }
@@ -1863,42 +1862,42 @@ static int pc_com_key(struct _select_def *conf, int key)
     char ans[4];
 
     switch (key) {
-    case 'a':
-        if (!pc_can_com(pc_n[pc_now_node_ent].comment , pc_n[pc_now_node_ent].uid))
-            return SHOW_CONTINUE;
-        if (pc_add_a_com(0))
-            return SHOW_DIRCHANGE;
-        return SHOW_REFRESH;
-        break;
-    case 'd':
-        if (!pc_is_admin(pc_u->username) && 
-            ((strcmp(getCurrentUser()->userid, "guest")==0) ||
-            strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username)))
-            return SHOW_CONTINUE;
+        case 'a':
+            if (!pc_can_com(pc_n[pc_now_node_ent].comment , pc_n[pc_now_node_ent].uid))
+                return SHOW_CONTINUE;
+            if (pc_add_a_com(0))
+                return SHOW_DIRCHANGE;
+            return SHOW_REFRESH;
+            break;
+        case 'd':
+            if (!pc_is_admin(pc_u->username) &&
+                    ((strcmp(getCurrentUser()->userid, "guest")==0) ||
+                     strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username)))
+                return SHOW_CONTINUE;
 
-        move(2,0);
-		clrtoeol();
-		ans[0]=0;
-        getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
-		if(ans[0] != 'y' && ans[0]!='Y') {
-			
-        } else if (del_pc_comments(pc_n[pc_now_node_ent].nid, pc_c[conf->pos - conf->page_pos].cid)) {
-            return SHOW_DIRCHANGE;
-        }
-        return SHOW_REFRESH;
-        break;
-    case 'e':
-        if ((strcmp(getCurrentUser()->userid, "guest")==0) ||
-            strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
-            return SHOW_CONTINUE;
-        if (pc_add_a_com(pc_c[conf->pos - conf->page_pos].cid))
-            return SHOW_DIRCHANGE;
-        return SHOW_REFRESH;
-        break;
-    case 'v':
-        i_read_mail();
-        return SHOW_REFRESH;
-        break;
+            move(2,0);
+            clrtoeol();
+            ans[0]=0;
+            getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
+            if (ans[0] != 'y' && ans[0]!='Y') {
+
+            } else if (del_pc_comments(pc_n[pc_now_node_ent].nid, pc_c[conf->pos - conf->page_pos].cid)) {
+                return SHOW_DIRCHANGE;
+            }
+            return SHOW_REFRESH;
+            break;
+        case 'e':
+            if ((strcmp(getCurrentUser()->userid, "guest")==0) ||
+                    strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
+                return SHOW_CONTINUE;
+            if (pc_add_a_com(pc_c[conf->pos - conf->page_pos].cid))
+                return SHOW_DIRCHANGE;
+            return SHOW_REFRESH;
+            break;
+        case 'v':
+            i_read_mail();
+            return SHOW_REFRESH;
+            break;
     }
 
     return SHOW_CONTINUE;
@@ -1943,7 +1942,7 @@ static int pc_com_select(struct _select_def *conf)
 
     clear();
 
-        /***先显示文章正文*****/
+    /***先显示文章正文*****/
     gettmpfilename(fpath, "pc.comments");
     unlink(fpath);
     if (!pc_conv_com_to_file(pc_c[conf->pos - conf->page_pos].cid, fpath)) {
