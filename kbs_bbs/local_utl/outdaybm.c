@@ -15,7 +15,7 @@ typedef int cmpfunc(const void *, const void *);
 typedef struct {
     char uname[IDLEN + 2];
     char board[STRLEN];
-	time_t inday;
+    time_t inday;
 } BMInfo;
 
 static BMInfo *pBMInfo;
@@ -60,7 +60,7 @@ void checkBMs(void)
 
         pBM = &(pBMInfo[i]);
         dftime = (now - pBM->inday) / 86400;
-            strftime(mdate, 30, timefmt, localtime(&(pBM->inday)));
+        strftime(mdate, 30, timefmt, localtime(&(pBM->inday)));
         sprintf(tbuf, "%d", dftime);
         sprintf(lbuf, fmt, fgc, bgc, pBM->uname, pBM->board, mdate, tbuf);
         fprintf(stdout, "%s\n", lbuf);
@@ -73,41 +73,41 @@ int main(int argc, char **argv)
 {
     BMInfo bmusr[MAXCHECK];
     char buf[256];
-	FILE *fp;
-	char uname[IDLEN+2];
-	char board[STRLEN];
-	time_t inday;
-	char renming[STRLEN];
-	const struct boardheader *bp;
+    FILE *fp;
+    char uname[IDLEN+2];
+    char board[STRLEN];
+    time_t inday;
+    char renming[STRLEN];
+    const struct boardheader *bp;
 
     pBMInfo = bmusr;
 
-	chdir(BBSHOME);
-	resolve_boards();
+    chdir(BBSHOME);
+    resolve_boards();
 
-	if((fp=fopen("etc/bmat","r"))==NULL){
-		fprintf(stdout,"cannot read bmat file\n");
-		exit(0);
-	}
+    if ((fp=fopen("etc/bmat","r"))==NULL) {
+        fprintf(stdout,"cannot read bmat file\n");
+        exit(0);
+    }
 
-	while(fgets(buf, 256,fp)){
-		if( sscanf(buf,"%s %s %lu %s",uname, board, &inday,renming) != 4)
-			continue;
-    	if (!strcasecmp(uname, "SYSOP") || !isascii(*uname))
-        	continue;
-		bp = getbcache(board);
-		if (bp==NULL)
-			continue;
-    	if (!isNormalBoard(bp))
-			continue;
-		if (nBMCount >= MAXCHECK)
-			continue;
-		strcpy(pBMInfo[nBMCount].uname,uname);
-		strcpy(pBMInfo[nBMCount].board, board);
-		pBMInfo[nBMCount].inday = inday;
-		nBMCount++;
-	}
-	fclose(fp);
+    while (fgets(buf, 256,fp)) {
+        if (sscanf(buf,"%s %s %lu %s",uname, board, &inday,renming) != 4)
+            continue;
+        if (!strcasecmp(uname, "SYSOP") || !isascii(*uname))
+            continue;
+        bp = getbcache(board);
+        if (bp==NULL)
+            continue;
+        if (!isNormalBoard(bp))
+            continue;
+        if (nBMCount >= MAXCHECK)
+            continue;
+        strcpy(pBMInfo[nBMCount].uname,uname);
+        strcpy(pBMInfo[nBMCount].board, board);
+        pBMInfo[nBMCount].inday = inday;
+        nBMCount++;
+    }
+    fclose(fp);
 
     qsort(pBMInfo, nBMCount, sizeof(BMInfo), (cmpfunc *) cmpBMLogin);
     checkBMs();

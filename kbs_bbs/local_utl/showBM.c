@@ -22,7 +22,8 @@ int query_BM(struct userec *user, void *arg)
     return 0;
 }
 
-int main(void){
+int main(void)
+{
     chdir(BBSHOME);
     resolve_ucache();
     resolve_boards();

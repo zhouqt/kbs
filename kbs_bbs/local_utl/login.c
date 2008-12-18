@@ -38,30 +38,29 @@ int login(struct userec *user)
     strncpy(ui.from, getSession()->fromhost, IPLEN);
     ui.logintime = time(0);     /* for counting user's stay time */
     /* refer to bbsfoot.c for details */
-	ui.freshtime = time(0);
+    ui.freshtime = time(0);
     ui.mode = WEBEXPLORE;
     strncpy(ui.userid, user->userid, 20);
-	{
-		struct userdata ud;
+    {
+        struct userdata ud;
 
-		read_userdata(user->userid, &ud);
-    	strncpy(ui.realname, ud.realname, 20);
-	}
+        read_userdata(user->userid, &ud);
+        strncpy(ui.realname, ud.realname, 20);
+    }
     strncpy(ui.username, user->username, 40);
     utmpent = getnewutmpent2(&ui, 1);
-    if (utmpent == -1)
-	{
+    if (utmpent == -1) {
         fprintf(stderr, "抱歉，目前在线用户数已达上限，无法登录。");
-		exit(-1);
-	}
+        exit(-1);
+    }
     /*u = get_user_info(utmpent);*/
-	u = &(utmpshm->uinfo[utmpent-1]);
+    u = &(utmpshm->uinfo[utmpent-1]);
     u->pid = 1;
     tmp = rand() % 100000000;
     u->utmpkey = tmp;
     getfriendstr(user,u, getSession());
     /*setcurruinfo(u);*/
-	/*u_info = ui;*/
+    /*u_info = ui;*/
     /*if (addto_msglist(get_utmpent_num(getcurruinfo()), getcurruserid()) < 0)
         http_fatal("无法添加当前用户到消息列表中");*/
     sprintf(buf, "%d", utmpent);
@@ -74,28 +73,26 @@ int login(struct userec *user)
 
 int main(int argc, char **argv)
 {
-	struct userec *x = NULL;
+    struct userec *x = NULL;
 
-	if (argc != 2)
-	{
-		fprintf(stderr, "Usage: %s <username>\n", argv[0]);
-		exit(-1);
-	}
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <username>\n", argv[0]);
+        exit(-1);
+    }
 
     if (init_all()) {
         printf("init data fail\n");
         return -1;
     }
 
-	getuser(argv[1], &x);
-	if (x == NULL)
-	{
-		fprintf(stderr, "%s not found.\n", argv[1]);
-		exit(-1);
-	}
-	setCurrentUser(x);
-	login(x);
+    getuser(argv[1], &x);
+    if (x == NULL) {
+        fprintf(stderr, "%s not found.\n", argv[1]);
+        exit(-1);
+    }
+    setCurrentUser(x);
+    login(x);
 
-	return 0;
+    return 0;
 }
 

@@ -6,7 +6,8 @@
 
 #define MAX_COMMEND 5
 
-int gen_commend_xml(void){
+int gen_commend_xml(void)
+{
     int dirfd;
     FILE *fp;
     FILE *fp1;
@@ -29,24 +30,24 @@ int gen_commend_xml(void){
     if (numrecords <= 0)
         return -1;
 
-    if ((fp = fopen("xml/commend.xml", "w")) == NULL) 
+    if ((fp = fopen("xml/commend.xml", "w")) == NULL)
         return -1;
 
     fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
     fprintf(fp, "<hotsubjects>\n");
 
     dirfd = open(dirpath, O_RDONLY);
-    if( dirfd >= 0 ){
-        if( numrecords > MAX_COMMEND )
+    if (dirfd >= 0) {
+        if (numrecords > MAX_COMMEND)
             lseek(dirfd, sizeof(struct fileheader)*(numrecords - MAX_COMMEND), SEEK_SET);
 
         numrecords -= MAX_COMMEND;
 
-        while(read(dirfd, &dirfh, sizeof(dirfh)) >= sizeof(dirfh) ){
+        while (read(dirfd, &dirfh, sizeof(dirfh)) >= sizeof(dirfh)) {
 
             setbfile(dirfile, COMMEND_ARTICLE, dirfh.filename);
 
-            if(( fp1=fopen(dirfile, "r"))==NULL )
+            if ((fp1=fopen(dirfile, "r"))==NULL)
                 continue;
 
             numrecords ++;
@@ -60,38 +61,38 @@ int gen_commend_xml(void){
             bh = (struct boardheader *) getboard(dirfh.o_bid);
             fprintf(fp, "<o_board>%s</o_board>\n", encode_url(url_buf,(bh ? bh->filename : ""),sizeof(url_buf)));
             fprintf(fp, "<o_id>%d</o_id>\n",dirfh.o_id);
-            if( fgets(buf, 255, fp1) ){
-                if( ! strncmp(buf, "发信人: ", 8) ){
-                    if( (c=strchr(buf+8, ' ')) != NULL )
+            if (fgets(buf, 255, fp1)) {
+                if (! strncmp(buf, "发信人: ", 8)) {
+                    if ((c=strchr(buf+8, ' ')) != NULL)
                         *c = 0;
                     fprintf(fp, "<owner>%s</owner>\n", buf+8);
                 }
             }
             fprintf(fp, "<o_groupid>%d</o_groupid>\n<brief>", dirfh.o_groupid);
-            for(i=0;i<3;i++) fgets(buf, 255, fp1);
+            for (i=0;i<3;i++) fgets(buf, 255, fp1);
             brieflen = 240;
-            for(i=0;i<4;){
-                if(fgets(buf, 240, fp1) ){
-                    if( buf[0] == '\n' || buf[0] == '\r' || buf[0]=='\0' )
+            for (i=0;i<4;) {
+                if (fgets(buf, 240, fp1)) {
+                    if (buf[0] == '\n' || buf[0] == '\r' || buf[0]=='\0')
                         continue;
                     buf[240]=0;
                     /* etnlegend, 2006.09.17, 过滤控制字符... */
                     process_control_chars(buf,"\n");
 
                     len = strlen(buf);
-                    if(!(len<brieflen)){
+                    if (!(len<brieflen)) {
                         strnzhcpy(buf,buf,brieflen);
                         len=brieflen;
                     }
 
-                    fprintf(fp, "%s", encode_url(url_buf,encode_xml(xml_buf, buf, sizeof(xml_buf)),sizeof(url_buf)) );
+                    fprintf(fp, "%s", encode_url(url_buf,encode_xml(xml_buf, buf, sizeof(xml_buf)),sizeof(url_buf)));
                     i++;
 
                     brieflen -= len;
 
-                    if(brieflen<2)
+                    if (brieflen<2)
                         break;
-                }else
+                } else
                     break;
             }
             fprintf(fp, " </brief>\n</hotsubject>\n");
@@ -106,14 +107,16 @@ int gen_commend_xml(void){
     return 0;
 }
 
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
     chdir(BBSHOME);
     resolve_boards();
     gen_commend_xml();
     return 0;
 }
 #else
-int main(void){
+int main(void)
+{
     return 0;
 }
 #endif

@@ -1,4 +1,4 @@
-/*    自动解封系统    KCN 1999.7.26 		  */
+/*    自动解封系统    KCN 1999.7.26     */
 
 #include "bbs.h"
 struct userec deliveruser;

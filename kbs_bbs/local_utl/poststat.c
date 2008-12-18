@@ -11,24 +11,24 @@
 #include <time.h>
 #include "bbs.h"
 #include "urlencode.c"
-#define	DELETE
+#define DELETE
 
 char *myfile[] = { "day", "week", "month", "year", "bless" };
 int mycount[4] = { 7, 4, 12 };
 int mytop[] = { 10, 50, 100, 100, 10 };
 char *mytitle[] = { "日十大热门话题",
-    "周五十大热门话题",
-    "月百大热门话题",
-    "年度百大热门话题",
-    "日十大衷心祝福"
-};
+                    "周五十大热门话题",
+                    "月百大热门话题",
+                    "年度百大热门话题",
+                    "日十大衷心祝福"
+                  };
 
 
 #define HASHSIZE 10240
 #define TOPCOUNT 10000
 #ifdef BLESS_BOARD
 const char *surfix_bless[23] = {
-	" ",
+    " ",
     "  \x1b[1;34m◆  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
     "\x1b[0;32m│\x1b[1m本\x1b[0;32m│",
@@ -55,7 +55,7 @@ const char *surfix_bless[23] = {
 #endif
 
 struct fileheader               /* This structure is used to hold data in */
- fh[1];
+            fh[1];
 
 struct postrec_old {
     struct posttop pt;
@@ -172,15 +172,15 @@ void writestat(int mytype, struct postrec_old *dobucket[HASHSIZE])
     char *p, curfile[40];
 
     /*
-     * Haohmaru.99.11.20.检查是否已被删 
+     * Haohmaru.99.11.20.检查是否已被删
      */
-	int fd;
+    int fd;
     char dirfile[80];
     int real;
-	fileheader_t fh;
+    fileheader_t fh;
 
     /*
-     * Bigman.2000.8.28: 修改统计方式 
+     * Bigman.2000.8.28: 修改统计方式
      */
     int m, n;
     char BoardName[100][BOARDNAMELEN];
@@ -188,12 +188,12 @@ void writestat(int mytype, struct postrec_old *dobucket[HASHSIZE])
 
     struct top_header curr_top[10];
 
-/* ---------------------------------------------- */
+    /* ---------------------------------------------- */
     /*
-     * sort top 100 issue and save results            
+     * sort top 100 issue and save results
      */
     /*
-     * ---------------------------------------------- 
+     * ----------------------------------------------
      */
 
     memset(top, 0, sizeof(top));
@@ -234,31 +234,31 @@ void writestat(int mytype, struct postrec_old *dobucket[HASHSIZE])
             p = buf + 4;
 
             sprintf(dirfile, "boards/%s/.DIR", top[i].board);
-			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
-				continue;
+            if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+                continue;
 
-    		if( get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 ){
-				close(fd);
-				continue;
-			}
-			close(fd);
+            if (get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0) {
+                close(fd);
+                continue;
+            }
+            close(fd);
 
-                m = 0;
-                for (n = 0; n < real; n++) {
-                    if (!strcmp(top[i].board, BoardName[n]))
-                        m++;
-                }
+            m = 0;
+            for (n = 0; n < real; n++) {
+                if (!strcmp(top[i].board, BoardName[n]))
+                    m++;
+            }
 #ifdef BLESS_BOARD
-				if(mytype != 4){
+            if (mytype != 4) {
 #endif
 
                 if (m >= 3)
                     continue;
 #ifdef BLESS_BOARD
-				}
+            }
 #endif
 
-                strcpy(BoardName[real], top[i].board);
+            strcpy(BoardName[real], top[i].board);
 
             real++;
 
@@ -273,11 +273,11 @@ void writestat(int mytype, struct postrec_old *dobucket[HASHSIZE])
 #endif
             {
                 fprintf(fp,"\033[37m第\033[31m%3d\033[37m 名 \033[37m信区 : \033[33m%-16s\033[37m【\033[32m%s\033[37m】"
-                    "\033[36m%4d \033[37m人\033[35m%16s\n     \033[37m标题 : \033[44m\033[37m%-60.60s\033[m\n",
-                    (!mytype?real:(i+1)),top[i].board,p,top[i].number,fh.owner,fh.title);
+                        "\033[36m%4d \033[37m人\033[35m%16s\n     \033[37m标题 : \033[44m\033[37m%-60.60s\033[m\n",
+                        (!mytype?real:(i+1)),top[i].board,p,top[i].number,fh.owner,fh.title);
 
                 /* etnlegend, 2006.05.28, 阅读十大 ... */
-                if(!mytype&&real<=10){
+                if (!mytype&&real<=10) {
                     curr_top[real-1].bid=getbid(top[i].board,NULL);
                     curr_top[real-1].gid=top[i].groupid;
                 }
@@ -285,12 +285,12 @@ void writestat(int mytype, struct postrec_old *dobucket[HASHSIZE])
             }
         }
 
-        if(!mytype){
+        if (!mytype) {
             const struct boardheader *bh;
             char path[PATHLEN];
             int k;
-            for(k=0;k<10;k++){
-                if(!(bh=getboard(publicshm->top[k].bid)))
+            for (k=0;k<10;k++) {
+                if (!(bh=getboard(publicshm->top[k].bid)))
                     continue;
                 snprintf(path,PATHLEN,"boards/%s/.TOP.%u",bh->filename,publicshm->top[k].gid);
                 unlink(path);
@@ -327,83 +327,79 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE]
     char *p, curfile[40];
 
     /*
-     * Haohmaru.99.11.20.检查是否已被删 
+     * Haohmaru.99.11.20.检查是否已被删
      */
-	int fd;
+    int fd;
     char dirfile[80];
     int real;
-	fileheader_t fh;
+    fileheader_t fh;
 
     /*
-     * Bigman.2000.8.28: 修改统计方式 
+     * Bigman.2000.8.28: 修改统计方式
      */
     int m, n;
     char BoardName[100][BOARDNAMELEN];
     char url_buf[256];
-	char xml_buf[256];
-	const struct boardheader *bp;
+    char xml_buf[256];
+    const struct boardheader *bp;
 
-	/* ---------------------------------------------- */
+    /* ---------------------------------------------- */
     /*
-     * sort top 100 issue and save results            
+     * sort top 100 issue and save results
      */
     /*
-     * ---------------------------------------------- 
+     * ----------------------------------------------
      */
     p = myfile[mytype];
 
     sprintf(curfile, "xml/%s_sec%d.xml", p, secid);
-    if ((fp = fopen(curfile, "w")) != NULL) 
-	{
-		fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
-		fprintf(fp, "<hotsubjects>\n");
+    if ((fp = fopen(curfile, "w")) != NULL) {
+        fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
+        fprintf(fp, "<hotsubjects>\n");
 
         real = 0;
-        for (i = 0; i < j && real < mytop[mytype]; i++) 
-		{
+        for (i = 0; i < j && real < mytop[mytype]; i++) {
 
-			bp = getbcache(top[i].board);
-			if (bp == NULL)
-				continue;
-			if ( secid != get_seccode_index(bp->title[0]) )
-				continue;
+            bp = getbcache(top[i].board);
+            if (bp == NULL)
+                continue;
+            if (secid != get_seccode_index(bp->title[0]))
+                continue;
 
-			setbdir(DIR_MODE_NORMAL, dirfile, top[i].board);
-			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
-				continue;
+            setbdir(DIR_MODE_NORMAL, dirfile, top[i].board);
+            if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+                continue;
 
-    		if(get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 )
-			{
-				close(fd);
-				continue;
-			}
-			close(fd);
+            if (get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0) {
+                close(fd);
+                continue;
+            }
+            close(fd);
 
-			m = 0;
-			for (n = 0; n < real; n++) 
-			{
-				if (!strcmp(top[i].board, BoardName[n]))
-					m++;
-			}
+            m = 0;
+            for (n = 0; n < real; n++) {
+                if (!strcmp(top[i].board, BoardName[n]))
+                    m++;
+            }
 
-			if (m >= 3)
-				continue;
+            if (m >= 3)
+                continue;
 
-			strcpy(BoardName[real], top[i].board);
+            strcpy(BoardName[real], top[i].board);
 
             real++;
 
-			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title, 
-						sizeof(xml_buf)),sizeof(url_buf)));
-			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
-			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%ld</time>\n", top[i].date);
-			fprintf(fp, "<number>%d</number>\n", top[i].number);
-			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
-			fprintf(fp, "</hotsubject>\n");
+            fprintf(fp, "<hotsubject>\n");
+            fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title,
+                    sizeof(xml_buf)),sizeof(url_buf)));
+            fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
+            fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
+            fprintf(fp, "<time>%ld</time>\n", top[i].date);
+            fprintf(fp, "<number>%d</number>\n", top[i].number);
+            fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
+            fprintf(fp, "</hotsubject>\n");
         }
-		fprintf(fp, "</hotsubjects>\n");
+        fprintf(fp, "</hotsubjects>\n");
 
         fclose(fp);
     }
@@ -411,7 +407,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE]
 
 void gen_secs_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE])
 {
-	int i,j;
+    int i,j;
     struct postrec_old *pp;
 
     memset(top, 0, sizeof(top));
@@ -420,9 +416,9 @@ void gen_secs_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE
             j = sort(pp, j);
     }
 
-	for(i=0; i<SECNUM; i++){
-		gen_sec_hot_subjects_xml(mytype, dobucket, i, j);
-	}
+    for (i=0; i<SECNUM; i++) {
+        gen_sec_hot_subjects_xml(mytype, dobucket, i, j);
+    }
 }
 
 void gen_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE])
@@ -433,27 +429,27 @@ void gen_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE])
     char *p, curfile[40];
 
     /*
-     * Haohmaru.99.11.20.检查是否已被删 
+     * Haohmaru.99.11.20.检查是否已被删
      */
-	int fd;
+    int fd;
     char dirfile[80];
     int real;
-	fileheader_t fh;
+    fileheader_t fh;
 
     /*
-     * Bigman.2000.8.28: 修改统计方式 
+     * Bigman.2000.8.28: 修改统计方式
      */
     int m, n;
     char BoardName[100][BOARDNAMELEN];
-	char xml_buf[256];
-	char url_buf[256];
+    char xml_buf[256];
+    char url_buf[256];
 
-	/* ---------------------------------------------- */
+    /* ---------------------------------------------- */
     /*
-     * sort top 100 issue and save results            
+     * sort top 100 issue and save results
      */
     /*
-     * ---------------------------------------------- 
+     * ----------------------------------------------
      */
 
     memset(top, 0, sizeof(top));
@@ -463,60 +459,56 @@ void gen_hot_subjects_xml(int mytype, struct postrec_old *dobucket[HASHSIZE])
     }
 
     p = myfile[mytype];
-	/*
-    sprintf(curfile, "etc/posts/%s.0", p);
-    if ((fp = fopen(curfile, "w")) != NULL) {
-        fwrite(top, sizeof(struct posttop), j, fp);
-        fclose(fp);
-    }
-	*/
+    /*
+       sprintf(curfile, "etc/posts/%s.0", p);
+       if ((fp = fopen(curfile, "w")) != NULL) {
+           fwrite(top, sizeof(struct posttop), j, fp);
+           fclose(fp);
+       }
+    */
 
     sprintf(curfile, "xml/%s.xml", p);
-    if ((fp = fopen(curfile, "w")) != NULL) 
-	{
-		fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
-		fprintf(fp, "<hotsubjects>\n");
+    if ((fp = fopen(curfile, "w")) != NULL) {
+        fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
+        fprintf(fp, "<hotsubjects>\n");
 
         i = mytop[mytype];
         real = 0;
-        for (i = 0; i < j && real < mytop[mytype]; i++) 
-		{
-			setbdir(DIR_MODE_NORMAL, dirfile, top[i].board);
-			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
-				continue;
+        for (i = 0; i < j && real < mytop[mytype]; i++) {
+            setbdir(DIR_MODE_NORMAL, dirfile, top[i].board);
+            if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+                continue;
 
-    		if(get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 )
-			{
-				close(fd);
-				continue;
-			}
-			close(fd);
+            if (get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0) {
+                close(fd);
+                continue;
+            }
+            close(fd);
 
-			m = 0;
-			for (n = 0; n < real; n++) 
-			{
-				if (!strcmp(top[i].board, BoardName[n]))
-					m++;
-			}
+            m = 0;
+            for (n = 0; n < real; n++) {
+                if (!strcmp(top[i].board, BoardName[n]))
+                    m++;
+            }
 
-			if (m >= 3)
-				continue;
+            if (m >= 3)
+                continue;
 
-			strcpy(BoardName[real], top[i].board);
+            strcpy(BoardName[real], top[i].board);
 
             real++;
 
-			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title, 
-						sizeof(xml_buf)),sizeof(url_buf)));
-			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
-			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%ld</time>\n", top[i].date);
-			fprintf(fp, "<number>%d</number>\n", top[i].number);
-			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
-			fprintf(fp, "</hotsubject>\n");
+            fprintf(fp, "<hotsubject>\n");
+            fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title,
+                    sizeof(xml_buf)),sizeof(url_buf)));
+            fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
+            fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
+            fprintf(fp, "<time>%ld</time>\n", top[i].date);
+            fprintf(fp, "<number>%d</number>\n", top[i].number);
+            fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
+            fprintf(fp, "</hotsubject>\n");
         }
-		fprintf(fp, "</hotsubjects>\n");
+        fprintf(fp, "</hotsubjects>\n");
 
         fclose(fp);
     }
@@ -530,28 +522,28 @@ void gen_blessing_list_xml(struct postrec_old *dobucket[HASHSIZE])
     char *p, curfile[40];
 
     /*
-     * Haohmaru.99.11.20.检查是否已被删 
+     * Haohmaru.99.11.20.检查是否已被删
      */
-	int fd;
+    int fd;
     char dirfile[80];
     int real;
-	fileheader_t fh;
+    fileheader_t fh;
 
     /*
-     * Bigman.2000.8.28: 修改统计方式 
+     * Bigman.2000.8.28: 修改统计方式
      */
     int m, n;
     char BoardName[100][BOARDNAMELEN];
-	char xml_buf[256];
-	char url_buf[256];
-	int mytype = 4;
+    char xml_buf[256];
+    char url_buf[256];
+    int mytype = 4;
 
-	/* ---------------------------------------------- */
+    /* ---------------------------------------------- */
     /*
-     * sort top 100 issue and save results            
+     * sort top 100 issue and save results
      */
     /*
-     * ---------------------------------------------- 
+     * ----------------------------------------------
      */
 
     memset(top, 0, sizeof(top));
@@ -561,57 +553,53 @@ void gen_blessing_list_xml(struct postrec_old *dobucket[HASHSIZE])
     }
 
     p = myfile[mytype];
-	/*
-    sprintf(curfile, "etc/posts/%s.0", p);
-    if ((fp = fopen(curfile, "w")) != NULL) {
-        fwrite(top, sizeof(struct posttop), j, fp);
-        fclose(fp);
-    }
-	*/
+    /*
+       sprintf(curfile, "etc/posts/%s.0", p);
+       if ((fp = fopen(curfile, "w")) != NULL) {
+           fwrite(top, sizeof(struct posttop), j, fp);
+           fclose(fp);
+       }
+    */
 
     sprintf(curfile, "xml/%s.xml", p);
-    if ((fp = fopen(curfile, "w")) != NULL) 
-	{
-		fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
-		fprintf(fp, "<hotsubjects>\n");
+    if ((fp = fopen(curfile, "w")) != NULL) {
+        fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
+        fprintf(fp, "<hotsubjects>\n");
 
         i = mytop[mytype];
         real = 0;
-        for (i = 0; i < j && real < mytop[mytype]; i++) 
-		{
-			setbdir(DIR_MODE_NORMAL, dirfile, top[i].board);
-			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
-				continue;
+        for (i = 0; i < j && real < mytop[mytype]; i++) {
+            setbdir(DIR_MODE_NORMAL, dirfile, top[i].board);
+            if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+                continue;
 
-    		if(get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 )
-			{
-				close(fd);
-				continue;
-			}
-			close(fd);
+            if (get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0) {
+                close(fd);
+                continue;
+            }
+            close(fd);
 
-			m = 0;
-			for (n = 0; n < real; n++) 
-			{
-				if (!strcmp(top[i].board, BoardName[n]))
-					m++;
-			}
+            m = 0;
+            for (n = 0; n < real; n++) {
+                if (!strcmp(top[i].board, BoardName[n]))
+                    m++;
+            }
 
-			strcpy(BoardName[real], top[i].board);
+            strcpy(BoardName[real], top[i].board);
 
             real++;
 
-			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title, 
-						sizeof(xml_buf)),sizeof(url_buf)));
-			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
-			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%ld</time>\n", top[i].date);
-			fprintf(fp, "<number>%d</number>\n", top[i].number);
-			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
-			fprintf(fp, "</hotsubject>\n");
+            fprintf(fp, "<hotsubject>\n");
+            fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, fh.title,
+                    sizeof(xml_buf)),sizeof(url_buf)));
+            fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
+            fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
+            fprintf(fp, "<time>%ld</time>\n", top[i].date);
+            fprintf(fp, "<number>%d</number>\n", top[i].number);
+            fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
+            fprintf(fp, "</hotsubject>\n");
         }
-		fprintf(fp, "</hotsubjects>\n");
+        fprintf(fp, "</hotsubjects>\n");
 
         fclose(fp);
     }
@@ -639,13 +627,13 @@ void poststat(int mytype, time_t now, struct tm *ptime)
 
     if (mytype < 0) {
         /*
-         * --------------------------------------- 
+         * ---------------------------------------
          */
         /*
-         * load .post and statictic processing     
+         * load .post and statictic processing
          */
         /*
-         * --------------------------------------- 
+         * ---------------------------------------
          */
 
         remove(oldfile);
@@ -660,19 +648,19 @@ void poststat(int mytype, time_t now, struct tm *ptime)
 #endif
 
         if (fp != NULL) {
-      	    while (fread(top, sizeof(struct posttop), 1, fp))
+            while (fread(top, sizeof(struct posttop), 1, fp))
                 search(top);
             fclose(fp);
         }
     } else {
         /*
-         * ---------------------------------------------- 
+         * ----------------------------------------------
          */
         /*
-         * load previous results and statictic processing 
+         * load previous results and statictic processing
          */
         /*
-         * ---------------------------------------------- 
+         * ----------------------------------------------
          */
 
         char *p;
@@ -688,46 +676,46 @@ void poststat(int mytype, time_t now, struct tm *ptime)
         mytype++;
     }
 
-	if( mytype > 0 && mytype < 3){
-		char *p;
-		i = mycount[mytype];
+    if (mytype > 0 && mytype < 3) {
+        char *p;
+        i = mycount[mytype];
         p = myfile[mytype];
         while (i) {
             sprintf(buf, "etc/posts/%s.%d", p, i);
             sprintf(curfile, "etc/posts/%s.%d", p, --i);
             rename(curfile, buf);
         }
-	}
+    }
 
     /*
-     * free statistics 
+     * free statistics
      */
 
     writestat(mytype, bucket);
-	gen_hot_subjects_xml(mytype, bucket);
-	gen_secs_hot_subjects_xml(mytype, bucket);
+    gen_hot_subjects_xml(mytype, bucket);
+    gen_secs_hot_subjects_xml(mytype, bucket);
 #ifdef BLESS_BOARD
     if (mytype == 0)
         writestat(4, blessbucket);
-	gen_blessing_list_xml(blessbucket);
+    gen_blessing_list_xml(blessbucket);
 #endif
     for (i = 0; i < HASHSIZE; i++) {
-		pp=bucket[i];
-		while( pp ){
-			qq=pp;
-			pp=pp->next;
+        pp=bucket[i];
+        while (pp) {
+            qq=pp;
+            pp=pp->next;
             free(qq);
-		}
+        }
         bucket[i] = NULL;
     }
 #ifdef BLESS_BOARD
     for (i = 0; i < HASHSIZE; i++) {
-		pp=blessbucket[i];
-		while(pp){
-			qq=pp;
-			pp=pp->next;
+        pp=blessbucket[i];
+        while (pp) {
+            qq=pp;
+            pp=pp->next;
             free(qq);
-		}
+        }
         blessbucket[i] = NULL;
     }
 #endif
@@ -741,18 +729,17 @@ int main(int argc, char **argv)
     int i;
     char buf[80], curfile[80] ;
 
-	if (init_all()) {
-		printf("init data fail\n");
-		return -1;
-	}
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
     time(&now);
     ptime = *localtime(&now);
     force_refresh = false;    /* 增加强制重新统计十大功能 pig2532 2006.04.06 */
     if (argc == 2) {
         if (strcmp(argv[1], "refresh") == 0) {
             force_refresh = true;
-        }
-        else {
+        } else {
             i = atoi(argv[1]);
             if (i != 0) {
                 poststat(i, now, &ptime);
@@ -762,19 +749,19 @@ int main(int argc, char **argv)
     }
 
     if ((ptime.tm_hour == 0) || force_refresh) {
-		if (ptime.tm_yday == 1)
-			poststat(2, now, &ptime);
+        if (ptime.tm_yday == 1)
+            poststat(2, now, &ptime);
         if (ptime.tm_mday == 1)
             poststat(1, now, &ptime);
         if (ptime.tm_wday == 0)
             poststat(0, now, &ptime);
-		//unlink("etc/posts/day.0");
-		i=7;
+        //unlink("etc/posts/day.0");
+        i=7;
         while (i) {
             sprintf(buf, "etc/posts/day.%d", i);
             sprintf(curfile, "etc/posts/day.%d", --i);
             rename(curfile, buf);
-		}
+        }
 #ifdef BLESS_BOARD
         unlink("etc/posts/bless.0");
         post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "十大祝福", 0, 1, getSession());

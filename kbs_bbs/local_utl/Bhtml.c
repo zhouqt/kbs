@@ -39,8 +39,8 @@
 /* Leeward 98.08.28: Do not process those boards not public */
 #define XBOARDNUM 6
 char Xboard[XBOARDNUM][24] = { "deleted", "junk", "syssecurity", "Registry",
-    "Filter", ""
-};
+                               "Filter", ""
+                             };
 
 int main(int argc, char **argv)
 {
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
             timeCurrent = mktime(ptm);
 
             stat(FH.filename, &st);
-            if (difftime(timeCurrent, st.st_mtime) > (double) (nDay + 1) * 3600 * 24)
+            if (difftime(timeCurrent, st.st_mtime) > (double)(nDay + 1) * 3600 * 24)
                 continue;
         }
         if (szAuthor[0]) {
@@ -164,12 +164,12 @@ int main(int argc, char **argv)
         }
         if (szTitle[0]) {
             if (!((!strncasecmp(FH.title, "Re: ", 4)
-                   && !strcmp(4 + FH.title, szTitle)
+                    && !strcmp(4 + FH.title, szTitle)
                   )
-                  || (!strcmp(FH.title, szTitle)
-                  )
-                )
-                )
+                    || (!strcmp(FH.title, szTitle)
+                       )
+                 )
+               )
                 continue;
         }
 
@@ -180,7 +180,7 @@ int main(int argc, char **argv)
             printf("%s not found£¡£¡£¡\n", FH.filename);
             continue;
             /*fclose(fpIndex);
-               fclose(fpDOTDIR);    
+               fclose(fpDOTDIR);
                exit(3); */
         }
 
@@ -209,15 +209,15 @@ int main(int argc, char **argv)
                 szBuf[2] = szBuf[3] = 161;
 
             for (j = 0; szBuf[j]; j++) {
-                if((ptr=strchr(szBuf+j,'@'))!=NULL){
+                if ((ptr=strchr(szBuf+j,'@'))!=NULL) {
                     j = ptr - szBuf;
                     if (strchr(ptr, '.')) {
                         if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
                             for (k = j - 1; k >= 0; k--)
                                 if (!((szBuf[k] >= '0' && szBuf[k] <= '9')
-                                      || (szBuf[k] >= 'A' && szBuf[k] <= 'Z')
-                                      || (szBuf[k] >= 'a' && szBuf[k] <= 'z')
-                                      || '.' == szBuf[k]))
+                                        || (szBuf[k] >= 'A' && szBuf[k] <= 'Z')
+                                        || (szBuf[k] >= 'a' && szBuf[k] <= 'z')
+                                        || '.' == szBuf[k]))
                                     break;
 
                             strcpy(szBufX, szBuf + k + 1);
@@ -232,60 +232,60 @@ int main(int argc, char **argv)
 
             for (j = szBufX[0] = 0; szBuf[j]; j++) {
                 switch (szBuf[j]) {
-                case '>':
-                    strcat(szBufX, "&gt;");
-                    break;
+                    case '>':
+                        strcat(szBufX, "&gt;");
+                        break;
 
-                case '<':
-                    strcat(szBufX, "&lt;");
-                    break;
+                    case '<':
+                        strcat(szBufX, "&lt;");
+                        break;
 
-                case '&':
-                    strcat(szBufX, "&amp;");
-                    break;
+                    case '&':
+                        strcat(szBufX, "&amp;");
+                        break;
 
-                case '"':
-                    strcat(szBufX, "&quot;");
-                    break;
+                    case '"':
+                        strcat(szBufX, "&quot;");
+                        break;
 
-                case ' ':
-                    strcat(szBufX, "&nbsp;");
-                    break;
+                    case ' ':
+                        strcat(szBufX, "&nbsp;");
+                        break;
 
-                case 27:
-                    ptr = strchr(szBuf + j, 'm');
-                    if (ptr)
-                        j = ptr - szBuf;
-                    break;
+                    case 27:
+                        ptr = strchr(szBuf + j, 'm');
+                        if (ptr)
+                            j = ptr - szBuf;
+                        break;
 
-                case 'h':
-                case 'H':
-                case 'f':
-                case 'F':
-                case 'n':
-                case 'N':
-                case 'm':
-                case 'M':
-                    if (!strncasecmp(szBuf + j, "http://", 7)
-                        || !strncasecmp(szBuf + j, "ftp://", 6)
-                        || !strncasecmp(szBuf + j, "news://", 7)
-                        || !strncasecmp(szBuf + j, "mailto:", 7)) {
-                        ptr = strchr(szBuf + j, ' ');
+                    case 'h':
+                    case 'H':
+                    case 'f':
+                    case 'F':
+                    case 'n':
+                    case 'N':
+                    case 'm':
+                    case 'M':
+                        if (!strncasecmp(szBuf + j, "http://", 7)
+                                || !strncasecmp(szBuf + j, "ftp://", 6)
+                                || !strncasecmp(szBuf + j, "news://", 7)
+                                || !strncasecmp(szBuf + j, "mailto:", 7)) {
+                            ptr = strchr(szBuf + j, ' ');
 
-                        if (ptr) {
-                            *ptr = 0;
-                            k = strlen(szBufX);
-                            sprintf(szBufX + k, "<A HREF=\"%s\">%s</A>", szBuf + j, szBuf + j + 7 * (!strncasecmp(szBuf + j, "mailto:", 7)));
-                            *ptr = ' ';
-                            j += ptr - (szBuf + j) - 1;
-                            break;
+                            if (ptr) {
+                                *ptr = 0;
+                                k = strlen(szBufX);
+                                sprintf(szBufX + k, "<A HREF=\"%s\">%s</A>", szBuf + j, szBuf + j + 7 * (!strncasecmp(szBuf + j, "mailto:", 7)));
+                                *ptr = ' ';
+                                j += ptr - (szBuf + j) - 1;
+                                break;
+                            }
                         }
-                    }
-                    /* no break here ! */
+                        /* no break here ! */
 
-                default:
-                    szBufX[k = strlen(szBufX)] = szBuf[j];
-                    szBufX[k + 1] = 0;
+                    default:
+                        szBufX[k = strlen(szBufX)] = szBuf[j];
+                        szBufX[k + 1] = 0;
                 }
             }
 

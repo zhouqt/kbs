@@ -4,13 +4,13 @@ int mode=0,count=0;
 
 int check(struct user_info *uentp, char *u)
 {
-    if(uentp->mode==mode) count++;
+    if (uentp->mode==mode) count++;
     return 0;
 }
 
 int main(int argc, char **argv)
 {
-    if(argc<=1) return 0;
+    if (argc<=1) return 0;
     mode = atoi(argv[1]);
     chdir(BBSHOME);
     resolve_boards();

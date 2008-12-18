@@ -38,7 +38,7 @@ int calc_mailsize(char *userid, char *dirname)
     ldata.l_start = 0;
     fcntl(fd, F_SETLKW, &ldata);
 
-    if((i=safe_mmapfile_handle(fd,PROT_READ|PROT_WRITE,MAP_SHARED, &ptr, &buf.st_size))!=1){
+    if ((i=safe_mmapfile_handle(fd,PROT_READ|PROT_WRITE,MAP_SHARED, &ptr, &buf.st_size))!=1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         ldata.l_type = F_UNLCK;
@@ -99,7 +99,7 @@ int sync_mailsize(struct userec *user, void *arg)
     return 0;
 }
 
-static void 
+static void
 usage()
 {
     fprintf(stderr, "Usage: sync_mailsize <-a|-u userid>\n\n");
@@ -107,7 +107,7 @@ usage()
     fprintf(stderr, "    else only reset the specified userid's mail size.\n");
 }
 
-int 
+int
 main(int argc, char ** argv)
 {
     struct userec *user = NULL;
@@ -116,17 +116,14 @@ main(int argc, char ** argv)
     resolve_ucache();
     if (argc == 2 && !strcmp(argv[1], "-a"))
         apply_users(sync_mailsize, NULL);
-    else if (argc == 3 && !strcmp(argv[1], "-u"))
-    {
+    else if (argc == 3 && !strcmp(argv[1], "-u")) {
         getuser(argv[2], &user);
-        if (user == NULL)
-        {
+        if (user == NULL) {
             fprintf(stderr, "User %s not found.\n", argv[2]);
             return -1;
         }
         sync_mailsize(user, NULL);
-    }
-    else
+    } else
         usage();
 
     return 0;

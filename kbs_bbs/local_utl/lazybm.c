@@ -53,8 +53,8 @@ int BM2User(int nbrd, char *uname)
     if (!isNormalBoard(&(bcache[nbrd])))
         return 0;
     /*  Anonymous board */
-/*    if(!strcmp(uname, bcache[nbrd].filename) && bcache[nbrd].flag & ANONY_FLAG)*/
-/*        return 0;*/
+    /*    if(!strcmp(uname, bcache[nbrd].filename) && bcache[nbrd].flag & ANONY_FLAG)*/
+    /*        return 0;*/
     for (i = 0; i < nBMCount; i++)
         if (!strcasecmp(pBMInfo[i].uname, uname))
             break;
@@ -121,7 +121,7 @@ void checkBMs(void)
 {
     char lbuf[256], tbuf[80], mdate[80];
 
-/*    char * fmt = " %14.14s%36.36s%24.24s%8.8s";*/
+    /*    char * fmt = " %14.14s%36.36s%24.24s%8.8s";*/
     char *fmt = " \033[%2d;%2dm%-14.14s%-32.32s%-24.24s%8.8s\033[m";
     char *timefmt = "%Y年%m月%d日 %T";
     char *nulstr = "";
@@ -131,13 +131,12 @@ void checkBMs(void)
     time_t now;
     BMInfo *pBM;
 
-    if(onlynormal) {
+    if (onlynormal) {
         fc1 = 37;
         bc1 = 40;
         fc2 = 37;
         bc2 = 40;
-    }
-    else {
+    } else {
         fc1 = 37;
         bc1 = 44;
         fc2 = 31;
@@ -172,8 +171,8 @@ void checkBMs(void)
             warningBM++;                                   /*---*/
         if (uid)
             strftime(mdate, 30, timefmt, localtime(&(pBM->lastlogin)));
-/*        else if(!(pBM->brd[1]) && bcache[brd-1].flag & ANONY_FLAG)*/
-/*            strcpy(mdate, "[匿名版所属帐号]");*/
+        /*        else if(!(pBM->brd[1]) && bcache[brd-1].flag & ANONY_FLAG)*/
+        /*            strcpy(mdate, "[匿名版所属帐号]");*/
         else
             strcpy(mdate, "[该帐号已注销]");
         sprintf(tbuf, "%d", dftime);
@@ -209,11 +208,10 @@ int main(int argc, char **argv)
             fprintf(stderr, "BBSHOME too long...\n");
             exit(-1);
         }
-        if(strcmp(argv[1], "-n") == 0) {
+        if (strcmp(argv[1], "-n") == 0) {
             onlynormal = true;
             *bhome = 0;
-        }
-        else
+        } else
             sprintf(bhome, "%s/", argv[1]);
     } else
         *bhome = 0;
@@ -224,7 +222,7 @@ int main(int argc, char **argv)
             continue;           /* invalid board    */
         if (bcache[i].BM[0] <= ' ')
             continue;           /* no board manager */
-        if(onlynormal && !normal_board(bcache[i].filename))
+        if (onlynormal && !normal_board(bcache[i].filename))
             continue;
         strcpy(tbuf, bcache[i].BM);
         ptr = strtok(tbuf, " ");

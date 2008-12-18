@@ -1,4 +1,4 @@
-/* 创建精华区打包文件 
+/* 创建精华区打包文件
    KCN 2001.3.21
 */
 
@@ -27,7 +27,7 @@
 #else
 #define GNUTAR "/bin/tar"
 #endif
-    typedef struct __tagDIR_DATA {
+typedef struct __tagDIR_DATA {
     char dir[MAX_PATH];
     struct __tagDIR_DATA *next;
 } DIR_DATA, *LP_DIR_DATA;
@@ -59,42 +59,42 @@ int DealParameters(int argc, char **argv)
         if (c == -1)
             break;
         switch (c) {
-        case 'b':
-            if (toupper(optarg[0]) == 'N') {
-                printf("Disable generate BBS Package\n");
-                genBBSPackage = 0;
-            }
-            break;
-        case 'd':
-            printf("change to directory %s\n", optarg);
-            chdir(optarg);
-            break;
-        case 'w':
-            printf("Set Work Directory:%s\n", optarg);
-            strncpy(WorkDir, optarg, MAX_PATH - 1);
-            if (WorkDir[strlen(WorkDir) - 1] != '/')
-                strcat(WorkDir, "/");
-            break;
-        case 'o':
-            printf("Set OutputDirectory:%s\n", optarg);
-            strncpy(OutDir, optarg, MAX_PATH - 1);
-            if (OutDir[strlen(OutDir) - 1] == '/')
-                OutDir[strlen(OutDir) - 1] = 0;
-            break;
-        case 'c':
-            if (chmcontentFile) {
-                printf("Too many -c!\n");
-                return -1;
-            }
-            chmcontentFile = fopen(optarg, "wt");
-            if (!chmcontentFile) {
-                printf("Can't open %s:%s", optarg, strerror(errno));
-                return -1;
-            }
-            printf("Set CHM content file:%s\n", optarg);
-            break;
-        default:
-            flag = 0;
+            case 'b':
+                if (toupper(optarg[0]) == 'N') {
+                    printf("Disable generate BBS Package\n");
+                    genBBSPackage = 0;
+                }
+                break;
+            case 'd':
+                printf("change to directory %s\n", optarg);
+                chdir(optarg);
+                break;
+            case 'w':
+                printf("Set Work Directory:%s\n", optarg);
+                strncpy(WorkDir, optarg, MAX_PATH - 1);
+                if (WorkDir[strlen(WorkDir) - 1] != '/')
+                    strcat(WorkDir, "/");
+                break;
+            case 'o':
+                printf("Set OutputDirectory:%s\n", optarg);
+                strncpy(OutDir, optarg, MAX_PATH - 1);
+                if (OutDir[strlen(OutDir) - 1] == '/')
+                    OutDir[strlen(OutDir) - 1] = 0;
+                break;
+            case 'c':
+                if (chmcontentFile) {
+                    printf("Too many -c!\n");
+                    return -1;
+                }
+                chmcontentFile = fopen(optarg, "wt");
+                if (!chmcontentFile) {
+                    printf("Can't open %s:%s", optarg, strerror(errno));
+                    return -1;
+                }
+                printf("Set CHM content file:%s\n", optarg);
+                break;
+            default:
+                flag = 0;
         }
     }
 
@@ -162,7 +162,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         return filename;
     } else {
         /*
-         * 处理一般的精华区文件 
+         * 处理一般的精华区文件
          */
         FILE *psrcFile;
         FILE *pBBSFile=NULL;
@@ -182,7 +182,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 
         if (pdstFile) {
             /*
-             * 关闭上一个HTML文件 
+             * 关闭上一个HTML文件
              */
             if (prevprevHtml[0]) {
                 fprintf(pdstFile, "<a href=\"%s\">上一篇</a>\n", prevprevHtml);
@@ -212,7 +212,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         fputs("<title>", pdstFile);
         fputs(title, pdstFile);
         fputs("</title>\n</head>\n<body>\n<center><h1>", pdstFile);
-		fprintf(pdstFile, "%s∶精华区", BBS_FULL_NAME);
+        fprintf(pdstFile, "%s∶精华区", BBS_FULL_NAME);
         fputs("</h1></center>\n", pdstFile);
         fputs("<a name=\"top\"></a>\n", pdstFile);
 
@@ -276,15 +276,15 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 
                 if (0) {        //disable it for core dump
                     for (j = 0; srcLine[j]; j++) {      //email detect
-                        if((ptr=strchr(srcLine+j,'@'))!=NULL){
+                        if ((ptr=strchr(srcLine+j,'@'))!=NULL) {
                             j = ptr - srcLine;
                             if (strchr(ptr, '.')) {
                                 if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
                                     for (k = j - 1; k >= 0; k--)
                                         if (!((srcLine[k] >= '0' && srcLine[k] <= '9')
-                                              || (srcLine[k] >= 'A' && srcLine[k] <= 'Z')
-                                              || (srcLine[k] >= 'a' && srcLine[k] <= 'z')
-                                              || '.' == srcLine[k]))
+                                                || (srcLine[k] >= 'A' && srcLine[k] <= 'Z')
+                                                || (srcLine[k] >= 'a' && srcLine[k] <= 'z')
+                                                || '.' == srcLine[k]))
                                             break;
 
                                     strcpy(Buf2, srcLine + k + 1);
@@ -299,62 +299,62 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 
                 for (j = Buf2[0] = 0; srcLine[j] && j < MAXLINELEN * 4 - 8; j++) {      //MAXLINELEN*4-8 for aviod Buf2 strcat overflow
                     switch (srcLine[j]) {
-                    case '>':
-                        strcat(Buf2, "&gt;");
-                        break;
+                        case '>':
+                            strcat(Buf2, "&gt;");
+                            break;
 
-                    case '<':
-                        strcat(Buf2, "&lt;");
-                        break;
+                        case '<':
+                            strcat(Buf2, "&lt;");
+                            break;
 
-                    case '&':
-                        strcat(Buf2, "&amp;");
-                        break;
+                        case '&':
+                            strcat(Buf2, "&amp;");
+                            break;
 
-                    case '"':
-                        strcat(Buf2, "&quot;");
-                        break;
+                        case '"':
+                            strcat(Buf2, "&quot;");
+                            break;
 
-                    case ' ':
-                        strcat(Buf2, "&nbsp;");
-                        break;
+                        case ' ':
+                            strcat(Buf2, "&nbsp;");
+                            break;
 
-                    case 27:
-                        ptr = strchr(srcLine + j, 'm');
-                        if (ptr)
-                            j = ptr - srcLine;
-                        break;
+                        case 27:
+                            ptr = strchr(srcLine + j, 'm');
+                            if (ptr)
+                                j = ptr - srcLine;
+                            break;
 
-                    case 'h':
-                    case 'H':
-                    case 'f':
-                    case 'F':
-                    case 'n':
-                    case 'N':
-                    case 'm':
-                    case 'M':
-                        if (!strncasecmp(srcLine + j, "http://", 7)
-                            || !strncasecmp(srcLine + j, "ftp://", 6)
-                            || !strncasecmp(srcLine + j, "news://", 7)
-                            || !strncasecmp(srcLine + j, "mailto:", 7)) {
-                            ptr = strchr(srcLine + j, ' ');
+                        case 'h':
+                        case 'H':
+                        case 'f':
+                        case 'F':
+                        case 'n':
+                        case 'N':
+                        case 'm':
+                        case 'M':
+                            if (!strncasecmp(srcLine + j, "http://", 7)
+                                    || !strncasecmp(srcLine + j, "ftp://", 6)
+                                    || !strncasecmp(srcLine + j, "news://", 7)
+                                    || !strncasecmp(srcLine + j, "mailto:", 7)) {
+                                ptr = strchr(srcLine + j, ' ');
 
-                            if (ptr) {
-                                *ptr = 0;
-                                k = strlen(Buf2);
-                                snprintf(Buf2 + k, MAXLINELEN * 4, "<a href=\"%s\">%s</a>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
-                                *ptr = ' ';
-                                j += ptr - (srcLine + j) - 1;
-                                break;
+                                if (ptr) {
+                                    *ptr = 0;
+                                    k = strlen(Buf2);
+                                    snprintf(Buf2 + k, MAXLINELEN * 4, "<a href=\"%s\">%s</a>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
+                                    *ptr = ' ';
+                                    j += ptr - (srcLine + j) - 1;
+                                    break;
+                                }
                             }
-                        }
-                        /*
-                         * no break here ! 
-                         */
+                            /*
+                             * no break here !
+                             */
 
-                    default:
-                        Buf2[k = strlen(Buf2)] = srcLine[j];
-                        Buf2[k + 1] = 0;
+                        default:
+                            Buf2[k = strlen(Buf2)] = srcLine[j];
+                            Buf2[k + 1] = 0;
                     }
                 }
 
@@ -443,24 +443,23 @@ void DealDirectory(char *directory)
                 if (fputs(Buf, BBSDotFile) == EOF)
                     perror("fputs bbs .Name:");
         Buf[strlen(Buf) - 1] = 0;
-        if((ptr=strstr(Buf,"Title="))!=NULL){
+        if ((ptr=strstr(Buf,"Title="))!=NULL) {
             fputs("<?xml version=\"1.0\" encoding=\"gb2312\"?>\n", IndexHtmlFile);
             fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n", IndexHtmlFile);
             fputs("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n", IndexHtmlFile);
             fputs("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\">\n", IndexHtmlFile);
             fputs("<title>", IndexHtmlFile);
-/*          fputs("<meta http-equiv='Content-Type' content='text/html; charset=gb2312'>");
-		  fputs("<link rel=stylesheet type=text/css href='/bbs.css'>");
-*/
+            /*          fputs("<meta http-equiv='Content-Type' content='text/html; charset=gb2312'>");
+                fputs("<link rel=stylesheet type=text/css href='/bbs.css'>");
+            */
             fputs(ptr + 6, IndexHtmlFile);
             fputs("</title>\n</head>\n\n<body>\n\n<center><h1>", IndexHtmlFile);
-			fprintf(IndexHtmlFile, "%s∶精华区", BBS_FULL_NAME);
+            fprintf(IndexHtmlFile, "%s∶精华区", BBS_FULL_NAME);
             fputs("</h1></center>\n\n", IndexHtmlFile);
             fputs("<center>\n", IndexHtmlFile);
             fputs("<table>", IndexHtmlFile);
             fputs("<tr><th>编号<th>类别<th class=\"body\">标题<th class=\"body\">编辑日期</tr>", IndexHtmlFile);
-        }
-        else if((ptr=strstr(Buf,"Name="))!=NULL){
+        } else if ((ptr=strstr(Buf,"Name="))!=NULL) {
             char Name[256];
 
             if (strstr(Buf, "(BM: BMS)"))
@@ -478,7 +477,7 @@ void DealDirectory(char *directory)
                 } else {
                     if (genBBSPackage && BBSDotFile)
                         fputs(Buf, BBSDotFile);
-                    if((ptr=strstr(Buf,"Path=~/"))!=NULL){
+                    if ((ptr=strstr(Buf,"Path=~/"))!=NULL) {
                         char *herfname;
                         char datestr[25];
                         int isDir;
@@ -502,13 +501,14 @@ void DealDirectory(char *directory)
                 }               /* feof */
             }                   /* while (1) */
         }                       /* if Buf has "Name" */
-    };                          /* while feof(DotFile) */
+    }
+    ;                          /* while feof(DotFile) */
     fclose(DotFile);
     if (genBBSPackage && BBSDotFile)
         fclose(BBSDotFile);
 
     if (pdstFile) {
-/*    fputs("</CENTER>\n",pdstFile);*/
+        /*    fputs("</CENTER>\n",pdstFile);*/
         if (prevHtml[0]) {
             fprintf(pdstFile, "<a href=\"%s\">上一篇</a>\n", prevHtml);
         }
@@ -517,7 +517,7 @@ void DealDirectory(char *directory)
         fputs("<a href=\"#top\">回到页首</a>\n", pdstFile);
         fputs("</center>\n", pdstFile);
         fputs("<center><h1>", pdstFile);
-		fprintf(pdstFile, "%s∶精华区", BBS_FULL_NAME);
+        fprintf(pdstFile, "%s∶精华区", BBS_FULL_NAME);
         fputs("</h1></center>\n", pdstFile);
         fputs("</body></html>", pdstFile);
         fclose(pdstFile);
@@ -529,7 +529,7 @@ void DealDirectory(char *directory)
     fputs("<a href=\"../index.htm\">回到上一级目录</a>\n", IndexHtmlFile);
     fputs("</center>\n", IndexHtmlFile);
     fputs("<center><h1>", IndexHtmlFile);
-	fprintf(IndexHtmlFile, "%s∶精华区", BBS_FULL_NAME);
+    fprintf(IndexHtmlFile, "%s∶精华区", BBS_FULL_NAME);
     fputs("</h1></center>\n", IndexHtmlFile);
     fputs("</body></html>", IndexHtmlFile);
 

@@ -7,7 +7,7 @@ crontab:  2 * * * * /home/bbs/bin/bonlinelog
 
 ******/
 
-/* mysql 
+/* mysql
  *
  CREATE TABLE bonline (
  id int(10) NOT NULL auto_increment,
@@ -21,7 +21,7 @@ crontab:  2 * * * * /home/bbs/bin/bonlinelog
  KEY bdate (bdate)
  ) TYPE=MyISAM COMMENT='bonline';
  */
- 
+
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
@@ -32,9 +32,9 @@ struct tm t;
 
 int fillbcache(struct boardheader *fptr,int idx,void* arg)
 {
-	int bnum;
+    int bnum;
     struct BoardStatus * bs;
-	char sql[500];
+    char sql[500];
 
     if (check_see_perm(NULL, fptr)==0 || strlen(fptr->filename) == 0)
         return 0;
@@ -42,31 +42,33 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     bnum = getbid(fptr->filename,NULL);
     bs = getbstatus(bnum);
 
-	sprintf(sql, "INSERT INTO bonline VALUES ( NULL, '%s', '%d', '%d', \"%d-%d-%d\", '%d', '%d' );",
-				fptr->filename, bs->currentusers, bs->nowid, 
-				t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min/6);
-    if( mysql_real_query( &s, sql, strlen(sql) ))
+    sprintf(sql, "INSERT INTO bonline VALUES ( NULL, '%s', '%d', '%d', \"%d-%d-%d\", '%d', '%d' );",
+            fptr->filename, bs->currentusers, bs->nowid,
+            t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min/6);
+    if (mysql_real_query(&s, sql, strlen(sql)))
         printf("%s\n",mysql_error(&s));
     return 0;
 }
 
-int fillboard(void){
+int fillboard(void)
+{
     return apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
-int main(void){
-	time_t now;
+int main(void)
+{
+    time_t now;
 
     chdir(BBSHOME);
-	now = time(0);
-	localtime_r( &now, &t);
+    now = time(0);
+    localtime_r(&now, &t);
 
-	mysql_init(&s);
-    if (!my_connect_mysql(&s) ){
+    mysql_init(&s);
+    if (!my_connect_mysql(&s)) {
         printf("Mysql connect error: %s\n",mysql_error(&s));
         return 0;
-    }   
-	
+    }
+
     resolve_boards();
     fillboard();
 
@@ -74,8 +76,9 @@ int main(void){
     return 0;
 }
 #else
-int main(void){
-	fprintf(stderr, "MySQL support had been disabled.\n");
-	return -1;
+int main(void)
+{
+    fprintf(stderr, "MySQL support had been disabled.\n");
+    return -1;
 }
 #endif

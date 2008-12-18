@@ -6,39 +6,42 @@
 static const struct userec *buf[MAXUSERS];
 static int count;
 
-static int dut_create_buffer(struct userec *user,void *varg){
-    if(*(user->userid)&&user->title)
+static int dut_create_buffer(struct userec *user,void *varg)
+{
+    if (*(user->userid)&&user->title)
         buf[count++]=user;
     return 0;
 }
 
-static int dut_sort_routine(const void *p,const void *q){
+static int dut_sort_routine(const void *p,const void *q)
+{
     return (((*(const struct userec**)p)->title)-((*(const struct userec**)q)->title));
 }
 
-int main(void){
+int main(void)
+{
     int idx;
     const char *des;
     unsigned char prev;
-    if(chdir(BBSHOME)==-1)
+    if (chdir(BBSHOME)==-1)
         return -1;
     resolve_ucache();
     apply_users(dut_create_buffer,NULL);
     qsort(buf,count,sizeof(const struct userec*),dut_sort_routine);
     fprintf(stdout,"%s\n","---- Current User Title Configuration ----");
-    for(prev=0,idx=0;idx<count;idx++){
-        if(prev!=buf[idx]->title){
-            while(++prev!=buf[idx]->title)
-                if(*(des=get_user_title(prev)))
+    for (prev=0,idx=0;idx<count;idx++) {
+        if (prev!=buf[idx]->title) {
+            while (++prev!=buf[idx]->title)
+                if (*(des=get_user_title(prev)))
                     fprintf(stdout,"\n[%3d] [%s]\n",prev,des);
-            if(!*(des=get_user_title(prev)))
+            if (!*(des=get_user_title(prev)))
                 des="(NULL)";
             fprintf(stdout,"\n[%3d] [%s]\n",prev,des);
         }
         fprintf(stdout,"    %s\n",buf[idx]->userid);
     }
-    while(++prev!=TIDMAX)
-        if(*(des=get_user_title(prev)))
+    while (++prev!=TIDMAX)
+        if (*(des=get_user_title(prev)))
             fprintf(stdout,"\n[%3d] [%s]\n",prev,des);
     fprintf(stdout,"\n%s\n","------------------------------------------");
     return 0;

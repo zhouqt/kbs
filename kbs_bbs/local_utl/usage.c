@@ -26,7 +26,7 @@ int brd_cmp(const void* b1, const void* a1)
 int total_cmp(const void* b1, const void* a1)
 {
     struct binfo *a, *b;
-    
+
     a = (struct binfo*)a1;
     b = (struct binfo*)b1;
     if (a->sum != b->sum)
@@ -38,9 +38,9 @@ int average_cmp(const void* b1, const void* a1)
 {
     struct binfo *a, *b;
     int a_ave, b_ave;
-    
+
     a = (struct binfo*)a1;
-    b = (struct binfo*)b1;     
+    b = (struct binfo*)b1;
     if (a->times)
         a_ave = a->sum / a->times;
     else
@@ -55,7 +55,8 @@ int average_cmp(const void* b1, const void* a1)
     return a->sum - b->sum;
 }
 
-int record_data(const char *board,int sec){
+int record_data(const char *board,int sec)
+{
     int i;
 
     for (i = 0; i < numboards; i++) {
@@ -68,7 +69,8 @@ int record_data(const char *board,int sec){
     return 0;
 }
 
-int add_data(const struct binfo *btmp){
+int add_data(const struct binfo *btmp)
+{
     int i;
 
     for (i = 0; i < numboards; i++) {
@@ -85,7 +87,7 @@ int fillbcache(const struct boardheader *fptr,int idx,void* arg)
 {
     if (numboards >= MAXBOARD)
         return 0;
-    if(!check_see_perm(NULL,fptr)||!*(fptr->filename))
+    if (!check_see_perm(NULL,fptr)||!*(fptr->filename))
         return 0;
     if (fptr->flag & BOARD_GROUP)
         return 0;
@@ -97,12 +99,13 @@ int fillbcache(const struct boardheader *fptr,int idx,void* arg)
     return 0;
 }
 
-int fillboard(void){
+int fillboard(void)
+{
     return apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
 char *timetostr(i)
-    int i;
+int i;
 {
     static char str[30];
     int minute, sec, hour;
@@ -149,9 +152,9 @@ static void gen_board_rank_xml(int brdcount, struct binfo *bi)
         if ((sec_id = get_seccode_index(bp->title[0])) < 0)
             continue;
         fprintf(fp, "<Board>\n");
-        fprintf(fp, "<EnglishName>%s</EnglishName>\n", 
+        fprintf(fp, "<EnglishName>%s</EnglishName>\n",
                 encode_url(url_buf,encode_xml(xml_buf, bi[i].boardname, sizeof(xml_buf)),sizeof(url_buf)));
-        fprintf(fp, "<ChineseName>%s</ChineseName>\n", 
+        fprintf(fp, "<ChineseName>%s</ChineseName>\n",
                 encode_url(url_buf,encode_xml(xml_buf, bi[i].expname, sizeof(xml_buf)),sizeof(url_buf)));
         fprintf(fp, "<VisitTimes>%d</VisitTimes>\n", bi[i].times);
         fprintf(fp, "<StayTime>%d</StayTime>\n", bi[i].sum);
@@ -180,9 +183,9 @@ int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
     };
 
     /*注:等待改*/
-    if ((op = fopen(buf, "w")) == NULL || (op1 = fopen(buf1, "w")) == NULL || (op2 = fopen(buf2, "w")) == NULL || (op3=fopen(buf3, "w")) == NULL ) {
-            printf("Can't Write file\n");
-            return 1;
+    if ((op = fopen(buf, "w")) == NULL || (op1 = fopen(buf1, "w")) == NULL || (op2 = fopen(buf2, "w")) == NULL || (op3=fopen(buf3, "w")) == NULL) {
+        printf("Can't Write file\n");
+        return 1;
     }
 
     qsort(st, numboards, sizeof(st[0]), brd_cmp);
@@ -219,7 +222,7 @@ int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
 
     fprintf(op, "名次 %-15.15s%-25.25s %5s %8s %10s\n", "讨论区名称", "中文叙述", "人次", "累积时间", "平均时间");
     fprintf(op3, "      \033[37m1 \033[m\033[34m%2s\033[37m= %d (总人次) \033[37m1 \033[m\033[32m%2s\033[37m= %s (累积总时数) \033[37m1 \033[m\033[31m%2s\033[37m= %d 秒(平均时数)\n\n",
-                blk[9], c[0], blk[9], timetostr(c[1]), blk[9], c[2]);
+            blk[9], c[0], blk[9], timetostr(c[1]), blk[9], c[2]);
 
     for (i = 0; i < numboards; i++) {
 
@@ -272,8 +275,7 @@ static int rotatelog(const char *basename, int rotatecount)
 {
     int i;
     char buffer[255],buffer1[255];
-    for (i=rotatecount;i>0;i--)
-    {
+    for (i=rotatecount;i>0;i--) {
         snprintf(buffer,255,"%s.%d",basename,i-1);
         snprintf(buffer1,255,"%s.%d",basename,i);
         rename(buffer,buffer1);
@@ -281,7 +283,8 @@ static int rotatelog(const char *basename, int rotatecount)
     return 0;
 }
 
-int main(void){
+int main(void)
+{
     char path[256];
     FILE *fp;
     char buf[256], buf1[256],buf2[256], buf3[256], buf4[256];
@@ -295,22 +298,22 @@ int main(void){
     char weeklogfile[256];
 
     now = time(0);
-    localtime_r( &now, &t);
+    localtime_r(&now, &t);
 
     chdir(BBSHOME);
 
-    if( stat( BONLINE_LOGDIR, &stt) < 0 ){
-        if(mkdir(BONLINE_LOGDIR, 0755) < 0)
+    if (stat(BONLINE_LOGDIR, &stt) < 0) {
+        if (mkdir(BONLINE_LOGDIR, 0755) < 0)
             exit(0);
     }
     sprintf(path, "%s/%d", BONLINE_LOGDIR, t.tm_year+1900);
-    if( stat(path, &stt) < 0){
-        if(mkdir(path, 0755) < 0)
+    if (stat(path, &stt) < 0) {
+        if (mkdir(path, 0755) < 0)
             exit(0);
     }
     sprintf(path, "%s/%d/%d", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1);
-    if( stat(path, &stt) < 0){
-        if(mkdir(path, 0755) < 0)
+    if (stat(path, &stt) < 0) {
+        if (mkdir(path, 0755) < 0)
             exit(0);
     }
 
@@ -339,7 +342,7 @@ int main(void){
     while (fgets(buf, 256, fp)) {
         if (strlen(buf) < 57)
             continue;
-        if((p=strstr(buf,"Stay: "))!=NULL){
+        if ((p=strstr(buf,"Stay: "))!=NULL) {
             q = p - 21;
             q = strtok(q, " ");
             strcpy(bname, q);
@@ -356,12 +359,12 @@ int main(void){
     strcpy(buf1, BBSHOME "/0Announce/bbslists/totaltime");
     strcpy(buf2, BBSHOME "/0Announce/bbslists/averagetime");
     strcpy(buf3, BBSHOME "/0Announce/bbslists/board1");
-    
+
     /*加上这周数据*/
-    if((fd=open(weeklogfile,O_RDONLY)) >=0 ){
+    if ((fd=open(weeklogfile,O_RDONLY)) >=0) {
         struct binfo stmp;
-        while( read(fd, &stmp,sizeof(stmp)) >= sizeof(stmp) ){
-            add_data( &stmp );
+        while (read(fd, &stmp,sizeof(stmp)) >= sizeof(stmp)) {
+            add_data(&stmp);
         }
         close(fd);
     }
@@ -370,8 +373,8 @@ int main(void){
     gen_usage(buf4,buf1,buf2,buf3);
 
     /*写入这周数据*/
-    if((fd=open(weeklogfile, O_WRONLY | O_CREAT ,0644 )) >= 0){
-        for(i=0; i<numboards; i++)
+    if ((fd=open(weeklogfile, O_WRONLY | O_CREAT ,0644)) >= 0) {
+        for (i=0; i<numboards; i++)
             write(fd, &(st[i]), sizeof(struct binfo));
         close(fd);
     }
@@ -385,7 +388,7 @@ int main(void){
 
     /*每周三计算完后，清除这周记录，并备份boardusage.week */
     sprintf(buf, "%s/%d/%d/%d_%d.boardusage.week.bak", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
-    if( t.tm_wday == 3 ){
+    if (t.tm_wday == 3) {
         f_mv(weeklogfile, buf);
         post_file(NULL, "", buf3, "BBSLists", "上周各版使用状况统计图", 0, 1, getSession());
         post_file(NULL, "", buf4, "BBSLists", "上周各版使用状况统计表（以总阅读人次排序）", 0, 1, getSession());

@@ -7,18 +7,18 @@
 
 #include"bbs.h"
 
-#define MAXLEN		256
-#define MAXBUF		2048
-#define MAXLINE		8192
-#define SHORTLEN	60
-#define MAXFILENUM	1024*2  /* max directories/files in a directory */
-#define MAXBLOCK	1024768 /* max blob/clob block size */
-#define DEFDBGFLAG	3       /* default debug flag */
-#define MAXIGNORE	5       /* maximum ignored sql errcode */
-#define DEFIDLEN	20
+#define MAXLEN  256
+#define MAXBUF  2048
+#define MAXLINE  8192
+#define SHORTLEN 60
+#define MAXFILENUM 1024*2  /* max directories/files in a directory */
+#define MAXBLOCK 1024768 /* max blob/clob block size */
+#define DEFDBGFLAG 3       /* default debug flag */
+#define MAXIGNORE 5       /* maximum ignored sql errcode */
+#define DEFIDLEN 20
 #define MAXDEPTH    15      /* maximum depth for indent */
 
-#define DOTNAMES	".Names"
+#define DOTNAMES ".Names"
 const short int gnsDirBackColor[] = { 41, 42, 43, 44, 45, 46, 47, 0 };
 const short int gnsDirForeColor[] = { 37, 37, 37, 37, 37, 37, 30, 37 };
 
@@ -114,7 +114,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
     char dirNameEn[MAXBUF];     /*  directory name ( with no path prefix ) */
     char psCTime[SHORTLEN];     /*  modify time string  */
     int oldIndentOutRange = gnIndentOutRange;
-/*    char psPrefix[SHORTLEN];*//*  output prefix string    */
+    /*    char psPrefix[SHORTLEN];*//*  output prefix string    */
     char *ptr, *end;
     FILE *idxfp;
     struct stat lst_p;
@@ -199,7 +199,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
                         fprintf(pLogFile, "Directory has NULL title : %s\n", dname);
                 } else
                     strcpy(vcTitle, buf + 8);
-/*				strftime(buf, 20, "%Y-%m-%d %T", localtime(&ltt_dir));*/
+                /*    strftime(buf, 20, "%Y-%m-%d %T", localtime(&ltt_dir));*/
             }
             continue;
         } else if (!strncmp(buf, "Name=", 5)) {
@@ -286,16 +286,16 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
 
             if (!gnIndentOutRange) {
                 fprintf(pOutFile, "\033[33m%s%2d.\033[37m [\033[1;32m目录\033[37m]"
-                    "\033[%d;%dm%.*s\033[0;31m%*.10s\033[37m\n",
-                    psIndent, nNumber,
-                    gnDirDepth < 7 ? gnsDirBackColor[gnDirDepth] : 0, gnDirDepth < 7 ? gnsDirForeColor[gnDirDepth] : 37, lntval, psName, 70 - gnDirDepth * 3 - lntval /*llen */ ,
-                    psCTime);
+                        "\033[%d;%dm%.*s\033[0;31m%*.10s\033[37m\n",
+                        psIndent, nNumber,
+                        gnDirDepth < 7 ? gnsDirBackColor[gnDirDepth] : 0, gnDirDepth < 7 ? gnsDirForeColor[gnDirDepth] : 37, lntval, psName, 70 - gnDirDepth * 3 - lntval /*llen */ ,
+                        psCTime);
             } else {
                 fprintf(pOutFile, "%*.*s\033[33m%4d\033[37m. [\033[1;32m目录\033[37m]"
-                    "\033[%d;%dm%.*s\033[0;31m%*.10s\033[37m\n",
-                    (gnDirDepth - 1) * 3, (gnDirDepth - 1) * 3, " ", nNumber,
-                    gnDirDepth < 7 ? gnsDirBackColor[gnDirDepth] : 0, gnDirDepth < 7 ? gnsDirForeColor[gnDirDepth] : 37, lntval, psName, 70 - gnDirDepth * 3 - lntval /*llen */ ,
-                    psCTime);
+                        "\033[%d;%dm%.*s\033[0;31m%*.10s\033[37m\n",
+                        (gnDirDepth - 1) * 3, (gnDirDepth - 1) * 3, " ", nNumber,
+                        gnDirDepth < 7 ? gnsDirBackColor[gnDirDepth] : 0, gnDirDepth < 7 ? gnsDirForeColor[gnDirDepth] : 37, lntval, psName, 70 - gnDirDepth * 3 - lntval /*llen */ ,
+                        psCTime);
             }
 
             if (!gnIndentOutRange)
@@ -310,13 +310,13 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
             lntval = gnDirDepth >= 15 ? 10 : 70 - gnDirDepth * 3;
             if (lntval > 39)
                 lntval = 39;
-/*			if(lntval > llen) lntval = llen;*/
+            /*   if(lntval > llen) lntval = llen;*/
             if (!gnIndentOutRange) {
                 fprintf(pOutFile, "\033[33m%s\033[37m%2d. [\033[1;36m文件\033[0;37m]"
-                    "%-*.*s\033[31m%*.10s\033[37m\n", psIndent, nNumber, lntval, lntval, psName, 70 - gnDirDepth * 3 - lntval, psCTime);
+                        "%-*.*s\033[31m%*.10s\033[37m\n", psIndent, nNumber, lntval, lntval, psName, 70 - gnDirDepth * 3 - lntval, psCTime);
             } else {
                 fprintf(pOutFile, "%*.*s%4d. [\033[1;36m文件\033[0;37m]"
-                    "%-*.*s\033[31m%*.10s\033[37m\n", (gnDirDepth - 1) * 3, (gnDirDepth - 1) * 3, " ", nNumber, lntval, lntval, psName, 70 - gnDirDepth * 3 - lntval, psCTime);
+                        "%-*.*s\033[31m%*.10s\033[37m\n", (gnDirDepth - 1) * 3, (gnDirDepth - 1) * 3, " ", nNumber, lntval, lntval, psName, 70 - gnDirDepth * 3 - lntval, psCTime);
             }
         } else {                /*      unknown item type       */
             if (DEFDBGFLAG <= gnDebugLevel)
@@ -343,67 +343,67 @@ int PhaseArgs(int argc, char **argv)
         return -1;
     while (++idx < argc) {
         switch (*(argv[idx])) {
-        case '-':              /*      parameters      */
-            if ('d' == argv[idx][1]) {  /* Debug Level */
-                idx++;
-                if (argc <= idx)
-                    return -1;
-                if (DEFDBGFLAG != gnDebugLevel)
-                    fprintf(pLogFile, "Option -v encountered, -d skipped...\n");
-                else if (1 != sscanf(argv[idx], "%d", &gnDebugLevel))
-                    return -1;
-            } else if ('i' == argv[idx][1]) {   /* assume initial depth */
-                idx++;
-                if (argc <= idx)
-                    return -1;
-                if (1 != sscanf(argv[idx], "%d", &gnDirDepth))
-                    return -1;
-            } else if ('o' == argv[idx][1]) {   /* output file */
-                idx++;
-                if (argc <= idx)
-                    return -1;
-                if (stdout == pOutFile)
-                    if (NULL == (pOutFile = fopen(argv[idx], "a+"))) {
-                        pOutFile = stdout;
-                        fprintf(pLogFile, "Error opening output file %s.\n", argv[idx]);
+            case '-':              /*      parameters      */
+                if ('d' == argv[idx][1]) {  /* Debug Level */
+                    idx++;
+                    if (argc <= idx)
                         return -1;
-                    }
-            } else if ('l' == argv[idx][1]) {   /* log infor into file */
-                idx++;
-                if (argc <= idx)
-                    return -1;
-                if (stderr == pLogFile)
-                    if (NULL == (pLogFile = fopen(argv[idx], "a+"))) {
-                        pLogFile = stderr;
-                        fprintf(pLogFile, "Error opening log file %s.\n", argv[idx]);
+                    if (DEFDBGFLAG != gnDebugLevel)
+                        fprintf(pLogFile, "Option -v encountered, -d skipped...\n");
+                    else if (1 != sscanf(argv[idx], "%d", &gnDebugLevel))
                         return -1;
-                    }
-            } else if ('v' == argv[idx][1]) {   /* verbose mode */
-                if (DEFDBGFLAG != gnDebugLevel) {
-                    fprintf(pLogFile, "Option -v encountered, -d skipped...\n");
-                    gnDebugLevel = DEFDBGFLAG + 1;
-                } else
-                    gnDebugLevel++;
-                if ('v' == argv[idx][2])
-                    gnDebugLevel++;
-            } else if ('n' == argv[idx][1]) {   /* ignore error */
-                gnIgnoreError = 0;
-            } else {            /* unknown command parameter */
-                return -1;
-            }
-            break;
-        default:               /*      root dir of source directory tree       */
-            if (strlen(psSrcDir) > 0)
-                return -1;
-            else if (strlen(argv[idx]) >= MAXLEN - 1) {
-                fprintf(pLogFile, "Argument too long.");
-                return -1;
-            }
-            strcpy(psSrcDir, argv[idx]);
-            len = strlen(psSrcDir) - 1;
-            if ('/' == psSrcDir[len])
-                psSrcDir[len] = 0;
-            break;
+                } else if ('i' == argv[idx][1]) {   /* assume initial depth */
+                    idx++;
+                    if (argc <= idx)
+                        return -1;
+                    if (1 != sscanf(argv[idx], "%d", &gnDirDepth))
+                        return -1;
+                } else if ('o' == argv[idx][1]) {   /* output file */
+                    idx++;
+                    if (argc <= idx)
+                        return -1;
+                    if (stdout == pOutFile)
+                        if (NULL == (pOutFile = fopen(argv[idx], "a+"))) {
+                            pOutFile = stdout;
+                            fprintf(pLogFile, "Error opening output file %s.\n", argv[idx]);
+                            return -1;
+                        }
+                } else if ('l' == argv[idx][1]) {   /* log infor into file */
+                    idx++;
+                    if (argc <= idx)
+                        return -1;
+                    if (stderr == pLogFile)
+                        if (NULL == (pLogFile = fopen(argv[idx], "a+"))) {
+                            pLogFile = stderr;
+                            fprintf(pLogFile, "Error opening log file %s.\n", argv[idx]);
+                            return -1;
+                        }
+                } else if ('v' == argv[idx][1]) {   /* verbose mode */
+                    if (DEFDBGFLAG != gnDebugLevel) {
+                        fprintf(pLogFile, "Option -v encountered, -d skipped...\n");
+                        gnDebugLevel = DEFDBGFLAG + 1;
+                    } else
+                        gnDebugLevel++;
+                    if ('v' == argv[idx][2])
+                        gnDebugLevel++;
+                } else if ('n' == argv[idx][1]) {   /* ignore error */
+                    gnIgnoreError = 0;
+                } else {            /* unknown command parameter */
+                    return -1;
+                }
+                break;
+            default:               /*      root dir of source directory tree       */
+                if (strlen(psSrcDir) > 0)
+                    return -1;
+                else if (strlen(argv[idx]) >= MAXLEN - 1) {
+                    fprintf(pLogFile, "Argument too long.");
+                    return -1;
+                }
+                strcpy(psSrcDir, argv[idx]);
+                len = strlen(psSrcDir) - 1;
+                if ('/' == psSrcDir[len])
+                    psSrcDir[len] = 0;
+                break;
         }
     }
     if (strlen(psSrcDir) <= 0)

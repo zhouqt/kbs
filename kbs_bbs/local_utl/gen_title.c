@@ -34,18 +34,18 @@ int generate_board_title(struct boardheader *bh,void* arg)
     struct BoardStatus* bs;
 
 #ifdef GEN_ORIGIN
-	setbdir(DIR_MODE_ORIGIN, opath, bh->filename);
+    setbdir(DIR_MODE_ORIGIN, opath, bh->filename);
 #endif
     setbdir(DIR_MODE_NORMAL, olddirect, bh->filename);
-    
+
     gen_threadid=1;
     if ((fd2 = open(olddirect, O_RDWR, 0664)) == -1) {
-	perror(olddirect);
+        perror(olddirect);
         return 0;
     }
 
     BBS_TRY {
-        if(!safe_mmapfile_handle(fd2,PROT_READ|PROT_WRITE,MAP_SHARED,&ptr,&buf.st_size)){
+        if (!safe_mmapfile_handle(fd2,PROT_READ|PROT_WRITE,MAP_SHARED,&ptr,&buf.st_size)) {
             close(fd2);
             return 0;
         }
@@ -71,7 +71,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
 
                 if (index[j].digest != index[i].digest)
                     continue;
-                tmppost = ((struct fileheader *) (ptr + j * size));
+                tmppost = ((struct fileheader *)(ptr + j * size));
                 t = tmppost->title;
                 if (index[j].has_pre)
                     t += 4;
@@ -124,49 +124,49 @@ int generate_board_title(struct boardheader *bh,void* arg)
 
 int generate_all_title()
 {
-	apply_boards(generate_board_title,NULL);
+    apply_boards(generate_board_title,NULL);
     return 0;
 }
 
 int main(int argc,char** argv)
 {
-	int allflag=0;
-	struct boardheader bh;
-	char* name;
+    int allflag=0;
+    struct boardheader bh;
+    char* name;
     while (1) {
-    	int c;
-    	c = getopt(argc, argv, "ah");
-    	if (c == -1)
+        int c;
+        c = getopt(argc, argv, "ah");
+        if (c == -1)
             break;
         switch (c) {
-        case 'a':
-        	allflag = 1;
-        	break;
-        case 'h':
-        	printf("%s [-a|boardname]\n  generatate board thread index.\n",argv[0]);
-        	return 0;
-        case '?':
-        	printf("%s:Unknown argument.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
-        	return 0;
+            case 'a':
+                allflag = 1;
+                break;
+            case 'h':
+                printf("%s [-a|boardname]\n  generatate board thread index.\n",argv[0]);
+                return 0;
+            case '?':
+                printf("%s:Unknown argument.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
+                return 0;
         }
     }
-	chdir(BBSHOME);
-	resolve_boards();
+    chdir(BBSHOME);
+    resolve_boards();
     if (optind < argc) {
-    	name = argv[optind++];
-    	if (optind < argc) {
+        name = argv[optind++];
+        if (optind < argc) {
             printf("%s:Too many arguments.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
             return 0;
         }
-        if(strchr(name,'/') || name[0] == '.') {
+        if (strchr(name,'/') || name[0] == '.') {
             printf("arguments must be boardname\n");
             return -1;
         }
-    	strncpy(bh.filename,name,STRLEN);
-    	generate_board_title(&bh,NULL);
+        strncpy(bh.filename,name,STRLEN);
+        generate_board_title(&bh,NULL);
     }
     if (allflag) {
-    	generate_all_title();
+        generate_all_title();
     }
     return 0;
 }

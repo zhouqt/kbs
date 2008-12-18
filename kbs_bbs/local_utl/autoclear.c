@@ -3,8 +3,8 @@
  *               dustbin according to the parameters and the settings
  *               located in BBSHOME/etc/autoclear
  * Usage:
- * 	autoclear [day] [max] [min]
- * 
+ *  autoclear [day] [max] [min]
+ *
  * porting from Maple 2.36 by Nighthawk.bbs@www.cn.nctu.edu.tw
  * changed for kbs_bbs
 
@@ -111,7 +111,8 @@ life *brd;
     updatelastpost(brd->bname);
 }
 
-int main(int argc,char **argv){
+int main(int argc,char **argv)
+{
     FILE *fin;
     int number;
     size_t count;
@@ -137,7 +138,7 @@ int main(int argc,char **argv){
     /* -------------- */
 
     count = 0;
-    if((fin=fopen(EXPIRE_CONF,"r"))!=NULL){
+    if ((fin=fopen(EXPIRE_CONF,"r"))!=NULL) {
         while (fgets(buf, 256, fin)) {
             if (buf[0] == '#')
                 continue;
@@ -178,7 +179,7 @@ int main(int argc,char **argv){
         printf(":Err: unable to open %s\n", bpath);
         return -1;
     }
-    while((de=readdir(dirp))!=NULL){
+    while ((de=readdir(dirp))!=NULL) {
         ptr = de->d_name;
         if (ptr[0] > ' ' && ptr[0] != '.') {
             if (count)

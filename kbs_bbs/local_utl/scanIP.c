@@ -4,7 +4,7 @@ char IP[20];
 
 int check(struct userec *uentp, void *arg)
 {
-    if(strstr(uentp->lasthost, IP)!=NULL) {
+    if (strstr(uentp->lasthost, IP)!=NULL) {
         printf("%s\t%s\n", uentp->userid, uentp->lasthost);
     }
     return 0;
@@ -12,7 +12,7 @@ int check(struct userec *uentp, void *arg)
 
 int main(int argc, char **argv)
 {
-    if(argc<=1) return 0;
+    if (argc<=1) return 0;
     strcpy(IP, argv[1]);
     chdir(BBSHOME);
     resolve_boards();

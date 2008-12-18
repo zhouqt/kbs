@@ -71,34 +71,36 @@ static inline int u_show_change(const struct userec*,unsigned int,unsigned int) 
 static inline int u_process(struct userec*,void*) __nonnull((1));
 
 /* 处理 -h 选项 */
-static inline int u_usage(void){
+static inline int u_usage(void)
+{
     fprintf(stdout,"\n%s\n%s\n%s\n%s\n%s\n",
-        "  命令形式:        ulevel [ 用户选项 ] [ 条件选项 ] [ 操作选项 ] [ 帮助选项 ]\n",
-        "  用户选项:\n"
-        "    -a             操作对象为所有用户, 该选项与 -u 选项互斥, 默认启用\n"
-        "    -u <user>      操作对象为用户名为 <user> 的用户, 该选项与 -a 选项互斥, 默认不启用\n",
-        "  条件选项:\n"
-        "    -p <perm>      启用权限检测, 操作对象为权限条件 <perm> 指定的用户, 默认不启用\n"
-        "                   <perm> 是一组权限符号的集合, 以字符 `&` 起始时表示各个权限之间是逻辑与关系,\n"
-        "                   即所有描述到的权限都是重要的, 默认情况下各个权限之前是逻辑或关系\n"
-        "    -t <tnum>      启用身份检测, 操作对象为身份条件 <tnum> 指定的用户, 默认不启用\n"
-        "                   <tnum> 是 `0 ~ 255` 之间的整数, 表示身份序号\n",
-        "  操作选项:\n"
-        "    -A <perm>      为当前操作对象增加权限 <perm>, 该选项与 -S 选项互斥, 默认不启用\n"
-        "    -D <perm>      为当前操作对象移除权限 <perm>, 该选项与 -S 选项互斥, 默认不启用\n"
-        "    -S <perm>      将当前操作对象权限设置为 <perm>, 该选项与 -A 选项和 -D 选项互斥, 默认不启用\n"
-        "    -T <tnum>      将当前操作对象身份设置为 <tnum>, 默认不启用\n",
-        "  帮助选项:\n"
-        "    -h             显示文档信息\n");
+            "  命令形式:        ulevel [ 用户选项 ] [ 条件选项 ] [ 操作选项 ] [ 帮助选项 ]\n",
+            "  用户选项:\n"
+            "    -a             操作对象为所有用户, 该选项与 -u 选项互斥, 默认启用\n"
+            "    -u <user>      操作对象为用户名为 <user> 的用户, 该选项与 -a 选项互斥, 默认不启用\n",
+            "  条件选项:\n"
+            "    -p <perm>      启用权限检测, 操作对象为权限条件 <perm> 指定的用户, 默认不启用\n"
+            "                   <perm> 是一组权限符号的集合, 以字符 `&` 起始时表示各个权限之间是逻辑与关系,\n"
+            "                   即所有描述到的权限都是重要的, 默认情况下各个权限之前是逻辑或关系\n"
+            "    -t <tnum>      启用身份检测, 操作对象为身份条件 <tnum> 指定的用户, 默认不启用\n"
+            "                   <tnum> 是 `0 ~ 255` 之间的整数, 表示身份序号\n",
+            "  操作选项:\n"
+            "    -A <perm>      为当前操作对象增加权限 <perm>, 该选项与 -S 选项互斥, 默认不启用\n"
+            "    -D <perm>      为当前操作对象移除权限 <perm>, 该选项与 -S 选项互斥, 默认不启用\n"
+            "    -S <perm>      将当前操作对象权限设置为 <perm>, 该选项与 -A 选项和 -D 选项互斥, 默认不启用\n"
+            "    -T <tnum>      将当前操作对象身份设置为 <tnum>, 默认不启用\n",
+            "  帮助选项:\n"
+            "    -h             显示文档信息\n");
     return 0;
 }
 
 /* 处理权限参数 */
-static inline unsigned int u_gen_perm(const char *s){
+static inline unsigned int u_gen_perm(const char *s)
+{
     const char *p,*r;
     unsigned int ret;
-    for(p=s,ret=0;*p;p++){
-        if(!(r=strchr(perms,(*p))))
+    for (p=s,ret=0;*p;p++) {
+        if (!(r=strchr(perms,(*p))))
             continue;
         ret|=(1<<(r-perms));
     }
@@ -106,65 +108,73 @@ static inline unsigned int u_gen_perm(const char *s){
 }
 
 /* 处理身份参数 */
-static inline unsigned int u_gen_title(const char *s){
+static inline unsigned int u_gen_title(const char *s)
+{
     const char *p;
     unsigned int ret;
-    for(p=s,ret=0;*p;p++)
-        if(!isdigit(*p))
+    for (p=s,ret=0;*p;p++)
+        if (!isdigit(*p))
             return 0x80000100;
     return (!((ret=atoi(s))&~0xFF)?(ret):(0x80000200));
 }
 
 /* 处理 -p 选项 */
-static inline int u_check_perm(const struct userec *user){
+static inline int u_check_perm(const struct userec *user)
+{
     return (!(flag&UC_PRM)?(1):(!(flag&UE_AND)?(user->userlevel&perm):((user->userlevel&perm)==perm)));
 }
 
 /* 处理 -t 选项 */
-static inline int u_check_title(const struct userec *user){
+static inline int u_check_title(const struct userec *user)
+{
     return (!(flag&UC_TTL)?(1):(user->title==tnum));
 }
 
 /* 处理 -A 选项 */
-static inline int u_add_perm(struct userec *user){
-    if(flag&UO_ADD)
+static inline int u_add_perm(struct userec *user)
+{
+    if (flag&UO_ADD)
         user->userlevel|=permA;
     return 0;
 }
 
 /* 处理 -D 选项 */
-static inline int u_del_perm(struct userec *user){
-    if(flag&UO_DEL)
+static inline int u_del_perm(struct userec *user)
+{
+    if (flag&UO_DEL)
         user->userlevel&=~permD;
     return 0;
 }
 
 /* 处理 -S 选项 */
-static inline int u_set_perm(struct userec *user){
-    if(flag&UO_SET)
+static inline int u_set_perm(struct userec *user)
+{
+    if (flag&UO_SET)
         user->userlevel=permS;
     return 0;
 }
 
 /* 处理 -T 选项 */
-static inline int u_set_title(struct userec *user){
-    if(flag&UO_TTL)
+static inline int u_set_title(struct userec *user)
+{
+    if (flag&UO_TTL)
         user->title=tnumT;
     return 0;
 }
 
 /* 处理条件 */
-static inline int u_process_condition(const struct userec *user){
+static inline int u_process_condition(const struct userec *user)
+{
     return (u_check_perm(user)&&u_check_title(user));
 }
 
 /* 处理操作 */
-static inline int u_process_operation(struct userec *user){
-    if(!(flag&UE_RVS)){
+static inline int u_process_operation(struct userec *user)
+{
+    if (!(flag&UE_RVS)) {
         u_add_perm(user);
         u_del_perm(user);
-    }
-    else{
+    } else {
         u_del_perm(user);
         u_add_perm(user);
     }
@@ -174,37 +184,41 @@ static inline int u_process_operation(struct userec *user){
 }
 
 /* 处理权限字符串 */
-static inline const char* u_gen_perms(unsigned int perm){
+static inline const char* u_gen_perms(unsigned int perm)
+{
     static char buf[NUMPERMS+1];
     int i;
-    for(i=0;i<NUMPERMS;i++)
+    for (i=0;i<NUMPERMS;i++)
         buf[i]=(!(perm&(1<<i))?('-'):perms[i]);
     buf[i]=0;
     return ((const char*)buf);
 }
 
 /* 处理输出当前 */
-static inline int u_show_current(const struct userec *user){
+static inline int u_show_current(const struct userec *user)
+{
     fprintf(stdout,"%-12.12s  <%03u>  %s\n",user->userid,user->title,u_gen_perms(user->userlevel));
     return 0;
 }
 
 /* 处理输出更改 */
-static inline int u_show_change(const struct userec *user,unsigned int save_perm,unsigned int save_tnum){
+static inline int u_show_change(const struct userec *user,unsigned int save_perm,unsigned int save_tnum)
+{
     fprintf(stdout,"%-12.12s  <%03u>  %s  ",user->userid,save_tnum,u_gen_perms(save_perm));
     fprintf(stdout,"=>  <%03u>  %s\n",user->title,u_gen_perms(user->userlevel));
     return 0;
 }
 
 /* 处理单一用户 */
-static inline int u_process(struct userec *user,void *arg){
+static inline int u_process(struct userec *user,void *arg)
+{
     unsigned int save_perm;
     unsigned int save_tnum;
-    if(!(user->userid[0])||!u_process_condition(user))
+    if (!(user->userid[0])||!u_process_condition(user))
         return 0;
-    if(!(flag&UO_MSK))
+    if (!(flag&UO_MSK))
         u_show_current(user);
-    else{
+    else {
         save_perm=user->userlevel;
         save_tnum=user->title;
         u_process_operation(user);
@@ -214,65 +228,66 @@ static inline int u_process(struct userec *user,void *arg){
 }
 
 /* 处理主交互 */
-int main(int argc,char **argv){
+int main(int argc,char **argv)
+{
 #define UE_QUIT(s) do{u_usage();fprintf(stderr,"error: %s\n",s);exit(__LINE__);}while(0)
     struct userec *p_user;
     int ret;
     opterr=0;
-    while((ret=getopt(argc,argv,"au:p:t:A:D:S:T:h"))!=-1){
-        switch(ret){
+    while ((ret=getopt(argc,argv,"au:p:t:A:D:S:T:h"))!=-1) {
+        switch (ret) {
             case 'a':
-                if(flag&(UE_BTH|UU_USR))
+                if (flag&(UE_BTH|UU_USR))
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UE_BTH;
                 break;
             case 'u':
-                if(flag&(UE_BTH|UU_USR))
+                if (flag&(UE_BTH|UU_USR))
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UU_USR;
                 snprintf(user,IDLEN+1,"%s",optarg);
                 break;
             case 'p':
-                if(flag&UC_PRM)
+                if (flag&UC_PRM)
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UC_PRM;
                 (*optarg=='&')?(flag|=UE_AND):(flag&=~UE_AND);
                 perm=u_gen_perm(optarg);
                 break;
             case 't':
-                if(flag&UC_TTL)
+                if (flag&UC_TTL)
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UC_TTL;
                 tnum=u_gen_title(optarg);
-                if(tnum&~0xFF)
+                if (tnum&~0xFF)
                     UE_QUIT("invalid title number ...");
                 break;
             case 'A':
-                if(flag&UO_ADD)
+                if (flag&UO_ADD)
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UO_ADD;
                 permA=u_gen_perm(optarg);
                 (flag&UO_DEL)?(flag|=UE_RVS):(flag&=~UE_RVS);
                 break;
             case 'D':
-                if(flag&UO_DEL)
+                if (flag&UO_DEL)
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UO_DEL;
                 permD=u_gen_perm(optarg);
                 (flag&UO_ADD)?(flag&=~UE_RVS):(flag|=UE_RVS);
                 break;
             case 'S':
-                if(flag&(UO_ADD|UO_DEL|UO_SET))
+                if (flag&(UO_ADD|UO_DEL|UO_SET))
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UO_SET;
                 permS=u_gen_perm(optarg);
                 break;
             case 'T':
-                if(flag&UO_TTL)
+                if (flag&UO_TTL)
                     UE_QUIT("options conflict or overlap ...");
                 flag|=UO_TTL;
                 tnumT=u_gen_title(optarg);
-                if(tnumT&~0xFF)
+                if (tnumT&~0xFF)
                     UE_QUIT("invalid title number ...");
                 break;
             case 'h':
@@ -282,17 +297,16 @@ int main(int argc,char **argv){
                 UE_QUIT("unknown usage of options ...");
         }
     }
-    if(optind!=argc)
+    if (optind!=argc)
         UE_QUIT("useless parameters ...");
-    if(chdir(BBSHOME)==-1)
+    if (chdir(BBSHOME)==-1)
         UE_QUIT("change directory to BBSHOME ...");
     resolve_ucache();
-    if(flag&UU_USR){
-        if(!getuser(user,&p_user))
+    if (flag&UU_USR) {
+        if (!getuser(user,&p_user))
             UE_QUIT("locate specified user ...");
         u_process(p_user,NULL);
-    }
-    else
+    } else
         apply_users(u_process,NULL);
     return 0;
 #undef UE_QUIT
