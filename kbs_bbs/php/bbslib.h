@@ -36,15 +36,15 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* 
 struct WWW_GUEST_S* www_get_guest_entry(int idx);
 
 #define DEBUG_WAIT \
-do {\
-	struct stat _dw_st; \
-	while (stat("/tmp/start", &_dw_st) < 0) \
-		sleep(1); \
-} while(0)
+    do {\
+        struct stat _dw_st; \
+        while (stat("/tmp/start", &_dw_st) < 0) \
+            sleep(1); \
+    } while(0)
 
-void output_ansi_text(char *buf, size_t buflen, 
-							buffered_output_t * output, char* attachlink);
-void output_ansi_javascript(char *buf, size_t buflen, 
-							buffered_output_t * output, char* attachlink);
+void output_ansi_text(char *buf, size_t buflen,
+                      buffered_output_t * output, char* attachlink);
+void output_ansi_javascript(char *buf, size_t buflen,
+                            buffered_output_t * output, char* attachlink);
 
 #endif                          /* BBSLIB_H */

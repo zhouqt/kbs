@@ -1,9 +1,9 @@
-#include "php_kbs_bbs.h"  
+#include "php_kbs_bbs.h"
 #include "SAPI.h"
 #include "md5.h"
 
 /*
- * refer Ecma-262 
+ * refer Ecma-262
  * '\033'  -> \r (not exactly the same thing, but borrow...)
  * '\n'    -> \n
  * '\\'    -> \\
@@ -32,11 +32,11 @@ PHP_FUNCTION(bbs2_readfile)
 
     if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
-    
+
     j = ptrlen = mmap_ptrlen;
     if (j > chunk_size) j = chunk_size;
     output_buffer_size = 2 * j + 16;
-    output_buffer = (char* )emalloc(output_buffer_size);
+    output_buffer = (char*)emalloc(output_buffer_size);
     output_buffer_len = 0;
     cur_ptr = ptr;
     strcpy(output_buffer + output_buffer_len, "prints('");
@@ -63,7 +63,7 @@ PHP_FUNCTION(bbs2_readfile)
                     else if (c == '\033') c = 'r';
                     else if (c != '\\' && c != '\'' && c != '\"'
                              && c != '/'    /* to prevent things like </script> */
-                             ) {
+                            ) {
                         if (c >= 32) {
                             output_buffer[output_buffer_len++] = c;
                         }
@@ -74,7 +74,7 @@ PHP_FUNCTION(bbs2_readfile)
                     }
                     output_buffer[output_buffer_len++] = '\\';
                     output_buffer[output_buffer_len++] = c;
-                } while(0);
+                } while (0);
                 in_chinese = false;
             }
             ptrlen--; cur_ptr++;
@@ -91,7 +91,7 @@ PHP_FUNCTION(bbs2_readfile)
     }
     strcpy(output_buffer + output_buffer_len, "');");
     output_buffer_len += 3;
-    
+
     if (ptrlen < 0) { //attachment
         char *attachfilename, *attachptr;
         char buf[1024];
@@ -102,9 +102,9 @@ PHP_FUNCTION(bbs2_readfile)
         ptrlen = -ptrlen;
         strcpy(buf, "attach('");
         startbufptr = buf + strlen(buf);
-        while(ptrlen > 0) {
-            if (((attachfilename = checkattach(cur_ptr, ptrlen, 
-                                  &attach_len, &attachptr)) == NULL)) {
+        while (ptrlen > 0) {
+            if (((attachfilename = checkattach(cur_ptr, ptrlen,
+                                               &attach_len, &attachptr)) == NULL)) {
                 break;
             }
             attach_pos = attachfilename - ptr;
@@ -113,8 +113,8 @@ PHP_FUNCTION(bbs2_readfile)
             ptrlen -= newlen;
             if (ptrlen < 0) break;
             bufptr = startbufptr;
-            while(*attachfilename != '\0') {
-                switch(*attachfilename) {
+            while (*attachfilename != '\0') {
+                switch (*attachfilename) {
                     case '\'':
                     case '\"':
                     case '\\':
@@ -164,14 +164,14 @@ PHP_FUNCTION(bbs2_readfile_text)
         RETURN_LONG(-1);
 
     ptrlen = mmap_ptrlen;
-    
+
     if (!maxchar) {
         maxchar = ptrlen;
     } else if (ptrlen > maxchar) {
         ptrlen = maxchar;
     }
     output_buffer_size = 2 * maxchar;
-    output_buffer = (char* )emalloc(output_buffer_size);
+    output_buffer = (char*)emalloc(output_buffer_size);
     output_buffer_len = 0;
     cur_ptr = ptr;
     if (escape_flag == 1) {
@@ -206,7 +206,7 @@ PHP_FUNCTION(bbs2_readfile_text)
                 is_last_space = !is_last_space;
             } else {
                 is_last_space = false;
-                switch(c) {
+                switch (c) {
                     case '&':
                         strcpy(output_buffer + output_buffer_len, escape_seq[0]);
                         output_buffer_len += escape_seq_len[0];
@@ -258,7 +258,7 @@ PHP_FUNCTION(bbs_file_output_attachment)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl|s", &filename, &filename_len, &attachpos, &attachname, &attachname_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    
+
     if (attachpos == 0 && attachname == NULL) {
         RETURN_LONG(-2);
     }
@@ -274,7 +274,7 @@ PHP_FUNCTION(bbs_file_output_attachment)
     } else if (attachpos >= 0 && attachpos < ptrlen) {
         char *p, *pend = ptr + ptrlen;
         p = attachname = ptr + attachpos;
-        while(*p && p < pend) {
+        while (*p && p < pend) {
             p++;
         }
         p++;
@@ -307,7 +307,7 @@ PHP_FUNCTION(bbs_file_output_attachment)
         snprintf(buf, 256, "Content-Disposition: inline;filename=%s", attachname);
         ctr.line_len = strlen(buf);
         sapi_header_op(SAPI_HEADER_ADD, &ctr TSRMLS_CC);
-        
+
         ZEND_WRITE(sendptr, sendlen);
     }
     end_mmapfile(ptr, mmap_ptrlen, -1);
@@ -323,7 +323,8 @@ static char* output_buffer=NULL;
 static int output_buffer_len=0;
 static int output_buffer_size=0;
 
-void reset_output_buffer() {
+void reset_output_buffer()
+{
     output_buffer=NULL;
     output_buffer_size=0;
     output_buffer_len=0;
@@ -331,56 +332,58 @@ void reset_output_buffer() {
 
 static void output_printf(const char* buf, uint len)
 {
-	int bufLen;
-	int n,newsize;
-	char * newbuf;
-	if (output_buffer==NULL) {
-		output_buffer=(char* )emalloc(51200); //first 50k
-		if (output_buffer==NULL) {
-			return;
-		}
-		output_buffer_size=51200;
-	}
-	bufLen=strlen(buf);
-	if (bufLen>len) {
-		bufLen=len;
-	}
-	n=1+output_buffer_len+bufLen-output_buffer_size;
-	if (n>=0) {
-		newsize=output_buffer_size+((n/102400)+1)*102400; //n*100k every time
-		newbuf=(char*)erealloc(output_buffer,newsize);
-		if (newbuf==NULL){
-			return;
-		}
-		output_buffer=newbuf;
-		output_buffer_size=newsize;
-	}
-	memcpy(output_buffer+output_buffer_len,buf,bufLen);
-	output_buffer_len+=bufLen;
+    int bufLen;
+    int n,newsize;
+    char * newbuf;
+    if (output_buffer==NULL) {
+        output_buffer=(char*)emalloc(51200);  //first 50k
+        if (output_buffer==NULL) {
+            return;
+        }
+        output_buffer_size=51200;
+    }
+    bufLen=strlen(buf);
+    if (bufLen>len) {
+        bufLen=len;
+    }
+    n=1+output_buffer_len+bufLen-output_buffer_size;
+    if (n>=0) {
+        newsize=output_buffer_size+((n/102400)+1)*102400; //n*100k every time
+        newbuf=(char*)erealloc(output_buffer,newsize);
+        if (newbuf==NULL) {
+            return;
+        }
+        output_buffer=newbuf;
+        output_buffer_size=newsize;
+    }
+    memcpy(output_buffer+output_buffer_len,buf,bufLen);
+    output_buffer_len+=bufLen;
 }
 
-static char* get_output_buffer(){
-	return output_buffer;
+static char* get_output_buffer()
+{
+    return output_buffer;
 }
 
-static int get_output_buffer_len(){
-	int len=output_buffer_len;
-	output_buffer_len=0;
-	return len;
+static int get_output_buffer_len()
+{
+    int len=output_buffer_len;
+    output_buffer_len=0;
+    return len;
 }
 
 #if 0
 static int new_buffered_output(char *buf, size_t buflen, void *arg)
 {
-	output_printf(buf,buflen);
-	return 0;
+    output_printf(buf,buflen);
+    return 0;
 }
 #endif
 
 static int new_write(const char *buf, uint buflen)
 {
-	output_printf(buf, buflen);
-	return 0;
+    output_printf(buf, buflen);
+    return 0;
 }
 
 /* 注意，当 is_preview 为 1 的时候，第一个参数 filename 就是供预览的帖子内容，而不是文件名 - atppp */
@@ -430,23 +433,22 @@ PHP_FUNCTION(bbs_printansifile)
         ptrlen = filename_len;
         getattachtmppath(attachdir, MAXPATH, getSession());
     }
-	if ((out = alloc_output(outbuf_len)) == NULL)
-	{
-		if (!is_preview) end_mmapfile(ptr, mmap_ptrlen, -1);
+    if ((out = alloc_output(outbuf_len)) == NULL) {
+        if (!is_preview) end_mmapfile(ptr, mmap_ptrlen, -1);
         RETURN_LONG(2);
-	}
-/*
-	override_default_output(out, buffered_output);
-	override_default_flush(out, flush_buffer);
-*/
-	/*override_default_output(out, new_buffered_output);
-	override_default_flush(out, new_flush_buffer);*/
-	override_default_write(out, new_write);
+    }
+    /*
+     override_default_output(out, buffered_output);
+     override_default_flush(out, flush_buffer);
+    */
+    /*override_default_output(out, new_buffered_output);
+    override_default_flush(out, new_flush_buffer);*/
+    override_default_write(out, new_write);
 
-	output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview ? attachdir : NULL);
-	free_output(out);
+    output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview ? attachdir : NULL);
+    free_output(out);
     if (!is_preview) end_mmapfile(ptr, mmap_ptrlen, -1);
-	RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
+    RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
 }
 
 PHP_FUNCTION(bbs_print_article)
@@ -479,16 +481,15 @@ PHP_FUNCTION(bbs_print_article)
     }
     if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
-	if ((out = alloc_output(outbuf_len)) == NULL)
-	{
-		end_mmapfile(ptr, mmap_ptrlen, -1);
+    if ((out = alloc_output(outbuf_len)) == NULL) {
+        end_mmapfile(ptr, mmap_ptrlen, -1);
         RETURN_LONG(2);
-	}
+    }
 
-	override_default_write(out, zend_write);
+    override_default_write(out, zend_write);
 
-	output_ansi_text(ptr, mmap_ptrlen, out, attachlink);
-	free_output(out);
+    output_ansi_text(ptr, mmap_ptrlen, out, attachlink);
+    free_output(out);
     end_mmapfile(ptr, mmap_ptrlen, -1);
 }
 
@@ -522,16 +523,15 @@ PHP_FUNCTION(bbs_print_article_js)
     }
     if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
-	if ((out = alloc_output(outbuf_len)) == NULL)
-	{
-		end_mmapfile(ptr, mmap_ptrlen, -1);
+    if ((out = alloc_output(outbuf_len)) == NULL) {
+        end_mmapfile(ptr, mmap_ptrlen, -1);
         RETURN_LONG(2);
-	}
+    }
 
-	override_default_write(out, zend_write);
+    override_default_write(out, zend_write);
 
-	output_ansi_javascript(ptr, mmap_ptrlen, out, attachlink);
-	free_output(out);
+    output_ansi_javascript(ptr, mmap_ptrlen, out, attachlink);
+    free_output(out);
     end_mmapfile(ptr, mmap_ptrlen, -1);
 }
 
@@ -545,54 +545,52 @@ PHP_FUNCTION(bbs_printoriginfile)
     int boardLen,filenameLen;
     FILE* fp;
     const int outbuf_len = 4096;
-	char buf[512],path[512];
+    char buf[512],path[512];
     buffered_output_t *out;
-	int i;
-	int skip;
-	const boardheader_t* bp;
+    int i;
+    int skip;
+    const boardheader_t* bp;
 
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board,&boardLen, &filename,&filenameLen) != SUCCESS)) {
-		WRONG_PARAM_COUNT;
-    } 
-	if ( (bp=getbcache(board))==0) {
-		RETURN_LONG(-1);
-	}
-	setbfile(path, bp->filename, filename);
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp=getbcache(board))==0) {
+        RETURN_LONG(-1);
+    }
+    setbfile(path, bp->filename, filename);
     fp = fopen(path, "r");
     if (fp == 0)
         RETURN_LONG(-1); //文件无法读取
-	if ((out = alloc_output(outbuf_len)) == NULL)
-	{
+    if ((out = alloc_output(outbuf_len)) == NULL) {
         RETURN_LONG(-2);
-	}
-	override_default_write(out, zend_write);
-	/*override_default_output(out, buffered_output);
-	override_default_flush(out, flush_buffer);*/
-	
-	i=0;    
-	skip=0;
+    }
+    override_default_write(out, zend_write);
+    /*override_default_output(out, buffered_output);
+    override_default_flush(out, flush_buffer);*/
+
+    i=0;
+    skip=0;
     while (skip_attach_fgets(buf, sizeof(buf), fp) != 0) {
-		i++;
+        i++;
         if (Origin2(buf))
             break;
-		if ((i==1) && (strncmp(buf,"发信人",6)==0)) {
-			skip=1;
-		}
-		if ((skip) && (i<=4) ){
-			continue;
-		}
+        if ((i==1) && (strncmp(buf,"发信人",6)==0)) {
+            skip=1;
+        }
+        if ((skip) && (i<=4)) {
+            continue;
+        }
         if (strstr(buf,"\033[36m※ 修改:·")==buf) {
             continue;
         }
-        if (!strcasestr(buf, "</textarea>"))
-		{
-			int len = strlen(buf);
+        if (!strcasestr(buf, "</textarea>")) {
+            int len = strlen(buf);
             BUFFERED_OUTPUT(out, buf, len);
-		}
+        }
     }
     fclose(fp);
-	BUFFERED_FLUSH(out);
-	free_output(out);
+    BUFFERED_FLUSH(out);
+    free_output(out);
     RETURN_LONG(0);
 }
 
@@ -606,46 +604,45 @@ PHP_FUNCTION(bbs_originfile)
     char *board,*filename;
     int boardLen,filenameLen;
     FILE* fp;
-	char buf[512],path[512];
+    char buf[512],path[512];
     char *content, *ptr;
     int chunk_size=51200, calen, clen, buflen;
-	int i;
-	int skip;
-	const boardheader_t* bp;
+    int i;
+    int skip;
+    const boardheader_t* bp;
 
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board,&boardLen, &filename,&filenameLen) != SUCCESS)) {
-		WRONG_PARAM_COUNT;
-    } 
-	if ( (bp=getbcache(board))==0) {
-		RETURN_LONG(-1);
-	}
-	setbfile(path, bp->filename, filename);
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp=getbcache(board))==0) {
+        RETURN_LONG(-1);
+    }
+    setbfile(path, bp->filename, filename);
     fp = fopen(path, "r");
     if (fp == 0)
         RETURN_LONG(-1); //文件无法读取
-	
-	i=0;    
-	skip=0;
+
+    i=0;
+    skip=0;
     calen = chunk_size;
     content = (char *)emalloc(calen);
     clen = 0;
     ptr = content;
     while (skip_attach_fgets(buf, sizeof(buf), fp) != 0) {
-		i++;
+        i++;
         if (Origin2(buf))
             break;
-		if ((i==1) && (strncmp(buf,"发信人",6)==0)) {
-			skip=1;
-		}
-		if ((skip) && (i<=4) ){
-			continue;
-		}
+        if ((i==1) && (strncmp(buf,"发信人",6)==0)) {
+            skip=1;
+        }
+        if ((skip) && (i<=4)) {
+            continue;
+        }
         if (strstr(buf,"\033[36m※ 修改:·")==buf) {
             continue;
         }
         buflen = strlen(buf);
-        if((clen + buflen) >= calen)
-        {
+        if ((clen + buflen) >= calen) {
             calen += chunk_size;
             content = (char *)erealloc(content, calen);
             ptr = content + clen;
@@ -675,11 +672,11 @@ PHP_FUNCTION(bbs_decode_att_hash)
     int i, u32, len;
     char *ptr;
     MD5_CTX md5;
-    
+
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &info, &infolen, &spec, &speclen) != SUCCESS)) {
-		WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
-    
+
     if (infolen > 128) {
         RETURN_FALSE;
     }
@@ -736,76 +733,72 @@ PHP_FUNCTION(bbs_decode_att_hash)
 
 // long bbs_parse_articles(string fname, array arr);
 // mode:  0 - parse, 1 - get brief
-PHP_FUNCTION(bbs_parse_article) {
+PHP_FUNCTION(bbs_parse_article)
+{
     int ac, fname_len;
     long mode;
     char *fname, line[1024], *ptr, *ptr1;
     FILE *fp;
     zval *arr;
-    
+
     ac = ZEND_NUM_ARGS();
-    if(ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sal", &fname, &fname_len, &arr, &mode) == FAILURE) {
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sal", &fname, &fname_len, &arr, &mode) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    
+
     fp = fopen(fname, "r");
-    if(!fp) {
+    if (!fp) {
         RETURN_LONG(-1);
     }
-    if(array_init(arr) != SUCCESS) {
+    if (array_init(arr) != SUCCESS) {
         fclose(fp);
         RETURN_LONG(-2);
     }
-    
-    if(mode == 0) {
-        while(skip_attach_fgets(line, 1024, fp)) {
-            if(strncmp(line, "发信人: ", 8) == 0) {
+
+    if (mode == 0) {
+        while (skip_attach_fgets(line, 1024, fp)) {
+            if (strncmp(line, "发信人: ", 8) == 0) {
                 ptr = strchr(line, '(');
-                if(!ptr)
+                if (!ptr)
                     continue;
                 *(ptr - 1) = '\0';
                 ptr1 = line + 8;
                 add_assoc_string(arr, "userid", ptr1, 1);
                 *(ptr - 1) = ' ';
                 ptr1 = strrchr(line, ')');
-                if(!ptr1)
+                if (!ptr1)
                     continue;
                 *ptr1 = '\0';
                 add_assoc_string(arr, "username", ptr + 1, 1);
                 continue;
-            }
-            else if(strncmp(line, "标  题: ", 8) == 0) {
+            } else if (strncmp(line, "标  题: ", 8) == 0) {
                 ptr = strrchr(line, '\n');
-                if(!ptr)
+                if (!ptr)
                     continue;
                 *ptr = '\0';
                 add_assoc_string(arr, "title", line + 8, 1);
                 continue;
-            }
-            else if(strncmp(line, "发信站: ", 8) == 0) {
+            } else if (strncmp(line, "发信站: ", 8) == 0) {
                 ptr = strchr(line, '(');
-                if(!ptr)
+                if (!ptr)
                     continue;
                 *(ptr - 1) = '\0';
                 add_assoc_string(arr, "postsite", line + 8, 1);
                 continue;
-            }
-            else if(strncmp(line, "转信站: ", 8) == 0) {
+            } else if (strncmp(line, "转信站: ", 8) == 0) {
                 ptr = strrchr(line, '\n');
-                if(!ptr)
+                if (!ptr)
                     continue;
                 *ptr = '\0';
                 add_assoc_string(arr, "innlist", line + 8, 1);
                 continue;
-            }
-            else if(strncmp(line, "\n", 1) == 0) {
+            } else if (strncmp(line, "\n", 1) == 0) {
                 break;
             }
         }
-    }
-    else if(mode == 1) {
-        while(skip_attach_fgets(line, 1024, fp)) {
-            if(strncmp(line, "\n", 1) == 0) {
+    } else if (mode == 1) {
+        while (skip_attach_fgets(line, 1024, fp)) {
+            if (strncmp(line, "\n", 1) == 0) {
                 bzero(line, 100);
                 fread(line, 50, 1, fp);
                 process_control_chars(line, NULL);
@@ -814,7 +807,7 @@ PHP_FUNCTION(bbs_parse_article) {
             }
         }
     }
-    
+
     fclose(fp);
     RETURN_LONG(0);
 }

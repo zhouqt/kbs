@@ -49,7 +49,7 @@ PHP_FUNCTION(bbs_getsessionid);
     PHP_FE(bbs_isonline, NULL) \
     PHP_FE(bbs_session_modify_user_mode, NULL) \
     PHP_FE(bbs_getsessionid, NULL) \
-
+     
 
 #endif //PHP_BBS_SESSION_H
 

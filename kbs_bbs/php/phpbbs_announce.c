@@ -1,27 +1,27 @@
-#include "php_kbs_bbs.h"  
+#include "php_kbs_bbs.h"
 
 PHP_FUNCTION(bbs_ann_num2path)
 {
     char *path,*userid;
     int path_len,userid_len;
     struct userec *user;
-	char buf[256];
+    char buf[256];
 
     if (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &userid, &userid_len) != SUCCESS)
         WRONG_PARAM_COUNT;
-    
+
     if (userid != 0) {
         if (getuser(userid, &user) == 0)
             RETURN_FALSE;
     } else
         user = getCurrentUser();
 
-	buf[0]='\0';
-	if(ann_numtopath(buf, path, user)==NULL){
-		RETURN_FALSE;
-	}else{
-	    RETURN_STRING(buf, 1);
-	}
+    buf[0]='\0';
+    if (ann_numtopath(buf, path, user)==NULL) {
+        RETURN_FALSE;
+    } else {
+        RETURN_STRING(buf, 1);
+    }
 }
 
 PHP_FUNCTION(bbs_ann_traverse_check)
@@ -32,13 +32,13 @@ PHP_FUNCTION(bbs_ann_traverse_check)
 
     if (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &userid, &userid_len) != SUCCESS)
         WRONG_PARAM_COUNT;
-    
+
     if (userid != 0) {
         if (getuser(userid, &user) == 0)
             RETURN_FALSE;
     } else
         user = getCurrentUser();
-    
+
     RETURN_LONG(ann_traverse_check(path, user));
 }
 
@@ -69,7 +69,7 @@ PHP_FUNCTION(bbs_getannpath)
     int ac = ZEND_NUM_ARGS();
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
         WRONG_PARAM_COUNT;
@@ -89,126 +89,126 @@ PHP_FUNCTION(bbs_getannpath)
 PHP_FUNCTION(bbs_add_import_path)
 {
     int ac = ZEND_NUM_ARGS();
-	char * path;
-	int path_len;
-	char * title;
-	int title_len;
-	long num;
-	char *im_path[ANNPATH_NUM];
-	char *im_title[ANNPATH_NUM];
-	time_t im_time=0;
-	int im_select=0;
-	char buf[MAXPATH];
-	char board[MAXPATH];
-	char *c;
+    char * path;
+    int path_len;
+    char * title;
+    int title_len;
+    long num;
+    char *im_path[ANNPATH_NUM];
+    char *im_title[ANNPATH_NUM];
+    time_t im_time=0;
+    int im_select=0;
+    char buf[MAXPATH];
+    char board[MAXPATH];
+    char *c;
     const struct boardheader *bp;
 
-	if(ac == 2){
-    	if ( zend_parse_parameters(2 TSRMLS_CC, "sl", &path, &path_len, &num) == FAILURE) {
-			WRONG_PARAM_COUNT;
-		}
-		title = NULL;
-	}else if(ac == 3){
-    	if ( zend_parse_parameters(3 TSRMLS_CC, "ssl", &path, &path_len, &title, &title_len, &num) == FAILURE) {
-			WRONG_PARAM_COUNT;
-		}
-	}else
-		WRONG_PARAM_COUNT;
+    if (ac == 2) {
+        if (zend_parse_parameters(2 TSRMLS_CC, "sl", &path, &path_len, &num) == FAILURE) {
+            WRONG_PARAM_COUNT;
+        }
+        title = NULL;
+    } else if (ac == 3) {
+        if (zend_parse_parameters(3 TSRMLS_CC, "ssl", &path, &path_len, &title, &title_len, &num) == FAILURE) {
+            WRONG_PARAM_COUNT;
+        }
+    } else
+        WRONG_PARAM_COUNT;
 
-	/* first ,check the path */
-	if(strstr(path,"..") || strstr(path,"SYSHome") ) /* SYSHome? from bbs0an.c */
-		RETURN_LONG(0);
-	if(path[0] == '\0')
-		RETURN_LONG(0);
-	path_len = strlen(path);
-	if(path[path_len-1]=='/')
-		path[path_len-1]='\0';
-	if(path[0]=='/')
-		snprintf(buf, sizeof(buf), "0Announce%s", path);
-	else if(strncmp(path,"0Announce",9))
-		snprintf(buf, sizeof(buf), "0Announce/%s", path);
-	else
-		snprintf(buf, sizeof(buf), "%s", path);
+    /* first ,check the path */
+    if (strstr(path,"..") || strstr(path,"SYSHome")) /* SYSHome? from bbs0an.c */
+        RETURN_LONG(0);
+    if (path[0] == '\0')
+        RETURN_LONG(0);
+    path_len = strlen(path);
+    if (path[path_len-1]=='/')
+        path[path_len-1]='\0';
+    if (path[0]=='/')
+        snprintf(buf, sizeof(buf), "0Announce%s", path);
+    else if (strncmp(path,"0Announce",9))
+        snprintf(buf, sizeof(buf), "0Announce/%s", path);
+    else
+        snprintf(buf, sizeof(buf), "%s", path);
 
-	if(strncmp(buf,"0Announce/groups/",17))
-		RETURN_LONG(0);
+    if (strncmp(buf,"0Announce/groups/",17))
+        RETURN_LONG(0);
 
-	if((c=strchr(buf+17,'/'))==NULL)
-		RETURN_LONG(0);
-	strcpy(board,c+1);
-	if((c=strchr(board,'/'))!=NULL) *c='\0';
+    if ((c=strchr(buf+17,'/'))==NULL)
+        RETURN_LONG(0);
+    strcpy(board,c+1);
+    if ((c=strchr(board,'/'))!=NULL) *c='\0';
     if ((bp = getbcache(board)) == NULL) {
         RETURN_LONG(0);
     }
-    if(! is_BM(bp, getCurrentUser()))
+    if (! is_BM(bp, getCurrentUser()))
         RETURN_LONG(0);
 
-	if (ann_traverse_check(buf, getCurrentUser()) < 0)
-		RETURN_LONG(0);
+    if (ann_traverse_check(buf, getCurrentUser()) < 0)
+        RETURN_LONG(0);
 
-	if(num < 0 || num >= ANNPATH_NUM)
-		RETURN_LONG(0);
+    if (num < 0 || num >= ANNPATH_NUM)
+        RETURN_LONG(0);
 
-	load_import_path(im_path,im_title,&im_time,&im_select, getSession());
+    load_import_path(im_path,im_title,&im_time,&im_select, getSession());
 
-	efree(im_path[num]);
-	if ( (im_path[num] = emalloc(strlen(buf)+1)) ==NULL) {
-		RETURN_LONG(0);
-	}
-	
-	strcpy(im_path[num],buf);
+    efree(im_path[num]);
+    if ((im_path[num] = emalloc(strlen(buf)+1)) ==NULL) {
+        RETURN_LONG(0);
+    }
 
-	if(title == NULL || title[0]==0 ){
-		MENU pm;
+    strcpy(im_path[num],buf);
 
-		bzero(&pm,sizeof(pm));
-		pm.path = im_path[num];
-		a_loadnames(&pm, getSession());
-		strncpy(buf, pm.mtitle, MAXPATH - 1);
-		buf[MAXPATH - 1]=0;
-		a_freenames(&pm);
-	}else{
-		strncpy(buf, title, MAXPATH - 1);
-		buf[MAXPATH - 1]=0;
-	}
+    if (title == NULL || title[0]==0) {
+        MENU pm;
 
-	efree(im_title[num]);
-	if ( (im_title[num] = emalloc(strlen(buf)+1)) ==NULL) {
-		RETURN_LONG(0);
-	}
-	strcpy(im_title[num],buf);
+        bzero(&pm,sizeof(pm));
+        pm.path = im_path[num];
+        a_loadnames(&pm, getSession());
+        strncpy(buf, pm.mtitle, MAXPATH - 1);
+        buf[MAXPATH - 1]=0;
+        a_freenames(&pm);
+    } else {
+        strncpy(buf, title, MAXPATH - 1);
+        buf[MAXPATH - 1]=0;
+    }
 
-	save_import_path(im_path,im_title,&im_time, getSession());
+    efree(im_title[num]);
+    if ((im_title[num] = emalloc(strlen(buf)+1)) ==NULL) {
+        RETURN_LONG(0);
+    }
+    strcpy(im_title[num],buf);
 
-	free_import_path(im_path,im_title,&im_time);
+    save_import_path(im_path,im_title,&im_time, getSession());
 
-	RETURN_LONG(1);
+    free_import_path(im_path,im_title,&im_time);
+
+    RETURN_LONG(1);
 }
 
 PHP_FUNCTION(bbs_get_import_path)
 {
     zval *element;
-	char *im_path[ANNPATH_NUM];
-	char *im_title[ANNPATH_NUM];
-	time_t im_time=0;
-	int im_select=0;
-	int i;
+    char *im_path[ANNPATH_NUM];
+    char *im_title[ANNPATH_NUM];
+    time_t im_time=0;
+    int im_select=0;
+    int i;
 
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
     }
 
-	load_import_path(im_path,im_title,&im_time,&im_select, getSession());
+    load_import_path(im_path,im_title,&im_time,&im_select, getSession());
 
-	for(i=0;i<ANNPATH_NUM;i++){
+    for (i=0;i<ANNPATH_NUM;i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-    	add_assoc_string(element, "PATH", im_path[i], 1);
-    	add_assoc_string(element, "TITLE", im_title[i], 1);
+        add_assoc_string(element, "PATH", im_path[i], 1);
+        add_assoc_string(element, "TITLE", im_title[i], 1);
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
 
-	free_import_path(im_path,im_title,&im_time);
+    free_import_path(im_path,im_title,&im_time);
 
 }
 
@@ -218,34 +218,33 @@ static int get_pos(char * s)
     FILE* fp;
     char buf[240],buf2[100],tt[100];
     int i,j;
-    if(stat(s, &st)==-1) return -1;
+    if (stat(s, &st)==-1) return -1;
     strcpy(buf, s);
     i=strlen(buf)-1;
-    while(buf[i]!='/') i--;
+    while (buf[i]!='/') i--;
     i++;
     strcpy(buf2, buf+i);
     strcpy(buf+i, ".Names");
     fp=fopen(buf, "r");
-    if(fp==NULL) return -1;
+    if (fp==NULL) return -1;
     tt[0]=0;
     j=0;
-    while(!feof(fp))
-    {
-	if(!fgets(buf, 240, fp)) {
-	    fclose(fp);
-	    return -1;
-	}
-	if(buf[0]) buf[strlen(buf)-1]=0;
-	if(!strncmp(buf, "Name=", 5)) {
-	    strcpy(tt, buf+5);
-	}
-	if(!strncmp(buf, "Path=~/", 7)) {
-	    j++;
-	    if(!strcmp(buf+7, buf2)) {
-		fclose(fp);
-		return j;
-	    }
-	}
+    while (!feof(fp)) {
+        if (!fgets(buf, 240, fp)) {
+            fclose(fp);
+            return -1;
+        }
+        if (buf[0]) buf[strlen(buf)-1]=0;
+        if (!strncmp(buf, "Name=", 5)) {
+            strcpy(tt, buf+5);
+        }
+        if (!strncmp(buf, "Path=~/", 7)) {
+            j++;
+            if (!strcmp(buf+7, buf2)) {
+                fclose(fp);
+                return j;
+            }
+        }
     }
     fclose(fp);
     return -1;
@@ -255,7 +254,7 @@ PHP_FUNCTION(bbs_x_search)
 {
     int toomany, res_total;
     int ac = ZEND_NUM_ARGS();
-    int char_len;   
+    int char_len;
     long pos;
     char *qn;
     zval* element;
@@ -266,16 +265,16 @@ PHP_FUNCTION(bbs_x_search)
     char buf[256];
     char s1[30], s2[30], *pp;
     const char *ip;
-    #define MAX_KEEP 100
+#define MAX_KEEP 100
     char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200],res_content[MAX_KEEP][1024];
     int res_flag[MAX_KEEP];
 
-    if(ac != 3 || zend_parse_parameters(3 TSRMLS_CC,"slz",&qn,&char_len,&pos,&total_records) ==FAILURE){
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC,"slz",&qn,&char_len,&pos,&total_records) ==FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
     /*
-     * check for parameter being passed by reference 
+     * check for parameter being passed by reference
      */
     if (!PZVAL_IS_REF(total_records)) {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
@@ -286,98 +285,96 @@ PHP_FUNCTION(bbs_x_search)
         RETURN_FALSE;
 
     if ((ip = sysconf_str("QUERY_SERVER")) == NULL) return;
-    if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
+    if ((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
     memset(&addr, 0, sizeof(addr));
-    addr.sin_family=AF_INET;    
+    addr.sin_family=AF_INET;
     addr.sin_addr.s_addr=inet_addr(ip);
     addr.sin_port=htons(4875);
-    if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
+    if (connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
     sockfp=fdopen(sockfd, "r+");
     fprintf(sockfp, "\n%ld\n%s\n", pos, qn);
     fflush(sockfp);
     fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
-    for(i=0;i<res_total;i++) {
+    for (i=0;i<res_total;i++) {
         fgets(buf, 256, sockfp);
-        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
+        if (buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
         strncpy(res_title[i], buf, ARTICLE_TITLE_LEN);
         res_title[i][ARTICLE_TITLE_LEN-1] = 0;
 
         fgets(buf, 256, sockfp);
-        if(buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
+        if (buf[0]&&buf[strlen(buf)-1]=='\n') buf[strlen(buf)-1]=0;
         strncpy(res_filename[i], buf, 200);
         res_filename[i][199] = 0;
     }
     fclose(sockfp);
     close(sockfd);
-    for(i=0;i<res_total;i++)
-	if(get_pos(res_filename[i])==-1) {
-	    strcpy(res_path[i], "无效文章");
-	    res_flag[i]=1;
-	}
-        else {
-	    char buf[200],buf2[200];
-	    res_flag[i]=0;
-	    if(!strncmp(res_filename[i], "0Announce/groups/", 17)) {
-		j=17;
-		while(res_filename[i][j]!='/') j++;
-		j++;
-		k=j;
-		while(res_filename[i][j]!='/') j++;
-		strcpy(buf,res_filename[i]+k);
-		buf[j-k]=0;
-		strcpy(res_path[i],buf);
-		k=strlen(res_path[i]);
-		while(1) {
-		    j++;
-		    while(res_filename[i][j]!='/'&&res_filename[i][j]) j++;
-		    strcpy(buf2, res_filename[i]);
-		    buf2[j] = 0;
-		    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
-		    k = strlen(res_path[i]);
-		    if(!res_filename[i][j]) break;
-		}
-	    }
-	    else {
-		j=10;
-		strcpy(res_path[i], "精华区");
-		k=strlen(res_path[i]);
-		while(1) {
-		    j++;
-		    while(res_filename[i][j]!='/'&&res_filename[i][j]) j++;
-		    strcpy(buf2, res_filename[i]);
-		    buf2[j] = 0;
-		    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
-		    k = strlen(res_path[i]);
-		    if(!res_filename[i][j]) break;
-		}
-	    }
-	}
-    for(i=0;i<res_total;i++) 
-    if(res_title[i][0]){
-        if(strlen(res_title[i])>30){
-	    j=30;
-	    while(res_title[i][j]!=' '&&res_title[i][j])j++;
-	    res_title[i][j]=0;
+    for (i=0;i<res_total;i++)
+        if (get_pos(res_filename[i])==-1) {
+            strcpy(res_path[i], "无效文章");
+            res_flag[i]=1;
+        } else {
+            char buf[200],buf2[200];
+            res_flag[i]=0;
+            if (!strncmp(res_filename[i], "0Announce/groups/", 17)) {
+                j=17;
+                while (res_filename[i][j]!='/') j++;
+                j++;
+                k=j;
+                while (res_filename[i][j]!='/') j++;
+                strcpy(buf,res_filename[i]+k);
+                buf[j-k]=0;
+                strcpy(res_path[i],buf);
+                k=strlen(res_path[i]);
+                while (1) {
+                    j++;
+                    while (res_filename[i][j]!='/'&&res_filename[i][j]) j++;
+                    strcpy(buf2, res_filename[i]);
+                    buf2[j] = 0;
+                    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
+                    k = strlen(res_path[i]);
+                    if (!res_filename[i][j]) break;
+                }
+            } else {
+                j=10;
+                strcpy(res_path[i], "精华区");
+                k=strlen(res_path[i]);
+                while (1) {
+                    j++;
+                    while (res_filename[i][j]!='/'&&res_filename[i][j]) j++;
+                    strcpy(buf2, res_filename[i]);
+                    buf2[j] = 0;
+                    sprintf(res_path[i]+k, "-%d", get_pos(buf2));
+                    k = strlen(res_path[i]);
+                    if (!res_filename[i][j]) break;
+                }
+            }
         }
-	j=strlen(res_title[i])-1;
-	if((j>=0)&&res_title[i][j]==' ')j--;
-	j++;
-	res_title[i][j]=0;
-    }
-    for(i=0;i<res_total;i++) {
-	pp=res_filename[i]+strlen(res_filename[i])-1;
-	while(*pp!='/') pp--;
-	strcpy(s1, pp+1);
-	if(strlen(s1)>7)
-	for(j=i+1;j<res_total;j++) {
-	    pp=res_filename[j]+strlen(res_filename[j])-1;
-	    while(*pp!='/') pp--;
-	    strcpy(s2, pp+1);
-	    if(!strcmp(s1,s2)) {
-		res_flag[j]=1;
-		strcpy(res_path[j], "重复文章");
-	    }
-	}
+    for (i=0;i<res_total;i++)
+        if (res_title[i][0]) {
+            if (strlen(res_title[i])>30) {
+                j=30;
+                while (res_title[i][j]!=' '&&res_title[i][j])j++;
+                res_title[i][j]=0;
+            }
+            j=strlen(res_title[i])-1;
+            if ((j>=0)&&res_title[i][j]==' ')j--;
+            j++;
+            res_title[i][j]=0;
+        }
+    for (i=0;i<res_total;i++) {
+        pp=res_filename[i]+strlen(res_filename[i])-1;
+        while (*pp!='/') pp--;
+        strcpy(s1, pp+1);
+        if (strlen(s1)>7)
+            for (j=i+1;j<res_total;j++) {
+                pp=res_filename[j]+strlen(res_filename[j])-1;
+                while (*pp!='/') pp--;
+                strcpy(s2, pp+1);
+                if (!strcmp(s1,s2)) {
+                    res_flag[j]=1;
+                    strcpy(res_path[j], "重复文章");
+                }
+            }
     }
 
     for (ttt=0; ttt < res_total; ttt++) {
@@ -386,125 +383,124 @@ PHP_FUNCTION(bbs_x_search)
         int i,j,k,l,fsize=0,t=0,p=0,inc=0;
         res_content[ttt][0] = 0;
         fp = fopen(res_filename[ttt], "rb");
-        if(!fp) continue;
+        if (!fp) continue;
         fsize = fread(buf, 1, 10*1024, fp);
         fclose(fp);
         memset(out, 0, fsize);
-        for(i=0;i<fsize;i++) {
-            if(buf[i]==0x1b) {
+        for (i=0;i<fsize;i++) {
+            if (buf[i]==0x1b) {
                 j=i;
-                while(!((buf[j]>='a'&&buf[j]<='z')||(buf[j]>='A'&&buf[j]<='Z'))&&j<fsize) {
+                while (!((buf[j]>='a'&&buf[j]<='z')||(buf[j]>='A'&&buf[j]<='Z'))&&j<fsize) {
                     buf[j] = 0;
                     j++;
                 }
-                if(j<fsize)
+                if (j<fsize)
                     buf[j] = 0;
             }
         }
         i=0;
-        if(qn[i]=='=') {
-            while(i<strlen(qn)&&qn[i]!=' ') i++;
-            if(i>=strlen(qn)) i=0;
+        if (qn[i]=='=') {
+            while (i<strlen(qn)&&qn[i]!=' ') i++;
+            if (i>=strlen(qn)) i=0;
         }
-        while(i<strlen(qn)) {
-            if((qn[i]>='a'&&qn[i]<='z')||(qn[i]>='A'&&qn[i]<='Z')) {
+        while (i<strlen(qn)) {
+            if ((qn[i]>='a'&&qn[i]<='z')||(qn[i]>='A'&&qn[i]<='Z')) {
                 j=i;
-                while((qn[j]>='a'&&qn[j]<='z')||(qn[j]>='A'&&qn[j]<='Z')||(qn[j]>='0'&&qn[j]<='9')) j++;
-                for(k=0;k<fsize-(j-i)+1;k++)
-                    if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!((buf[k-1]>='a'&&buf[k-1]<='z')||(buf[k-1]>='A'&&buf[k-1]<='Z')))&&
-                        (k+j-i==fsize||!((buf[k+j-i]>='a'&&buf[k+j-i]<='z')||(buf[k+j-i]>='A'&&buf[k+j-i]<='Z'))))
-                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                while ((qn[j]>='a'&&qn[j]<='z')||(qn[j]>='A'&&qn[j]<='Z')||(qn[j]>='0'&&qn[j]<='9')) j++;
+                for (k=0;k<fsize-(j-i)+1;k++)
+                    if (!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!((buf[k-1]>='a'&&buf[k-1]<='z')||(buf[k-1]>='A'&&buf[k-1]<='Z')))&&
+                            (k+j-i==fsize||!((buf[k+j-i]>='a'&&buf[k+j-i]<='z')||(buf[k+j-i]>='A'&&buf[k+j-i]<='Z'))))
+                        for (l=0;l<j-i;l++) if (!out[k+l]) {out[k+l]=1;t++;}
                 i=j-1;
             }
-            if(qn[i]>='0'&&qn[i]<='9') {
+            if (qn[i]>='0'&&qn[i]<='9') {
                 j=i;
-                while(qn[j]>='0'&&qn[j]<='9') j++;
-                for(k=0;k<fsize-(j-i)+1;k++)
-                    if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='0'&&buf[k-1]<='9'))&&
-                        (k+j-i==fsize||!(buf[k+j-i]>='0'&&buf[k+j-i]<='9')))
-                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                while (qn[j]>='0'&&qn[j]<='9') j++;
+                for (k=0;k<fsize-(j-i)+1;k++)
+                    if (!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='0'&&buf[k-1]<='9'))&&
+                            (k+j-i==fsize||!(buf[k+j-i]>='0'&&buf[k+j-i]<='9')))
+                        for (l=0;l<j-i;l++) if (!out[k+l]) {out[k+l]=1;t++;}
                 i=j-1;
             }
-            if(qn[i]<0&&qn[i+1]<0) {
+            if (qn[i]<0&&qn[i+1]<0) {
                 j=i+2;
-                for(k=0;k<fsize-(j-i)+1;k++)
-                    if(!strncmp(qn+i,buf+k,j-i))
-                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                for (k=0;k<fsize-(j-i)+1;k++)
+                    if (!strncmp(qn+i,buf+k,j-i))
+                        for (l=0;l<j-i;l++) if (!out[k+l]) {out[k+l]=1;t++;}
                 i=j-1;
             }
             i++;
         }
-        if(t>=20) {
-            for(k=0;k<fsize-4;k++) {
-                if(out[k]==0&&out[k+1]==1&&out[k+2]==0) {
+        if (t>=20) {
+            for (k=0;k<fsize-4;k++) {
+                if (out[k]==0&&out[k+1]==1&&out[k+2]==0) {
                     out[k+1]=0;
                     t--;
                 }
-                if(out[k]==0&&out[k+1]==1&&out[k+2]==1&&out[k+3]==0) {
+                if (out[k]==0&&out[k+1]==1&&out[k+2]==1&&out[k+3]==0) {
                     out[k+1]=0;
                     out[k+2]=0;
                     t-=2;
                 }
-                if(t<10) break;
+                if (t<10) break;
             }
         }
-        if(t==0) {
+        if (t==0) {
             continue;
         }
-        while(t<240&&t<fsize) {
+        while (t<240&&t<fsize) {
             memset(out2, 0, fsize);
             t=0;
-            for(k=0;k<fsize;k++) 
-            if(!out2[k]) {
-                if(out[k]||(k>0&&out[k-1])||(k<fsize-1&&out[k+1])) {
-                    if(out[k]==1)
-                        out2[k]=1;
-                    else {
-                        out2[k]=2;
-                        if(!out[k]&&buf[k]<0) {
-                            if(k>0&&out[k-1]&&k<fsize-1) out2[k+1]=2;
-                            if(k>0&&k<fsize-1&&out[k+1]) out2[k-1]=2;
-                            t++;
+            for (k=0;k<fsize;k++)
+                if (!out2[k]) {
+                    if (out[k]||(k>0&&out[k-1])||(k<fsize-1&&out[k+1])) {
+                        if (out[k]==1)
+                            out2[k]=1;
+                        else {
+                            out2[k]=2;
+                            if (!out[k]&&buf[k]<0) {
+                                if (k>0&&out[k-1]&&k<fsize-1) out2[k+1]=2;
+                                if (k>0&&k<fsize-1&&out[k+1]) out2[k-1]=2;
+                                t++;
+                            }
                         }
+                        t++;
                     }
-                    t++;
                 }
-            }
             memcpy(out,out2,fsize);
         }
         pp = res_content[ttt];
         j=0; t = 0;
-        for(i=0;i<fsize;i++)
-        if(out[i]) {
-            if(i>0&&out[i-1]==0) {
-                sprintf(pp, "...");
-                pp+=3;
-                j+=3;
+        for (i=0;i<fsize;i++)
+            if (out[i]) {
+                if (i>0&&out[i-1]==0) {
+                    sprintf(pp, "...");
+                    pp+=3;
+                    j+=3;
+                }
+                if (out[i]==1&&!inc) {
+                    sprintf(pp, "<font class=\"f001\">");
+                    pp += 19;
+                    inc = 1;
+                } else if (out[i]!=1&&inc) {
+                    sprintf(pp, "</font>");
+                    pp += 7;
+                    inc = 0;
+                }
+                if (buf[i]=='\n') *(pp++) = ' ';
+                else if (buf[i]) *(pp++) = buf[i];
+                if (p) p=0;
+                else if (buf[i]<0) p=1;
+                j++;
+                if (j>=84&&p==0) {
+                    t++;
+                    if (t>=3) break;
+                    sprintf(pp, "<br/>");
+                    pp += 5;
+                    j=0;
+                }
             }
-            if(out[i]==1&&!inc) {
-                sprintf(pp, "<font class=\"f001\">");
-                pp += 19;
-                inc = 1;
-            }
-            else if(out[i]!=1&&inc) {
-                sprintf(pp, "</font>");
-                pp += 7;
-                inc = 0;
-            }
-            if(buf[i]=='\n') *(pp++) = ' ';
-            else if(buf[i]) *(pp++) = buf[i];
-            if(p) p=0;
-            else if(buf[i]<0) p=1;
-            j++;
-            if(j>=84&&p==0) {
-                t++;
-                if(t>=3) break;
-                sprintf(pp, "<br/>");
-                pp += 5;
-                j=0;
-            }
-        }
-        if(inc) {
+        if (inc) {
             sprintf(pp, "</font>");
             pp += 7;
         }
@@ -512,14 +508,14 @@ PHP_FUNCTION(bbs_x_search)
     }
 
 
-    for ( i=0; i < res_total; i++ ) {
-        MAKE_STD_ZVAL ( element );
-        array_init ( element );
+    for (i=0; i < res_total; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
 
-        add_assoc_string ( element, "title", res_title[i], 1 );
-        add_assoc_string ( element, "filename", res_filename[i], 1 );
-        add_assoc_string ( element, "path", res_path[i], 1 );
-        add_assoc_string ( element, "content", res_content[i], 1 );
+        add_assoc_string(element, "title", res_title[i], 1);
+        add_assoc_string(element, "filename", res_filename[i], 1);
+        add_assoc_string(element, "path", res_path[i], 1);
+        add_assoc_string(element, "content", res_content[i], 1);
 
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
@@ -547,7 +543,7 @@ PHP_FUNCTION(bbs_read_ann_dir)
     char  *path;
     int   path_len;
     zval *board,*path2,*element,*articles;
-    
+
     struct userec *u;
     char pathbuf[256];
     int len;
@@ -560,26 +556,26 @@ PHP_FUNCTION(bbs_read_ann_dir)
     struct stat st;
     bool cansee;
     long seespecial=0;
-    
 
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,"szza|l",&path,&path_len,&board,&path2,&articles,&seespecial) == FAILURE) {
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,"szza|l",&path,&path_len,&board,&path2,&articles,&seespecial) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
     if (!PZVAL_IS_REF(board) || !PZVAL_IS_REF(path2)) {
-       	zend_error(E_WARNING, "Parameter wasn't passed by reference");
-       	RETURN_FALSE;
+        zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        RETURN_FALSE;
     }
-    
-    if(array_init(articles) != SUCCESS)
+
+    if (array_init(articles) != SUCCESS)
         RETURN_LONG(-9);
-    
+
     u = getCurrentUser();
     if (!u)
         RETURN_LONG(-9);
-    
-    if (strstr(path, "..") || strstr(path, "SYSHome"))  
-		RETURN_LONG(-1);
+
+    if (strstr(path, "..") || strstr(path, "SYSHome"))
+        RETURN_LONG(-1);
     if (path[0] != '\0') {
         len = strlen(path);
         if (path[len - 1] == '/')
@@ -589,7 +585,7 @@ PHP_FUNCTION(bbs_read_ann_dir)
         else
             snprintf(pathbuf, 255, "0Announce/%s", path);
         if (ann_traverse_check(pathbuf, u) < 0)
-			RETURN_LONG(-1);
+            RETURN_LONG(-1);
     } else
         strcpy(pathbuf, "0Announce");
 
@@ -597,13 +593,13 @@ PHP_FUNCTION(bbs_read_ann_dir)
 
     bzero(&me,sizeof(MENU));
     me.path = pathbuf;
-    if(a_loadnames(&me,NULL)==-1)
+    if (a_loadnames(&me,NULL)==-1)
         RETURN_LONG(-2);
 
     buf[0] = '\0';
     ann_get_board(pathbuf, buf, sizeof(buf));
     ZVAL_STRING(board,buf,1);
-    if (me.num <= 0) 
+    if (me.num <= 0)
         RETURN_LONG(-3);
 
     me.now = 0;
@@ -629,7 +625,7 @@ PHP_FUNCTION(bbs_read_ann_dir)
         }
         snprintf(buf, sizeof(buf), "%s/%s", me.path, M_ITEM(&me,i)->fname);
         ptr = strchr(me.path, '/');
-        
+
         if (stat(buf, &st) == -1) {
             r_time = 0;
             r_flag = 0;
@@ -637,24 +633,22 @@ PHP_FUNCTION(bbs_read_ann_dir)
             r_time = st.st_mtime;
             if (S_ISDIR(st.st_mode))
                 r_flag = 1;
-            else 
+            else
                 r_flag = M_ITEM(&me,i)->attachpos?3:2;
         }
-        
+
         snprintf(r_path, sizeof(r_path), "%s/%s", ptr == NULL ? "" : ptr, M_ITEM(&me,i)->fname);
         strncpy(r_bm,id[0]?id:"",sizeof(r_bm)-1);
         r_bm[sizeof(r_bm)-1] = '\0';
-        
+
         cansee = false;
         if (strcmp(r_bm, "BMS")==0) {
             if (HAS_PERM(getCurrentUser(), PERM_BOARDS) && (seespecial!=0))
                 cansee = true;
-        }
-        else if (strcmp(r_bm, "SYSOPS")==0) {
+        } else if (strcmp(r_bm, "SYSOPS")==0) {
             if (HAS_PERM(getCurrentUser(), PERM_SYSOP) && (seespecial!=0))
                 cansee = true;
-        }
-        else
+        } else
             cansee = true;
         if (cansee) {
             MAKE_STD_ZVAL(element);
@@ -685,24 +679,20 @@ PHP_FUNCTION(bbs_ann_get_title)
     bool find=false;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS))
-    {
+    if ((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
     strncpy(fpath, path, PATHLEN);
     fpath[PATHLEN - 1] = '\0';
-    if(strcmp(fpath, "0Announce") == 0)
-    {
+    if (strcmp(fpath, "0Announce") == 0) {
         RETURN_STRING("精华公布栏", 1);
     }
-    if(!(dashd(fpath) || dashf(fpath)))
-    {
+    if (!(dashd(fpath) || dashf(fpath))) {
         RETURN_STRING("精华区目录不存在", 1);
     }
     fname = strrchr(fpath, '/');
-    if(fname == NULL)
-    {
+    if (fname == NULL) {
         RETURN_STRING("找不到精华区目录", 1);
     }
     *fname = '\0';
@@ -712,16 +702,13 @@ PHP_FUNCTION(bbs_ann_get_title)
     me.path = fpath;
     me.level = PERM_BOARDS;
     a_loadnames(&me, getSession());
-    for(i=0; i<me.num; i++)
-    {
-        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
-        {
+    for (i=0; i<me.num; i++) {
+        if (strcmp(fname, M_ITEM(&me,i)->fname) == 0) {
             find = true;
             break;
         }
     }
-    if(!find)
-    {
+    if (!find) {
         a_freenames(&me);
         RETURN_STRING("找不到精华区项目", 1);
     }
@@ -741,9 +728,9 @@ PHP_FUNCTION(bbs_ann_get_title)
 static void ann_write_bmlog(char *path)
 {
     char *ptr, board[STRLEN];
-    if((ptr = strstr(path, "groups/")) != NULL)
+    if ((ptr = strstr(path, "groups/")) != NULL)
         ann_get_board(ptr, board, sizeof(board));
-    if(board[0] != '\0')
+    if (board[0] != '\0')
         bmlog(getCurrentUser()->userid, board, 13, 1);
 }
 
@@ -766,13 +753,11 @@ PHP_FUNCTION(bbs_ann_mkdir)
     FILE *fp;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 4) || (zend_parse_parameters(4 TSRMLS_CC, "ssss", &path, &path_len, &sfname, &fname_len, &title, &title_len, &bm, &bm_len) != SUCCESS))
-    {
+    if ((ac != 4) || (zend_parse_parameters(4 TSRMLS_CC, "ssss", &path, &path_len, &sfname, &fname_len, &title, &title_len, &bm, &bm_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
-    
-    if(!dashd(path))
-    {
+
+    if (!dashd(path)) {
         RETURN_LONG(-1);
     }
 #ifdef ANN_AUTONAME
@@ -780,14 +765,12 @@ PHP_FUNCTION(bbs_ann_mkdir)
 #else
     strncpy(fname, sfname, 80);
     fname[79] = '\0';
-    if(!valid_fname(fname))
-    {
+    if (!valid_fname(fname)) {
         RETURN_LONG(-2);
     }
 #endif
     sprintf(fpath, "%s/%s", path, fname);
-    if(dashf(fpath) || dashd(fpath))
-    {
+    if (dashf(fpath) || dashd(fpath)) {
         RETURN_LONG(-3);
     }
 
@@ -798,24 +781,20 @@ PHP_FUNCTION(bbs_ann_mkdir)
     me.path = path;
     me.level = PERM_BOARDS;
     a_loadnames(&me, getSession());
-    if(bm[0] == '\0')
+    if (bm[0] == '\0')
         sprintf(buf, "%-38.38s", title);
     else
         sprintf(buf, "%-38.38s(BM: %s)", title, bm);
     a_additem(&me, buf, fname, NULL, 0, 0);
-    if(a_savenames(&me) == 0)
-    {
+    if (a_savenames(&me) == 0) {
         sprintf(fpath, "%s/%s/.Names", path, fname);
-        if((fp = fopen(fpath, "w")) != NULL)
-        {
+        if ((fp = fopen(fpath, "w")) != NULL) {
             fprintf(fp, "#\n");
             fprintf(fp, "# Title=%s", buf);
             fprintf(fp, "#\n");
             fclose(fp);
         }
-    }
-    else
-    {
+    } else {
         a_freenames(&me);
         RETURN_LONG(-4);
     }
@@ -847,13 +826,11 @@ PHP_FUNCTION(bbs_ann_mkfile)
     char fpath[PATHLEN], buf[STRLEN];
 
     ac = ZEND_NUM_ARGS();
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssss/|l", &path, &path_len, &sfname, &fname_len, &title, &title_len, &content, &content_len, &import) != SUCCESS)
-    {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssss/|l", &path, &path_len, &sfname, &fname_len, &title, &title_len, &content, &content_len, &import) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
 
-    if(!dashd(path))
-    {
+    if (!dashd(path)) {
         RETURN_LONG(-1);
     }
 #ifdef ANN_AUTONAME
@@ -861,38 +838,30 @@ PHP_FUNCTION(bbs_ann_mkfile)
 #else
     strncpy(fname, sfname, 80);
     fname[79] = '\0';
-    if(!valid_fname(fname))
-    {
+    if (!valid_fname(fname)) {
         RETURN_LONG(-2);
     }
 #endif
     sprintf(fpath, "%s/%s", path, fname);
-    if(dashf(fpath) || dashd(fpath))
-    {
+    if (dashf(fpath) || dashd(fpath)) {
         RETURN_LONG(-3);
     }
 
-    if(import)
-    {
+    if (import) {
         char importpath[PATHLEN], attachpath[PATHLEN];
         sprintf(importpath, "tmp/bm.%s", getCurrentUser()->userid);
-        if(!dashf(importpath))
-        {
+        if (!dashf(importpath)) {
             RETURN_LONG(0);
         }
         sprintf(attachpath, "tmp/bm.%s.attach", getCurrentUser()->userid);
-        if(dashf(attachpath))
-        {
+        if (dashf(attachpath)) {
             a_append_attachment(importpath, attachpath);
             my_unlink(attachpath);
         }
         f_mv(importpath, fpath);
         chmod(fpath, 0644);
-    }
-    else
-    {
-        if((fp = fopen(fpath, "w")) == NULL)
-        {
+    } else {
+        if ((fp = fopen(fpath, "w")) == NULL) {
             RETURN_LONG(-4);
         }
         fwrite(content, content_len, 1, fp);
@@ -906,8 +875,7 @@ PHP_FUNCTION(bbs_ann_mkfile)
     a_loadnames(&me, getSession());
     sprintf(buf, "%-38.38s %s ", title, getCurrentUser()->userid);
     a_additem(&me, buf, fname, NULL, 0, 0);
-    if(a_savenames(&me) != 0)
-    {
+    if (a_savenames(&me) != 0) {
         a_freenames(&me);
         RETURN_LONG(-5);
     }
@@ -938,25 +906,20 @@ PHP_FUNCTION(bbs_ann_editdir)
     bool find = false;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 5) || (zend_parse_parameters(5 TSRMLS_CC, "sssss", &path, &path_len, &fname, &fname_len, &newfname, &newfname_len, &title, &title_len, &bm, &bm_len) != SUCCESS))
-    {
+    if ((ac != 5) || (zend_parse_parameters(5 TSRMLS_CC, "sssss", &path, &path_len, &fname, &fname_len, &newfname, &newfname_len, &title, &title_len, &bm, &bm_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
     snprintf(fpath, PATHLEN, "%s/%s", path, fname);
-    if(!dashd(fpath))
-    {
+    if (!dashd(fpath)) {
         RETURN_LONG(-1);
     }
-    if(!valid_fname(newfname))
-    {
+    if (!valid_fname(newfname)) {
         RETURN_LONG(-2);
     }
-    if(strcmp(fname, newfname))
-    {
+    if (strcmp(fname, newfname)) {
         snprintf(newfpath, PATHLEN, "%s/%s", path, newfname);
-        if(dashf(newfpath) || dashd(newfpath))
-        {
+        if (dashf(newfpath) || dashd(newfpath)) {
             RETURN_LONG(-3);
         }
         f_mv(fpath, newfpath);
@@ -965,13 +928,11 @@ PHP_FUNCTION(bbs_ann_editdir)
     me.path = path;
     me.level = PERM_BOARDS;
     a_loadnames(&me, getSession());
-    for(i=0; i<me.num; i++)
-    {
-        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
-        {
+    for (i=0; i<me.num; i++) {
+        if (strcmp(fname, M_ITEM(&me,i)->fname) == 0) {
             strncpy(M_ITEM(&me,i)->fname, newfname, 80);
             M_ITEM(&me,i)->fname[79] = '\0';
-            if(bm[0] == '\0')
+            if (bm[0] == '\0')
                 sprintf(M_ITEM(&me,i)->title, "%-38.38s", title);
             else
                 sprintf(M_ITEM(&me,i)->title, "%-38.38s(BM: %s)", title, bm);
@@ -979,13 +940,11 @@ PHP_FUNCTION(bbs_ann_editdir)
             break;
         }
     }
-    if(!find)
-    {
+    if (!find) {
         a_freenames(&me);
         RETURN_LONG(-4);
     }
-    if(a_savenames(&me) != 0)
-    {
+    if (a_savenames(&me) != 0) {
         a_freenames(&me);
         RETURN_LONG(-5);
     }
@@ -1003,34 +962,30 @@ PHP_FUNCTION(bbs_ann_originfile)
     int ac, path_len;
     char *path;
     FILE* fp;
-	char buf[512];
+    char buf[512];
     char *content, *ptr;
     int chunk_size=51200, calen, clen, buflen;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS))
-    {
+    if ((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
-	if (!dashf(path))
-    {
-		RETURN_LONG(-1);
-	}
-    fp = fopen(path, "r");
-    if (fp == NULL)
-    {
+    if (!dashf(path)) {
         RETURN_LONG(-1);
     }
-	
+    fp = fopen(path, "r");
+    if (fp == NULL) {
+        RETURN_LONG(-1);
+    }
+
     calen = chunk_size;
     content = (char *)emalloc(calen);
     clen = 0;
     ptr = content;
     while (skip_attach_fgets(buf, sizeof(buf), fp) != 0) {
         buflen = strlen(buf);
-        if((clen + buflen) >= (calen + 1))
-        {
+        if ((clen + buflen) >= (calen + 1)) {
             calen += chunk_size;
             content = (char *)erealloc(content, calen);
             ptr = content + clen;
@@ -1066,35 +1021,28 @@ PHP_FUNCTION(bbs_ann_editfile)
     MENU me;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 5) || (zend_parse_parameters(5 TSRMLS_CC, "sssss/", &path, &path_len, &fname, &fname_len, &newfname, &newfname_len, &title, &title_len, &content, &content_len) != SUCCESS))
-    {
+    if ((ac != 5) || (zend_parse_parameters(5 TSRMLS_CC, "sssss/", &path, &path_len, &fname, &fname_len, &newfname, &newfname_len, &title, &title_len, &content, &content_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
     snprintf(fpath, PATHLEN, "%s/%s", path, fname);
-    if(!dashf(fpath))
-    {
+    if (!dashf(fpath)) {
         RETURN_LONG(-1);
     }
-    if(!valid_fname(newfname))
-    {
+    if (!valid_fname(newfname)) {
         RETURN_LONG(-2);
     }
 
-    if((fin = fopen(fpath, "r")) == NULL)
-    {
+    if ((fin = fopen(fpath, "r")) == NULL) {
         RETURN_LONG(-4);
     }
     snprintf(tmpfpath, PATHLEN, "tmp/%s.%d.editpost", getCurrentUser()->userid, getpid());
-    if((fout = fopen(tmpfpath, "w")) == NULL)
-    {
+    if ((fout = fopen(tmpfpath, "w")) == NULL) {
         RETURN_LONG(-4);
     }
     fwrite(content, content_len, 1, fout);
-    while((asize = -attach_fgets(buf, sizeof(buf), fin)) != 0)
-    {
-        if(asize > 0)
-        {
+    while ((asize = -attach_fgets(buf, sizeof(buf), fin)) != 0) {
+        if (asize > 0) {
             put_attach(fin, fout, asize);
         }
     }
@@ -1103,11 +1051,9 @@ PHP_FUNCTION(bbs_ann_editfile)
     f_cp(tmpfpath, fpath, O_TRUNC);
     unlink(tmpfpath);
 
-    if(strcmp(fname, newfname))
-    {
+    if (strcmp(fname, newfname)) {
         snprintf(newfpath, PATHLEN, "%s/%s", path, newfname);
-        if(dashf(newfpath) || dashd(newfpath))
-        {
+        if (dashf(newfpath) || dashd(newfpath)) {
             RETURN_LONG(-3);
         }
         f_mv(fpath, newfpath);
@@ -1117,10 +1063,8 @@ PHP_FUNCTION(bbs_ann_editfile)
     me.path = path;
     me.level = PERM_BOARDS;
     a_loadnames(&me, getSession());
-    for(i=0; i<me.num; i++)
-    {
-        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
-        {
+    for (i=0; i<me.num; i++) {
+        if (strcmp(fname, M_ITEM(&me,i)->fname) == 0) {
             strncpy(M_ITEM(&me,i)->fname, newfname, 80);
             M_ITEM(&me,i)->fname[79] = '\0';
             sprintf(M_ITEM(&me,i)->title, "%-38.38s %s ", title, getCurrentUser()->userid);
@@ -1128,13 +1072,11 @@ PHP_FUNCTION(bbs_ann_editfile)
             break;
         }
     }
-    if(!find)
-    {
+    if (!find) {
         a_freenames(&me);
         RETURN_LONG(-5);
     }
-    if(a_savenames(&me) != 0)
-    {
+    if (a_savenames(&me) != 0) {
         a_freenames(&me);
         RETURN_LONG(-6);
     }
@@ -1161,23 +1103,18 @@ PHP_FUNCTION(bbs_ann_delete)
     bool find = false;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &fname, &fname_len) != SUCCESS))
-    {
+    if ((ac != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &fname, &fname_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
-    if(!dashd(path))
-    {
+    if (!dashd(path)) {
         RETURN_LONG(-1);
     }
 
     snprintf(fpath, PATHLEN, "%s/%s", path, fname);
-    if(dashd(fpath))
-    {
+    if (dashd(fpath)) {
         my_f_rm(fpath);
-    }
-    else if(dashf(fpath))
-    {
+    } else if (dashf(fpath)) {
         my_unlink(fpath);
     }
 
@@ -1185,22 +1122,18 @@ PHP_FUNCTION(bbs_ann_delete)
     me.path = path;
     me.level = PERM_BOARDS;
     a_loadnames(&me, getSession());
-    for(i=0; i<me.num; i++)
-    {
-        if(strcmp(fname, M_ITEM(&me,i)->fname) == 0)
-        {
+    for (i=0; i<me.num; i++) {
+        if (strcmp(fname, M_ITEM(&me,i)->fname) == 0) {
             find = true;
             break;
         }
     }
-    if(!find)
-    {
+    if (!find) {
         a_freenames(&me);
         RETURN_LONG(-2);
     }
     a_delitem(&me,i);
-    if(a_savenames(&me) != 0)
-    {
+    if (a_savenames(&me) != 0) {
         a_freenames(&me);
         RETURN_LONG(-3);
     }
@@ -1228,30 +1161,24 @@ PHP_FUNCTION(bbs_ann_copy)
     char *ptr;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 3) || (zend_parse_parameters(3 TSRMLS_CC, "ssl", &path, &path_len, &fnames, &fnames_len, &delsource) != SUCCESS))
-    {
+    if ((ac != 3) || (zend_parse_parameters(3 TSRMLS_CC, "ssl", &path, &path_len, &fnames, &fnames_len, &delsource) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
     snprintf(clipfile, PATHLEN, "tmp/clip/%s.announce", getCurrentUser()->userid);
-    if((fp = fopen(clipfile, "w")) == NULL)
-    {
+    if ((fp = fopen(clipfile, "w")) == NULL) {
         RETURN_LONG(-1);
     }
     fprintf(fp, "DelSource=%ld\n", delsource);
     fprintf(fp, "Path=%s\n", path);
     ptr = fnames;
-    while(*fnames != '\0')
-    {
+    while (*fnames != '\0') {
         ptr = strchr(fnames, ',');
-        if(ptr != NULL)
-        {
+        if (ptr != NULL) {
             *ptr = '\0';
             fprintf(fp, "Filename=%s\n", fnames);
             fnames = ptr + 1;
-        }
-        else
-        {
+        } else {
             break;
         }
     }
@@ -1285,54 +1212,41 @@ PHP_FUNCTION(bbs_ann_paste)
     struct fileheader fh;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &dpath, &dpath_len) != SUCCESS))
-    {
+    if ((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &dpath, &dpath_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
-    if(!dashd(dpath))
-    {
+    if (!dashd(dpath)) {
         RETURN_LONG(-1);
     }
 
     snprintf(clipfile, PATHLEN, "tmp/clip/%s.announce", getCurrentUser()->userid);
-    if((fp = fopen(clipfile, "r")) == NULL)
-    {
+    if ((fp = fopen(clipfile, "r")) == NULL) {
         RETURN_LONG(0);
     }
     spath[0] = '\0';
     bname[0] = '\0';
-    while(fgets(buf, sizeof(buf), fp) != NULL)
-    {
-        if((ptr = strchr(buf, '\n')) != NULL)
+    while (fgets(buf, sizeof(buf), fp) != NULL) {
+        if ((ptr = strchr(buf, '\n')) != NULL)
             *ptr = '\0';
-        if(strncmp(buf, "DelSource=OnBoard", 17) == 0)
-        {
+        if (strncmp(buf, "DelSource=OnBoard", 17) == 0) {
             inann = false;    /* the files in clipboard is from a borad, not a announce dir */
             continue;
-        }
-        else if(strncmp(buf, "DelSource=1", 11) == 0)
-        {
+        } else if (strncmp(buf, "DelSource=1", 11) == 0) {
             delsource = true;
             continue;
         }
 
-        if(inann)       /* clipboard contains files from another announce dir */
-        {
-            if(strncmp(buf, "Path=", 5) == 0)
-            {
+        if (inann) {    /* clipboard contains files from another announce dir */
+            if (strncmp(buf, "Path=", 5) == 0) {
                 strncpy(spath, buf + 5, PATHLEN);
-                if(dashd(spath))
-                {
-                    if(strcmp(spath, dpath) == 0)
-                    {
+                if (dashd(spath)) {
+                    if (strcmp(spath, dpath) == 0) {
                         fclose(fp);
                         unlink(clipfile);
                         RETURN_LONG(-1);
                     }
-                }
-                else
-                {
+                } else {
                     fclose(fp);
                     unlink(clipfile);
                     RETURN_LONG(-2);
@@ -1345,55 +1259,44 @@ PHP_FUNCTION(bbs_ann_paste)
                 dme.path = dpath;
                 dme.level = PERM_BOARDS;
                 a_loadnames(&dme, getSession());
-            }
-            else if(spath[0] != '\0')
-            {
-                if(strncmp(buf, "Filename=", 9) == 0)
-                {
+            } else if (spath[0] != '\0') {
+                if (strncmp(buf, "Filename=", 9) == 0) {
                     strncpy(fname, buf + 9, STRLEN);
                     snprintf(sfpath, PATHLEN, "%s/%s", spath, fname);
-                    if(!(dashf(sfpath)||dashd(sfpath)))
+                    if (!(dashf(sfpath)||dashd(sfpath)))
                         continue;
                     snprintf(dfpath, PATHLEN, "%s/%s", dpath, fname);
-                    if(dashf(dfpath)||dashd(dfpath))
+                    if (dashf(dfpath)||dashd(dfpath))
                         continue;
-                    if(delsource)
+                    if (delsource)
                         f_mv(sfpath, dfpath);
                     else
                         f_cp(sfpath, dfpath, O_TRUNC);
                     find = false;
-                    for(i=0; i<sme.num; i++)
-                    {
-                        if(strcmp(fname, M_ITEM(&sme,i)->fname) == 0)
-                        {
+                    for (i=0; i<sme.num; i++) {
+                        if (strcmp(fname, M_ITEM(&sme,i)->fname) == 0) {
                             find = true;
                             break;
                         }
                     }
-                    if(find)
-                    {
+                    if (find) {
                         strncpy(title, M_ITEM(&sme,i)->title, STRLEN);
-                        if(delsource)
+                        if (delsource)
                             a_delitem(&sme,i);
                     }
                     a_additem(&dme, title, fname, NULL, 0, 0);
                 }
             }
-        }
-        else       /* clipboard contains files from a board */
-        {
-            if(strncmp(buf, "Board=", 6) == 0)
-            {
+        } else {    /* clipboard contains files from a board */
+            if (strncmp(buf, "Board=", 6) == 0) {
                 strncpy(bname, buf + 6, STRLEN);
-                if((bp = getbcache(bname)) == NULL)
-                {
+                if ((bp = getbcache(bname)) == NULL) {
                     fclose(fp);
                     unlink(clipfile);
                     RETURN_LONG(-3);
                 }
                 strcpy(bname, bp->filename);
-                if(!is_BM(bp, getCurrentUser()))
-                {
+                if (!is_BM(bp, getCurrentUser())) {
                     fclose(fp);
                     unlink(clipfile);
                     RETURN_LONG(-4);
@@ -1403,18 +1306,13 @@ PHP_FUNCTION(bbs_ann_paste)
                 dme.level = PERM_BOARDS;
                 a_loadnames(&dme, getSession());
                 strcpy(title, "没有名字？");
-            }
-            else if(bname[0] != '\0')
-            {
-                if(strncmp(buf, "Title=", 6) == 0)
-                {
+            } else if (bname[0] != '\0') {
+                if (strncmp(buf, "Title=", 6) == 0) {
                     snprintf(title, STRLEN, "%-38.38s %s ", buf + 6, getCurrentUser()->userid);
-                }
-                else if(strncmp(buf, "Filename=", 9) == 0)
-                {
+                } else if (strncmp(buf, "Filename=", 9) == 0) {
                     strncpy(fname, buf + 9, STRLEN);
                     setbfile(sfpath, bname, fname);
-                    if(!dashf(sfpath))
+                    if (!dashf(sfpath))
                         continue;
                     strcpy(fh.filename, fname);
                     ann_get_postfilename(newfname, &fh, &dme);
@@ -1426,23 +1324,19 @@ PHP_FUNCTION(bbs_ann_paste)
         }
     }
     fclose(fp);
-    if(delsource && inann)
-    {
-        if(a_savenames(&sme) != 0)
+    if (delsource && inann) {
+        if (a_savenames(&sme) != 0)
             err = true;
     }
-    if(a_savenames(&dme) != 0)
+    if (a_savenames(&dme) != 0)
         err = true;
-    if(inann)
+    if (inann)
         a_freenames(&sme);
     a_freenames(&dme);
     unlink(clipfile);
-    if(err)
-    {
+    if (err) {
         RETURN_LONG(-3);
-    }
-    else
-    {
+    } else {
         ann_write_bmlog(dpath);
         RETURN_LONG(0);
     }
@@ -1466,17 +1360,14 @@ PHP_FUNCTION(bbs_ann_move)
     ITEM *tmp;
 
     ac = ZEND_NUM_ARGS();
-    if((ac != 3) || (zend_parse_parameters(3 TSRMLS_CC, "sll", &path, &path_len, &oldnum, &newnum) != SUCCESS))
-    {
+    if ((ac != 3) || (zend_parse_parameters(3 TSRMLS_CC, "sll", &path, &path_len, &oldnum, &newnum) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
 
-    if(oldnum == newnum)
-    {
+    if (oldnum == newnum) {
         RETURN_LONG(0);
     }
-    if(!dashd(path))
-    {
+    if (!dashd(path)) {
         RETURN_LONG(-1);
     }
 
@@ -1484,31 +1375,26 @@ PHP_FUNCTION(bbs_ann_move)
     me.path = path;
     me.level = PERM_BOARDS;
     a_loadnames(&me, getSession());
-    if((oldnum > me.num) || (oldnum <= 0))
-    {
+    if ((oldnum > me.num) || (oldnum <= 0)) {
         RETURN_LONG(-2);
     }
-    if(newnum <= 0)
+    if (newnum <= 0)
         newnum = 1;
-    if(newnum > me.num)
+    if (newnum > me.num)
         newnum = me.num;
     oldnum--;
     newnum--;
     tmp = M_ITEM(&me,oldnum);
-    if(oldnum > newnum)
-    {
-        for(i=oldnum; i>newnum; i--)
+    if (oldnum > newnum) {
+        for (i=oldnum; i>newnum; i--)
             M_ITEM(&me,i) = M_ITEM(&me,i-1);
-    }
-    else
-    {
-        for(i=oldnum; i<newnum; i++)
+    } else {
+        for (i=oldnum; i<newnum; i++)
             M_ITEM(&me,i) = M_ITEM(&me,i+1);
     }
     M_ITEM(&me,newnum)=tmp;
 
-    if(a_savenames(&me) != 0)
-    {
+    if (a_savenames(&me) != 0) {
         a_freenames(&me);
         RETURN_LONG(-3);
     }
@@ -1537,18 +1423,15 @@ PHP_FUNCTION(bbs_ipath_list)
     int ipath_select = 0, i;
     time_t ipath_time = 0;
 
-    if(ZEND_NUM_ARGS() != 0)
-    {
+    if (ZEND_NUM_ARGS() != 0) {
         WRONG_PARAM_COUNT;
     }
-    if(!HAS_PERM(getCurrentUser(), PERM_BOARDS))
-    {
+    if (!HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         RETURN_FALSE;
     }
     load_import_path(ipath, ititle, &ipath_time, &ipath_select, getSession());
     array_init(return_value);
-    for(i=0; i<ANNPATH_NUM; i++)
-    {
+    for (i=0; i<ANNPATH_NUM; i++) {
         MAKE_STD_ZVAL(item);
         array_init(item);
         add_assoc_string(item, "PATH", ipath[i], 1);
@@ -1575,23 +1458,19 @@ PHP_FUNCTION(bbs_ipath_modify)
     time_t ipath_time = 0;
 
     path = NULL;
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ls|s", &num, &title, &title_len, &path, &path_len) != SUCCESS)
-    {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ls|s", &num, &title, &title_len, &path, &path_len) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
 
-    if(!HAS_PERM(getCurrentUser(), PERM_BOARDS))
-    {
+    if (!HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         RETURN_LONG(-2);
     }
-    if((num < 1) || (num > ANNPATH_NUM))
-    {
+    if ((num < 1) || (num > ANNPATH_NUM)) {
         RETURN_LONG(-1);
     }
-    if(path)
-        if(path[0] != '\0')
-            if(ann_traverse_check(path, getCurrentUser()) != 1)
-            {
+    if (path)
+        if (path[0] != '\0')
+            if (ann_traverse_check(path, getCurrentUser()) != 1) {
                 RETURN_LONG(-2);
             }
     num--;
@@ -1600,8 +1479,7 @@ PHP_FUNCTION(bbs_ipath_modify)
     ititle[num] = (char *)malloc(title_len + 1);
     strcpy(ititle[num], title);
     ititle[num][title_len] = '\0';
-    if(path)
-    {
+    if (path) {
         free(ipath[num]);
         ipath[num] = (char *)malloc(path_len + 1);
         strcpy(ipath[num], path);

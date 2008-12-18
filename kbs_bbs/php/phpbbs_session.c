@@ -1,4 +1,4 @@
-#include "php_kbs_bbs.h"  
+#include "php_kbs_bbs.h"
 
 static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
 {
@@ -32,7 +32,7 @@ inline void setcurrentuinfo(struct user_info *uinfo, int uinfonum)
 
 inline void setcurrentuser(struct userec *user, int usernum)
 {
-	setCurrentUser(user);
+    setCurrentUser(user);
     getSession()->currentuid = usernum;
 }
 
@@ -54,7 +54,7 @@ PHP_FUNCTION(bbs_setfromhost)
 }
 
 
-struct fulluserlistarg{
+struct fulluserlistarg {
     long start;
     long num;
     zval* return_value;
@@ -76,19 +76,19 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
         return COUNT;
     if (count+1-arg->start>=arg->num)
         return QUIT;
-    MAKE_STD_ZVAL ( element );
-    array_init ( element );
+    MAKE_STD_ZVAL(element);
+    array_init(element);
 
-    add_assoc_bool ( element, "invisible", userinfo.invisible );
-    add_assoc_long ( element, "pid", userinfo.pid );
-    add_assoc_bool ( element, "isfriend", isfriend(userinfo.userid) );
-    add_assoc_string ( element, "userid", userinfo.userid, 1 );
-    add_assoc_string ( element, "username", userinfo.username, 1 );
-    if( getuser(userinfo.userid, &lookupuser) == 0 ) lookupuser=NULL;
-    add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)? userinfo.from: SHOW_USERIP(lookupuser, userinfo.from), 1 );
-    add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
-    add_assoc_long ( element, "idle", (long)(time(0) - userinfo.freshtime)/60 );
-    
+    add_assoc_bool(element, "invisible", userinfo.invisible);
+    add_assoc_long(element, "pid", userinfo.pid);
+    add_assoc_bool(element, "isfriend", isfriend(userinfo.userid));
+    add_assoc_string(element, "userid", userinfo.userid, 1);
+    add_assoc_string(element, "username", userinfo.username, 1);
+    if (getuser(userinfo.userid, &lookupuser) == 0) lookupuser=NULL;
+    add_assoc_string(element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)? userinfo.from: SHOW_USERIP(lookupuser, userinfo.from), 1);
+    add_assoc_string(element, "mode", ModeType(userinfo.mode), 1);
+    add_assoc_long(element, "idle", (long)(time(0) - userinfo.freshtime)/60);
+
     zend_hash_index_update(Z_ARRVAL_P(arg->return_value), count+1-arg->start, (void *) &element, sizeof(zval *), NULL);
     return COUNT;
 }
@@ -106,7 +106,7 @@ PHP_FUNCTION(bbs_getonline_user_list)
     struct fulluserlistarg arg;
     int ac = ZEND_NUM_ARGS();
 
-    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"ll",&arg.start,&arg.num) ==FAILURE){
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"ll",&arg.start,&arg.num) ==FAILURE) {
         WRONG_PARAM_COUNT;
     }
     if (arg.start < 0 || arg.start > USHM_SIZE) RETURN_FALSE;
@@ -243,10 +243,10 @@ PHP_FUNCTION(bbs_setonlineuser)
     }
     if (userid_len > IDLEN)
         RETURN_LONG(1);
-	/*
-    if (utmpnum < 0 || utmpnum >= MAXACTIVE)
-        RETURN_LONG(2);
-		*/
+    /*
+       if (utmpnum < 0 || utmpnum >= MAXACTIVE)
+           RETURN_LONG(2);
+     */
     if (userid_len==0)
         userid=NULL;
     if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui, compat_telnet)) == 0) {
@@ -273,21 +273,21 @@ PHP_FUNCTION(bbs_check_ban_ip)
 {
     int ac, userid_len, fromhost_len;
     char *userid, *fromhost, buf[255];
-    
+
     ac = ZEND_NUM_ARGS();
-    if((ac == 2) && (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &fromhost, &fromhost_len) != SUCCESS)) { 
+    if ((ac == 2) && (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &fromhost, &fromhost_len) != SUCCESS)) {
         WRONG_PARAM_COUNT;
     }
-    
-    if(check_ban_IP(fromhost, buf) > 0) {
+
+    if (check_ban_IP(fromhost, buf) > 0) {
         RETURN_LONG(1);
     }
-    if(strcasecmp(userid, "guest") != 0) {
-        if(check_ip_acl(userid, fromhost)) {
+    if (strcasecmp(userid, "guest") != 0) {
+        if (check_ip_acl(userid, fromhost)) {
             RETURN_LONG(2);
         }
     }
-    
+
     RETURN_LONG(0);
 }
 
@@ -317,7 +317,7 @@ PHP_FUNCTION(bbs_wwwlogin)
     } else {
         WRONG_PARAM_COUNT;
     }
-    
+
     ret = www_user_login(getCurrentUser(), getSession()->currentuid, kick_multi, fromhost, fullfrom, &pu, &utmpent);
     if (getCurrentUser() == NULL) {
         struct userec *user;
@@ -386,8 +386,8 @@ PHP_FUNCTION(bbs_update_uinfo)
     }
 
     if (!strcmp(field, "invisible")) {
-/*	    conver_to_boolean_ex(&value);
- *	    */
+        /*     conver_to_boolean_ex(&value);
+         *     */
         getSession()->currentuinfo->invisible = Z_LVAL_P(value);
     }
     RETURN_LONG(0);
@@ -415,7 +415,7 @@ PHP_FUNCTION(bbs_session_modify_user_mode)
 static int printstatusstr(struct user_info *uentp, char *arg, int pos)
 {
     if (uentp->invisible == 1) {
-		arg[0] = '1';
+        arg[0] = '1';
         if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
             return COUNT;
     }
@@ -439,48 +439,48 @@ static int printstatusstr(struct user_info *uentp, char *arg, int pos)
 /* stiger: 获得一个用户的在线状态string */
 static int get_userstatusstr(char *userid, char *buf)
 {
-	int tuid=0;
-	struct userec *lookupuser;
+    int tuid=0;
+    struct userec *lookupuser;
 
-	if(!(tuid = getuser(userid, &lookupuser)))
-		return 0;
+    if (!(tuid = getuser(userid, &lookupuser)))
+        return 0;
 
-	buf[0]='0';
-	buf[1]=0;
+    buf[0]='0';
+    buf[1]=0;
 
-	return apply_utmp((APPLY_UTMP_FUNC) printstatusstr, 10, lookupuser->userid, buf);
+    return apply_utmp((APPLY_UTMP_FUNC) printstatusstr, 10, lookupuser->userid, buf);
 }
 
 
 PHP_FUNCTION(bbs_getusermode)
 {
-	char *userid;
-	int userid_len;
-	char buf[1024];
+    char *userid;
+    int userid_len;
+    char buf[1024];
 
     if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
-	
-	if( userid_len > IDLEN )
-		userid[IDLEN]=0;
 
-	if( get_userstatusstr(userid, buf) == 0 )
-		RETURN_LONG(0);
+    if (userid_len > IDLEN)
+        userid[IDLEN]=0;
 
-	RETURN_STRING(buf,1);
+    if (get_userstatusstr(userid, buf) == 0)
+        RETURN_LONG(0);
+
+    RETURN_STRING(buf,1);
 }
 
 
 
 static int count_online(struct user_info *uentp, int *arg, int pos)
 {
-     if (uentp->invisible == 1) {
-         return COUNT;
-     }
-     (*arg) = 1;
-     UNUSED_ARG(pos);
-     return QUIT;
+    if (uentp->invisible == 1) {
+        return COUNT;
+    }
+    (*arg) = 1;
+    UNUSED_ARG(pos);
+    return QUIT;
 }
 /*
  * bbs_isonline(userid), return if this userid is online. If cloak, return false
@@ -496,7 +496,7 @@ PHP_FUNCTION(bbs_isonline)
     if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &s, &s_len) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
-    if( ! getuser(s,&lookupuser) ) {
+    if (! getuser(s,&lookupuser)) {
         RETURN_FALSE;
     }
     apply_utmp((APPLY_UTMP_FUNC) count_online, 0, lookupuser->userid, &can_see);

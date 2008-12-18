@@ -45,9 +45,9 @@
 
 #define ERRS(name) \
     case PHPBBS_ERROR_##name: \
-        desc = PHPBBS_ERROR_##name##_MSG; \
-        break;
-    
+    desc = PHPBBS_ERROR_##name##_MSG; \
+    break;
+
 #define ALL_PHPBBS_ERRORS \
     ERRS(OK) \
     \
@@ -70,7 +70,7 @@
     ERRS(ATTACH_INVALIDNAME) \
     ERRS(ATTACH_DUPNAME) \
     ERRS(ATTACH_ADDPERM) \
-
+     
 
 #define RETURN_ERROR(name)  RETURN_LONG(PHPBBS_ERROR_##name)
 

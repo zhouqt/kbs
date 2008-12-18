@@ -1,4 +1,4 @@
-#include "php_kbs_bbs.h"  
+#include "php_kbs_bbs.h"
 
 
 #ifdef HAVE_WFORUM
@@ -6,14 +6,14 @@
 
 /* add by roy 2003.8.7 struct wwwthreadheader */
 /* used for .WWWTHREAD */
-struct wwwthreadheader{
-	struct fileheader origin; /* groupid */
-	struct fileheader lastreply;	/* id for last article */
-	unsigned int articlecount; /* number of articles */
-	unsigned int flags;
-	unsigned int unused;   /* used for further index */
+struct wwwthreadheader {
+    struct fileheader origin; /* groupid */
+    struct fileheader lastreply; /* id for last article */
+    unsigned int articlecount; /* number of articles */
+    unsigned int flags;
+    unsigned int unused;   /* used for further index */
 };
-#define FILE_ON_TOP	0x2 /* on top mode */
+#define FILE_ON_TOP 0x2 /* on top mode */
 
 
 
@@ -70,34 +70,34 @@ static wwwthread_treenode *AVL_RightBalance(wwwthread_treenode * r)
 
     x = r->Rchild;
     switch (x->bf) {
-    case RH:
-        r->bf = EH;
-        x->bf = EH;
-        r = AVL_RotateLeft(r);
-        break;
-    case LH:
-        w = x->Lchild;
-        switch (w->bf) {
-        case EH:
+        case RH:
             r->bf = EH;
             x->bf = EH;
+            r = AVL_RotateLeft(r);
             break;
         case LH:
-            r->bf = EH;
-            x->bf = RH;
+            w = x->Lchild;
+            switch (w->bf) {
+                case EH:
+                    r->bf = EH;
+                    x->bf = EH;
+                    break;
+                case LH:
+                    r->bf = EH;
+                    x->bf = RH;
+                    break;
+                case RH:
+                    r->bf = LH;
+                    x->bf = EH;
+                    break;
+            }
+            w->bf = EH;
+            x = AVL_RotateRight(x);
+            r->Rchild = x;
+            r = AVL_RotateLeft(r);
             break;
-        case RH:
-            r->bf = LH;
-            x->bf = EH;
+        default:
             break;
-        }
-        w->bf = EH;
-        x = AVL_RotateRight(x);
-        r->Rchild = x;
-        r = AVL_RotateLeft(r);
-        break;
-    default:
-        break;
     }
     return r;
 }
@@ -109,34 +109,34 @@ static wwwthread_treenode *AVL_LeftBalance(wwwthread_treenode * r)
 
     x = r->Lchild;
     switch (x->bf) {
-    case LH:
-        r->bf = EH;
-        x->bf = EH;
-        r = AVL_RotateRight(r);
-        break;
-    case RH:
-        w = x->Rchild;
-        switch (w->bf) {
-        case EH:
+        case LH:
             r->bf = EH;
             x->bf = EH;
+            r = AVL_RotateRight(r);
             break;
         case RH:
-            r->bf = EH;
-            x->bf = LH;
+            w = x->Rchild;
+            switch (w->bf) {
+                case EH:
+                    r->bf = EH;
+                    x->bf = EH;
+                    break;
+                case RH:
+                    r->bf = EH;
+                    x->bf = LH;
+                    break;
+                case LH:
+                    r->bf = RH;
+                    x->bf = EH;
+                    break;
+            }
+            w->bf = EH;
+            x = AVL_RotateLeft(x);
+            r->Lchild = x;
+            r = AVL_RotateRight(r);
             break;
-        case LH:
-            r->bf = RH;
-            x->bf = EH;
+        default:
             break;
-        }
-        w->bf = EH;
-        x = AVL_RotateLeft(x);
-        r->Lchild = x;
-        r = AVL_RotateRight(r);
-        break;
-    default:
-        break;
     }
     return r;
 }
@@ -159,7 +159,7 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int f
     bool taller = false;
     wwwthread_treenode *root;
     int cmp;
-    
+
     root = *proot;
     if (root == NULL) {
         root = (wwwthread_treenode *) malloc(sizeof(wwwthread_treenode));
@@ -177,11 +177,11 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int f
             root->content.origin = *fh;
         else
             root->content.origin.groupid = fh->groupid + 1;
-        
+
         root->content.flags = flags;
         root->content.articlecount = 1;
         root->content.unused = 0;
-        
+
         root->previous = *previous; //linked list support
         *previous = root;           //return the newly created node address in *previous, so the caller can set tail variable.
 
@@ -196,18 +196,18 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int f
             tallersubtree = AVL_Insert(&(root->Lchild), fh, flags, previous);
             if (tallersubtree)
                 switch (root->bf) {
-                case LH:
-                    root = AVL_LeftBalance(root);
-                    taller = false;
-                    break;
-                case EH:
-                    root->bf = LH;
-                    taller = true;
-                    break;
-                case RH:
-                    root->bf = EH;
-                    taller = false;
-                    break;
+                    case LH:
+                        root = AVL_LeftBalance(root);
+                        taller = false;
+                        break;
+                    case EH:
+                        root->bf = LH;
+                        taller = true;
+                        break;
+                    case RH:
+                        root->bf = EH;
+                        taller = false;
+                        break;
                 }
 
             else
@@ -216,29 +216,29 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int f
             tallersubtree = AVL_Insert(&(root->Rchild), fh, flags, previous);
             if (tallersubtree)
                 switch (root->bf) {
-                case LH:
-                    root->bf = EH;
-                    taller = false;
-                    break;
-                case EH:
-                    root->bf = RH;
-                    taller = true;
-                    break;
-                case RH:
-                    root = AVL_RightBalance(root);
-                    taller = false;
+                    case LH:
+                        root->bf = EH;
+                        taller = false;
+                        break;
+                    case EH:
+                        root->bf = RH;
+                        taller = true;
+                        break;
+                    case RH:
+                        root = AVL_RightBalance(root);
+                        taller = false;
                 }
 
             else
                 taller = false;
         } else {  // the groupid (node) already exists
             /* We have a bug here: sysmail board won't generate correct .WEBTHREAD file. But who cares!!! */
-			if (root->content.lastreply.groupid == root->content.lastreply.id) { // this node was created by Zhiding fileheader
-				root->content.lastreply = *fh;
-			} else {
-				root->content.articlecount++;
+            if (root->content.lastreply.groupid == root->content.lastreply.id) { // this node was created by Zhiding fileheader
+                root->content.lastreply = *fh;
+            } else {
+                root->content.articlecount++;
                 if ((fh->groupid == fh->id) && (root->content.flags != FILE_ON_TOP)) { //found the original post, put into origin field
-                                               /* 后面这个判断只是为了保证新旧代码产生 .WEBTHREAD 完全一致。这个细节以后还要调整 */
+                    /* 后面这个判断只是为了保证新旧代码产生 .WEBTHREAD 完全一致。这个细节以后还要调整 */
                     root->content.origin =*fh;
                 }
             }
@@ -249,13 +249,14 @@ static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int f
     return taller;
 }
 
-static void clearWWWThreadList(wwwthread_treenode *p){
-	wwwthread_treenode *q;
-	while (p!=NULL) {
-		q=p->previous;
-		free(p);
-		p=q;
-	}
+static void clearWWWThreadList(wwwthread_treenode *p)
+{
+    wwwthread_treenode *q;
+    while (p!=NULL) {
+        q=p->previous;
+        free(p);
+        p=q;
+    }
 }
 
 static int www_generateOriginIndex(const char* board)
@@ -265,7 +266,7 @@ static int www_generateOriginIndex(const char* board)
     struct flock ldata, ldata2;
     int fd, fd2, size, total, i;
     char olddirect[PATHLEN];
-	char currdirect[PATHLEN];
+    char currdirect[PATHLEN];
     char *ptr;
     struct stat buf;
 
@@ -275,7 +276,7 @@ static int www_generateOriginIndex(const char* board)
     /* linked list support */
     wwwthread_treenode *tail = NULL;
     wwwthread_treenode *temp = NULL;
-    
+
     int bid;
     struct BoardStatus* bs;
 
@@ -323,8 +324,8 @@ static int www_generateOriginIndex(const char* board)
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
         return -5;
-	}
-	
+    }
+
     total = buf.st_size /sizeof(fileheader);
 
     if ((i = safe_mmapfile_handle(fd2,  PROT_READ, MAP_SHARED, &ptr, &buf.st_size)) != 1) {
@@ -339,7 +340,7 @@ static int www_generateOriginIndex(const char* board)
         return -5;
     }
 
-	size=sizeof(struct wwwthreadheader);
+    size=sizeof(struct wwwthreadheader);
 
     bid = getbid(board,NULL);
     bs = getbstatus(bid);
@@ -355,16 +356,16 @@ static int www_generateOriginIndex(const char* board)
 
 
     ptr1 = (struct fileheader *) ptr;
-	for (i=total-1;i>=0;i--) {
+    for (i=total-1;i>=0;i--) {
         AVL_Insert(&root, &(ptr1[i]), 0, &temp);
         if (temp == NULL) { //malloc failure, impossible?
-				clearWWWThreadList(tail);
-				return -5;
+            clearWWWThreadList(tail);
+            return -5;
         }
         tail = temp;
-	}
-	while (tail!=NULL) {
-		temp=tail->previous;
+    }
+    while (tail!=NULL) {
+        temp=tail->previous;
         if (tail->content.origin.groupid != tail->content.lastreply.groupid) {
             //original post does not exist, do something
             tail->content.origin = tail->content.lastreply;
@@ -372,9 +373,9 @@ static int www_generateOriginIndex(const char* board)
             tail->content.origin.groupid++; //indication that this thread has no original post.
         }
         write(fd,&(tail->content),size);
-		free(tail);
-		tail=temp;
-	}
+        free(tail);
+        tail=temp;
+    }
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
@@ -395,7 +396,8 @@ static int www_generateOriginIndex(const char* board)
 
 
 
-static int cmp_original_date(const void *a, const void *b) {
+static int cmp_original_date(const void *a, const void *b)
+{
     struct wwwthreadheader * pa;
     struct wwwthreadheader * pb;
     pa = *((struct wwwthreadheader **)a);
@@ -427,7 +429,7 @@ PHP_FUNCTION(bbs_searchtitle)
 
 
     if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&maxreturn) != SUCCESS) {
-            WRONG_PARAM_COUNT;
+        WRONG_PARAM_COUNT;
     }
     if (date < 0) {
         is_original_date = true;
@@ -445,7 +447,7 @@ PHP_FUNCTION(bbs_searchtitle)
     is_bm = is_BM(bh, getCurrentUser());
     setbdir(DIR_MODE_WEB_THREAD, dirpath, bh->filename);
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
-        RETURN_LONG(-3);   
+        RETURN_LONG(-3);
     ldata.l_type = F_RDLCK;
     ldata.l_whence = 0;
     ldata.l_len = 0;
@@ -462,9 +464,9 @@ PHP_FUNCTION(bbs_searchtitle)
     }
 
     resultList  = emalloc(maxreturn * sizeof(struct wwwthreadheader *));
-    if (resultList == NULL) {   
-        RETURN_LONG(-211);   
-    } 
+    if (resultList == NULL) {
+        RETURN_LONG(-211);
+    }
 
     total = buf.st_size / sizeof(struct wwwthreadheader);
 
@@ -477,7 +479,7 @@ PHP_FUNCTION(bbs_searchtitle)
         RETURN_LONG(-4);
     }
     /*
-     * fetching articles 
+     * fetching articles
      */
     if (array_init(return_value) == FAILURE) {
         RETURN_LONG(-210);
@@ -509,7 +511,7 @@ PHP_FUNCTION(bbs_searchtitle)
 
         resultList[threads] = &(ptr1[i]);
         threads++;
-        if (threads>=maxreturn) 
+        if (threads>=maxreturn)
             break;
     }
 
@@ -519,22 +521,22 @@ PHP_FUNCTION(bbs_searchtitle)
 
     for (i = 0; i < threads; i++) {
 
-                MAKE_STD_ZVAL(element);
-		array_init(element);
-		for (j = 0; j < 3; j++) {
-			MAKE_STD_ZVAL(columns[j] );
-			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
-		}
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        for (j = 0; j < 3; j++) {
+            MAKE_STD_ZVAL(columns[j]);
+            zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
+        }
         make_article_flag_array(flags, &(resultList[i]->origin), getCurrentUser(), bh->filename, is_bm);
-		array_init(columns[0] );
-		bbs_make_article_array(columns[0], &(resultList[i]->origin), flags, sizeof(flags));
+        array_init(columns[0]);
+        bbs_make_article_array(columns[0], &(resultList[i]->origin), flags, sizeof(flags));
 
         make_article_flag_array(flags, &(resultList[i]->lastreply), getCurrentUser(), bh->filename, is_bm);
-		array_init(columns[1] );
-		bbs_make_article_array(columns[1], &(resultList[i]->lastreply), flags, sizeof(flags));
-		ZVAL_LONG(columns[2],resultList[i]->articlecount);
+        array_init(columns[1]);
+        bbs_make_article_array(columns[1], &(resultList[i]->lastreply), flags, sizeof(flags));
+        ZVAL_LONG(columns[2],resultList[i]->articlecount);
 
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i + 1, (void *) &element, sizeof(zval *), NULL);
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i + 1, (void *) &element, sizeof(zval *), NULL);
 
     }
     end_mmapfile((void *) ptr, buf.st_size, -1);
@@ -566,37 +568,37 @@ PHP_FUNCTION(bbs_getthreads)
     long start,num;
     int total;
     const struct boardheader *bp=NULL;
-	char dirpath[STRLEN];
+    char dirpath[STRLEN];
     int i,j;
     zval *element;
     int is_bm;
     char flags[5];
-	int fd;
-	struct stat buf;
-	struct flock ldata;
-	struct wwwthreadheader *ptr1=NULL;
-	char* ptr;
-	long includeTop;
+    int fd;
+    struct stat buf;
+    struct flock ldata;
+    struct wwwthreadheader *ptr1=NULL;
+    char* ptr;
+    long includeTop;
     int ac = ZEND_NUM_ARGS();
-	int begin,end;
-	zval* columns[3];
-	char* thread_col_names[]={"origin","lastreply","articlenum"};
+    int begin,end;
+    zval* columns[3];
+    char* thread_col_names[]={"origin","lastreply","articlenum"};
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &start, &num, &includeTop) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
-	if (start<0){
-		RETURN_FALSE;
-	}
-	if (num<0){
-		RETURN_FALSE;
-	}
+    if (start<0) {
+        RETURN_FALSE;
+    }
+    if (num<0) {
+        RETURN_FALSE;
+    }
     /*
-     * checking arguments 
+     * checking arguments
      */
     if (getCurrentUser() == NULL) {
         RETURN_FALSE;
@@ -618,22 +620,22 @@ PHP_FUNCTION(bbs_getthreads)
     setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1) {
-        RETURN_LONG(-1);   
-	}
+        RETURN_LONG(-1);
+    }
     ldata.l_type = F_RDLCK;
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata)==-1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf)==-1) {
+        close(fd);
+        RETURN_LONG(-200);
+    }
+    if (fstat(fd, &buf)==-1) {
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-		RETURN_LONG(-201);
-	}
+        RETURN_LONG(-201);
+    }
     total = buf.st_size / sizeof(struct wwwthreadheader);
 
     if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &ptr, &buf.st_size)) != 1) {
@@ -648,39 +650,39 @@ PHP_FUNCTION(bbs_getthreads)
 
     ptr1 = (struct wwwthreadheader *) ptr;
     /*
-     * fetching articles 
+     * fetching articles
      */
-	 total--;
-	if (!includeTop) {
-		for (i=total;i>=0;i--) {
-			if (!( ptr1[i].flags & FILE_ON_TOP )) 
-				break;
-		}
-		total=i;
-	} 
-	begin=total-start;
-	end=total-start-num+1;
-	if (end<0)
-		end=0;
+    total--;
+    if (!includeTop) {
+        for (i=total;i>=0;i--) {
+            if (!(ptr1[i].flags & FILE_ON_TOP))
+                break;
+        }
+        total=i;
+    }
+    begin=total-start;
+    end=total-start-num+1;
+    if (end<0)
+        end=0;
 
-	for (i=begin;i>=end;i--) {
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		for (j = 0; j < 3; j++) {
-			MAKE_STD_ZVAL(columns[j] );
-			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
-		}
+    for (i=begin;i>=end;i--) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        for (j = 0; j < 3; j++) {
+            MAKE_STD_ZVAL(columns[j]);
+            zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
+        }
         make_article_flag_array(flags, &(ptr1[i].origin), getCurrentUser(), bp->filename, is_bm);
-		array_init(columns[0] );
-		bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
+        array_init(columns[0]);
+        bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
 
         make_article_flag_array(flags, &(ptr1[i].lastreply), getCurrentUser(), bp->filename, is_bm);
-		array_init(columns[1] );
-		bbs_make_article_array(columns[1], &(ptr1[i].lastreply), flags, sizeof(flags));
-		ZVAL_LONG(columns[2],ptr1[i].articlecount);
+        array_init(columns[1]);
+        bbs_make_article_array(columns[1], &(ptr1[i].lastreply), flags, sizeof(flags));
+        ZVAL_LONG(columns[2],ptr1[i].articlecount);
 
-		zend_hash_index_update(Z_ARRVAL_P(return_value), begin-i, (void *) &element, sizeof(zval *), NULL);
-	}
+        zend_hash_index_update(Z_ARRVAL_P(return_value), begin-i, (void *) &element, sizeof(zval *), NULL);
+    }
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
@@ -694,27 +696,27 @@ PHP_FUNCTION(bbs_get_today_article_num)
     int blen;
     int total;
     const struct boardheader *bp;
-	char dirpath[STRLEN];
+    char dirpath[STRLEN];
     int i;
     int ac = ZEND_NUM_ARGS();
-	unsigned int articleNums;
-	int fd;
-	struct stat buf;
-	struct flock ldata;
-	struct fileheader *ptr1;
-	char* ptr;
-	time_t now;
-	struct tm nowtm;
+    unsigned int articleNums;
+    int fd;
+    struct stat buf;
+    struct flock ldata;
+    struct fileheader *ptr1;
+    char* ptr;
+    time_t now;
+    struct tm nowtm;
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &blen) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
     /*
-     * checking arguments 
+     * checking arguments
      */
     if (getCurrentUser() == NULL) {
         RETURN_LONG(-2);
@@ -725,21 +727,21 @@ PHP_FUNCTION(bbs_get_today_article_num)
     setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
-        RETURN_LONG(-4);   
+        RETURN_LONG(-4);
     ldata.l_type = F_RDLCK;
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata)==-1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf) == -1 ){
+        close(fd);
+        RETURN_LONG(-200);
+    }
+    if (fstat(fd, &buf) == -1) {
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-		RETURN_LONG(-201);
-	}
+        RETURN_LONG(-201);
+    }
     total = buf.st_size / sizeof(struct fileheader);
 
     if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &ptr, &buf.st_size)) != 1) {
@@ -752,25 +754,25 @@ PHP_FUNCTION(bbs_get_today_article_num)
     }
     ptr1 = (struct fileheader *) ptr;
 
-	articleNums=0;
+    articleNums=0;
 
-	now=time(NULL);
-	localtime_r(&now,&nowtm);
-	nowtm.tm_sec=0;
-	nowtm.tm_min=0;
-	nowtm.tm_hour=0;
-	now=mktime(&nowtm);
+    now=time(NULL);
+    localtime_r(&now,&nowtm);
+    nowtm.tm_sec=0;
+    nowtm.tm_min=0;
+    nowtm.tm_hour=0;
+    now=mktime(&nowtm);
 
-	for (i=total-1;i>=0;i--) {
-		if (get_posttime(ptr1+i)<now)
-			break;
-		articleNums++;
-	}
+    for (i=total-1;i>=0;i--) {
+        if (get_posttime(ptr1+i)<now)
+            break;
+        articleNums++;
+    }
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
-	RETURN_LONG(articleNums);
+    RETURN_LONG(articleNums);
 }
 
 
@@ -788,11 +790,11 @@ PHP_FUNCTION(bbs_getthreadnum)
     char dirpath[STRLEN];
     int total;
     int ac = ZEND_NUM_ARGS();
-	struct stat normalStat,originStat;
-	char dirpath1[STRLEN];
+    struct stat normalStat,originStat;
+    char dirpath1[STRLEN];
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &brdnum) == FAILURE) {
         WRONG_PARAM_COUNT;
@@ -801,19 +803,19 @@ PHP_FUNCTION(bbs_getthreadnum)
         RETURN_LONG(-1);
     }
     setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
-	if (!stat(dirpath,&originStat))	{
-		setbdir(DIR_MODE_NORMAL,dirpath1,bp->filename);
-		if (!stat(dirpath1,&normalStat)){
-			if (normalStat.st_mtime>originStat.st_mtime){
-				www_generateOriginIndex(bp->filename);
-			}
-		} else {
-			www_generateOriginIndex(bp->filename);
-		}
-	} else {
-		www_generateOriginIndex(bp->filename);
-	}
-   total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
+    if (!stat(dirpath,&originStat)) {
+        setbdir(DIR_MODE_NORMAL,dirpath1,bp->filename);
+        if (!stat(dirpath1,&normalStat)) {
+            if (normalStat.st_mtime>originStat.st_mtime) {
+                www_generateOriginIndex(bp->filename);
+            }
+        } else {
+            www_generateOriginIndex(bp->filename);
+        }
+    } else {
+        www_generateOriginIndex(bp->filename);
+    }
+    total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
 
 
     RETURN_LONG(total);

@@ -26,7 +26,7 @@ PHP_FUNCTION(bbs_parse_article);
     PHP_FE(bbs_originfile, NULL) \
     PHP_FE(bbs_decode_att_hash, NULL) \
     PHP_FE(bbs_parse_article, NULL) \
-    
+     
 
 #endif //PHP_BBS_FILE_H
 

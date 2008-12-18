@@ -13,6 +13,6 @@ PHP_FUNCTION(bbs_getthreads);
     PHP_FE(bbs_get_today_article_num, NULL) \
     PHP_FE(bbs_getthreadnum, NULL) \
     PHP_FE(bbs_getthreads, NULL) \
-
+     
 #endif //PHP_BBS_WFORUM_H
 

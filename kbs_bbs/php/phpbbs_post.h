@@ -53,7 +53,7 @@ PHP_FUNCTION(bbs2_brcsync);
     PHP_FE(bbs_brcclear, NULL) \
     PHP_FE(bbs2_brcdump, NULL) \
     PHP_FE(bbs2_brcsync, NULL) \
-
+     
 
 #endif //PHP_BBS_POST_H
 

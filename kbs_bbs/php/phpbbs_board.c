@@ -1,4 +1,4 @@
-#include "php_kbs_bbs.h"  
+#include "php_kbs_bbs.h"
 
 static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
 {
@@ -61,18 +61,18 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
         ZVAL_STRING(value, (char *)brd->name, 1);
     } else if (strncmp(col_name, "BM", len) == 0) {
         ZVAL_STRING(value, (char *)brd->BM, 1);
-    /* added by caltary */
-    } else if (strncmp(col_name, "POSITION", len) == 0){
+        /* added by caltary */
+    } else if (strncmp(col_name, "POSITION", len) == 0) {
         ZVAL_LONG(value, brd->pos);/*added end */
-    } else if (strncmp(col_name, "FLAG", len) == 0){
+    } else if (strncmp(col_name, "FLAG", len) == 0) {
         ZVAL_LONG(value, brd->flag);/*added end */
-    } else if (strncmp(col_name, "BID", len) == 0){
+    } else if (strncmp(col_name, "BID", len) == 0) {
         ZVAL_LONG(value, brd->pos+1);/*added end */
-    } else if (strncmp(col_name, "NPOS", len) == 0){
+    } else if (strncmp(col_name, "NPOS", len) == 0) {
         ZVAL_LONG(value, brd->pos);/*added end */
-    } else if (strncmp(col_name, "CURRENTUSERS", len) == 0){
+    } else if (strncmp(col_name, "CURRENTUSERS", len) == 0) {
         ZVAL_LONG(value, brd->currentusers);
-    } else if (strncmp(col_name, "LASTPOST", len) == 0){
+    } else if (strncmp(col_name, "LASTPOST", len) == 0) {
         ZVAL_LONG(value, brd->lastpost);
     } else {
         ZVAL_EMPTY_STRING(value);
@@ -104,16 +104,16 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
         ZVAL_STRING(value, (char *)brd->title, 1);
     } else if (strncmp(col_name, "NAME", len) == 0) {
         ZVAL_STRING(value, (char *)brd->name, 1);
-    } else if (strncmp(col_name, "POSITION", len) == 0){
-		/* 保存目录的上一级的索引值 */
+    } else if (strncmp(col_name, "POSITION", len) == 0) {
+        /* 保存目录的上一级的索引值 */
         ZVAL_LONG(value, getSession()->favbrd_list[brd->tag].father);
-    } else if (strncmp(col_name, "FLAG", len) == 0){
+    } else if (strncmp(col_name, "FLAG", len) == 0) {
         ZVAL_LONG(value, (brd->flag == 0xffffffff) ? -1L : brd->flag);/*added end */
-    } else if (strncmp(col_name, "BID", len) == 0){
-		/* 保存目录的索引值 */
+    } else if (strncmp(col_name, "BID", len) == 0) {
+        /* 保存目录的索引值 */
         ZVAL_LONG(value, brd->tag);/*added end */
-    } else if (strncmp(col_name, "NPOS", len) == 0){
-		/* 保存目录的索引值 */
+    } else if (strncmp(col_name, "NPOS", len) == 0) {
+        /* 保存目录的索引值 */
         ZVAL_LONG(value, brd->pos);/*added end */
     } else {
         ZVAL_EMPTY_STRING(value);
@@ -257,7 +257,7 @@ PHP_FUNCTION(bbs_safe_getboard)
     if (!check_read_perm(user, bh)) {
         RETURN_NULL();
     }
-    
+
     bs = getbstatus(bid);
     if (array_init(array) != SUCCESS) {
         RETURN_NULL();
@@ -289,7 +289,7 @@ PHP_FUNCTION(bbs_safe_getboard)
  *
  * @return array of loaded boards on success,
  *         FALSE on failure.
- * @author roy 
+ * @author roy
  *
  * original version by flyriver - removed by atppp
  */
@@ -310,120 +310,120 @@ PHP_FUNCTION(bbs_getboards)
     int j;
     int ac = ZEND_NUM_ARGS();
     int brdnum, yank, no_brc, all_boards, new_return_mode;
-    int total;   
+    int total;
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &prefix, &plen, &group,&flag) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
-	if (plen == 0) {
-		RETURN_FALSE;
-	}
+    if (plen == 0) {
+        RETURN_FALSE;
+    }
     if (getCurrentUser() == NULL) {
         RETURN_FALSE;
     }
 
-	total=get_boardcount();
-    
-	yank = flag & 1;
+    total=get_boardcount();
+
+    yank = flag & 1;
     no_brc = flag & 2;
     all_boards = (flag & 4) && (group == 0);
     new_return_mode = (flag & 8);
 
 #if 0
-    if  (getSession()->zapbuf==NULL)  {
-		char fname[STRLEN];
-		int fd, size;
+    if (getSession()->zapbuf==NULL)  {
+        char fname[STRLEN];
+        int fd, size;
 
-		size = total* sizeof(int);
-   		getSession()->zapbuf = (int *) malloc(size);
-		if (getSession()->zapbuf==NULL) {
-			RETURN_FALSE;
-		}
-    	for (i = 0; i < total; i++)
-        	getSession()->zapbuf[i] = 1;
-	   	sethomefile(fname, getCurrentUser()->userid, ".lastread");       /*user的.lastread， zap信息 */
+        size = total* sizeof(int);
+        getSession()->zapbuf = (int *) malloc(size);
+        if (getSession()->zapbuf==NULL) {
+            RETURN_FALSE;
+        }
+        for (i = 0; i < total; i++)
+            getSession()->zapbuf[i] = 1;
+        sethomefile(fname, getCurrentUser()->userid, ".lastread");       /*user的.lastread， zap信息 */
         if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-	        size = total * sizeof(int);
-	        read(fd, getSession()->zapbuf, size);
-	   	    close(fd);
-	    } 
+            size = total * sizeof(int);
+            read(fd, getSession()->zapbuf, size);
+            close(fd);
+        }
     }
 #endif
 
     brdnum = 0;
     {
-	    int n;
-	    struct boardheader const *bptr;
-	    const char** namelist;
+        int n;
+        struct boardheader const *bptr;
+        const char** namelist;
         int* indexlist;
-		time_t tnow;
+        time_t tnow;
 
-		tnow = time(0);
+        tnow = time(0);
         namelist=(const char**)emalloc(sizeof(char**)*(total));
-		if (namelist==NULL) {
-			RETURN_FALSE;
-		}
-	    indexlist=(int*)emalloc(sizeof(int*)*(total));
-		if (indexlist==NULL) {
-			RETURN_FALSE;
-		}
-	    for (n = 0; n < total; n++) {
-	        bptr = getboard(n + 1);
-	        if (!bptr)
-	            continue;
-	        if (*(bptr->filename)==0)
-	            continue;
-			if ( group == -2 ){
-				if( ( tnow - bptr->createtime ) > 86400*30 || ( bptr->flag & BOARD_GROUP ) )
-					continue;
-			}else if (!all_boards && (bptr->group!=group))
-	            continue;
-	        if (!check_see_perm(getCurrentUser(),bptr)) {
-	            continue;
-	        }
-	        if ((group==0)&&( strchr(prefix, bptr->title[0]) == NULL && prefix[0] != '*'))
-	            continue;
-	        /* if (yank || getSession()->zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) */ {
-	            /*都要排序*/
-	            for (i=0;i<brdnum;i++) {
-				    if ( strcasecmp(namelist[i], bptr->filename)>0) 
-						break;
-				}
-				for (j=brdnum;j>i;j--) {
-						namelist[j]=namelist[j-1];
-					   	indexlist[j]=indexlist[j-1];
-				}
-			   	namelist[i]=bptr->filename;
-			   	indexlist[i]=n;
-			   	brdnum++;
-		   	}
-	   	}
+        if (namelist==NULL) {
+            RETURN_FALSE;
+        }
+        indexlist=(int*)emalloc(sizeof(int*)*(total));
+        if (indexlist==NULL) {
+            RETURN_FALSE;
+        }
+        for (n = 0; n < total; n++) {
+            bptr = getboard(n + 1);
+            if (!bptr)
+                continue;
+            if (*(bptr->filename)==0)
+                continue;
+            if (group == -2) {
+                if ((tnow - bptr->createtime) > 86400*30 || (bptr->flag & BOARD_GROUP))
+                    continue;
+            } else if (!all_boards && (bptr->group!=group))
+                continue;
+            if (!check_see_perm(getCurrentUser(),bptr)) {
+                continue;
+            }
+            if ((group==0)&&(strchr(prefix, bptr->title[0]) == NULL && prefix[0] != '*'))
+                continue;
+            /* if (yank || getSession()->zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) */ {
+                /*都要排序*/
+                for (i=0;i<brdnum;i++) {
+                    if (strcasecmp(namelist[i], bptr->filename)>0)
+                        break;
+                }
+                for (j=brdnum;j>i;j--) {
+                    namelist[j]=namelist[j-1];
+                    indexlist[j]=indexlist[j-1];
+                }
+                namelist[i]=bptr->filename;
+                indexlist[i]=n;
+                brdnum++;
+            }
+        }
         newpost_buffer = (struct newpostdata*)emalloc(sizeof(struct newpostdata) * brdnum);
-		for (i=0;i<brdnum;i++) {
-		  	ptr=&(newpost_buffer[i]);
-		   	bptr = getboard(indexlist[i]+1);
-		   	ptr->dir = bptr->flag&BOARD_GROUP?1:0;
-		   	ptr->name = (char*)bptr->filename;
-		   	ptr->title = (char*)bptr->title;
-		   	ptr->BM = (char*)bptr->BM;
-		   	ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-		   	ptr->pos = indexlist[i];
-		   	if (bptr->flag&BOARD_GROUP) {
-			   	ptr->total = bptr->board_data.group_total;
-		   	} else ptr->total=-1;
-		   	ptr->zap = (getSession()->zapbuf[indexlist[i]] == 0);
-   			check_newpost(ptr, no_brc);
-		}
+        for (i=0;i<brdnum;i++) {
+            ptr=&(newpost_buffer[i]);
+            bptr = getboard(indexlist[i]+1);
+            ptr->dir = bptr->flag&BOARD_GROUP?1:0;
+            ptr->name = (char*)bptr->filename;
+            ptr->title = (char*)bptr->title;
+            ptr->BM = (char*)bptr->BM;
+            ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+            ptr->pos = indexlist[i];
+            if (bptr->flag&BOARD_GROUP) {
+                ptr->total = bptr->board_data.group_total;
+            } else ptr->total=-1;
+            ptr->zap = (getSession()->zapbuf[indexlist[i]] == 0);
+            check_newpost(ptr, no_brc);
+        }
 
         if (new_return_mode) {
             if (array_init(return_value) == FAILURE) {
                 RETURN_FALSE;
             }
-            for(i=0;i<brdnum;i++) {
+            for (i=0;i<brdnum;i++) {
                 MAKE_STD_ZVAL(element);
                 array_init(element);
                 assign_board_zval(element, &(newpost_buffer[i]));
@@ -431,15 +431,15 @@ PHP_FUNCTION(bbs_getboards)
             }
         } else {
             /*
-             * setup column names 
+             * setup column names
              */
             if (array_init(return_value) == FAILURE) {
                 RETURN_FALSE;
             }
             columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
-        	if (columns==NULL) {
-        		RETURN_FALSE;
-        	}
+            if (columns==NULL) {
+                RETURN_FALSE;
+            }
             for (i = 0; i < BOARD_COLUMNS; i++) {
                 MAKE_STD_ZVAL(element);
                 array_init(element);
@@ -447,19 +447,19 @@ PHP_FUNCTION(bbs_getboards)
                 zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
             }
 
-    		for (i=0;i<brdnum;i++) {
+            for (i=0;i<brdnum;i++) {
                 ptr=&(newpost_buffer[i]);
-    	        for (j = 0; j < BOARD_COLUMNS; j++) {
-           		    MAKE_STD_ZVAL(element);
-    	            bbs_make_board_zval(element, brd_col_names[j], ptr);
-    	            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
-    	        }
-    		}
+                for (j = 0; j < BOARD_COLUMNS; j++) {
+                    MAKE_STD_ZVAL(element);
+                    bbs_make_board_zval(element, brd_col_names[j], ptr);
+                    zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
+                }
+            }
             efree(columns);
         }
         efree(newpost_buffer);
-		efree(namelist);
-	   	efree(indexlist);
+        efree(namelist);
+        efree(indexlist);
     }
 
 }
@@ -471,53 +471,53 @@ PHP_FUNCTION(bbs_getboards)
 
 PHP_FUNCTION(bbs_checkorigin)
 {
-	char *board;
+    char *board;
     int board_len;
     int ac = ZEND_NUM_ARGS();
-	int total;
+    int total;
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
     if (!setboardorigin(board, -1)) {
-    	RETURN_LONG(0);
+        RETURN_LONG(0);
     }
-	total = board_regenspecial(board,DIR_MODE_ORIGIN,NULL);
+    total = board_regenspecial(board,DIR_MODE_ORIGIN,NULL);
 
-   	RETURN_LONG(total);
+    RETURN_LONG(total);
 }
 
 PHP_FUNCTION(bbs_checkmark)
 {
-	char *board;
+    char *board;
     int board_len;
     int ac = ZEND_NUM_ARGS();
-	int total;
+    int total;
 
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
     if (!setboardmark(board, -1)) {
-    	RETURN_LONG(0);
+        RETURN_LONG(0);
     }
-	total = board_regenspecial(board,DIR_MODE_MARK,NULL);
+    total = board_regenspecial(board,DIR_MODE_MARK,NULL);
 
-   	RETURN_LONG(total);
+    RETURN_LONG(total);
 }
 
 PHP_FUNCTION(bbs_getbdes)
 {
-	char *board;
-	int board_len;
-	const struct boardheader *bp=NULL;
+    char *board;
+    int board_len;
+    const struct boardheader *bp=NULL;
     int ac = ZEND_NUM_ARGS();
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
@@ -526,13 +526,13 @@ PHP_FUNCTION(bbs_getbdes)
     if ((bp = getbcache(board)) == NULL) {
         RETURN_LONG(0);
     }
-	RETURN_STRING((char *)(bp->des),1);
+    RETURN_STRING((char *)(bp->des),1);
 }
 
 PHP_FUNCTION(bbs_getbname)
 {
-	long brdnum;
-	const struct boardheader *bp=NULL;
+    long brdnum;
+    const struct boardheader *bp=NULL;
     int ac = ZEND_NUM_ARGS();
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &brdnum) == FAILURE) {
@@ -541,7 +541,7 @@ PHP_FUNCTION(bbs_getbname)
     if ((bp = getboard(brdnum)) == NULL) {
         RETURN_LONG(0);
     }
-	RETURN_STRING((char *)(bp->filename),1);
+    RETURN_STRING((char *)(bp->filename),1);
 }
 
 PHP_FUNCTION(bbs_checkreadperm)
@@ -568,10 +568,10 @@ PHP_FUNCTION(bbs_checkpostperm)
     user = getuserbynum(user_num);
     if (user == NULL)
         RETURN_LONG(0);
-	bh=getboard(boardnum);
-	if (bh==0) {
-		RETURN_LONG(0);
-	}
+    bh=getboard(boardnum);
+    if (bh==0) {
+        RETURN_LONG(0);
+    }
     RETURN_LONG(haspostperm(user, bh->filename));
 }
 
@@ -585,8 +585,8 @@ PHP_FUNCTION(bbs_checkpostperm)
  * int bbs_normal(char* boardname);
  *
  *  @return the result
- *  	1 -- normal board
- *  	0 -- no
+ *   1 -- normal board
+ *   0 -- no
  *  @author kcn
  */
 PHP_FUNCTION(bbs_normalboard)
@@ -596,9 +596,9 @@ PHP_FUNCTION(bbs_normalboard)
     int name_len;
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &name_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-	RETURN_LONG(normal_board(boardname));
+        WRONG_PARAM_COUNT;
+    }
+    RETURN_LONG(normal_board(boardname));
 }
 
 /**
@@ -619,21 +619,21 @@ PHP_FUNCTION(bbs_searchboard)
 
     int ac = ZEND_NUM_ARGS();
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sla", &keyword, &keyword_len, &exact ,&boards) == FAILURE)
-		WRONG_PARAM_COUNT;
-	
-	if (!*keyword)
+        WRONG_PARAM_COUNT;
+
+    if (!*keyword)
         RETURN_FALSE;
-    
+
     if (array_init(boards) != SUCCESS)
         RETURN_FALSE;
-    
+
     bc = bcache;
     if (exact) { //精确查找
         for (i = 0; i < MAXBOARD; i++) {
             board1 = bc[i].filename;
             title = bc[i].title + 13;
             if (!check_read_perm(getCurrentUser(), &bc[i]))
-                 continue;
+                continue;
             if (!strcasecmp(keyword, board1)) {
                 MAKE_STD_ZVAL(element);
                 array_init(element);
@@ -645,8 +645,7 @@ PHP_FUNCTION(bbs_searchboard)
             }
         }
         RETURN_FALSE;
-    }
-    else { //模糊查找
+    } else { //模糊查找
         int total = 0;
         for (i = 0; i < MAXBOARD; i++) {
             board1 = bc[i].filename;
@@ -663,16 +662,16 @@ PHP_FUNCTION(bbs_searchboard)
                 total ++;
             }
         }
-        
+
         RETURN_LONG(total);
-   }
+    }
 }
 
 /**
  * int bbs_useronboard(string baord,array users)
  * show users on board
  * $users = array(
- *              string 'USERID'  
+ *              string 'USERID'
  *              string 'HOST'
  *              );
  * return user numbers , less than 0 when failed
@@ -686,28 +685,28 @@ PHP_FUNCTION(bbs_useronboard)
     zval *element,*users;
     int bid,i,j;
     long seecloak=0;
-    
+
     int ac = ZEND_NUM_ARGS();
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sz", &board, &board_len, &users) == FAILURE) {
         if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "szl", &board, &board_len, &users, &seecloak) == FAILURE) {
             WRONG_PARAM_COUNT;
         }
-	}
+    }
 
-    
+
     bid = getbid(board, NULL);
     if (bid == 0)
         RETURN_LONG(-1);
 #ifndef ALLOW_PUBLIC_USERONBOARD
-    if(! HAS_PERM(getCurrentUser(), PERM_SYSOP))
-		RETURN_LONG(-1);
+    if (! HAS_PERM(getCurrentUser(), PERM_SYSOP))
+        RETURN_LONG(-1);
     seecloak = 1;
 #endif
     if (array_init(users) != SUCCESS)
         RETURN_LONG(-1);
-    
-    j = 0;  
-	for (i=0;i<USHM_SIZE;i++) {
+
+    j = 0;
+    for (i=0;i<USHM_SIZE;i++) {
         struct user_info* ui;
         ui=get_utmpent(i+1);
         if (ui->active&&ui->currentboard) {
@@ -722,7 +721,7 @@ PHP_FUNCTION(bbs_useronboard)
             }
         }
     }
-    
+
     resolve_guest_table();
     for (i=0;i<MAX_WWW_GUEST;i++) {
         if (wwwguest_shm->use_map[i / 32] & (1 << (i % 32)))
@@ -739,8 +738,8 @@ PHP_FUNCTION(bbs_useronboard)
                 }
             }
     }
-    
-    RETURN_LONG(j);  
+
+    RETURN_LONG(j);
 }
 
 
@@ -789,24 +788,24 @@ PHP_FUNCTION(bbs_boardonlines_for_rrdtool)
 
 PHP_FUNCTION(bbs_set_onboard)
 {
-	int ac = ZEND_NUM_ARGS();
-	long boardnum,count;
-	int oldboard;
+    int ac = ZEND_NUM_ARGS();
+    long boardnum,count;
+    int oldboard;
     struct WWW_GUEST_S *guestinfo = NULL;
 
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &count) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
+        WRONG_PARAM_COUNT;
+    }
     if (getCurrentUser()==NULL) RETURN_FALSE;
     if (getSession()->currentuinfo==NULL) RETURN_FALSE;
-    
+
 #ifdef NEWSMTH
     // pig2532: ignore wwwguest to check if board online number is ok
-    if(strcmp(getCurrentUser()->userid, "guest") == 0) {
+    if (strcmp(getCurrentUser()->userid, "guest") == 0) {
         RETURN_FALSE;
     }
 #endif
-    
+
     if (!strcmp(getCurrentUser()->userid,"guest")) {
         guestinfo=www_get_guest_entry(getSession()->utmpent);
         oldboard=guestinfo->currentboard;
@@ -814,15 +813,14 @@ PHP_FUNCTION(bbs_set_onboard)
         oldboard=getSession()->currentuinfo->currentboard;
     if (oldboard)
         board_setcurrentuser(oldboard, -1);
-    
+
     board_setcurrentuser(boardnum, count);
     if (!strcmp(getCurrentUser()->userid,"guest")) {
         if (count>0)
             guestinfo->currentboard = boardnum;
         else
             guestinfo->currentboard = 0;
-    }
-    else {
+    } else {
         if (count>0)
             getSession()->currentuinfo->currentboard = boardnum;
         else
@@ -840,135 +838,131 @@ PHP_FUNCTION(bbs_set_onboard)
 */
 PHP_FUNCTION(bbs_load_favboard)
 {
-        long select, mode=1;
-        if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &select, &mode) ==FAILURE) {
-                WRONG_PARAM_COUNT;
-        }
-		getSession()->mybrd_list_t = 0;
-        load_favboard(mode, getSession());
-        if(select>=0 && select<favbrd_list_t)
-        {
-                SetFav(select, getSession());
-                RETURN_LONG(0);
-        }
-        else 
-                RETURN_LONG(-1);
+    long select, mode=1;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &select, &mode) ==FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    getSession()->mybrd_list_t = 0;
+    load_favboard(mode, getSession());
+    if (select>=0 && select<favbrd_list_t) {
+        SetFav(select, getSession());
+        RETURN_LONG(0);
+    } else
+        RETURN_LONG(-1);
 }
 
 PHP_FUNCTION(bbs_is_favboard)
 {
-        int ac = ZEND_NUM_ARGS();
-        long position;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-        RETURN_LONG(IsFavBoard(position-1, getSession(), 1, getSession()->favnow)); //position是bid，但是fav数据结构里头的是-1的. - atppp
+    int ac = ZEND_NUM_ARGS();
+    long position;
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    RETURN_LONG(IsFavBoard(position-1, getSession(), 1, getSession()->favnow)); //position是bid，但是fav数据结构里头的是-1的. - atppp
 }
 
 PHP_FUNCTION(bbs_del_favboarddir)
 {
-        int ac = ZEND_NUM_ARGS();
-		long select;
-        long position;
-        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-		if(select < 0 || select >= FAVBOARDNUM)
-				RETURN_LONG(-1);
-		if(getSession()->nowfavmode != 1)
-				RETURN_LONG(-1);
+    int ac = ZEND_NUM_ARGS();
+    long select;
+    long position;
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (select < 0 || select >= FAVBOARDNUM)
+        RETURN_LONG(-1);
+    if (getSession()->nowfavmode != 1)
+        RETURN_LONG(-1);
 
-			if(position < 0 || position>= getSession()->mybrd_list[select].bnum)
-				RETURN_LONG(-1);
+    if (position < 0 || position>= getSession()->mybrd_list[select].bnum)
+        RETURN_LONG(-1);
 
-			if(getSession()->mybrd_list[select].bid[position]<0)
-				DelFavBoardDir(position,select, getSession());
-			else
-				RETURN_LONG(-1);
-        	save_favboard(1, getSession());
-			RETURN_LONG(0);
+    if (getSession()->mybrd_list[select].bid[position]<0)
+        DelFavBoardDir(position,select, getSession());
+    else
+        RETURN_LONG(-1);
+    save_favboard(1, getSession());
+    RETURN_LONG(0);
 
 }
 
 PHP_FUNCTION(bbs_get_dirname)
 {
-        int ac = ZEND_NUM_ARGS();
-		long select;
-		char title[256];
+    int ac = ZEND_NUM_ARGS();
+    long select;
+    char title[256];
 
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-	if(select < 0 || select >= favbrd_list_t )
-		RETURN_LONG(0);
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (select < 0 || select >= favbrd_list_t)
+        RETURN_LONG(0);
 
-	FavGetTitle(select,title, getSession());
+    FavGetTitle(select,title, getSession());
 
-    RETURN_STRING( title, 1);
+    RETURN_STRING(title, 1);
 
 }
 
 PHP_FUNCTION(bbs_get_father)
 {
-        int ac = ZEND_NUM_ARGS();
-		long select;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
+    int ac = ZEND_NUM_ARGS();
+    long select;
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
 
-		RETURN_LONG( FavGetFather(select, getSession()) );
+    RETURN_LONG(FavGetFather(select, getSession()));
 }
 
 PHP_FUNCTION(bbs_del_favboard)
 {
-        int ac = ZEND_NUM_ARGS();
-		long select;
-        long position;
-        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-		if(getSession()->nowfavmode != 1)
-				RETURN_LONG(-1);
-        	DelFavBoard(position, getSession());
-        	save_favboard(1, getSession());
-			RETURN_LONG(0);
+    int ac = ZEND_NUM_ARGS();
+    long select;
+    long position;
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (getSession()->nowfavmode != 1)
+        RETURN_LONG(-1);
+    DelFavBoard(position, getSession());
+    save_favboard(1, getSession());
+    RETURN_LONG(0);
 }
 //add fav dir
 PHP_FUNCTION(bbs_add_favboarddir)
 {
-        int ac = ZEND_NUM_ARGS();
-        int char_len;   
-        char *char_dname;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_dname,&char_len) ==FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-        if(char_len <= 20)
-        {
-				if(getSession()->nowfavmode != 1)
-					RETURN_LONG(-1);
-                addFavBoardDir(char_dname, getSession());
-                save_favboard(1, getSession());
-        }
-        RETURN_LONG(char_len);
+    int ac = ZEND_NUM_ARGS();
+    int char_len;
+    char *char_dname;
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_dname,&char_len) ==FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (char_len <= 20) {
+        if (getSession()->nowfavmode != 1)
+            RETURN_LONG(-1);
+        addFavBoardDir(char_dname, getSession());
+        save_favboard(1, getSession());
+    }
+    RETURN_LONG(char_len);
 }
 
 PHP_FUNCTION(bbs_add_favboard)
 {
-        int ac = ZEND_NUM_ARGS();
-        int char_len;
-        char *char_bname;
-        int i;
-        if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_bname,&char_len) ==FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-				if(getSession()->nowfavmode != 1)
-					RETURN_LONG(-1);
-        i=getbid(char_bname,NULL);
-        if(i >0 && ! IsFavBoard(i - 1, getSession(), -1, -1))
-        {
-                addFavBoard(i - 1, getSession(), -1, -1);
-                save_favboard(1, getSession());
-        }
+    int ac = ZEND_NUM_ARGS();
+    int char_len;
+    char *char_bname;
+    int i;
+    if (ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_bname,&char_len) ==FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (getSession()->nowfavmode != 1)
+        RETURN_LONG(-1);
+    i=getbid(char_bname,NULL);
+    if (i >0 && ! IsFavBoard(i - 1, getSession(), -1, -1)) {
+        addFavBoard(i - 1, getSession(), -1, -1);
+        save_favboard(1, getSession());
+    }
 }
 
 /**
@@ -997,7 +991,7 @@ PHP_FUNCTION(bbs_fav_boards)
     int brdnum;
     int new_return_mode;
     /*
-     * getting arguments 
+     * getting arguments
      */
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll|l", &select, &mode, &flag) == FAILURE) {
         WRONG_PARAM_COUNT;
@@ -1007,41 +1001,40 @@ PHP_FUNCTION(bbs_fav_boards)
 
 
     /*
-     * loading boards 
+     * loading boards
      */
     /*
-     * handle some global variables: getCurrentUser(), yank, brdnum, 
+     * handle some global variables: getCurrentUser(), yank, brdnum,
      * * nbrd.
      */
     /*
-     * NOTE: getCurrentUser() SHOULD had been set in funcs.php, 
-     * * but we still check it. 
+     * NOTE: getCurrentUser() SHOULD had been set in funcs.php,
+     * * but we still check it.
      */
 
-	if (mode==2){
+    if (mode==2) {
         load_favboard(2, getSession());
-        if(select>=0 && select<favbrd_list_t)
+        if (select>=0 && select<favbrd_list_t)
             SetFav(select, getSession());
-	}
-	else if(mode==3){
+    } else if (mode==3) {
         load_favboard(3, getSession());
-        if(select>=0 && select<favbrd_list_t)
+        if (select>=0 && select<favbrd_list_t)
             SetFav(select, getSession());
-	}
+    }
 
-	if (getCurrentUser() == NULL) {
+    if (getCurrentUser() == NULL) {
         RETURN_FALSE;
     }
     brdnum = 0;
-    
+
     if ((brdnum = fav_loaddata(newpost_buffer, select, 1, FAVBOARDNUM, 1, NULL, getSession())) <= -1) {
         RETURN_FALSE;
     }
     /*
-     * fill data in output array. 
+     * fill data in output array.
      */
     /*
-     * setup column names 
+     * setup column names
      */
     rows=brdnum;
     for (i = 0; i < rows; i++) {
@@ -1054,14 +1047,14 @@ PHP_FUNCTION(bbs_fav_boards)
         if (array_init(return_value) == FAILURE) {
             RETURN_FALSE;
         }
-        for(i=0;i<brdnum;i++) {
+        for (i=0;i<brdnum;i++) {
             MAKE_STD_ZVAL(element);
             array_init(element);
             ptr = &newpost_buffer[i];
-			if (ptr->flag == 0xffffffff) /* the item is a directory */
-            	assign_favdir_zval(element, &(newpost_buffer[i]));
-			else
-            	assign_board_zval(element, &(newpost_buffer[i]));
+            if (ptr->flag == 0xffffffff) /* the item is a directory */
+                assign_favdir_zval(element, &(newpost_buffer[i]));
+            else
+                assign_board_zval(element, &(newpost_buffer[i]));
             zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *)&element, sizeof(zval*), NULL);
         }
     } else {
@@ -1070,39 +1063,40 @@ PHP_FUNCTION(bbs_fav_boards)
         }
         columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
 
-    	if (columns==NULL){
-    		RETURN_FALSE;
-    	}
+        if (columns==NULL) {
+            RETURN_FALSE;
+        }
         for (i = 0; i < BOARD_COLUMNS; i++) {
             MAKE_STD_ZVAL(element);
             array_init(element);
             columns[i] = element;
             zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
         }
-       /*
-         * fill data for each column 
-         */
-       for (i = 0; i < rows; i++) {
+        /*
+          * fill data for each column
+          */
+        for (i = 0; i < rows; i++) {
             ptr = &newpost_buffer[i];
             for (j = 0; j < BOARD_COLUMNS; j++) {
                 MAKE_STD_ZVAL(element);
-    			if (ptr->flag == 0xffffffff) /* the item is a directory */
-                	bbs_make_favdir_zval(element, brd_col_names[j], ptr);
-    			else
-                	bbs_make_board_zval(element, brd_col_names[j], ptr);
+                if (ptr->flag == 0xffffffff) /* the item is a directory */
+                    bbs_make_favdir_zval(element, brd_col_names[j], ptr);
+                else
+                    bbs_make_board_zval(element, brd_col_names[j], ptr);
                 zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
-            }       
+            }
         }
-            
+
         efree(columns);
     }
 }
 
-PHP_FUNCTION(bbs_deny_me) {
+PHP_FUNCTION(bbs_deny_me)
+{
     int ac, userid_len, bname_len;
     char *userid, *bname;
     ac = ZEND_NUM_ARGS();
-    if((ac != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &bname, &bname_len) == FAILURE)) {
+    if ((ac != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &bname, &bname_len) == FAILURE)) {
         WRONG_PARAM_COUNT;
     }
     RETURN_LONG(deny_me(userid, bname));

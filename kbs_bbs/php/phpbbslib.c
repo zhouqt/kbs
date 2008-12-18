@@ -3,55 +3,55 @@
 
 #if PHP_MAJOR_VERSION == 5
 static
-     ZEND_BEGIN_ARG_INFO(one_arg_force_ref_1, 0)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(one_arg_force_ref_1, 0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 static
-     ZEND_BEGIN_ARG_INFO(two_arg_force_ref_01, 0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(two_arg_force_ref_01, 0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 static
-     ZEND_BEGIN_ARG_INFO(third_arg_force_ref_1111, 0)
-             ZEND_ARG_PASS_INFO(1)
-             ZEND_ARG_PASS_INFO(1)
-             ZEND_ARG_PASS_INFO(1)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(third_arg_force_ref_1111, 0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_ARG_PASS_INFO(1)
+ZEND_ARG_PASS_INFO(1)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 static
-     ZEND_BEGIN_ARG_INFO(third_arg_force_ref_011, 0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(1)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(third_arg_force_ref_011, 0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 static
-     ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref_0001, 0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref_0001, 0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 static
-     ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref_0111, 0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(1)
-             ZEND_ARG_PASS_INFO(1)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref_0111, 0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_ARG_PASS_INFO(1)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 static
-     ZEND_BEGIN_ARG_INFO(third_arg_force_ref_001, 0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(third_arg_force_ref_001, 0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 static
-     ZEND_BEGIN_ARG_INFO(fifth_arg_force_ref_00011, 0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(0)
-             ZEND_ARG_PASS_INFO(1)
-             ZEND_ARG_PASS_INFO(1)
-     ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO(fifth_arg_force_ref_00011, 0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(0)
+ZEND_ARG_PASS_INFO(1)
+ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
 #else //if PHP_MAJOR_VERSION == 4
 static unsigned char one_arg_force_ref_1[]  = { 1, BYREF_FORCE };
 static unsigned char two_arg_force_ref_01[] = { 2, BYREF_NONE, BYREF_FORCE };
@@ -169,19 +169,19 @@ static void setstrlen(pval * arg)
  */
 
 static int phpbbs_zap_buf[MAXBOARD];
-static int ext_init = 0; /* Don't access this variable directly, 
-						  use the following helper routines */
+static int ext_init = 0; /* Don't access this variable directly,
+        use the following helper routines */
 
 static int get_initialized()
 {
-	return ext_init;
+    return ext_init;
 }
 
 static int initialize_ext()
 {
     char old_cwd[256];
     getcwd(old_cwd, sizeof(old_cwd));
-	
+
     chdir(BBSHOME);
     get_publicshm();
     resolve_ucache();
@@ -191,8 +191,8 @@ static int initialize_ext()
     www_data_init();
     ext_init = 1;
 
-	chdir(old_cwd);
-	return ext_init;
+    chdir(old_cwd);
+    return ext_init;
 }
 
 /**
@@ -238,7 +238,7 @@ PHP_FUNCTION(bbs_get_webdomain)
 {
     const char *c;
     c=sysconf_str("BBS_WEBDOMAIN");
-    if(c==NULL){
+    if (c==NULL) {
         c=sysconf_str("BBSDOMAIN");
         if (c==NULL) c = ""; //ft, should I say TODO here?
     }
@@ -260,7 +260,7 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     MY_REGISTER_STRING_CONSTANT("BBS_XPERMSTR", XPERMSTR, CONST_CS | CONST_PERSISTENT);
 
     REGISTER_LONG_CONSTANT("BBS_IDLEN", 12, CONST_CS | CONST_PERSISTENT);
-    
+
 #ifdef BUILD_PHP_EXTENSION
     REGISTER_LONG_CONSTANT("BUILD_PHP_EXTENSION", 1, CONST_CS | CONST_PERSISTENT);
 #else
@@ -317,7 +317,7 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     REGISTER_LONG_CONSTANT("BBS_MAXATTACHMENTSIZE", MAXATTACHMENTSIZE, CONST_CS | CONST_PERSISTENT);
 
     REGISTER_LONG_CONSTANT("BBS_SECNUM", SECNUM, CONST_CS | CONST_PERSISTENT);
-    for(i=0;i<SECNUM;i++) {
+    for (i=0;i<SECNUM;i++) {
         sprintf(buf, "BBS_SECCODE%d", i);
         MY_REGISTER_STRING_CONSTANT(buf, seccode[i], CONST_CS | CONST_PERSISTENT);
         sprintf(buf, "BBS_GROUP%d", i);
@@ -329,7 +329,7 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     }
 
     REGISTER_LONG_CONSTANT("BBS_NUMPERMS", NUMPERMS, CONST_CS | CONST_PERSISTENT);
-    for(i=0; i<NUMPERMS; i++) {
+    for (i=0; i<NUMPERMS; i++) {
         sprintf(buf, "BBS_PERMSTRING%d", i);
         MY_REGISTER_STRING_CONSTANT(buf, permstrings[i], CONST_CS | CONST_PERSISTENT);
     }
@@ -371,14 +371,13 @@ PHP_MINIT_FUNCTION(kbs_bbs)
 
 PHP_MSHUTDOWN_FUNCTION(kbs_bbs)
 {
-	if (get_initialized())
-	{
-		www_data_detach();
-		detach_utmp();
-		detach_boards();
-		detach_ucache();
-		detach_publicshm();
-	}
+    if (get_initialized()) {
+        www_data_detach();
+        detach_utmp();
+        detach_boards();
+        detach_ucache();
+        detach_publicshm();
+    }
 
 #ifdef DEBUG
     zend_error(E_WARNING, "module shutdown");
@@ -396,7 +395,7 @@ PHP_RINIT_FUNCTION(kbs_bbs)
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getSession()->currentuinfo);
 #endif
-	getSession()->zapbuf = phpbbs_zap_buf;
+    getSession()->zapbuf = phpbbs_zap_buf;
     getSession()->fromhost[0] = '\0';
 
 
@@ -406,10 +405,10 @@ PHP_RINIT_FUNCTION(kbs_bbs)
 #endif
 
 
-	reset_output_buffer();
+    reset_output_buffer();
 #ifdef SMS_SUPPORT
-	getSession()->smsbuf=NULL;
-	getSession()->smsresult=0;
+    getSession()->smsbuf=NULL;
+    getSession()->smsresult=0;
 #endif
     return SUCCESS;
 }
@@ -422,8 +421,8 @@ PHP_RSHUTDOWN_FUNCTION(kbs_bbs)
     chdir(old_pwd);
 
 #ifdef HAVE_BRC_CONTROL
-    if (getCurrentUser() && getCurrentUser()->userid && (getCurrentUser()->userid[0]) ) {
-        free_brc_cache( getCurrentUser()->userid, getSession() );
+    if (getCurrentUser() && getCurrentUser()->userid && (getCurrentUser()->userid[0])) {
+        free_brc_cache(getCurrentUser()->userid, getSession());
     }
 #endif
 
@@ -452,18 +451,18 @@ PHP_MINFO_FUNCTION(kbs_bbs)
 #if HAVE_MYSQL_SMTH == 1
 PHP_FUNCTION(bbs_csv_to_al)
 {
-	int ac = ZEND_NUM_ARGS();
-	char *dest;
-	int dest_len;
-	int ret;
+    int ac = ZEND_NUM_ARGS();
+    char *dest;
+    int dest_len;
+    int ret;
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
+        WRONG_PARAM_COUNT;
+    }
 
-	ret = conv_csv_to_al( dest, getSession() );
+    ret = conv_csv_to_al(dest, getSession());
 
-	RETURN_LONG(ret);
+    RETURN_LONG(ret);
 }
 #endif
 

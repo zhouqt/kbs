@@ -45,6 +45,6 @@ PHP_FUNCTION(bbs_user_level_char);
     PHP_FE(bbs_getuserlevel, NULL) \
     PHP_FE(bbs_compute_user_value, NULL) \
     PHP_FE(bbs_user_level_char, NULL) \
-
+     
 
 #endif //PHP_BBS_USER_H

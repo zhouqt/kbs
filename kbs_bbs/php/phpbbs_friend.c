@@ -1,4 +1,4 @@
-#include "php_kbs_bbs.h"  
+#include "php_kbs_bbs.h"
 
 /*
  * stiger: getfriends
@@ -7,12 +7,12 @@ PHP_FUNCTION(bbs_getfriends)
 {
     char *userid;
     int userid_len;
-	struct friends fr;
+    struct friends fr;
     int ac = ZEND_NUM_ARGS();
-	long start;
-	int fd;
-	int i=0;
-	char fpath[STRLEN];
+    long start;
+    int fd;
+    int i=0;
+    char fpath[STRLEN];
     zval *element;
 
     if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sl", &userid, &userid_len, &start) == FAILURE) {
@@ -25,25 +25,25 @@ PHP_FUNCTION(bbs_getfriends)
         RETURN_FALSE;
     }
 
-	i=0;
-	sethomefile(fpath, userid, "friends");
+    i=0;
+    sethomefile(fpath, userid, "friends");
 
-	if( (fd=open(fpath, O_RDONLY)) < 0 )
+    if ((fd=open(fpath, O_RDONLY)) < 0)
         RETURN_FALSE;
-	lseek(fd, sizeof(struct friends)*start, SEEK_CUR);
+    lseek(fd, sizeof(struct friends)*start, SEEK_CUR);
     while (read(fd, &fr, sizeof(fr)) > 0) {
 
         MAKE_STD_ZVAL(element);
         array_init(element);
 
-    	add_assoc_string(element, "ID", fr.id, 1);
-    	add_assoc_string(element, "EXP", fr.exp, 1);
+        add_assoc_string(element, "ID", fr.id, 1);
+        add_assoc_string(element, "EXP", fr.exp, 1);
 
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 
-		i++;
-		if( i>=20)
-			break;
+        i++;
+        if (i>=20)
+            break;
     }
     close(fd);
 }
@@ -51,7 +51,7 @@ PHP_FUNCTION(bbs_getfriends)
 
 
 
- 
+
 /*
  * stiger: countfriends
  */
@@ -60,8 +60,8 @@ PHP_FUNCTION(bbs_countfriends)
     char *userid;
     int userid_len;
     int ac = ZEND_NUM_ARGS();
-	char fpath[STRLEN];
-	struct stat st;
+    char fpath[STRLEN];
+    struct stat st;
 
     if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s", &userid, &userid_len) == FAILURE) {
         WRONG_PARAM_COUNT;
@@ -69,12 +69,12 @@ PHP_FUNCTION(bbs_countfriends)
     if (userid_len > IDLEN)
         WRONG_PARAM_COUNT;
 
-	sethomefile(fpath, userid, "friends");
+    sethomefile(fpath, userid, "friends");
 
     if (stat(fpath, &st) < 0)
         RETURN_FALSE;
 
-	RETURN_LONG(st.st_size / sizeof(struct friends));
+    RETURN_LONG(st.st_size / sizeof(struct friends));
 }
 
 static int cmpfnames2(char *userid, struct friends *uv)
@@ -89,26 +89,26 @@ PHP_FUNCTION(bbs_delete_friend)
     int ac = ZEND_NUM_ARGS();
     char buf[STRLEN];
     struct friends fh;
-	int deleted;
+    int deleted;
 
     if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s", &userid, &userid_len) == FAILURE) {
         WRONG_PARAM_COUNT;
-	}
+    }
 
     sethomefile(buf, getCurrentUser()->userid, "friends");
 
     deleted = search_record(buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames2, userid);
 
     if (deleted > 0) {
-        if (delete_record(buf, sizeof(fh), deleted, NULL, NULL) != -1){
-			getfriendstr(getCurrentUser(),getSession()->currentuinfo,getSession());
-			RETURN_LONG(0);
-		} else {
-			RETURN_LONG(3);
+        if (delete_record(buf, sizeof(fh), deleted, NULL, NULL) != -1) {
+            getfriendstr(getCurrentUser(),getSession()->currentuinfo,getSession());
+            RETURN_LONG(0);
+        } else {
+            RETURN_LONG(3);
         }
-    } else{
-		RETURN_LONG(2);
-	}
+    } else {
+        RETURN_LONG(2);
+    }
 }
 
 
@@ -117,17 +117,17 @@ PHP_FUNCTION(bbs_add_friend)
 {
     char *userid;
     int userid_len;
-	char *exp;
-	int exp_len;
+    char *exp;
+    int exp_len;
     int ac = ZEND_NUM_ARGS();
     char buf[STRLEN];
     struct friends fh;
-	struct userec *lookupuser;
-	int n;
+    struct userec *lookupuser;
+    int n;
 
     if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ss", &userid, &userid_len, &exp, &exp_len) == FAILURE) {
         WRONG_PARAM_COUNT;
-	}
+    }
 
     if (userid_len == 0) RETURN_LONG(-4);
 
@@ -135,16 +135,16 @@ PHP_FUNCTION(bbs_add_friend)
     sethomefile(buf, getCurrentUser()->userid, "friends");
 
     if ((!HAS_PERM(getCurrentUser(), PERM_SYSOP))
-        && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
-		RETURN_LONG(-1);
+            && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
+        RETURN_LONG(-1);
     }
 
-	if(! getuser(userid,&lookupuser))
-		RETURN_LONG(-4);
+    if (! getuser(userid,&lookupuser))
+        RETURN_LONG(-4);
 
     n = search_record(buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames2, lookupuser->userid);
     if (n > 0)
-		RETURN_LONG(-2);
+        RETURN_LONG(-2);
 
     strcpy(fh.id, lookupuser->userid);
     strncpy(fh.exp, exp, sizeof(fh.exp)-1);
@@ -153,9 +153,9 @@ PHP_FUNCTION(bbs_add_friend)
     n = append_record(buf, &fh, sizeof(friends_t));
     getfriendstr(getCurrentUser(),getSession()->currentuinfo,getSession());
     if (n != -1)
-		RETURN_LONG(0);
+        RETURN_LONG(0);
 
-	RETURN_LONG(-3);
+    RETURN_LONG(-3);
 }
 
 
@@ -168,13 +168,13 @@ static int cmpuser(const void *a1, const void *b1)
     uinfo_t *a, *b;
     a = (uinfo_t *)a1;
     b = (uinfo_t *)b1;
-    
+
     sprintf(id1, "%d%s", !isfriend(a->userid), a->userid);
     sprintf(id2, "%d%s", !isfriend(b->userid), b->userid);
     return strcasecmp(id1, id2);
 }
 
-typedef struct _frienduserlistarg{
+typedef struct _frienduserlistarg {
     int count;
     uinfo_t** user_record;
 } frienduserlistarg;
@@ -218,7 +218,7 @@ static int fill_friendlist(int* range, uinfo_t** user_record)
  *  Function: 返回当前在线好友名单
  *   user_info bbs_getonlinefriends();
  *
- *  Return: user_info 结构数组 
+ *  Return: user_info 结构数组
  *  by binxun
  */
 PHP_FUNCTION(bbs_getonlinefriends)
@@ -238,38 +238,38 @@ PHP_FUNCTION(bbs_getonlinefriends)
     }
 
     fill_friendlist(&range, usr);
-    
+
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
     }
     //if(!usr) RETURN_LONG(0);
-    
+
     for (i = 0; i < range; i++) {
         x = usr[i];
         if (x == NULL)continue;
         if (x->active == 0) continue;
         if (x->invisible && !HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) continue;
-	
+
         memcpy(&user[total], x , sizeof(uinfo_t));
-    	total++;
-        if(total >= MAXFRIENDS) break;
+        total++;
+        if (total >= MAXFRIENDS) break;
     }
-    if(total == 0) RETURN_LONG(0);
-    
-    qsort(user, total, sizeof(uinfo_t), cmpuser);	
-	
+    if (total == 0) RETURN_LONG(0);
+
+    qsort(user, total, sizeof(uinfo_t), cmpuser);
+
     for (i = 0; i < total; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-        add_assoc_bool ( element, "invisible", user[i].invisible );
-        add_assoc_long ( element, "pid", user[i].pid );
-        add_assoc_bool ( element, "isfriend", isfriend(user[i].userid) );
-        add_assoc_long ( element, "idle", (long)(time(0) - user[i].freshtime)/60 );
-        add_assoc_string ( element, "userid", user[i].userid, 1 );       
-        add_assoc_string ( element, "username", user[i].username, 1 );   
-        if( getuser(user[i].userid, &lookupuser) == 0 ) lookupuser=NULL;
-        add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)?user[i].from:SHOW_USERIP(lookupuser, user[i].from), 1 );
-        add_assoc_string ( element, "mode", ModeType(user[i].mode), 1 );
+        add_assoc_bool(element, "invisible", user[i].invisible);
+        add_assoc_long(element, "pid", user[i].pid);
+        add_assoc_bool(element, "isfriend", isfriend(user[i].userid));
+        add_assoc_long(element, "idle", (long)(time(0) - user[i].freshtime)/60);
+        add_assoc_string(element, "userid", user[i].userid, 1);
+        add_assoc_string(element, "username", user[i].username, 1);
+        if (getuser(user[i].userid, &lookupuser) == 0) lookupuser=NULL;
+        add_assoc_string(element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)?user[i].from:SHOW_USERIP(lookupuser, user[i].from), 1);
+        add_assoc_string(element, "mode", ModeType(user[i].mode), 1);
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
-	}
+    }
 }

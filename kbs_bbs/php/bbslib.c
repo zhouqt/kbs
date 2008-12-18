@@ -117,9 +117,9 @@ static struct user_info www_guest_uinfo;
 
 static int www_guest_calc_hashkey(struct in_addr *fromhostn)
 {
-	unsigned int i=ntohl(fromhostn->s_addr);
-	unsigned int j;
-			        
+    unsigned int i=ntohl(fromhostn->s_addr);
+    unsigned int j;
+
     j =  i & 0x0000FFFF;
     j |= (((i&0xFF000000)>>8) + (i&0x00FF0000)) & 0x000F0000;
 
@@ -128,16 +128,16 @@ static int www_guest_calc_hashkey(struct in_addr *fromhostn)
 
 static int www_guest_start_map(int key)
 {
-	return ( key % MAX_WWW_MAP_ITEM + 1 );
+    return (key % MAX_WWW_MAP_ITEM + 1);
 }
 
 #define WWW_GUEST_HASHTAB(key) wwwguest_shm->hashtab[key>>16][(key&0x0000FF00)>>8][key&0x000000FF]
 
 /*   stiger:  1 guest entry per IP
 return:
-	<0: error
-	0: 正常登录,idx
-	1: 有重复,使用idx的entry
+ <0: error
+ 0: 正常登录,idx
+ 1: 有重复,使用idx的entry
 **************/
 static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
 {
@@ -145,8 +145,8 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
     int oldidx, num, fd, i, j = 0;
     time_t now;
     struct userec *user;
-	int hashkey;
-	int startkey;
+    int hashkey;
+    int startkey;
 
     fd = www_guest_lock();
     if (fd == -1)
@@ -154,133 +154,132 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
     setpublicshmreadonly(0);
     pub = get_publicshm();
     if (pub->www_guest_count >= MAX_WWW_GUEST) {
-    	www_guest_unlock(fd);
+        www_guest_unlock(fd);
         setpublicshmreadonly(1);
         return -1;
     }
     user = getCurrentUser();
     getuser("guest", &getCurrentUser());
 
-    if (getCurrentUser() == NULL){
-    	www_guest_unlock(fd);
-    	setpublicshmreadonly(1);
+    if (getCurrentUser() == NULL) {
+        www_guest_unlock(fd);
+        setpublicshmreadonly(1);
         return -1;
-	}
+    }
     now = time(NULL);
     if ((now > wwwguest_shm->uptime + 240) || (now < wwwguest_shm->uptime - 240)) {
         newbbslog(BBSLOG_USIES, "WWW guest:Clean guest table:%d", wwwguest_shm->uptime);
         wwwguest_shm->uptime = now;
         for (i = 0; i < MAX_WWW_GUEST; i++) {
-	    struct user_info guestinfo;
+            struct user_info guestinfo;
             if (!(wwwguest_shm->use_map[i / 32] & (1 << (i % 32))) || (now - wwwguest_shm->guest_entry[i].freshtime < MAX_WWW_GUEST_IDLE_TIME))
                 continue;
             newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", now - wwwguest_shm->guest_entry[i].freshtime, wwwguest_shm->guest_entry[i].key);
             /*
-             * 清除use_map 
+             * 清除use_map
              */
-	    guestinfo.currentboard=wwwguest_shm->guest_entry[i].currentboard;
-	    do_after_logout(getCurrentUser(), &guestinfo, i, 1,false);
-	    do_after_logout(getCurrentUser(), &guestinfo, i, 1,true);
+            guestinfo.currentboard=wwwguest_shm->guest_entry[i].currentboard;
+            do_after_logout(getCurrentUser(), &guestinfo, i, 1,false);
+            do_after_logout(getCurrentUser(), &guestinfo, i, 1,true);
 
             wwwguest_shm->use_map[i / 32] &= ~(1 << (i % 32));
-			/* 清除hashtab */
-			WWW_GUEST_HASHTAB(www_guest_calc_hashkey(& wwwguest_shm->guest_entry[i].fromip)) = 0;
+            /* 清除hashtab */
+            WWW_GUEST_HASHTAB(www_guest_calc_hashkey(& wwwguest_shm->guest_entry[i].fromip)) = 0;
             if (pub->www_guest_count > 0) {
                 pub->www_guest_count--;
-	        	pub->wwwguestlogoutcount++;
-	       		pub->wwwgueststaytime += now - wwwguest_shm->guest_entry[i].logintime;
+                pub->wwwguestlogoutcount++;
+                pub->wwwgueststaytime += now - wwwguest_shm->guest_entry[i].logintime;
                 /*
-                 * 清除数据 
+                 * 清除数据
                  */
                 bzero(&wwwguest_shm->guest_entry[i], sizeof(struct WWW_GUEST_S));
             }
         } //for
     }//if need kick www guest
 
-	hashkey = www_guest_calc_hashkey(fromhostn);
-	oldidx = WWW_GUEST_HASHTAB(hashkey);
+    hashkey = www_guest_calc_hashkey(fromhostn);
+    oldidx = WWW_GUEST_HASHTAB(hashkey);
 
-	num=0;
+    num=0;
     pub->wwwguestlogincount++;
 
-/* 如果已经有相同的登录 */
-if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip.s_addr ){
+    /* 如果已经有相同的登录 */
+    if (oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip.s_addr) {
 
-	*idx = oldidx;
-	num=-1;
-}else{
+        *idx = oldidx;
+        num=-1;
+    } else {
 
-	startkey = www_guest_start_map(hashkey);
+        startkey = www_guest_start_map(hashkey);
 
-/* 如果hashtab有值但是IP不同，遍历 */
-	if( oldidx != 0 ){
-		for ( num = 0, i = startkey; num < MAX_WWW_MAP_ITEM; num++, i++){
-			if( i>= MAX_WWW_MAP_ITEM)
-				i=1;
-        	if (wwwguest_shm->use_map[i] != 0) {
-            	int map = wwwguest_shm->use_map[i];
-            	for (j = 0; j < 32; j++){
-                	if ((map & 1) != 0) {
-						/* 找到相同的IP了 */
-						if( wwwguest_shm->guest_entry[i*32+j].fromip.s_addr == fromhostn->s_addr ){
-							num = -1;
-							*idx = i*32+j;
-							break;
-						}
-					}
-					map = map >> 1;
-				}
-        	}
-			if( num == -1 )
-				break;
-		}
-	}
+        /* 如果hashtab有值但是IP不同，遍历 */
+        if (oldidx != 0) {
+            for (num = 0, i = startkey; num < MAX_WWW_MAP_ITEM; num++, i++) {
+                if (i>= MAX_WWW_MAP_ITEM)
+                    i=1;
+                if (wwwguest_shm->use_map[i] != 0) {
+                    int map = wwwguest_shm->use_map[i];
+                    for (j = 0; j < 32; j++) {
+                        if ((map & 1) != 0) {
+                            /* 找到相同的IP了 */
+                            if (wwwguest_shm->guest_entry[i*32+j].fromip.s_addr == fromhostn->s_addr) {
+                                num = -1;
+                                *idx = i*32+j;
+                                break;
+                            }
+                        }
+                        map = map >> 1;
+                    }
+                }
+                if (num == -1)
+                    break;
+            }
+        }
 
-/* 如果遍历发现没有相同IP的 */
-	if( num != -1 ){
-		/* 找一个新的空位 */
-	    for (num=0, i = startkey; num < MAX_WWW_MAP_ITEM; num++, i++){
-			if( i>= MAX_WWW_MAP_ITEM)
-				i=1;
-        	if (wwwguest_shm->use_map[i] != 0xFFFFFFFF) {
-            	int map = wwwguest_shm->use_map[i];
+        /* 如果遍历发现没有相同IP的 */
+        if (num != -1) {
+            /* 找一个新的空位 */
+            for (num=0, i = startkey; num < MAX_WWW_MAP_ITEM; num++, i++) {
+                if (i>= MAX_WWW_MAP_ITEM)
+                    i=1;
+                if (wwwguest_shm->use_map[i] != 0xFFFFFFFF) {
+                    int map = wwwguest_shm->use_map[i];
 
-            	for (j = 0; j < 32; j++)
-                	if ((map & 1) == 0) {
-                    	wwwguest_shm->use_map[i] |= 1 << j;
-                    	wwwguest_shm->guest_entry[i * 32 + j].freshtime = time(0);
-						/* 设置hashtab */
-						WWW_GUEST_HASHTAB(hashkey) = i*32+j;
-                    	/*
-                     	* 避免被kick下去 
-                     	*/
-                    	break;
-                	} else
-                    	map = map >> 1;
-            	break;
-        	}
-		}
-    	if (num != MAX_WWW_MAP_ITEM) {
-        	pub->www_guest_count++;
-        	if (get_utmp_number() + getwwwguestcount() > get_publicshm()->max_user) {
-            	save_maxuser();
-        	}
-    	}
-		*idx = i*32+j;
-	}
-}
+                    for (j = 0; j < 32; j++)
+                        if ((map & 1) == 0) {
+                            wwwguest_shm->use_map[i] |= 1 << j;
+                            wwwguest_shm->guest_entry[i * 32 + j].freshtime = time(0);
+                            /* 设置hashtab */
+                            WWW_GUEST_HASHTAB(hashkey) = i*32+j;
+                            /*
+                             * 避免被kick下去
+                             */
+                            break;
+                        } else
+                            map = map >> 1;
+                    break;
+                }
+            }
+            if (num != MAX_WWW_MAP_ITEM) {
+                pub->www_guest_count++;
+                if (get_utmp_number() + getwwwguestcount() > get_publicshm()->max_user) {
+                    save_maxuser();
+                }
+            }
+            *idx = i*32+j;
+        }
+    }
     setCurrentUser(user);
     setpublicshmreadonly(1);
     www_guest_unlock(fd);
     if (num == MAX_WWW_MAP_ITEM)
         return -1;
-	if (num == -1)
-		return 1;
+    if (num == -1)
+        return 1;
     return 0;
 }
 
-struct WWW_GUEST_S* www_get_guest_entry(int idx)
-{
+struct WWW_GUEST_S* www_get_guest_entry(int idx) {
     return  &wwwguest_shm->guest_entry[idx];
 }
 
@@ -299,15 +298,15 @@ static int www_free_guest_entry(int idx)
     pub = get_publicshm();
     fd = www_guest_lock();
     if (wwwguest_shm->use_map[idx / 32] & (1 << (idx % 32))) {
-		time_t staytime = time(NULL)-wwwguest_shm->guest_entry[idx].logintime;
+        time_t staytime = time(NULL)-wwwguest_shm->guest_entry[idx].logintime;
         wwwguest_shm->use_map[idx / 32] &= ~(1 << (idx % 32));
-		WWW_GUEST_HASHTAB(www_guest_calc_hashkey(&wwwguest_shm->guest_entry[idx].fromip))=0;
-    	bzero(&wwwguest_shm->guest_entry[idx], sizeof(struct WWW_GUEST_S));
-        if (pub->www_guest_count > 0){
-	       	pub->wwwguestlogoutcount++;
-	       	pub->wwwgueststaytime += staytime;
+        WWW_GUEST_HASHTAB(www_guest_calc_hashkey(&wwwguest_shm->guest_entry[idx].fromip))=0;
+        bzero(&wwwguest_shm->guest_entry[idx], sizeof(struct WWW_GUEST_S));
+        if (pub->www_guest_count > 0) {
+            pub->wwwguestlogoutcount++;
+            pub->wwwgueststaytime += staytime;
             pub->www_guest_count--;
-		}
+        }
     }
     www_guest_unlock(fd);
     setpublicshmreadonly(1);
@@ -349,7 +348,7 @@ int www_data_init()
     www_guest_uinfo.utmpkey = 0;
 
     /*
-     * destuid 将被用来存放www guest表的入口 
+     * destuid 将被用来存放www guest表的入口
      */
     www_guest_uinfo.destuid = 0;
 
@@ -378,25 +377,25 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
      * printf("utmpuserid = %s\n", id);
      */
     /*
-     * printf("utmpnum = %s\n", num); 
+     * printf("utmpnum = %s\n", num);
      */
     if (userid&&!strcasecmp(userid, "new"))
         return -1;
 
     if ((userid==NULL)||strcasecmp(userid, "guest")) {
         /*
-         * 非guest在线用户处理 
+         * 非guest在线用户处理
          */
         if (useridx < 1 || useridx >= MAXACTIVE) {
             return -1;
         }
         (*y) = get_utmpent(useridx);
         if (                    /*(strncmp((*y)->from, getSession()->fromhost, IPLEN))|| */
-               ((*y)->utmpkey != key))
+            ((*y)->utmpkey != key))
             return -2;
 
         if ((((*y)->active == 0)) || ((*y)->userid[0] == 0)
-            || ((compat_telnet==0)&&((*y)->pid != 1)))
+                || ((compat_telnet==0)&&((*y)->pid != 1)))
             return -3;
 
         if (userid&&strcmp((*y)->userid, userid))
@@ -409,11 +408,11 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
         strncpy(getSession()->fromhost, (*y)->from, IPLEN);
         getSession()->fromhost[IPLEN] = '\0';
 #ifdef SECONDSITE
-        getSession()->anonyindex = ((*y)->utmpkey + (*y)->logintime ) % 65536;
+        getSession()->anonyindex = ((*y)->utmpkey + (*y)->logintime) % 65536;
 #endif
     } else {
         /*
-         * guest用户处理 
+         * guest用户处理
          */
         struct WWW_GUEST_S *guest_info;
 
@@ -452,7 +451,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         int utmpent;
         time_t t;
         int multi_ret = 1;
- 
+
         while (multi_ret != 0) {
             int num;
             struct user_info uin;
@@ -478,10 +477,10 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         strncpy(user->lasthost, fromhost, IPLEN);
         user->lasthost[IPLEN - 1] = '\0';       /* add by binxun ,fix the bug */
         read_userdata(user->userid, &ud);
-	user->userlevel &= (~PERM_SUICIDE);
+        user->userlevel &= (~PERM_SUICIDE);
         if (!HAS_PERM(user, PERM_LOGINOK) && !HAS_PERM(user, PERM_SYSOP)) {
             if (strchr(ud.realemail, '@')
-                && valid_ident(ud.realemail)) {
+                    && valid_ident(ud.realemail)) {
                 user->userlevel |= PERM_DEFAULT;
                 /*
                  * if (HAS_PERM(user, PERM_DENYPOST)  )
@@ -496,8 +495,8 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
          * Bigman 2000.8.29 智囊团能够隐身
          */
         if ((HAS_PERM(user, PERM_CHATCLOAK)
-             || HAS_PERM(user, PERM_CLOAK))
-            && (user->flags & CLOAK_FLAG))
+                || HAS_PERM(user, PERM_CLOAK))
+                && (user->flags & CLOAK_FLAG))
             ui.invisible = true;
         ui.pager = 0;
         if (DEFINE(user, DEF_FRIENDCALL)) {
@@ -518,11 +517,11 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         strncpy(ui.from, fromhost, IPLEN);
         ui.logintime = time(0); /* for counting user's stay time */
         /*
-         * refer to bbsfoot.c for details 
+         * refer to bbsfoot.c for details
          */
         ui.freshtime = time(0);
         ui.mode = WEBEXPLORE;
-        
+
 #ifdef HAVE_ACTIVATION
         if (!(user->flags & ACTIVATED_FLAG)) {
             struct activation_info ai;
@@ -544,59 +543,59 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 
             u = get_utmpent(utmpent);
             u->pid = 1;
-			/*
-            if (addto_msglist(utmpent, user->userid) < 0) {
-                bbslog("3system", "can't add msg:%d %s!!!\n", utmpent, user->userid);
-                *ppuinfo = u;
-                *putmpent = utmpent;
-                ret = 2;
-            } else {
-			*/
-                *ppuinfo = u;
-                *putmpent = utmpent;
-                ret = 0;
-				/*
-            }
-			*/
-    	    /* Load getCurrentUser()'s mailbox properties, added by atppp */
-    	    u->mailbox_prop = load_mailbox_prop(user->userid);
+            /*
+                     if (addto_msglist(utmpent, user->userid) < 0) {
+                         bbslog("3system", "can't add msg:%d %s!!!\n", utmpent, user->userid);
+                         *ppuinfo = u;
+                         *putmpent = utmpent;
+                         ret = 2;
+                     } else {
+            */
+            *ppuinfo = u;
+            *putmpent = utmpent;
+            ret = 0;
+            /*
+                    }
+            */
+            /* Load getCurrentUser()'s mailbox properties, added by atppp */
+            u->mailbox_prop = load_mailbox_prop(user->userid);
 
             getfriendstr(getCurrentUser(), u, getSession());
             do_after_login(getCurrentUser(),utmpent,0);
         }
     } else {
         /*
-         * TODO:alloc guest table 
+         * TODO:alloc guest table
          */
-		int idx = 0;
-		int exist;
-		struct in_addr fromhostn;
+        int idx = 0;
+        int exist;
+        struct in_addr fromhostn;
 
 #ifdef HAVE_INET_ATON
-    inet_aton(fromhost, &fromhostn);
+        inet_aton(fromhost, &fromhostn);
 #elif defined HAVE_INET_PTON
-	inet_pton(AF_INET, fromhost, &fromhostn);
+        inet_pton(AF_INET, fromhost, &fromhostn);
 #else
-    my_inet_aton(fromhost, &fromhostn);
+        my_inet_aton(fromhost, &fromhostn);
 #endif
 
-		exist = www_new_guest_entry(&fromhostn, &idx);
-		/* exist:
-<0: error
-0: 正常登录,idx
-1: 有重复,使用idx的entry
-		*/
+        exist = www_new_guest_entry(&fromhostn, &idx);
+        /* exist:
+        <0: error
+        0: 正常登录,idx
+        1: 有重复,使用idx的entry
+        */
 
         if (exist < 0)
             ret = 5;
         else {
 
-			if( ! exist ){
-            	int tmp = rand() % 100000000;
-            	wwwguest_shm->guest_entry[idx].key = tmp;
-				wwwguest_shm->guest_entry[idx].fromip.s_addr = fromhostn.s_addr;
-            	wwwguest_shm->guest_entry[idx].logintime = time(0);
-			}
+            if (! exist) {
+                int tmp = rand() % 100000000;
+                wwwguest_shm->guest_entry[idx].key = tmp;
+                wwwguest_shm->guest_entry[idx].fromip.s_addr = fromhostn.s_addr;
+                wwwguest_shm->guest_entry[idx].logintime = time(0);
+            }
 
             wwwguest_shm->guest_entry[idx].freshtime = time(0);
             www_guest_uinfo.freshtime = wwwguest_shm->guest_entry[idx].freshtime;
@@ -607,8 +606,8 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
             *putmpent = idx;
             getuser("guest", &getCurrentUser());
             ret = 0;
-			if( ! exist )
-            	do_after_login(getCurrentUser(),idx,1);
+            if (! exist)
+                do_after_login(getCurrentUser(),idx,1);
         }
     }
 
@@ -636,12 +635,12 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
     if (stay < 0) stay = 0;
 #if 0 // atppp 20060221
     /*
-     * 上站时间超过 2 小时按 2 小时计 
+     * 上站时间超过 2 小时按 2 小时计
      */
     if (stay > 7200)
         stay = 7200;
 #endif
-    if(stay < 300) {
+    if (stay < 300) {
         if (user->numlogins > 5)
             user->numlogins--;
     } else {
@@ -688,7 +687,7 @@ static void print_font_style(unsigned int style, buffered_output_t * output)
     char font_style[STRLEN];
     char font_str[256];
     unsigned int bg;
-	int len;
+    int len;
 
     if (STYLE_ISSET(style, FONT_BG_SET)) {
         bg = 8;
@@ -704,7 +703,7 @@ static void print_font_style(unsigned int style, buffered_output_t * output)
         sprintf(font_str, "<font class=\"%s\" style=\"%s\">", font_class, font_style);
     else
         sprintf(font_str, "<font class=\"%s\">", font_class);
-	len = strlen(font_str);
+    len = strlen(font_str);
     BUFFERED_OUTPUT(output, font_str, len);
 }
 
@@ -712,44 +711,42 @@ static void print_font_style(unsigned int style, buffered_output_t * output)
 static void html_output(char *buf, size_t buflen, buffered_output_t * output)
 */
 #define html_output(buf, buflen, output) \
-do { \
-    size_t _ho_i; \
-	const char *_ho_ptr = buf; \
-\
-    for (_ho_i = 0; _ho_i < buflen; _ho_i++) { \
-        switch (_ho_ptr[_ho_i]) { \
-        case '&': \
-            BUFFERED_OUTPUT(output, "&amp;", 5); \
-            break; \
-        case '<': \
-            BUFFERED_OUTPUT(output, "&lt;", 4); \
-            break; \
-        case '>': \
-            BUFFERED_OUTPUT(output, "&gt;", 4); \
-            break; \
-        case ' ': \
-            BUFFERED_OUTPUT(output, "&nbsp;", 6); \
-            break; \
-        default: \
-            BUFFERED_OUTPUT(output, &(_ho_ptr[_ho_i]), 1); \
+    do { \
+        size_t _ho_i; \
+        const char *_ho_ptr = buf; \
+        \
+        for (_ho_i = 0; _ho_i < buflen; _ho_i++) { \
+            switch (_ho_ptr[_ho_i]) { \
+                case '&': \
+                    BUFFERED_OUTPUT(output, "&amp;", 5); \
+                    break; \
+                case '<': \
+                    BUFFERED_OUTPUT(output, "&lt;", 4); \
+                    break; \
+                case '>': \
+                    BUFFERED_OUTPUT(output, "&gt;", 4); \
+                    break; \
+                case ' ': \
+                    BUFFERED_OUTPUT(output, "&nbsp;", 6); \
+                    break; \
+                default: \
+                    BUFFERED_OUTPUT(output, &(_ho_ptr[_ho_i]), 1); \
+            } \
         } \
-    } \
-} while(0)
+    } while(0)
 
 static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
 {
     size_t i;
 
     for (i = 0; i < buflen; i++) {
-        if (buf[i] == 0x1b)
-		{
+        if (buf[i] == 0x1b) {
             html_output("*", 1, output);
-		}
-        else if (buf[i]=='\n') {
-			BUFFERED_OUTPUT(output, " <br /> ", 8);
+        } else if (buf[i]=='\n') {
+            BUFFERED_OUTPUT(output, " <br /> ", 8);
         } else {
             html_output(&buf[i], 1, output);
-		}
+        }
     }
 }
 
@@ -772,10 +769,10 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val, siz
             STYLE_SET_FG(*style, color);
         } else if (ansi_val[i] >= 40 && ansi_val[i] <= 47) {
             /*
-             * user explicitly specify background color 
+             * user explicitly specify background color
              */
             /*
-             * STYLE_SET(*style, FONT_BG_SET); 
+             * STYLE_SET(*style, FONT_BG_SET);
              */
             color = ansi_val[i] - 40;
             STYLE_SET_BG(*style, color);
@@ -787,41 +784,41 @@ static void generate_font_style(unsigned int *style, unsigned int *ansi_val, siz
 static void js_output(char *buf, size_t buflen, buffered_output_t * output)
 */
 #define js_output(buf, buflen, output) \
-do { \
-    size_t _js_i; \
-	const char *_js_ptr = buf; \
-\
-    for (_js_i = 0; _js_i < buflen; _js_i++) { \
-        switch (_js_ptr[_js_i]) { \
-        case '&': \
-            BUFFERED_OUTPUT(output, "&amp;", 5); \
-            break; \
-        case '<': \
-            BUFFERED_OUTPUT(output, "&lt;", 4); \
-            break; \
-        case '>': \
-            BUFFERED_OUTPUT(output, "&gt;", 4); \
-            break; \
-        case ' ': \
-            BUFFERED_OUTPUT(output, "&nbsp;", 6); \
-            break; \
-        case '\'': \
-            BUFFERED_OUTPUT(output, "\\\'", 2); \
-            break; \
-        case '\\': \
-            BUFFERED_OUTPUT(output, "\\\\", 2); \
-            break; \
-		case '\r': \
-            BUFFERED_OUTPUT(output, "\\r", 2); \
-			break; \
-        default: \
-            BUFFERED_OUTPUT(output, &(_js_ptr[_js_i]), 1); \
+    do { \
+        size_t _js_i; \
+        const char *_js_ptr = buf; \
+        \
+        for (_js_i = 0; _js_i < buflen; _js_i++) { \
+            switch (_js_ptr[_js_i]) { \
+                case '&': \
+                    BUFFERED_OUTPUT(output, "&amp;", 5); \
+                    break; \
+                case '<': \
+                    BUFFERED_OUTPUT(output, "&lt;", 4); \
+                    break; \
+                case '>': \
+                    BUFFERED_OUTPUT(output, "&gt;", 4); \
+                    break; \
+                case ' ': \
+                    BUFFERED_OUTPUT(output, "&nbsp;", 6); \
+                    break; \
+                case '\'': \
+                    BUFFERED_OUTPUT(output, "\\\'", 2); \
+                    break; \
+                case '\\': \
+                    BUFFERED_OUTPUT(output, "\\\\", 2); \
+                    break; \
+                case '\r': \
+                    BUFFERED_OUTPUT(output, "\\r", 2); \
+                    break; \
+                default: \
+                    BUFFERED_OUTPUT(output, &(_js_ptr[_js_i]), 1); \
+            } \
         } \
-    } \
-} while (0)
+    } while (0)
 
-void output_ansi_text(char *buf, size_t buflen, 
-							buffered_output_t * output, char* attachlink)
+void output_ansi_text(char *buf, size_t buflen,
+                      buffered_output_t * output, char* attachlink)
 {
     unsigned int font_style = 0;
     unsigned int ansi_state;
@@ -831,14 +828,14 @@ void output_ansi_text(char *buf, size_t buflen,
     char *ansi_begin = NULL;
     char *ansi_end;
     int attachmatched;
-	long attachPos[MAXATTACHMENTCOUNT];
-	long attachLen[MAXATTACHMENTCOUNT];
-	char* attachFileName[MAXATTACHMENTCOUNT];
-	enum ATTACHMENTTYPE attachType[MAXATTACHMENTCOUNT];
-	int attachShowed[MAXATTACHMENTCOUNT];
-	char outbuf[512];
-	int outbuf_len;
-	size_t article_len = buflen;
+    long attachPos[MAXATTACHMENTCOUNT];
+    long attachLen[MAXATTACHMENTCOUNT];
+    char* attachFileName[MAXATTACHMENTCOUNT];
+    enum ATTACHMENTTYPE attachType[MAXATTACHMENTCOUNT];
+    int attachShowed[MAXATTACHMENTCOUNT];
+    char outbuf[512];
+    int outbuf_len;
+    size_t article_len = buflen;
 
     if (buf == NULL)
         return;
@@ -847,37 +844,33 @@ void output_ansi_text(char *buf, size_t buflen,
     bzero(ansi_val, sizeof(ansi_val));
     bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-	if (attachlink != NULL)
-	{
-		long attach_len;
-		char *attachptr, *attachfilename;
-		for (i = 0; i < buflen ; i++ )
-		{
-			if (attachmatched >= MAXATTACHMENTCOUNT)
-				break;
+    if (attachlink != NULL) {
+        long attach_len;
+        char *attachptr, *attachfilename;
+        for (i = 0; i < buflen ; i++) {
+            if (attachmatched >= MAXATTACHMENTCOUNT)
+                break;
 
-			if (((attachfilename = checkattach(buf + i, buflen - i, 
-									&attach_len, &attachptr)) != NULL))
-			{
-				i += (attachptr-buf-i) + attach_len - 1;
-				if (i > buflen)
-					continue;
-				attachPos[attachmatched] = attachfilename - buf;
-				attachLen[attachmatched] = attach_len;
-				attachFileName[attachmatched] = (char*)malloc(256);
-				strncpy(attachFileName[attachmatched], attachfilename, 255);
-				attachFileName[attachmatched][255] = '\0';
-				attachType[attachmatched] = get_attachment_type(attachfilename);
-				attachmatched++;
-			}
-		}
-	}
+            if (((attachfilename = checkattach(buf + i, buflen - i,
+                                               &attach_len, &attachptr)) != NULL)) {
+                i += (attachptr-buf-i) + attach_len - 1;
+                if (i > buflen)
+                    continue;
+                attachPos[attachmatched] = attachfilename - buf;
+                attachLen[attachmatched] = attach_len;
+                attachFileName[attachmatched] = (char*)malloc(256);
+                strncpy(attachFileName[attachmatched], attachfilename, 255);
+                attachFileName[attachmatched][255] = '\0';
+                attachType[attachmatched] = get_attachment_type(attachfilename);
+                attachmatched++;
+            }
+        }
+    }
 
-	if (attachmatched > 0)
-		article_len = attachPos[0] - ATTACHMENT_SIZE;
+    if (attachmatched > 0)
+        article_len = attachPos[0] - ATTACHMENT_SIZE;
 
-    for (i = 0; i < article_len; i++)
-	{
+    for (i = 0; i < article_len; i++) {
         if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
             STATE_CLR(ansi_state, STATE_NEW_LINE);
             if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
@@ -885,7 +878,7 @@ void output_ansi_text(char *buf, size_t buflen,
                 if (STATE_ISSET(ansi_state, STATE_FONT_SET))
                     BUFFERED_OUTPUT(output, "</font>", 7);
                 /*
-                 * set quoted line styles 
+                 * set quoted line styles
                  */
                 STYLE_SET(font_style, FONT_STYLE_QUOTE);
                 STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
@@ -895,7 +888,7 @@ void output_ansi_text(char *buf, size_t buflen,
                 STATE_SET(ansi_state, STATE_FONT_SET);
                 STATE_CLR(ansi_state, STATE_ESC_SET);
                 /*
-                 * clear ansi_val[] array 
+                 * clear ansi_val[] array
                  */
                 bzero(ansi_val, sizeof(ansi_val));
                 ival = 0;
@@ -905,14 +898,10 @@ void output_ansi_text(char *buf, size_t buflen,
         }
         if (buf[i] == 0x1b) {
             STATE_SET(ansi_state, STATE_ESC_SET);
-        }
-		else if (STATE_ISSET(ansi_state, STATE_ESC_SET))
-		{
+        } else if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
             if (isalpha(buf[i]))
-				STATE_CLR(ansi_state, STATE_ESC_SET);
-        }
-		else if (buf[i] == '\n')
-		{
+                STATE_CLR(ansi_state, STATE_ESC_SET);
+        } else if (buf[i] == '\n') {
             if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 /*
                  *[\n or *[13;24\n */
@@ -925,7 +914,7 @@ void output_ansi_text(char *buf, size_t buflen,
             }
             if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
                 /*
-                 * end of a quoted line 
+                 * end of a quoted line
                  */
                 BUFFERED_OUTPUT(output, "</font>", 7);
                 STYLE_CLR(font_style, FONT_STYLE_QUOTE);
@@ -934,62 +923,61 @@ void output_ansi_text(char *buf, size_t buflen,
             BUFFERED_OUTPUT(output, "<br />\n", 7);
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
-        }
-		else
-			print_raw_ansi(&buf[i], 1, output);
+        } else
+            print_raw_ansi(&buf[i], 1, output);
     }
     if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
         BUFFERED_OUTPUT(output, "</font>", 7);
         STATE_CLR(ansi_state, STATE_FONT_SET);
     }
-	for ( i = 0; i<attachmatched ; i++ ){
-		if (!attachShowed[i]) { 
-			switch(attachType[i]) {
-			case ATTACH_IMG:
-		 		snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
-				break;
-			case ATTACH_FLASH:
-		        snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
-				break;
-			case ATTACH_OTHERS:
-				 snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
-				 break;
-			}	
-			outbuf_len = strlen(outbuf);
-			BUFFERED_OUTPUT(output, outbuf, outbuf_len);
-			attachShowed[i]=1;
-		}
-		free(attachFileName[i]);
-	}
+    for (i = 0; i<attachmatched ; i++) {
+        if (!attachShowed[i]) {
+            switch (attachType[i]) {
+                case ATTACH_IMG:
+                    snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+                    break;
+                case ATTACH_FLASH:
+                    snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
+                    break;
+                case ATTACH_OTHERS:
+                    snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
+                    break;
+            }
+            outbuf_len = strlen(outbuf);
+            BUFFERED_OUTPUT(output, outbuf, outbuf_len);
+            attachShowed[i]=1;
+        }
+        free(attachFileName[i]);
+    }
 
     BUFFERED_FLUSH(output);
 
 }
 
 #define JS_BUFFERED_OUTPUT(buf, buflen, output) \
-do { \
-    size_t _jbo_i; \
-	const char *_jbo_ptr = buf; \
-\
-    for (_jbo_i = 0; _jbo_i < buflen; _jbo_i++) { \
-        switch (_jbo_ptr[_jbo_i]) { \
-        case '\'': \
-            BUFFERED_OUTPUT(output, "\\\'", 2); \
-            break; \
-        case '\\': \
-            BUFFERED_OUTPUT(output, "\\\\", 2); \
-            break; \
-		case '\r': \
-            BUFFERED_OUTPUT(output, "\\r", 2); \
-			break; \
-        default: \
-            BUFFERED_OUTPUT(output, &(_jbo_ptr[_jbo_i]), 1); \
+    do { \
+        size_t _jbo_i; \
+        const char *_jbo_ptr = buf; \
+        \
+        for (_jbo_i = 0; _jbo_i < buflen; _jbo_i++) { \
+            switch (_jbo_ptr[_jbo_i]) { \
+                case '\'': \
+                    BUFFERED_OUTPUT(output, "\\\'", 2); \
+                    break; \
+                case '\\': \
+                    BUFFERED_OUTPUT(output, "\\\\", 2); \
+                    break; \
+                case '\r': \
+                    BUFFERED_OUTPUT(output, "\\r", 2); \
+                    break; \
+                default: \
+                    BUFFERED_OUTPUT(output, &(_jbo_ptr[_jbo_i]), 1); \
+            } \
         } \
-    } \
-} while (0)
+    } while (0)
 
-void output_ansi_javascript(char *buf, size_t buflen, 
-							buffered_output_t * output, char* attachlink)
+void output_ansi_javascript(char *buf, size_t buflen,
+                            buffered_output_t * output, char* attachlink)
 {
     unsigned int font_style = 0;
     unsigned int ansi_state;
@@ -999,14 +987,14 @@ void output_ansi_javascript(char *buf, size_t buflen,
     char *ansi_begin = NULL;
     char *ansi_end;
     int attachmatched;
-	long attachPos[MAXATTACHMENTCOUNT];
-	long attachLen[MAXATTACHMENTCOUNT];
-	char* attachFileName[MAXATTACHMENTCOUNT];
-	enum ATTACHMENTTYPE attachType[MAXATTACHMENTCOUNT];
-	int attachShowed[MAXATTACHMENTCOUNT];
-	char outbuf[512];
-	int outbuf_len;
-	size_t article_len = buflen;
+    long attachPos[MAXATTACHMENTCOUNT];
+    long attachLen[MAXATTACHMENTCOUNT];
+    char* attachFileName[MAXATTACHMENTCOUNT];
+    enum ATTACHMENTTYPE attachType[MAXATTACHMENTCOUNT];
+    int attachShowed[MAXATTACHMENTCOUNT];
+    char outbuf[512];
+    int outbuf_len;
+    size_t article_len = buflen;
 
     if (buf == NULL)
         return;
@@ -1015,47 +1003,43 @@ void output_ansi_javascript(char *buf, size_t buflen,
     bzero(ansi_val, sizeof(ansi_val));
     bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-	if (attachlink != NULL)
-	{
-		long attach_len;
-		char *attachptr, *attachfilename;
-		for (i = 0; i < buflen ; i++ )
-		{
-			if (attachmatched >= MAXATTACHMENTCOUNT)
-				break;
+    if (attachlink != NULL) {
+        long attach_len;
+        char *attachptr, *attachfilename;
+        for (i = 0; i < buflen ; i++) {
+            if (attachmatched >= MAXATTACHMENTCOUNT)
+                break;
 
-			if (((attachfilename = checkattach(buf + i, buflen - i, 
-									&attach_len, &attachptr)) != NULL))
-			{
-				i += (attachptr-buf-i) + attach_len - 1;
-				if (i > buflen)
-					continue;
-				attachPos[attachmatched] = attachfilename - buf;
-				attachLen[attachmatched] = attach_len;
-				attachFileName[attachmatched] = (char*)malloc(256);
-				strncpy(attachFileName[attachmatched], attachfilename, 255);
-				attachFileName[attachmatched][255] = '\0';
+            if (((attachfilename = checkattach(buf + i, buflen - i,
+                                               &attach_len, &attachptr)) != NULL)) {
+                i += (attachptr-buf-i) + attach_len - 1;
+                if (i > buflen)
+                    continue;
+                attachPos[attachmatched] = attachfilename - buf;
+                attachLen[attachmatched] = attach_len;
+                attachFileName[attachmatched] = (char*)malloc(256);
+                strncpy(attachFileName[attachmatched], attachfilename, 255);
+                attachFileName[attachmatched][255] = '\0';
                 attachType[attachmatched] = get_attachment_type(attachfilename);
-				attachmatched++;
-			}
-		}
-	}
+                attachmatched++;
+            }
+        }
+    }
 
-	if (attachmatched > 0)
-		article_len = attachPos[0] - ATTACHMENT_SIZE;
+    if (attachmatched > 0)
+        article_len = attachPos[0] - ATTACHMENT_SIZE;
 
-	BUFFERED_OUTPUT(output, "document.write('", 16);
-    for (i = 0; i < article_len; i++)
-	{
+    BUFFERED_OUTPUT(output, "document.write('", 16);
+    for (i = 0; i < article_len; i++) {
         if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
-			BUFFERED_OUTPUT(output, "document.write('", 16);
+            BUFFERED_OUTPUT(output, "document.write('", 16);
             STATE_CLR(ansi_state, STATE_NEW_LINE);
             if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
                 STATE_SET(ansi_state, STATE_QUOTE_LINE);
                 if (STATE_ISSET(ansi_state, STATE_FONT_SET))
                     BUFFERED_OUTPUT(output, " </font>", 8);
                 /*
-                 * set quoted line styles 
+                 * set quoted line styles
                  */
                 STYLE_SET(font_style, FONT_STYLE_QUOTE);
                 STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
@@ -1065,7 +1049,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
                 STATE_SET(ansi_state, STATE_FONT_SET);
                 STATE_CLR(ansi_state, STATE_ESC_SET);
                 /*
-                 * clear ansi_val[] array 
+                 * clear ansi_val[] array
                  */
                 bzero(ansi_val, sizeof(ansi_val));
                 ival = 0;
@@ -1075,14 +1059,10 @@ void output_ansi_javascript(char *buf, size_t buflen,
         }
         if (buf[i] == 0x1b) {
             STATE_SET(ansi_state, STATE_ESC_SET);
-        }
-		else if (STATE_ISSET(ansi_state, STATE_ESC_SET))
-		{
+        } else if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
             if (isalpha(buf[i]))
-				STATE_CLR(ansi_state, STATE_ESC_SET);
-        }
-		else if (buf[i] == '\n')
-		{
+                STATE_CLR(ansi_state, STATE_ESC_SET);
+        } else if (buf[i] == '\n') {
             if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 /*
                  *[\n or *[13;24\n */
@@ -1095,7 +1075,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
             }
             if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
                 /*
-                 * end of a quoted line 
+                 * end of a quoted line
                  */
                 BUFFERED_OUTPUT(output, " </font>", 8);
                 STYLE_CLR(font_style, FONT_STYLE_QUOTE);
@@ -1104,38 +1084,37 @@ void output_ansi_javascript(char *buf, size_t buflen,
             BUFFERED_OUTPUT(output, " <br/>');\n", 10);
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
-        }
-		else
-			js_output(&buf[i], 1, output);
+        } else
+            js_output(&buf[i], 1, output);
     }
     if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
         BUFFERED_OUTPUT(output, " </font>", 8);
         STATE_CLR(ansi_state, STATE_FONT_SET);
     }
-	if (!STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
-		BUFFERED_OUTPUT(output, " <br/>');\n", 10);
-	}
-	for ( i = 0; i<attachmatched ; i++ ){
-		if (!attachShowed[i]) { 
-			switch(attachType[i]) {
-			case ATTACH_IMG:
-		 		snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
-				break;
-			case ATTACH_FLASH:
-		        snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
-				break;
-			case ATTACH_OTHERS:
-				 snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
-				 break;
-			}	
-			BUFFERED_OUTPUT(output, "document.write('", 16);
-			outbuf_len = strlen(outbuf);
-			JS_BUFFERED_OUTPUT(outbuf, outbuf_len, output);
-			BUFFERED_OUTPUT(output, "');\n", 4);
-			attachShowed[i]=1;
-		}
-		free(attachFileName[i]);
-	}
+    if (!STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
+        BUFFERED_OUTPUT(output, " <br/>');\n", 10);
+    }
+    for (i = 0; i<attachmatched ; i++) {
+        if (!attachShowed[i]) {
+            switch (attachType[i]) {
+                case ATTACH_IMG:
+                    snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+                    break;
+                case ATTACH_FLASH:
+                    snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
+                    break;
+                case ATTACH_OTHERS:
+                    snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
+                    break;
+            }
+            BUFFERED_OUTPUT(output, "document.write('", 16);
+            outbuf_len = strlen(outbuf);
+            JS_BUFFERED_OUTPUT(outbuf, outbuf_len, output);
+            BUFFERED_OUTPUT(output, "');\n", 4);
+            attachShowed[i]=1;
+        }
+        free(attachFileName[i]);
+    }
 
     BUFFERED_FLUSH(output);
 
@@ -1183,8 +1162,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     bzero(ansi_val, sizeof(ansi_val));
     bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-    if (attachlink != NULL)
-    {
+    if (attachlink != NULL) {
         long attach_len;
         char *attachptr, *attachfilename;
         if (preview_attach_dir) {
@@ -1199,7 +1177,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                     struct stat st;
 
                     if (attachmatched >= MAXATTACHMENTCOUNT)
-                        break;                    
+                        break;
 
                     fgets(inputbuf, 256, fp2);
                     name = strchr(inputbuf, ' ');
@@ -1221,17 +1199,15 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 
                     attachmatched++;
                 }
-    			fclose(fp2);
+                fclose(fp2);
             }
         } else {
-            for (i = 0; i < buflen ; i++ )
-            {
+            for (i = 0; i < buflen ; i++) {
                 if (attachmatched >= MAXATTACHMENTCOUNT)
                     break;
 
-                if (((attachfilename = checkattach(buf + i, buflen - i, 
-                                        &attach_len, &attachptr)) != NULL))
-                {
+                if (((attachfilename = checkattach(buf + i, buflen - i,
+                                                   &attach_len, &attachptr)) != NULL)) {
                     i += (attachptr-buf-i) + attach_len - 1;
                     if (i > buflen)
                         continue;
@@ -1258,7 +1234,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 if (STATE_ISSET(ansi_state, STATE_FONT_SET))
                     BUFFERED_OUTPUT(output, "</font>", 7);
                 /*
-                 * set quoted line styles 
+                 * set quoted line styles
                  */
                 STYLE_SET(font_style, FONT_STYLE_QUOTE);
                 STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
@@ -1268,7 +1244,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 STATE_SET(ansi_state, STATE_FONT_SET);
                 STATE_CLR(ansi_state, STATE_ESC_SET);
                 /*
-                 * clear ansi_val[] array 
+                 * clear ansi_val[] array
                  */
                 bzero(ansi_val, sizeof(ansi_val));
                 ival = 0;
@@ -1333,7 +1309,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                         goto atppp_never_use_goto;
                     }
                 }
-                while(buf_p < end_buf_p) {
+                while (buf_p < end_buf_p) {
                     if ((*buf_p >= '0') && (*buf_p <= '9')) {
                         num = num * 10 + (*buf_p - '0');
                     } else {
@@ -1350,17 +1326,17 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                     }
                 }
                 if ((num > 0) && (num <= attachmatched)) {
-                    switch(attachType[num-1]) {
-                    case ATTACH_IMG:
-                        snprintf(outbuf, 511, "<a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[num-1],attachlink, attachPos[num-1]);
-                        break;
-                    case ATTACH_FLASH:
-                        snprintf(outbuf, 511, "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object>", attachlink, attachPos[num-1], attachlink, attachPos[num-1]);
-                        break;
-                    case ATTACH_OTHERS:
-                         snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[num-1], attachFileName[num-1], attachLen[num-1]);
-                         break;
-                    }   
+                    switch (attachType[num-1]) {
+                        case ATTACH_IMG:
+                            snprintf(outbuf, 511, "<a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[num-1],attachlink, attachPos[num-1]);
+                            break;
+                        case ATTACH_FLASH:
+                            snprintf(outbuf, 511, "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object>", attachlink, attachPos[num-1], attachlink, attachPos[num-1]);
+                            break;
+                        case ATTACH_OTHERS:
+                            snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[num-1], attachFileName[num-1], attachLen[num-1]);
+                            break;
+                    }
                     outbuf_len = strlen(outbuf);
                     BUFFERED_OUTPUT(output, outbuf, outbuf_len);
                     attachShowed[num-1]=1;
@@ -1399,7 +1375,7 @@ atppp_never_use_goto:
             }
             if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
                 /*
-                 * end of a quoted line 
+                 * end of a quoted line
                  */
                 BUFFERED_OUTPUT(output, "</font>", 7);
                 STYLE_CLR(font_style, FONT_STYLE_QUOTE);
@@ -1430,7 +1406,7 @@ atppp_never_use_goto:
                          * STYLE_ZERO(font_style);
                          */
                         /*
-                         * clear ansi_val[] array 
+                         * clear ansi_val[] array
                          */
                         bzero(ansi_val, sizeof(ansi_val));
                         ival = 0;
@@ -1439,12 +1415,12 @@ atppp_never_use_goto:
                     /*
                      *[23;32H */
                     /*
-                     * ignore it 
+                     * ignore it
                      */
                     STATE_CLR(ansi_state, STATE_ESC_SET);
                     STYLE_ZERO(font_style);
                     /*
-                     * clear ansi_val[] array 
+                     * clear ansi_val[] array
                      */
                     bzero(ansi_val, sizeof(ansi_val));
                     ival = 0;
@@ -1461,7 +1437,7 @@ atppp_never_use_goto:
                     /*
                      *[1;32/XXXX or *[* or *[[ */
                     /*
-                     * not a valid ANSI string, just output it 
+                     * not a valid ANSI string, just output it
                      */
                     size_t len;
 
@@ -1470,7 +1446,7 @@ atppp_never_use_goto:
                     print_raw_ansi(ansi_begin, len, output);
                     STATE_CLR(ansi_state, STATE_ESC_SET);
                     /*
-                     * clear ansi_val[] array 
+                     * clear ansi_val[] array
                      */
                     bzero(ansi_val, sizeof(ansi_val));
                     ival = 0;
@@ -1484,18 +1460,18 @@ atppp_never_use_goto:
         BUFFERED_OUTPUT(output, "</font>", 7);
         STATE_CLR(ansi_state, STATE_FONT_SET);
     }
-    for ( i = 0; i<attachmatched ; i++ ){
-        if (!attachShowed[i]) { 
-            switch(attachType[i]) {
-            case ATTACH_IMG:
-                snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
-                break;
-            case ATTACH_FLASH:
-                snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
-                break;
-            case ATTACH_OTHERS:
-                 snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
-                 break;
+    for (i = 0; i<attachmatched ; i++) {
+        if (!attachShowed[i]) {
+            switch (attachType[i]) {
+                case ATTACH_IMG:
+                    snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+                    break;
+                case ATTACH_FLASH:
+                    snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
+                    break;
+                case ATTACH_OTHERS:
+                    snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
+                    break;
             }
             outbuf_len = strlen(outbuf);
             BUFFERED_OUTPUT(output, outbuf, outbuf_len);
@@ -1516,7 +1492,7 @@ int del_post(int ent, struct fileheader *fileinfo, const struct boardheader *bh)
     char direct[PATHLEN];
 
     ret = deny_del_article(bh, fileinfo, getSession());
-    switch(ret) {
+    switch (ret) {
         case -3:
             return 4;
             break;
