@@ -48,18 +48,18 @@ int uleveltochar(char *buf, struct userec *lookupuser)
         strcpy(buf, "新人");
         return 0;
     }
-/*    if( lvl < PERM_DEFAULT )
-    {
-        strcpy( buf, "- --" );
-        return 1;
-    }
-*/
+    /*    if( lvl < PERM_DEFAULT )
+        {
+            strcpy( buf, "- --" );
+            return 1;
+        }
+    */
 
     /*
-     * Bigman: 增加中文查询显示 2000.8.10 
+     * Bigman: 增加中文查询显示 2000.8.10
      */
     /*
-     * if( lvl & PERM_ZHANWU ) strcpy(buf,"站务"); 
+     * if( lvl & PERM_ZHANWU ) strcpy(buf,"站务");
      */
     if ((lvl & PERM_ANNOUNCE) && (lvl & PERM_OBOARDS))
         strcpy(buf, "站务");
@@ -78,7 +78,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     else if (lvl & PERM_HORNOR)
         strcpy(buf, "荣誉");
     /*
-     * Bigman: 修改显示 2001.6.24 
+     * Bigman: 修改显示 2001.6.24
      */
     else if (lvl & (PERM_LOGINOK)) {
         if (lookupuser->flags & GIVEUP_FLAG)
@@ -95,16 +95,16 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     else
         strcpy(buf, "受限");
 
-/*    else {
-        buf[0] = (lvl & (PERM_SYSOP)) ? 'C' : ' ';
-        buf[1] = (lvl & (PERM_XEMPT)) ? 'L' : ' ';
-        buf[2] = (lvl & (PERM_BOARDS)) ? 'B' : ' ';
-        buf[3] = !(lvl & (PERM_POST)) ? 'p' : ' ';
-        if( lvl & PERM_ACCOUNTS ) buf[3] = 'A';
-        if( lvl & PERM_SYSOP ) buf[3] = 'S'; 
-        buf[4] = '\0';
-    }
-*/
+    /*    else {
+            buf[0] = (lvl & (PERM_SYSOP)) ? 'C' : ' ';
+            buf[1] = (lvl & (PERM_XEMPT)) ? 'L' : ' ';
+            buf[2] = (lvl & (PERM_BOARDS)) ? 'B' : ' ';
+            buf[3] = !(lvl & (PERM_POST)) ? 'p' : ' ';
+            if( lvl & PERM_ACCOUNTS ) buf[3] = 'A';
+            if( lvl & PERM_SYSOP ) buf[3] = 'S';
+            buf[4] = '\0';
+        }
+    */
 
     return 1;
 }
@@ -150,9 +150,9 @@ int multilogin_user(struct userec *user, int usernum, int mode)
      * binxun 2003.5 仲裁，版主，Chatop，等都可以三登
      */
     if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP)
-         || HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
-         || HAS_PERM(user, PERM_BMAMANGER))
-        && logincount < 3)
+            || HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
+            || HAS_PERM(user, PERM_BMAMANGER))
+            && logincount < 3)
         return 0;
 
     if (!strcmp("guest", user->userid)) {
@@ -165,15 +165,15 @@ int multilogin_user(struct userec *user, int usernum, int mode)
     }
 
     /*
-     * 未通过注册的用户不能双登 added by bixnun 2003.5.30 
+     * 未通过注册的用户不能双登 added by bixnun 2003.5.30
      */
     if ((!HAS_PERM(user, PERM_LOGINOK)) && logincount > 0)
         return 1;
 
     if (((curr_login_num < 700) && (logincount >= 3))   /*小于700可以三登 */
-        ||((curr_login_num >= 700) && (logincount >= 2) /*700人以上 */
-           &&!(((arg.telnet_count == 0) && (mode == 0)) /* telnet个数为零可以再登一个telnet */
-               ||(((arg.www_count == 0) && (mode == 1))))))     /*user login limit */
+            ||((curr_login_num >= 700) && (logincount >= 2) /*700人以上 */
+               &&!(((arg.telnet_count == 0) && (mode == 0)) /* telnet个数为零可以再登一个telnet */
+                   ||(((arg.www_count == 0) && (mode == 1))))))     /*user login limit */
         return 1;
     return 0;
 }
@@ -183,15 +183,15 @@ int old_compute_user_value(const struct userec *urec)
     int value;
 
     /*
-     * if (urec) has CHATCLOAK permission, don't kick it 
+     * if (urec) has CHATCLOAK permission, don't kick it
      */
     /*
-     * 元老和荣誉帐号 在不自杀的情况下， 生命力999 Bigman 2001.6.23 
+     * 元老和荣誉帐号 在不自杀的情况下， 生命力999 Bigman 2001.6.23
      */
     /*
      * * zixia 2001-11-20 所有的生命力都使用宏替换，
-     * * 在 smth.h/zixia.h 中定义 
-     * * 
+     * * 在 smth.h/zixia.h 中定义
+     * *
      */
 
     if (((urec->userlevel & PERM_HORNOR) || (urec->userlevel & PERM_CHATCLOAK)) && (!(urec->userlevel & PERM_SUICIDE)))
@@ -200,7 +200,7 @@ int old_compute_user_value(const struct userec *urec)
     if (urec->userlevel & PERM_SYSOP)
         return LIFE_DAY_SYSOP;
     /*
-     * 站务人员生命力不变 Bigman 2001.6.23 
+     * 站务人员生命力不变 Bigman 2001.6.23
      */
 
 
@@ -209,7 +209,7 @@ int old_compute_user_value(const struct userec *urec)
         value = 1;              /* Leeward 98.03.30 */
 
     /*
-     * 修改: 将永久帐号转为长期帐号, Bigman 2000.8.11 
+     * 修改: 将永久帐号转为长期帐号, Bigman 2000.8.11
      */
     if ((urec->userlevel & PERM_XEMPT) && (!(urec->userlevel & PERM_SUICIDE))) {
         if (urec->lastlogin < 988610030)
@@ -218,14 +218,14 @@ int old_compute_user_value(const struct userec *urec)
             return (LIFE_DAY_LONG * 24 * 60 - value) / (60 * 24);
     }
     /*
-     * new user should register in 30 mins 
+     * new user should register in 30 mins
      */
     if (strcmp(urec->userid, "new") == 0) {
         return (LIFE_DAY_NEW - value) / 60;     /* *->/ modified by dong, 1998.12.3 */
     }
 
     /*
-     * 自杀功能,Luzi 1998.10.10 
+     * 自杀功能,Luzi 1998.10.10
      */
     if (urec->userlevel & PERM_SUICIDE)
         return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
@@ -236,7 +236,7 @@ int old_compute_user_value(const struct userec *urec)
         return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24);
     /*
      * if (urec->userlevel & PERM_LONGID)
-     * return (667 * 24 * 60 - value)/(60*24); 
+     * return (667 * 24 * 60 - value)/(60*24);
      */
     return (LIFE_DAY_USER * 24 * 60 - value) / (60 * 24);
 }
@@ -248,24 +248,24 @@ int compute_user_value(const struct userec *urec)
     int basiclife;
 
     /*
-     * if (urec) has CHATCLOAK permission, don't kick it 
+     * if (urec) has CHATCLOAK permission, don't kick it
      */
     /*
-     * 元老和荣誉帐号 在不自杀的情况下， 生命力999 Bigman 2001.6.23 
+     * 元老和荣誉帐号 在不自杀的情况下， 生命力999 Bigman 2001.6.23
      */
     /*
      * * zixia 2001-11-20 所有的生命力都使用宏替换，
-     * * 在 smth.h/zixia.h 中定义 
-     * * 
+     * * 在 smth.h/zixia.h 中定义
+     * *
      */
     /*
-     * 特殊处理请移动出cvs 代码 
+     * 特殊处理请移动出cvs 代码
      */
 
     if (urec->lastlogin < 1022036050)
         return old_compute_user_value(urec) + 15;
     /*
-     * 这个是死人的id,sigh 
+     * 这个是死人的id,sigh
      */
     if ((urec->userlevel & PERM_HORNOR) && !(urec->userlevel & PERM_LOGINOK))
         return LIFE_DAY_LONG;
@@ -277,7 +277,7 @@ int compute_user_value(const struct userec *urec)
     if ((urec->userlevel & PERM_ANNOUNCE) && (urec->userlevel & PERM_OBOARDS))
         return LIFE_DAY_SYSOP;
     /*
-     * 站务人员生命力不变 Bigman 2001.6.23 
+     * 站务人员生命力不变 Bigman 2001.6.23
      */
 
 
@@ -286,14 +286,14 @@ int compute_user_value(const struct userec *urec)
         value = 1;              /* Leeward 98.03.30 */
 
     /*
-     * new user should register in 30 mins 
+     * new user should register in 30 mins
      */
     if (strcmp(urec->userid, "new") == 0) {
         return (LIFE_DAY_NEW - value) / 60;     /* *->/ modified by dong, 1998.12.3 */
     }
 
     /*
-     * 自杀功能,Luzi 1998.10.10 
+     * 自杀功能,Luzi 1998.10.10
      */
     if (urec->userlevel & PERM_SUICIDE)
         return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24) + 15;
@@ -304,7 +304,7 @@ int compute_user_value(const struct userec *urec)
         return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24) + 15;
     /*
      * if (urec->userlevel & PERM_LONGID)
-     * return (667 * 24 * 60 - value)/(60*24); 
+     * return (667 * 24 * 60 - value)/(60*24);
      */
     registeryear = (time(0) - urec->firstlogin) / 31536000;
     if (registeryear < 2)
@@ -395,18 +395,18 @@ void get_mail_limit(struct userec *user, int *sumlimit, int *numlimit)
         } else
             /*
              * if (lookupuser->userlevel & PERM_BOARDS)
-             * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
+             * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31
              */
-        if (user->userlevel & PERM_MANAGER) {
-            *sumlimit = 4000;
-            *numlimit = 4000;
-        } else if (user->userlevel & PERM_LOGINOK) {
-            *sumlimit = 1000;
-            *numlimit = 1000;
-        } else {
-            *sumlimit = 15;
-            *numlimit = 15;
-        }
+            if (user->userlevel & PERM_MANAGER) {
+                *sumlimit = 4000;
+                *numlimit = 4000;
+            } else if (user->userlevel & PERM_LOGINOK) {
+                *sumlimit = 1000;
+                *numlimit = 1000;
+            } else {
+                *sumlimit = 15;
+                *numlimit = 15;
+            }
     } else {
         *sumlimit = 9999;
         *numlimit = 9999;
@@ -453,8 +453,8 @@ int check_see_perm(const struct userec *user, const struct boardheader *board)
         return 0;
 
     if (board->level & PERM_POSTMASK || ((user == NULL) && (board->level == 0))
-        || ((user != NULL) && HAS_PERM(user, board->level))
-        || (board->level & PERM_NOZAP)) {
+            || ((user != NULL) && HAS_PERM(user, board->level))
+            || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_HIDE) {    /*隐藏俱乐部 */
             if (user == NULL)
                 return 0;
