@@ -273,6 +273,7 @@ PHP_FUNCTION(bbs_check_ban_ip)
 {
     int ac, userid_len, fromhost_len;
     char *userid, *fromhost, buf[255];
+    struct userec *user;
 
     ac = ZEND_NUM_ARGS();
     if ((ac == 2) && (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &fromhost, &fromhost_len) != SUCCESS)) {
@@ -282,10 +283,15 @@ PHP_FUNCTION(bbs_check_ban_ip)
     if (check_ban_IP(fromhost, buf) > 0) {
         RETURN_LONG(1);
     }
-    if (strcasecmp(userid, "guest") != 0) {
-        if (check_ip_acl(userid, fromhost)) {
-            RETURN_LONG(2);
+    if(getuser(userid, &user)) {
+        if (strcasecmp(user->userid, "guest") != 0) {
+            if (check_ip_acl(user->userid, fromhost)) {
+                RETURN_LONG(2);
+            }
         }
+    }
+    else {
+        RETURN_LONG(2);
     }
 
     RETURN_LONG(0);
