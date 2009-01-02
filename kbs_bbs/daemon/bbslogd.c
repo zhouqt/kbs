@@ -295,6 +295,26 @@ static void trunclog(int signo)
 {
     int i;
     flushlog(-1);
+
+    /* see libBBS/log.c:logconf[] */
+    static const char *dirty_rotate[] = {"error.log", "connect.log", "msg.log",
+       "trace.chatd", "trace"};
+    for (i = 0; i < sizeof(dirty_rotate) / sizeof(dirty_rotate[0]); i++) {
+        char buf[MAXPATH];
+        int j;
+
+        if (!dashf(dirty_rotate[i]))
+            continue;
+
+        j=0;
+        while (1) {
+            sprintf(buf,"%s.%d", dirty_rotate[i],j);
+            if (!dashf(buf))
+               break;
+            j++;
+        }
+        f_mv(dirty_rotate[i],buf);
+    }
     
     for (i = 0; i < sizeof(logconfig) / sizeof(struct taglogconfig); i++) {
         struct taglogconfig *pconf;
