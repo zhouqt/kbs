@@ -1939,12 +1939,15 @@ int wait_friend(void)
 }
 
 /* 坏人名单:Bigman 2000.12.26 */
-int list_ignore(fname)
+int list_ignore(fname, page, pagecnt)
 char *fname;
+int *page;
+int *pagecnt;
 {
     FILE *fp;
     int x = 0, y = 4, nIdx = 0;
     char buf[IDLEN + 1], buf2[80];
+    int reccnt = 0;
 
     clear();
     move(y, x);
@@ -1953,8 +1956,35 @@ char *fname;
      */
     if ((fp = fopen(fname, "r")) == NULL) {
         prints("\033[1;33m*** 尚未设定黑名单 ***\033[m");
+        *page = 0;
+        *pagecnt = 0;
         return (0);
     } else {
+
+        /* get record count and page count */
+        fseek(fp, 0, SEEK_END);
+        long lens = ftell(fp);
+        reccnt = lens/(IDLEN + 1);
+        *pagecnt = reccnt/(4*18);
+        if (reccnt % (4*18) > 0) {
+            (*pagecnt)++;
+        }
+
+        /* correct the page number */
+        if (*page < 1) {
+            *page = 1;
+        }
+        if (*page > *pagecnt) {
+            *page = *pagecnt;
+        }
+
+        /* lseek to the correct offset */
+        if (reccnt > 4*18) {
+            fseek(fp, (*page-1)*72*(IDLEN+1), SEEK_SET);
+        } else {
+            fseek(fp, 0, SEEK_SET);
+        }
+
         strcpy(buf2, "\033[1;32m〖黑名单上的用户ID列表〗\033[m");
         while (fread(buf, IDLEN + 1, 1, fp) > 0) {
             if (nIdx % 4 == 0) {
@@ -1975,9 +2005,10 @@ char *fname;
         move(y, x);
         clrtoeol();
         fclose(fp);
-        return (nIdx);
+        return (reccnt);
     }
 }
+
 void clear_press()
 {                               /* 2000.12.28 Bigman 重复输入的回车，清除 */
     pressreturn();
@@ -1985,6 +2016,71 @@ void clear_press()
     clrtoeol();
     move(2, 0);
     clrtoeol();
+}
+
+static int get_ignore_header(buf, cnt, page, pagecnt)
+char *buf;
+int cnt;
+int page;
+int pagecnt;
+{
+    enum MF {
+        ADD,
+        DELETE,
+        CLEAR,
+        PREV,
+        NEXT,
+        QUITS
+    };
+
+    char item[][10] = {"(A)增加 ", "(D)删除 ", "(C)清除 ", "(P)上翻 ", "(N)下翻 ", "(Q)返回 " };
+    enum MF flag[QUITS+1];
+    int i = 0;
+
+    /* initialize flags */
+    for (i=ADD;i<=QUITS;i++) {
+        flag[i] = 1;
+    }
+
+    /* over lengthed blacklist */
+    if (cnt >= MAX_IGNORE) {
+        flag[ADD] = 0;
+    }
+
+    /* empty list */
+    if (cnt <=0) {
+        flag[DELETE] = 0;
+        flag[CLEAR] = 0;
+    }
+
+    /* first page */
+    if (page == 1 || page == 0) {
+        flag[PREV] = 0;
+    }
+
+    /* last page */
+    if (page == pagecnt) {
+        flag[NEXT] = 0;
+    }
+
+    /* put menu items together */
+    for (i=ADD;i<=QUITS;i++) {
+        if (flag[i] == 1) {
+            strcat(buf, item[i]);
+        }
+    }
+
+    /* default value:
+       normally ENTER to quit,
+       in multi-page mode, ENTER to PageDown, and ENTER to quit at the last page
+     */
+    if (flag[NEXT] == 0) {
+        strcat(buf, "[Q]");
+    } else {
+        strcat(buf, "[N]");
+    }
+
+    return 0;
 }
 
 int badlist(void)
@@ -1998,18 +2094,30 @@ int badlist(void)
     modify_user_mode(EDITUFILE);
     clear();
     sethomefile(path, getCurrentUser()->userid, "ignores");
+    int page = 1, pagecnt = 0;
     while (1) {
-        cnt = list_ignore(path);
+        cnt = list_ignore(path, &page, &pagecnt);
+
         if (cnt >= MAX_IGNORE) {
             move(1, 0);
             prints("已经到达黑名单最大人数限制");
-            getdata(0, 0, "(D)删除 (C)清除 (Q)返回? [Q]： ", tmp, 2, DOECHO, NULL, true);
-        } else if (cnt <= 0)
-            getdata(0, 0, "(A)增加 (Q)返回? [Q]： ", tmp, 2, DOECHO, NULL, true);
-        else
-            getdata(0, 0, "(A)增加 (D)删除 (C)清除 (Q)返回? [Q]： ", tmp, 2, DOECHO, NULL, true);
-        if (tmp[0] == 'Q' || tmp[0] == 'q' || tmp[0] == '\0') {
+        }
+
+        char ignore_header[100] = {'\0'};
+        get_ignore_header(ignore_header, cnt, page, pagecnt);
+
+        getdata(0, 0, ignore_header, tmp, 2, DOECHO, NULL, true);
+
+        if (tmp[0] == 'Q' || tmp[0] == 'q' || (page == pagecnt && tmp[0] == '\0')) {
             break;
+        }
+        if (tmp[0] == 'N' || tmp[0] == 'n' || tmp[0] == '\0') {
+            page++;
+            continue;
+        }
+        if (tmp[0] == 'P' || tmp[0] == 'p') {
+            page--;
+            continue;
         }
         if (((tmp[0] == 'a' || tmp[0] == 'A') && (cnt < MAX_IGNORE)) || ((tmp[0] == 'd' || tmp[0] == 'D') && (cnt > 0))) {
             if (tmp[0] == 'a' || tmp[0] == 'A')
