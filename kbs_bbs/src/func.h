@@ -224,7 +224,7 @@ extern "C"
     void getuinfo(FILE * fn, struct userec *ptr_urec);
     int simplepasswd(char *str);
     void logattempt(char *uid, char *frm, char *action);
-    int check_ban_IP(char *IP, char *buf);
+    int check_ban_IP(const char *IP, char *buf);
     int is_valid_date(int year, int month, int day);
     int valid_filename(char *file, int use_subdir);
     int cmpuids2(int unum, struct user_info *urec);

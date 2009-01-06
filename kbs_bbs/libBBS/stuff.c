@@ -1334,7 +1334,7 @@ static inline int IPmatch(const char *ip, const char *pattern)
 # 注意上头那行单纯一个 * 会导致匹配所有 IP
 */
 
-int check_ban_IP(char *IP, char *buf)
+int check_ban_IP(const char *IP, char *buf)
 {
     FILE *Ban;
     char IPBan[STRLEN];
