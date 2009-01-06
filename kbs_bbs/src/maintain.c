@@ -1864,35 +1864,6 @@ char *ident;
     return 0;
 }
 
-int check_proxy_IP(const char *ip,char *reason)
-{
-    FILE *fp;
-    char buf[128],*p;
-    int ip_len,buf_len,comp_len,ret;
-    if (!(fp=fopen("etc/proxyIP","r")))
-        return -1;
-    ip_len=strlen(ip);
-    ret=0;
-    while (fgets(buf,128,fp)) {
-        if ((p=strchr(buf,'\n')))
-            *p=0;
-        if ((p=strchr(buf,' '))) {
-            *p=0;
-            if (reason)
-                strcpy(reason,&p[1]);
-        }
-        buf_len=(p-buf);
-        if ((comp_len=ip_len)>buf_len)
-            comp_len=buf_len;
-        if (!strncmp(ip,buf,comp_len)) {
-            ret=comp_len;
-            break;
-        }
-    }
-    fclose(fp);
-    return ret;
-}
-
 int apply_reg(regfile, fname, pid, num)
 /* added by Bigman, 2002.5.31 */
 /* 申请指定条数注册单 */

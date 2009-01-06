@@ -225,6 +225,7 @@ extern "C"
     int simplepasswd(char *str);
     void logattempt(char *uid, char *frm, char *action);
     int check_ban_IP(const char *IP, char *buf);
+    int check_proxy_IP(const char *ip, char *reason);
     int is_valid_date(int year, int month, int day);
     int valid_filename(char *file, int use_subdir);
     int cmpuids2(int unum, struct user_info *urec);

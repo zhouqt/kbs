@@ -1210,9 +1210,7 @@ void logattempt(char *uid, char *frm, char *action)
     }
 }
 
-/* 新的 IP 匹配系统, Nov 30 2008, skybluee@free
- * TODO: 用到 proxyIP 那边去
- */
+/* 新的 IP 匹配系统, Nov 30 2008, skybluee@free */
 static unsigned long long get_ullip(const char *ip)
 {
     /*
@@ -1332,7 +1330,7 @@ static inline int IPmatch(const char *ip, const char *pattern)
 59.66.*.*
 *
 # 注意上头那行单纯一个 * 会导致匹配所有 IP
-*/
+ */
 
 int check_ban_IP(const char *IP, char *buf)
 {
@@ -3127,6 +3125,54 @@ void enable_core_dump(int max_size)
     setrlimit(RLIMIT_CORE, &rl);
 }
 
+/* etc/proxyIP 文件格式: 每一行为 # 开头的注释或者
+ * IP Reason 形式, 中间以一个空格隔开
+ *
+ * 支持的IP格式有
+59.66.122.1
+59.66.122.0/24
+59.66.122.0/255.255.255.0
+59.66.122.*
+59.66.*
+59.66.*.*
+*
+# 注意上头那行单纯一个 * 会导致匹配所有 IP
+ */
+
+int check_proxy_IP(const char *ip,char *reason)
+{
+    FILE *fp;
+    char buf[128],*p;
+    int ip_len,/*buf_len,comp_len,*/ret;
+    if (!(fp=fopen("etc/proxyIP","r")))
+        return -1;
+    ip_len=strlen(ip);
+    ret=0;
+    while (fgets(buf,128,fp)) {
+        if (!*buf || *buf == '#') // comment
+            continue;
+        if ((p=strchr(buf,'\n')))
+            *p=0;
+        if ((p=strchr(buf,' '))) {
+            *p=0;
+            if (reason)
+                strcpy(reason,&p[1]);
+        }
+        /*buf_len=(p-buf);
+        if ((comp_len=ip_len)>buf_len)
+            comp_len=buf_len;
+        if (!strncmp(ip,buf,comp_len)) {
+            ret=comp_len;
+            break;
+        }*/
+        if (IPmatch(ip, buf)) {
+            ret = ip_len;
+            break;
+        }
+    }
+    fclose(fp);
+    return ret;
+}
 
 int sock_readline(int socket, char *buf, unsigned int size)
 {
