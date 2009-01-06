@@ -512,6 +512,7 @@ static int bbs_main(char *argv)
 #endif /* SECONDSITE */
 
     getSession()->fromhost[IPLEN-1]=0;
+    *buf = 0;
     if (check_ban_IP(getSession()->fromhost,buf)>0) {
         local_prints("本站目前不欢迎来自 %s 访问!\r\n原因: %s\r\n\r\n",getSession()->fromhost,buf);
         BBS_MAIN_EXIT(60);

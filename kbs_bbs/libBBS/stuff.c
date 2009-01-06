@@ -1319,8 +1319,8 @@ static inline int IPmatch(const char *ip, const char *pattern)
  */
 /* .badIP 文件格式: 每一行为 # 开头的注释或者
  * +IP Reason 形式, 中间以一个空格隔开
- * 如果去掉行首加号, 则无效
- *
+ * 如果去掉行首加号, 则本行视同注释
+ * etc/proxyIP 文件格式: 与 .badIP 类似，但行首不以加号开头
  * 支持的IP格式有
 59.66.122.1
 59.66.122.0/24
@@ -1332,37 +1332,47 @@ static inline int IPmatch(const char *ip, const char *pattern)
 # 注意上头那行单纯一个 * 会导致匹配所有 IP
  */
 
+static int check_IP_core(const char *file, const char *IP, char *reason, bool has_plus)
+{
+    FILE *fp;
+    char buf[STRLEN];
+    char *p, *q;
+
+    if (!(fp = fopen(file, "r")))
+        return -1;
+    while (fgets(buf, STRLEN, fp)) {
+        if (!*buf || *buf == '#') //comment
+            continue;
+        if (has_plus) {
+            if (*buf != '+')
+                continue;
+            else
+                q = &buf[1];
+        } else
+            q = buf;
+        if ((p = strchr(q, '\n'))) //remove trailing newline
+            *p = 0;
+        if ((p = strchr(q, '\r'))) //remove trailing CR
+            *p = 0;
+        if ((p = strchr(q, ' '))) //split IP from reason
+            *p++ = 0;
+        if (IPmatch(IP, q)) {
+            if (p && *p)
+                strcpy(reason, p);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int check_ban_IP(const char *IP, char *buf)
 {
-    FILE *Ban;
-    char IPBan[STRLEN];
-    int IPX = -1;
-    char *ptr;
+    return check_IP_core(".badIP", IP, buf, true);
+}
 
-    Ban = fopen(".badIP", "r");
-    if (!Ban)
-        return IPX;
-    else
-        IPX++;
-
-    while (fgets(IPBan, STRLEN, Ban)) {
-        if (!*IPBan || (*IPBan == '#')) // comment
-            continue;
-        if ((ptr = strchr(IPBan, '\n')) != NULL)
-            *ptr = 0;
-        if ((ptr = strchr(IPBan, ' ')) != NULL) {
-            *ptr++ = 0;
-            strcpy(buf, ptr);
-        } else
-            *buf = 0; // 防止 buf 飞了
-        IPX = strlen(IPBan);
-        if (*IPBan == '+')
-            if (IPmatch(IP, IPBan + 1))
-                break;
-        IPX = 0;
-    }
-    fclose(Ban);
-    return IPX;
+int check_proxy_IP(const char *ip, char *reason)
+{
+    return check_IP_core("etc/proxyIP", ip, reason, false);
 }
 
 int dodaemon(char *daemonname, bool single, bool closefd)
@@ -3123,55 +3133,6 @@ void enable_core_dump(int max_size)
     getrlimit(RLIMIT_CORE, &rl);
     rl.rlim_cur = rl.rlim_max < max_size ? rl.rlim_max : max_size;
     setrlimit(RLIMIT_CORE, &rl);
-}
-
-/* etc/proxyIP 文件格式: 每一行为 # 开头的注释或者
- * IP Reason 形式, 中间以一个空格隔开
- *
- * 支持的IP格式有
-59.66.122.1
-59.66.122.0/24
-59.66.122.0/255.255.255.0
-59.66.122.*
-59.66.*
-59.66.*.*
-*
-# 注意上头那行单纯一个 * 会导致匹配所有 IP
- */
-
-int check_proxy_IP(const char *ip,char *reason)
-{
-    FILE *fp;
-    char buf[128],*p;
-    int ip_len,/*buf_len,comp_len,*/ret;
-    if (!(fp=fopen("etc/proxyIP","r")))
-        return -1;
-    ip_len=strlen(ip);
-    ret=0;
-    while (fgets(buf,128,fp)) {
-        if (!*buf || *buf == '#') // comment
-            continue;
-        if ((p=strchr(buf,'\n')))
-            *p=0;
-        if ((p=strchr(buf,' '))) {
-            *p=0;
-            if (reason)
-                strcpy(reason,&p[1]);
-        }
-        /*buf_len=(p-buf);
-        if ((comp_len=ip_len)>buf_len)
-            comp_len=buf_len;
-        if (!strncmp(ip,buf,comp_len)) {
-            ret=comp_len;
-            break;
-        }*/
-        if (IPmatch(ip, buf)) {
-            ret = ip_len;
-            break;
-        }
-    }
-    fclose(fp);
-    return ret;
 }
 
 int sock_readline(int socket, char *buf, unsigned int size)
