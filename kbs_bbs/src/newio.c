@@ -501,10 +501,11 @@ igetagain:
         if (hasaddio && (i_newfd && FD_ISSET(i_newfd, &readfds)))
             return I_OTHERDATA;
 #ifdef SSHBBS
-        while ((ibufsize = ssh_read(0, inbuffer + 1, IBUFSIZE)) <= 0) {
+        while ((ibufsize = ssh_read(0, inbuffer + 1, IBUFSIZE)) <= 0)
 #else
-        while ((ibufsize = read(0, inbuffer + 1, IBUFSIZE)) <= 0) {
+        while ((ibufsize = read(0, inbuffer + 1, IBUFSIZE)) <= 0)
 #endif
+        {
             if (ibufsize == 0)
                 longjmp(byebye, -1);
             if (ibufsize < 0 && errno != EINTR)
@@ -615,7 +616,8 @@ int ingetdata=false;
 
 extern void mailscr();
 
-int igetkey() {
+int igetkey()
+{
     int mode;
     int ch, last, llast;
     int ret=0;
@@ -787,7 +789,8 @@ bool enableESC=false;
 /*
  * ret:  -1: user cancel input
  */
-int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel) {
+int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel)
+{
     int ch, clen = 0, curr = 0, x, y;
     bool init=true;
     char tmp[STRLEN],save[STRLEN];
@@ -1033,7 +1036,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
 bool UPDOWN=false;
 
-int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode) {
+int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode)
+{
     int ch, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
     char savebuffer[25][LINELEN*3];
     bool init=true;
@@ -1412,7 +1416,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     return y-starty+1;
 }
 
-int lock_scr(void) {                            /* Leeward 98.02.22 */
+int lock_scr(void)                              /* Leeward 98.02.22 */
+{
     char passbuf[STRLEN];
 
     if (!strcmp(getCurrentUser()->userid, "guest"))
@@ -1445,7 +1450,8 @@ int lock_scr(void) {                            /* Leeward 98.02.22 */
     return 0;
 }
 
-void printdash(char *mesg) {
+void printdash(char *mesg)
+{
     char buf[80], *ptr;
     int len;
 
@@ -1463,7 +1469,8 @@ void printdash(char *mesg) {
     prints("%s\n", buf);
 }
 
-void bell() {
+void bell()
+{
     /*
      * change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;
      */
@@ -1474,7 +1481,8 @@ void bell() {
 
 }
 
-int pressreturn() {
+int pressreturn()
+{
     extern int showansi;
     char buf[3];
 
@@ -1506,7 +1514,8 @@ int defa;
     return defa;
 }
 
-int pressanykey() {
+int pressanykey()
+{
     extern int showansi;
 
     showansi = 1;
