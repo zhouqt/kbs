@@ -5876,15 +5876,39 @@ static char* read_top_ent(char *buf,int num,struct fileheader *fh,struct filehea
     char date[8],title[48],threadprefix[2][16],threadsuffix[16],*highstr;
     int type,isreply,isthread,attachch;
     time_t ftime;
+    int titlelen = 0;
+    struct read_arg * arg=(struct read_arg*)conf->arg;
+
     type=get_article_flag(fh,getCurrentUser(),currboard->filename,0,NULL,getSession());
     if ((ftime=get_posttime(fh))>740000000)
         snprintf(date,7,"%s",ctime(&ftime)+4);
     else
         date[0]=0;
     attachch=((fh->attachment)?'@':' ');
-    strnzhcpy(title,fh->title,45);
+
+    isreply=((fh->groupid!=fh->id)&&(!strncasecmp(fh->title,"Re: ",4)||!strncmp(fh->title,"»Ø¸´: ",6)));
+
+    titlelen = scr_cols > 80 ? scr_cols - 80 + 45 : 45;
+    if (isreply) titlelen += 3;
+    if (titlelen > ARTICLE_TITLE_LEN) {
+        titlelen = ARTICLE_TITLE_LEN;
+    }
+    if (! DEFINE(getCurrentUser(), DEF_SHOWSIZE) && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK) {
+        char sizebuf[30];
+        strnzhcpy(title, fh->title, titlelen - 7);
+        if (fh->eff_size < 1000)
+            sprintf(sizebuf,"(%d)", fh->eff_size);
+        else if (fh->eff_size < 1000000) {
+            sprintf(sizebuf,"\033[1;33m(%dk)\033[m", fh->eff_size/1000);
+        } else {
+            sprintf(sizebuf, "\033[1;31m(%dm)\033[m", (fh->eff_size/1000000)%1000);
+        }
+        strcat(title, sizebuf);
+    } else {
+        strnzhcpy(title, fh->title, titlelen);
+    }
+
     isthread=(read_fh&&read_fh->groupid==fh->groupid);
-    isreply=((fh->groupid!=fh->id)&&(!strncasecmp(title,"Re: ",4)||!strncmp(title,"»Ø¸´: ",6)));
     highstr=DEFINE(getCurrentUser(),DEF_HIGHCOLOR)?"1;":"";
     if (isthread) {
         sprintf(threadprefix[0],"\033[%s%dm",highstr,(isreply?36:33));
