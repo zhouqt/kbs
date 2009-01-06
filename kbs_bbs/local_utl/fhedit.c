@@ -325,7 +325,7 @@ int fh_insert(int num, int count)
 int fh_remove(int num, int count)
 {
     off_t filesize;
-    int total, rest;
+    int total = 0, rest;
     char *ptr;
     if (num <= 0) {
         printf("number must be specified.\n");
