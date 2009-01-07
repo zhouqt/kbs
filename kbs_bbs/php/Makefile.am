@@ -41,4 +41,9 @@ libphpbbslib_la_SOURCES = phpbbslib.c \
                           bbslib.c
 libphpbbslib_la_LIBADD = $(top_builddir)/libBBS/libBBS.la $(top_builddir)/libsystem/libsystem.la
 AM_CFLAGS  = @PHPCFLAGS@ -I$(top_srcdir)/src -DCOMPILE_DL_KBS_BBS
+if MACOSX
+AM_LDFLAGS = -module
+else !MACOSX
+AM_LDFLAGS = 
+endif !MACOSX
 CLEANFILES=@EXTRA_CLEAN@

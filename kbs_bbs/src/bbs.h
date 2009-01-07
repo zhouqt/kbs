@@ -109,7 +109,7 @@
 #include "mpatrol.h"
 #endif /* DEBUG_MEMORY */
 
-#ifndef HAVE_BOOL
+#if !defined(HAVE_BOOL) && !defined(MACOSX)
 typedef enum { false = 0, true = 1 } bool;
 #else /* HAVE_BOOL */
 

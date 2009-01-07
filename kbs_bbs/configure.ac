@@ -34,6 +34,7 @@ case "${host}" in
         ;;        
 esac              
 CFLAGS="$CFLAGS -D$OSTYPE"
+AM_CONDITIONAL([MACOSX], [test x$OSTYPE = xMACOSX])
 
 AH_TOP([
 #ifndef KBS_CONFIG_H_INCLUDED
