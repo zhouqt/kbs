@@ -1,3 +1,9 @@
 #!/bin/sh
+if [ `uname -s` = Darwin ]
+then
+    LIBTOOLIZE=glibtoolize
+else
+    LIBTOOLIZE=libtoolize
+fi
 
-aclocal; libtoolize -c --force; autoheader; automake -a; autoconf
+aclocal; $LIBTOOLIZE -c --force; autoheader; automake -a; autoconf
