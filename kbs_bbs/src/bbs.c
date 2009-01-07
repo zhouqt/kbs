@@ -5873,7 +5873,7 @@ static void read_top_title(struct _select_def *conf)
 
 static char* read_top_ent(char *buf,int num,struct fileheader *fh,struct fileheader *read_fh,struct _select_def *conf)
 {
-    char date[8],title[48],threadprefix[2][16],threadsuffix[16],*highstr;
+    char date[8],title[ARTICLE_TITLE_LEN + 30],threadprefix[2][16],threadsuffix[16],*highstr;
     int type,isreply,isthread,attachch;
     time_t ftime;
     int titlelen = 0;
