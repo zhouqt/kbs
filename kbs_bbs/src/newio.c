@@ -1506,7 +1506,7 @@ int defa;
 
     sprintf(realstr, "%s (Y/N)? [%c]: ", str, (defa) ? 'Y' : 'N');
     getyx(&x, &y);
-    getdata(x, y, realstr, ans, 3, DOECHO, NULL, true);
+    getdata(x, y, realstr, ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
         return 1;
     else if (ans[0] == 'N' || ans[0] == 'n')
