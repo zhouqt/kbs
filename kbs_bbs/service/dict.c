@@ -133,7 +133,7 @@ int dict_main()
             ch = igetkey();
             clear();
             if(ch==13||ch==10) break;
-            else if(((ch==KEY_DEL)||(ch==8))&&len) {
+            else if(((ch==KEY_DEL)||(ch==8)||(ch=='\177')||(ch==Ctrl('H')))&&len) {
                 len--; word[len]=0;
 #ifdef CHINESE_CHARACTER
             if(DEFINE(getCurrentUser(), DEF_CHCHAR)) {
