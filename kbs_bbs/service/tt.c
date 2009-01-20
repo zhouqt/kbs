@@ -127,7 +127,7 @@ start:
     }else
 	  wrong++;
   }
-  score = 18000 * CLK_TCK /(times(NULL) - t);
+  score = 18000 * CLK_TCK / (int)(times(NULL) - t);
   snprintf(fbuf, 10, "%5.2f", score/10.0);
   prints("\n\nSpeed=%-5s WPMs\n\n", fbuf);
   if(wrong > 30) prints("\033[1;32m你错的太多了！成绩无效\n\n");
