@@ -337,7 +337,7 @@ reenter:
                     sethomefile(fname, getCurrentUser()->userid, "msgindex");
                     sethomefile(fname2, getCurrentUser()->userid, "msgindex3");
                     fd = open(fname, O_RDONLY, 0644);
-                    fd2 = open(fname2, O_WRONLY|O_CREAT, 0644);
+                    fd2 = open(fname2, O_WRONLY|O_CREAT|O_TRUNC, 0644);
                     write(fd2, &i, 4);
                     lseek(fd, 4, SEEK_SET);
                     for (i=0;i<count;i++) {
