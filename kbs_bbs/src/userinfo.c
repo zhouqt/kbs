@@ -1944,6 +1944,9 @@ int modify_userinfo(int uid,int mode)
             unlink(name);
         }
     }
+    if ((change & (1 << MOD_USERLEVEL)) && (ouser.userlevel & PERM_BASIC) && !(vuser.userlevel & PERM_BASIC))
+        while (kick_user_utmp(uid, NULL, 0) == 10)
+            continue;
     if (mode) {
         snprintf(name,MU_LENGTH,"tmp/modify_userinfo_%lu_%d.log",time(NULL),(int)getpid());
         if (!(fp=fopen(name,"w"))) {
