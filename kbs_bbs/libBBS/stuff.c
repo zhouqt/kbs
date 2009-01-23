@@ -2451,7 +2451,7 @@ int check_ID_lists(char * id)
             if ((double)(now-ids[i].last)<=ID_CONNECT_CON_THRESHOLD2) {
                 fp=fopen(".IDdenys", "a");
                 if (fp) {
-                    fprintf(fp, "0 %ld %s %d\n", now, id, ids[i].t);
+                    fprintf(fp, "0 %ld %s %d %ld\n", now, id, ids[i].t, now-ids[i].last);
                     fclose(fp);
                 }
                 if ((double)(now-ids[i].last)<=5.0)
@@ -2464,7 +2464,7 @@ int check_ID_lists(char * id)
                 if (ids[i].t>=10&&(ids[i].t/(double)(ids[i].last-ids[i].first)>=ID_CONNECT_CON_THRESHOLD)) {
                     fp=fopen(".IDdenys", "a");
                     if (fp) {
-                        fprintf(fp, "1 %ld %s %d\n", now, id, ids[i].t);
+                        fprintf(fp, "1 %ld %s %d %ld\n", now, id, ids[i].t, ids[i].last-ids[i].first);
                         fclose(fp);
                     }
                     if (ids[i].t/(double)(ids[i].last-ids[i].first)>=100.0/60/60)

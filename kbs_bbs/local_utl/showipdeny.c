@@ -10,7 +10,7 @@ int main(int argc, char **argv)
     char * p;
     int i,ip[4],t,count=0;
     long j;
-    time_t tt;
+    time_t tt,time_interval;
 
     if (init_all()) {
         printf("init data fail\n");
@@ -65,16 +65,16 @@ int main(int argc, char **argv)
         count=0;
         fp2=fopen(fn2, "w");
         while (!feof(fp)) {
-            if (fscanf(fp, "%d %ld %s %d", &i, &j, id, &t)<=0) break;
+            if (fscanf(fp, "%d %ld %s %d %ld", &i, &j, id, &t, &time_interval)<=0) break;
             if (t<=5) continue;
             count++;
             tt=(time_t) j;
             p = ctime(&tt);
             p[19]=0; p+=4;
             if (i==0)
-                fprintf(fp2, "%s %s 两次连接时间太短.一小时内共连接%d次.\n", p, id,t+1);
+                fprintf(fp2, "%s %s 两次连接时间太短.间隔为%ld秒.\n", p, id, time_interval);
             else
-                fprintf(fp2, "%s %s 连接过于频繁.    一小时内共连接%d次.\n", p, id,t);
+                fprintf(fp2, "%s %s 连接过于频繁.    %ld秒内共连接%d次.\n", p, id, time_interval, t);
         }
         fclose(fp);
         fclose(fp2);
