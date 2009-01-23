@@ -31,6 +31,7 @@ static int insert_character = 1;
 /* for copy/paste */
 static struct textline *mark_begin, *mark_end;
 static int mark_on;
+static int edit_or_post;
 
 void msgline();
 
@@ -1016,7 +1017,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
     int aborted = 0;
     int temp;
     int do_edit_attach=0;
-    long sign_size;
+    long sign_size,encounter=0;
     int ret=0;
     extern char quote_title[120], quote_board[120];
     extern int Anony;
@@ -1221,7 +1222,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
                         /*如果不是签名档分隔符*/
                         if (sign_size!=0) /*在可能的签名档中*/
                             sign_size+=strlen(p->data);
-                        else
+                        else if((edit_or_post==1 && encounter>=4) || edit_or_post==0)
                             *effsize+=strlen(p->data);
                     }
                 }
@@ -1300,6 +1301,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
         free(p->data);
         free(p);
         p = v;
+        encounter++;
     }
     if (!aborted) {
         if (add_loginfo)
@@ -2322,6 +2324,7 @@ int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos,int add_
 #ifdef NEW_HELP
     helpmode = HELP_EDIT;
 #endif
+    edit_or_post = 0;
     ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos, add_loginfo, 1);
 #ifdef NEW_HELP
     helpmode = oldhelpmode;
@@ -2338,6 +2341,7 @@ int vedit_post(char *filename,int saveheader,long* eff_size,long* pattachpos, in
     showansi = 0;
     ismsgline = (DEFINE(getCurrentUser(), DEF_EDITMSG)) ? 1 : 0;
     domsg();
+    edit_or_post = 1;
     ans = raw_vedit(filename, saveheader, 4, eff_size,pattachpos, 0, filtrate);   /*Haohmaru.99.5.5.应该保留一个空行 */
     showansi = t;
     return ans;
