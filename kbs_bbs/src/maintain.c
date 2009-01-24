@@ -2230,6 +2230,7 @@ char *logfile, *regfile;
                          * Bigman, 2001.11.9
                          */
                         clrtoeol();
+                        if (strstr(finfo[n], "×¢²á IP")) continue;
 #ifdef AUTO_CHECK_REGISTER_FORM
                         if (strstr(finfo[n],"ÕæÊµÐÕÃû")) continue;
 #endif
