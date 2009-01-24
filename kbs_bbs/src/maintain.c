@@ -2193,8 +2193,8 @@ char *logfile, *regfile;
             disply_userinfo(&uinfo, 2);
             //dirty fix here! 要职务干什么！fancy Jan 8 2009
             move(8, 0); clrtoeol();
-	    if (!*fdata[7])
-                strncpy(fdata[7], uinfo.lasthost, IPLEN);
+            if (!*fdata[7])
+                strncpy(fdata[7], uinfo.lasthost, 20);
             prints("注册 IP      : %s", fdata[7]);
             read_userdata(lookupuser->userid, &ud);
             useproxy = check_proxy_IP(fdata[7], buf);
