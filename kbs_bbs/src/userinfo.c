@@ -624,6 +624,7 @@ int x_fillform(void)
 #else
         fprintf(fn, "birth: %d-%d-%d\n", ud.birthyear, ud.birthmonth, ud.birthday);
 #endif
+        fprintf(fn, "IP: %s\n", getSession()->fromhost);
         fprintf(fn, "----\n");
         fclose(fn);
     }

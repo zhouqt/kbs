@@ -376,6 +376,7 @@ PHP_FUNCTION(bbs_createregform)
         fprintf(fn, "addr: %s\n", address);
         fprintf(fn, "phone: %s\n", phone);
         fprintf(fn, "birth: %s\n", genbuf);
+        fprintf(fn, "IP: %s\n", getSession()->fromhost);
         fprintf(fn, "----\n");
         un_lock(fileno(fn), 0, SEEK_SET, 0);
         fclose(fn);

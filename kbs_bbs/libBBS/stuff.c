@@ -2984,7 +2984,7 @@ void trimstr(char *s)
     return;
 }
 
-void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN], session_t *session)
+void securityreport(char *str, struct userec *lookupuser, char fdata[9][STRLEN], session_t *session)
 {                               /* Leeward: 1997.12.02 */
     FILE *se;
     char fname[STRLEN], timebuf[STRLEN];
@@ -3021,10 +3021,12 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN],
                 fprintf(se, "最近光临日期 : %s", ctime_r(&lookupuser->lastlogin, timebuf));
                 fprintf(se, "最近光临机器 : %s\n", lookupuser->lasthost);
                 fprintf(se, "上站次数     : %d 次\n", lookupuser->numlogins);
-                fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);
+                /* fancy Jan 8 2009, 都没过注册要这个干啥! */
+                //fprintf(se, "文章数目     : %d(Board)\n", lookupuser->numposts);
+                fprintf(se, "注册 IP      : %s\n", fdata[7]);
                 fprintf(se, "生    日     : %s\n", fdata[6]);
                 if (strstr(str,"拒绝"))
-                    fprintf(se, (strstr(str, "自动处理程序") ? "\033[1;32m自动拒绝理由 : %s\033[m\n" : "\033[1;32m拒绝理由 : %s\033[m\n"), fdata[7]);
+                    fprintf(se, (strstr(str, "自动处理程序") ? "\033[1;32m自动拒绝理由 : %s\033[m\n" : "\033[1;32m拒绝理由 : %s\033[m\n"), fdata[8]);
                 /*
                  * fprintf(se, "\n\033[33m以下是认证者个人资料\033[35m");
                  * getuinfo(se, session->currentuser);rem by Haohmaru.99.4.16

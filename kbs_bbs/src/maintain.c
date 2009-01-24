@@ -2074,7 +2074,7 @@ int mod;
 }
 
 static const char *field[] = { "usernum", "userid", "realname", "career",
-                               "addr", "phone", "birth", NULL
+                               "addr", "phone", "birth", "IP", NULL
                              };
 static const char *reason[] = {
     "请输入真实姓名(国外可用拼音).", "请详填学校科系或工作单位.",
@@ -2091,11 +2091,11 @@ int scan_register_form(logfile, regfile)
 char *logfile, *regfile;
 {
     static const char *finfo[] = { "帐号位置", "申请代号", "真实姓名", "服务单位",
-                                   "目前住址", "联络电话", "生    日", NULL
+                                   "目前住址", "联络电话", "生    日", "注册 IP ", NULL
                                  };
     struct userec uinfo;
     FILE *fn, *fout, *freg;
-    char fdata[8][STRLEN];
+    char fdata[9][STRLEN];
     char fname[STRLEN], buf[STRLEN], buff;
     char sender[IDLEN + 2];
     int  useproxy;
@@ -2191,9 +2191,13 @@ char *logfile, *regfile;
             prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
             count++;
             disply_userinfo(&uinfo, 2);
-
+            //dirty fix here! 要职务干什么！fancy Jan 8 2009
+            move(8, 0); clrtoeol();
+	    if (!*fdata[7])
+                strncpy(fdata[7], uinfo.lasthost, IPLEN);
+            prints("注册 IP      : %s", fdata[7]);
             read_userdata(lookupuser->userid, &ud);
-            useproxy = check_proxy_IP(uinfo.lasthost, buf);
+            useproxy = check_proxy_IP(fdata[7], buf);
 #ifdef AUTO_CHECK_REGISTER_FORM
             {
                 struct REGINFO regform;
@@ -2207,12 +2211,12 @@ char *logfile, *regfile;
                 strncpy(regform.addr,fdata[4],99);
                 strncpy(regform.phone,fdata[5],99);
                 strncpy(regform.birth,fdata[6],99);
-                strncpy(regform.ip, uinfo.lasthost, 20);
+                strncpy(regform.ip, fdata[7], IPLEN);
                 ret=checkreg(regform, errorstr, useproxy);
                 if (ret==-2) {
 #endif
-                    if (qqwry_search(result,uinfo.lasthost)==1) {
-                        move(8,20);
+                    if (qqwry_search(result,fdata[7])==1) {
+                        move(8,15+IPLEN);
                         prints("\033[1;33m[%s]\033[m",result);
                     }
 
@@ -2357,7 +2361,6 @@ char *logfile, *regfile;
                             fprintf(fout, "电子邮件信箱 : %s\n", ud.email);
                             fprintf(fout, "真实 E-mail  : %s\n", ud.realemail);
                             fprintf(fout, "注册日期     : %s\n", ctime(&uinfo.firstlogin));
-                            fprintf(fout, "注册时的机器 : %s\n", uinfo.lasthost);
                             fprintf(fout, "Approved: %s\n", sender);
                             fclose(fout);
                         }
@@ -2400,7 +2403,7 @@ char *logfile, *regfile;
 #ifdef AUTO_CHECK_REGISTER_FORM
                         } else {
                             buf[0]='!';
-                            strncpy(fdata[7],errorstr,STRLEN - 1);
+                            strncpy(fdata[8],errorstr,STRLEN - 1);
                             sprintf(genbuf, "自动处理程序拒绝 %s 的身份确认.", uinfo.userid);
                             securityreport(genbuf, lookupuser, fdata, getSession());
                         }
@@ -2415,7 +2418,7 @@ char *logfile, *regfile;
                             if (ret == -2) {
 #endif
                                 sprintf(genbuf, "%s 拒绝 %s 的身份确认.", uid, uinfo.userid);
-                                strncpy(fdata[7], buf, STRLEN - 1);
+                                strncpy(fdata[8], buf, STRLEN - 1);
                                 securityreport(genbuf, lookupuser, fdata, getSession());
 #ifdef AUTO_CHECK_REGISTER_FORM
                             }

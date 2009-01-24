@@ -251,7 +251,7 @@ extern "C"
     char* process_control_chars(char *s,const char *reserved_chars);
     char* strnzhcpy(char *dest, const char *src, size_t n);
     void trimstr(char*);
-    void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN], session_t *session);
+    void securityreport(char *str, struct userec *lookupuser, char fdata[9][STRLEN], session_t *session);
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)
