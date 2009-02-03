@@ -2604,6 +2604,7 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
                         }
                     }
                 }
+	    }
             break;
         case '7': {
             break;
