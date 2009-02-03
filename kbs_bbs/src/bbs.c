@@ -2594,7 +2594,7 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
                         char ans[4];
                         clear();
                         move(3, 0);
-			prints("%s版治版方针已经通过审核, 批号: %d\n", currboard->filename, st.st_mtime);
+                        prints("%s版治版方针已经通过审核, 批号: %d\n", currboard->filename, st.st_mtime);
                         getdata(t_lines - 1, 0, "是否追回该版治版方针 (Yes/No)? [N] ", ans, 3, DOECHO, NULL, true);
                         if (ans[0] == 'y' || ans[0] == 'Y') {
                             int ret;
@@ -2605,7 +2605,7 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
                         }
                     }
                 }
-	    }
+            }
             break;
         case '7': {
             break;
