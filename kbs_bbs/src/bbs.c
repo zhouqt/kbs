@@ -2477,6 +2477,12 @@ int set_board_rule(struct boardheader *bh, int flag)
         sprintf(buf2, "%s删除%s治版方针草案", getCurrentUser() -> userid, bh -> filename);
         post_file(getCurrentUser(), "", buf, "BoardRules", buf2, 0, 2, getSession());
         unlink(buf);
+    } else if (flag == 3) {
+        char buf[256];
+        char buf2[256];
+        setvfile(buf, bh->filename, "rules");
+        sprintf(buf2, "%s追回%s治版方针", getCurrentUser()->userid, bh->filename);
+        post_file(getCurrentUser(), "", buf, "BoardRules", buf2, 0, 2, getSession());
     }
     return 0;
 }
@@ -2564,27 +2570,40 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
                     pressanykey();
                 }
                 show_help(fpath);
-                if (!(currboard->flag & BOARD_RULES) && HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
-                    char ans[4];
-                    clear();
-                    move(3, 0);
-                    prints("%s版治版方针尚未通过审核, 批号: %d\n", currboard->filename, st.st_mtime);
-                    getdata(t_lines - 1, 0, "您要通过该版的治版方针吗 (Yes/No/Del)? [N] ", ans, 3, DOECHO, NULL, true);
-                    if (ans[0] == 'y' || ans[0] == 'Y') {
-                        int ret;
-                        ret = set_board_rule(currboard, 1);
-                        move(6, 0);
-                        prints("通过%s:%d\n",(ret==0)?"成功":"失败",ret);
-                        pressreturn();
-                    } else if (ans[0] == 'd' || ans[0] == 'D') {
-                        int ret;
-                        ret = set_board_rule(currboard, 2);
-                        move(6, 0);
-                        prints("删除%s!\n", (!ret) ? "成功" : "失败");
-                        pressreturn();
+                if (HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+                    if (!(currboard->flag & BOARD_RULES)) {
+                        char ans[4];
+                        clear();
+                        move(3, 0);
+                        prints("%s版治版方针尚未通过审核, 批号: %d\n", currboard->filename, st.st_mtime);
+                        getdata(t_lines - 1, 0, "您要通过该版的治版方针吗 (Yes/No/Del)? [N] ", ans, 3, DOECHO, NULL, true);
+                        if (ans[0] == 'y' || ans[0] == 'Y') {
+                            int ret;
+                            ret = set_board_rule(currboard, 1);
+                            move(6, 0);
+                            prints("通过%s:%d\n",(ret==0)?"成功":"失败",ret);
+                            pressreturn();
+                        } else if (ans[0] == 'd' || ans[0] == 'D') {
+                            int ret;
+                            ret = set_board_rule(currboard, 2);
+                            move(6, 0);
+                            prints("删除%s!\n", (!ret) ? "成功" : "失败");
+                            pressreturn();
+                        }
+                    } else {
+                        char ans[4];
+                        clear();
+                        move(3, 0);
+                        prints("是否追回%s版治版方针 (Yes/No)? [N] ", ans, 3, DOECHO, NULL, true);
+                        if (ans[0] == 'y' || ans[0] == 'Y') {
+                            int ret;
+                            ret = set_board_rule(currboard, 3);
+                            move(6, 0);
+                            prints("追回%s!\n", (!ret) ? "成功" : "失败");
+                            pressreturn();
+                        }
                     }
                 }
-            }
             break;
         case '7': {
             break;
