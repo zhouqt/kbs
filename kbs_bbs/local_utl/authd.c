@@ -62,6 +62,8 @@ int do_auth(int fd)
             buf[4+num] = '-';
     }
     write(fd, buf, strlen(buf));
+    sprintf(buf, "FL:%ld\n", u->firstlogin);
+    write(fd, buf, strlen(buf));
     //u->lastlogin = time(NULL);
 
     return 0;
