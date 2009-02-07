@@ -20,6 +20,7 @@ PHP_FUNCTION(bbs_sendactivation);
 #ifdef NEWSMTH
 PHP_FUNCTION(bbs_getinvite_email);
 PHP_FUNCTION(bbs_cleaninvite);
+PHP_FUNCTION(bbs_invite);
 #endif
 
 #define PHP_BBS_REG_EXPORT_FUNCTIONS1 \
@@ -43,7 +44,8 @@ PHP_FUNCTION(bbs_cleaninvite);
 #if defined(NEWSMTH) && defined(HAVE_ACTIVATION)
 #define PHP_BBS_REG_EXPORT_FUNCTIONS3 \
     PHP_FE(bbs_getinvite_email, NULL) \
-    PHP_FE(bbs_cleaninvite, NULL)
+    PHP_FE(bbs_cleaninvite, NULL) \
+    PHP_FE(bbs_invite, NULL)
 #else
 #define PHP_BBS_REG_EXPORT_FUNCTIONS3
 #endif

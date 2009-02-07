@@ -838,5 +838,56 @@ PHP_FUNCTION(bbs_cleaninvite)
 
     RETURN_LONG(ret);
 }
+
+PHP_FUNCTION(bbs_invite)
+{
+    char *email, *word;
+    int email_len, word_len, ret;
+    struct userdata ud;
+
+    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &email, &email_len, &word, &word_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+
+    if (!HAS_PERM(getCurrentUser(), PERM_POST)) {
+        RETURN_LONG(-1);
+    }
+    
+    if (read_userdata(getCurrentUser()->userid, &ud) < 0) {
+        RETURN_LONG(-2);
+    }
+
+    if ((ud.lastinvite > time(NULL) - 86400) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+        RETURN_LONG(-3);
+    }
+
+    if (invalidaddr(email) || !strstr(email, "@") || !strstr(email, ".")) {
+        RETURN_LONG(-4);
+    }
+    
+    ret = send_invite(getCurrentUser(), getSession(), email, word);
+    if(ret >= 0) {
+        FILE *fout;
+        char buf2[STRLEN], buf3[STRLEN];
+
+        ud.lastinvite=time(NULL);
+        write_userdata(getCurrentUser()->userid, &ud);
+
+        sprintf(buf3, "tmp/sendinvite.%s",getCurrentUser()->userid);
+        if ((fout = fopen(buf3, "w")) != NULL) {
+            fprintf(fout, "ÎÒµÄ IP      : %s\n", getSession()->fromhost);
+            fclose(fout);
+            sprintf(buf2, "%sÑûÇë%s (WEB)", getCurrentUser()->userid, email);
+            post_file(getCurrentUser(), "", buf3, "Invite", buf2, 0, 2, getSession());
+            unlink(buf3);
+        }
+    }
+    else {
+        RETURN_LONG(-5);
+    }
+
+    RETURN_LONG(0);
+}
+
 #endif /* defined(NEWSMTH) && defined(HAVE_ACTIVATION) */
 
