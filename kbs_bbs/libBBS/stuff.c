@@ -2716,11 +2716,11 @@ int send_invite(struct userec *user, session_t* session, char *email, char *msg)
         return -1;
 
     fprintf(fp,"%s 邀请您光临水木社区\n", user->userid);
-    fprintf(fp,"您可以直接注册成为社区一员,注册地址:\n    http://www.newsmth.net/bbsinvite.php?s=%s&p=%s\n", in.inviteid, in.passwd);
+    fprintf(fp,"您可以直接注册成为社区一员,注册地址:\n    http://www.newsmth.net/bbsinvite.php?s=%s&p=%s \n", in.inviteid, in.passwd);
     if (expireday)
         fprintf(fp, "有效期 %d 天，超过有效期您也可以通过http://www.newsmth.net/随时注册成水木社区一员\n", expireday);
     if (msg[0])
-        fprintf(fp, "%s 还想对您说: %s\n\n", user->userid, msg);
+        fprintf(fp, "\n %s 还想对您说: %s\n\n", user->userid, msg);
 
     if ((fpp=fopen(INVITEFILE,"r"))!=NULL) {
         char tmp[256];
