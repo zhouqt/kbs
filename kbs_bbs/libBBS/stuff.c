@@ -2800,7 +2800,7 @@ int clean_invite(char *userid, char *inviteid)
 {
     struct invite in;
     char f[PATHLEN];
-    struct userec *uc;
+    struct userec *uc, *inuser;
     struct activation_info ai;
 
     if (getuser(userid,&uc)==0)
@@ -2836,6 +2836,23 @@ int clean_invite(char *userid, char *inviteid)
 
     doactivation(&ai, uc, getSession());
     uc->firstlogin -= REGISTER_WAIT_TIME;
+
+    /* add score, pig2532 */
+    if (getuser(in.userid, &inuser)) {
+        FILE *fout;
+        char buf[STRLEN], buf2[STRLEN];
+        unsigned int old_score;
+        old_score = inuser->score_user;
+        inuser->score_user += 0;
+        sprintf(buf, "tmp/invite.score.%d", getpid());
+        if ((fout = fopen(buf, "w")) != NULL) {
+            fprintf(fout, "给 %s 增加用户积分 %d 分 ( %d -> %d )\n", inuser->userid, 0, old_score, inuser->score_user);
+            fclose(fout);
+            sprintf(buf2, "%s 邀请我", inuser->userid);
+            //post_file(uc, "", buf, "ScoreClub", buf2, 0, 2, getSession());
+            unlink(buf);
+        }
+    }
 
     return 1;
 }
