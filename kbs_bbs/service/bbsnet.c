@@ -10,6 +10,7 @@
 
 SMTH_API struct user_info uinfo;
 SMTH_API int msg_count;
+SMTH_API int t_lines, t_columns;
 
 #define TIME_OUT	15
 #define MAX_PROCESS_BAR_LEN 30
@@ -288,7 +289,24 @@ bbsnet_read(int fd, char *buf, int len)
 	return rc;
 }
 
-int bbsnet(int n)
+static void bbsnet_send_winsize(int fd)
+{
+    char cmd[10];
+    cmd[0] = 255;
+    cmd[1] = 250;
+    cmd[2] = 31;
+    cmd[3] = t_columns >> 8;
+    cmd[4] = t_columns & 0xff;
+    cmd[5] = t_lines >> 8;
+    cmd[6] = t_lines & 0xff;
+    cmd[7] = 255;
+    cmd[8] = 240;
+    
+    write(fd, cmd, 9);
+}
+
+
+int bbsnet(struct _select_def *conf, int n)
 {
 	time_t now;
 	struct hostent *pHost = NULL;
@@ -303,6 +321,7 @@ int bbsnet(int n)
 	int i;
 	sig_t oldsig;
 	int ret;
+    int key;
 
 	now = time(NULL);
 	clear();
@@ -372,6 +391,7 @@ int bbsnet(int n)
 	bbsnet_report(host1[n], ip[n], now, 0);
 	clear();
 	refresh();
+    bbsnet_send_winsize(sockfd);
 	for (;;)
 	{
 		FD_ZERO(&readset);
@@ -428,6 +448,9 @@ int bbsnet(int n)
 			}
 			if (rc == 0)
 				break;
+            if ((key = list_select_remove_key(conf)) != KEY_INVALID)
+                if (key == KEY_ONSIZE)
+                    bbsnet_send_winsize(sockfd);
 			write(sockfd, buf, rc);
 		}
 	}
@@ -442,7 +465,7 @@ on_error:
 
 static int bbsnet_onselect(struct _select_def *conf)
 {
-	bbsnet(conf->pos-1);
+	bbsnet(conf, conf->pos-1);
 	bbsnet_redraw=true;
 	return SHOW_REFRESH;
 }
