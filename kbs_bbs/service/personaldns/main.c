@@ -6,7 +6,7 @@
 
 #ifdef HAVE_PERSONAL_DNS
 extern int update_dns(const char *server, const char *zone, const char *keyname,
-    const char *key, const char *host, const char *ip, int ttl); 
+                          const char *key, const char *host, const char *ip, int ttl);
 
 #define MAX_COUNT 100
 #define MAX_REQUEST 100000 //after MAX_REQUEST times,fork a new nsupdate
@@ -20,39 +20,41 @@ FILE* nsupdate_pipe=NULL;
 
 int reread;
 bool doflush;
-int getconf(char* key,char* value,int len) {
+int getconf(char* key,char* value,int len)
+{
     char* data;
     data=sysconf_str(key);
     if (data==NULL) {
-    	return -1;
+        return -1;
     }
     strncpy(value,data,len-1);
     value[len-1]=0;
     return 0;
 }
 
-int readconfig() {
+int readconfig()
+{
     if (nsupdate_pipe!=NULL) {
         fprintf(nsupdate_pipe,"quit\n");
-        pclose(nsupdate_pipe); 
+        pclose(nsupdate_pipe);
     }
     if (getconf("DNS_UPDATE_ZONE",dns_zone,50)!=0) {
-    	bbslog("3error","please configure dns_update_key!\n");
-	return -1;
+        bbslog("3error","please configure dns_update_key!\n");
+        return -1;
     }
 
     if (getconf("DNS_UPDATE_KEYNAME",update_keyname,20)!=0) {
-    	bbslog("3error","please configure dns_update_key!\n");
-    	return -1;
+        bbslog("3error","please configure dns_update_key!\n");
+        return -1;
     }
 
     if (getconf("DNS_UPDATE_KEY",update_key,99)!=0) {
-    	bbslog("3error","please configure dns updat_key!\n");
-    	return -1;
+        bbslog("3error","please configure dns updat_key!\n");
+        return -1;
     }
     if (getconf("DNS_UPDATE_SERVER",dns_server,50)!=0) {
-    	bbslog("3error","please configure dns update server!\n");
-    	return -1;
+        bbslog("3error","please configure dns update server!\n");
+        return -1;
     }
     dns_ttl=sysconf_eval("DNS_TTL", 60);
 
@@ -99,7 +101,7 @@ int main()
     umask(027);
 
     chdir(BBSHOME);
-    reread=0; 
+    reread=0;
 
     dnscount=0;
     act.sa_handler = reconfig;
@@ -107,7 +109,7 @@ int main()
 
     act.sa_handler = reconfig;
     sigaction(SIGPIPE, &act, NULL);
-    
+
     act.sa_handler = flush_buffer;
     sigaction(SIGALRM, &act, NULL);
 #ifdef AIX
@@ -126,7 +128,7 @@ int main()
     setregid(BBSGID, BBSGID);
     dodaemon("bbsnsupdated", true, false);
     if (readconfig()!=0) return -1;
-    
+
     msqid = msgget(sysconf_eval("BBSDNS_MSG", 0x999), IPC_CREAT | 0664);
     if (msqid < 0)
         return -1;
@@ -149,7 +151,7 @@ int main()
             requestcount++;
             if (dnscount>=MAX_COUNT)
                 doflush=true;
-	     bbslog("3error","update dns %s %s",msg.userid,msg.ip);
+            bbslog("3error","update dns %s %s",msg.userid,msg.ip);
         }
 
         if (doflush&&dnscount) {
@@ -161,9 +163,9 @@ int main()
             reread=true;
             requestcount=0;
         }
-        if (reread) 
+        if (reread)
             if (readconfig()!=0) {
-            	bbslog("3error","bbsupdated config error");
+                bbslog("3error","bbsupdated config error");
             }
     }
     fprintf(nsupdate_pipe,"quit\n");

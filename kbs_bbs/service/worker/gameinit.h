@@ -10,20 +10,18 @@
 const char SectionStart = '[';
 const char SectionEnd = ']';
 #else
-#define SectionStart	'['
-#define SectionEnd		']'
+#define SectionStart '['
+#define SectionEnd  ']'
 #endif
 
-typedef struct _PadPoint
-{
-	unsigned int start, end;
-	unsigned int pos;
-	int orientation;
+typedef struct _PadPoint {
+    unsigned int start, end;
+    unsigned int pos;
+    int orientation;
 } PadPoint;
 
-typedef struct _BoxPoint
-{
-	unsigned int x, y;
+typedef struct _BoxPoint {
+    unsigned int x, y;
 } BoxPoint;
 
 void DestroyPad(void);
