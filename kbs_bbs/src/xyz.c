@@ -968,7 +968,7 @@ void myexec_cmd(int umode,const char *cmdfile,const char *param)
         if (p[1] != 0)
             dup2(p[1], 0);
         dup2(0, 1);
-        dup2(0, 2);
+        //dup2(0, 2);
         if (param1[0]) {
             execl(cmdfile, cmdfile, param1, getCurrentUser()->userid, NULL);
         } else {
