@@ -583,7 +583,7 @@ static inline int edit_cross_content(const char *name,char *new_file_name,unsign
 
 #ifdef REMOTE_CROSS
 
-#define REMOTE_SITE_NAME "水木二站"
+#define REMOTE_SITE_NAME "水木社区主站"
 
 struct rc_res {
     char text[STRLEN];
@@ -629,7 +629,7 @@ int do_remote_cross(struct fileheader* fh, int inmail)
     else
         setbfile(fname, currboard->filename, fh->filename);
     handle = curl_easy_init();
-    curl_easy_setopt(handle, CURLOPT_URL, "http://127.0.0.1:10080/bbsremotepost.php");
+    curl_easy_setopt(handle, CURLOPT_URL, "http://10.0.4.238:8006/bbsremotepost.php");
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "rpid", CURLFORM_COPYCONTENTS, rpid, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "user", CURLFORM_COPYCONTENTS, getCurrentUser()->userid, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "board", CURLFORM_COPYCONTENTS, bname, CURLFORM_END);
@@ -668,7 +668,7 @@ int do_remote_cross(struct fileheader* fh, int inmail)
     curl_slist_free_all(header);
 
     unlink(fname);
-    sprintf(buf, "transferred '%s' on '%s' to '%s'@2", fh->title, currboard->filename, bname);
+    sprintf(buf, "transferred '%s' on '%s' to '%s'@1", fh->title, currboard->filename, bname);
     newbbslog(BBSLOG_USER, "%s", buf);
 
     move(6, 0);
@@ -3144,6 +3144,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     anonyboard = anonymousboard(currboard->filename);     /* 是否为匿名版 */
     if (!strcmp(currboard->filename, "Announce") || (!strcmp(currboard->filename, "Penalty")))
         Anony = 1;
+#ifdef SECONDSITE
+    else if (!strcmp(currboard->filename, "Sex"))
+        Anony = 0;
+#endif
     else if (anonyboard)
         Anony = ANONYMOUS_DEFAULT;
     else
@@ -3860,7 +3864,7 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         setbfile(buff, currboard->filename, fileinfo->filename);
         post_file(getCurrentUser(), "", buff, "AnonyDeny", title, 0, 2, getSession());
 #ifdef SECONDSITE
-        if (strcmp(currboard->filename, "SecretSky") == 0)
+        if ((strcmp(currboard->filename, "SecretSky") == 0)||(strcmp(currboard->filename, "Sex") == 0))
             getuser("guest", &u_deny);
         else
 #endif /* SECONDSITE */
