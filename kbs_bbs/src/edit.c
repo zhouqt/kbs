@@ -1222,7 +1222,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
                         /*如果不是签名档分隔符*/
                         if (sign_size!=0) /*在可能的签名档中*/
                             sign_size+=strlen(p->data);
-                        else if((edit_or_post==1 && encounter>=4) || edit_or_post==0)
+                        else if ((edit_or_post==1 && encounter>=4) || edit_or_post==0)
                             *effsize+=strlen(p->data);
                     }
                 }
