@@ -3144,6 +3144,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     anonyboard = anonymousboard(currboard->filename);     /* ÊÇ·ñÎªÄäÃû°æ */
     if (!strcmp(currboard->filename, "Announce") || (!strcmp(currboard->filename, "Penalty")))
         Anony = 1;
+#ifdef SECONDSITE
+    else if (!strcmp(currboard->filename, "Sex"))
+        Anony = 0;
+#endif
     else if (anonyboard)
         Anony = ANONYMOUS_DEFAULT;
     else
@@ -3860,7 +3864,8 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         setbfile(buff, currboard->filename, fileinfo->filename);
         post_file(getCurrentUser(), "", buff, "AnonyDeny", title, 0, 2, getSession());
 #ifdef SECONDSITE
-        if (strcmp(currboard->filename, "SecretSky") == 0)
+        if (strcmp(currboard->filename, "SecretSky") == 0
+                || strcmp(currboard->filename, "Sex") == 0)
             getuser("guest", &u_deny);
         else
 #endif /* SECONDSITE */
