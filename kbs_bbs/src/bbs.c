@@ -5218,7 +5218,6 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
             }
             break;
         case BM_TOTAL:
-        case BM_TMP:
             a_SeSave("0Announce",
                      currboard->filename,
                      fh,
@@ -5229,6 +5228,17 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
                      getCurrentUser()->userid);
             /* add 'total made' flag, pig2532 */
             fh->accessed[0]|=FILE_TOTAL;
+            break;
+        case BM_TMP:
+            a_SeSave("0Announce",
+                     currboard->filename,
+                     fh,
+                     true,
+                     arg->direct,
+                     ent,
+                     !func_arg->saveorigin,
+                     getCurrentUser()->userid);
+            fh->accessed[0]|=FILE_IMPORTED;
             break;
     }
     return ret;
