@@ -733,7 +733,7 @@ char *bname;
             currvote.totalitems = 0;
             break;
     }
-    setvoteflag(bname, 1);
+    //setvoteflag(bname, 1);
     clear();
     /*Haohmaru.99.11.17.根据投票管理员设的限制条件判断是否让该使用者投票 */
     if (HAS_PERM(getCurrentUser(), PERM_SYSOP)
@@ -792,6 +792,7 @@ char *bname;
         char votename[STRLEN];
         int i;
 
+        setvoteflag(bname, 1);
         b_report("OPEN VOTE");
         prints("投票箱已经开启了！\n");
         range++;
