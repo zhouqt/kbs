@@ -283,14 +283,13 @@ PHP_FUNCTION(bbs_check_ban_ip)
     if (check_ban_IP(fromhost, buf) > 0) {
         RETURN_LONG(1);
     }
-    if(getuser(userid, &user)) {
+    if (getuser(userid, &user)) {
         if (strcasecmp(user->userid, "guest") != 0) {
             if (check_ip_acl(user->userid, fromhost)) {
                 RETURN_LONG(2);
             }
         }
-    }
-    else {
+    } else {
         RETURN_LONG(2);
     }
 
