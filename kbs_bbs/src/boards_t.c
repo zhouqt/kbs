@@ -1668,6 +1668,8 @@ static int fav_key(struct _select_def *conf, int command)
                         DelFavBoardDir(ptr->pos,getSession()->favnow, getSession());
                     else
                         DelFavBoard(ptr->pos, getSession());
+                    if (conf->pos == conf->item_count && conf->pos > 1)
+                        conf->pos--;
                     save_favboard(arg->favmode, getSession());
                     arg->father=getSession()->favnow;
                     arg->reloaddata=true;
