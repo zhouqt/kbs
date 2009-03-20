@@ -165,10 +165,18 @@ void printutitle()
 }
 
 
+/* g_board_names() and make_blist()
+ * mode == 1: Add all readable boards
+ * mode == 2: Add all visible boards
+ * mode == 3: Add all managable boards
+ */
 int g_board_names(struct boardheader *fhdrp,void* arg)
 {
     int mode = *((int *) arg);
-    if (((mode == 1) && check_read_perm(getCurrentUser(), fhdrp)) || ((mode == 2) && check_see_perm(getCurrentUser(), fhdrp))) {
+    if (((mode == 1) && check_read_perm(getCurrentUser(), fhdrp))
+            || ((mode == 2) && check_see_perm(getCurrentUser(), fhdrp))
+            || ((mode == 3) && check_read_perm(getCurrentUser(), fhdrp) && chk_currBM(fhdrp->BM, getCurrentUser()))
+       ) {
         AddNameList(fhdrp->filename);
     }
     return 0;

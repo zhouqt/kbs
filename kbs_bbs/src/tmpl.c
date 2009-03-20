@@ -9,18 +9,15 @@ struct a_template * ptemplate = NULL ;
 int template_num = 0;
 int t_now = 0;
 
-
-int tmpl_init(int mode)
+/* load template, see also: orig_tmpl_init(). */
+int tmpl_init_ex(int mode, const char *bname, struct a_template **pptemp)
 {
-
     int newmode=0;
     int ret;
 
-    if (mode==1 || chk_currBM(currBM, getCurrentUser())) newmode = 1;
+    if (mode==1 || chk_BM(bname, getCurrentUser())) newmode = 1;
 
-    ret = orig_tmpl_init(currboard->filename, newmode, & ptemplate);
-
-    if (ret >= 0) template_num = ret;
+    ret = orig_tmpl_init((char*)bname, newmode, pptemp);
 
     if (ret == -2) {
         clear();
@@ -29,12 +26,27 @@ int tmpl_init(int mode)
         pressreturn();
     }
     return ret;
+}
 
+void tmpl_free_ex(struct a_template ** pptemp, int temp_num)
+{
+    orig_tmpl_free(pptemp, temp_num);
+}
+
+int tmpl_init(int mode)
+{
+    int ret;
+
+    ret = tmpl_init_ex(mode, currboard->filename, & ptemplate);
+
+    if (ret >= 0) template_num = ret;
+
+    return ret;
 }
 
 void tmpl_free()
 {
-    orig_tmpl_free(& ptemplate, template_num);
+    tmpl_free_ex(& ptemplate, template_num);
     template_num = 0;
 }
 
@@ -44,6 +56,120 @@ int tmpl_save()
     return orig_tmpl_save(ptemplate, template_num, currboard->filename);
 
 }
+
+/* make a deep copy of one specified template, caller guarantees permission
+ * @to_board, from_board - board name, no NULL.
+ **/
+static int deepcopy(struct a_template *to,   const char *to_board,
+                    struct a_template *from, const char *from_board)
+{
+    if (to == from)
+        return -1;
+
+    /* copy basic structure */
+    if (!(to->tmpl = malloc(sizeof(struct s_template))))
+        return -1;
+
+    memcpy(to->tmpl, from->tmpl, sizeof(struct s_template));
+
+    /* copy questions */
+    if (to->tmpl->content_num > 0) {
+        int size = (to->tmpl->content_num + 1) * sizeof(struct s_content);
+        if (!(to->cont = malloc(size))) {
+            free(to->tmpl); to->tmpl = NULL;
+            return -1;
+        }
+
+        memcpy(to->cont, from->cont, size);
+
+    } else {
+        to->cont = NULL;
+    }
+
+    /* copy template text */
+    if (from->tmpl->filename[0] != '\0') {
+        char to_filepath[STRLEN];
+        char from_filepath[STRLEN];
+
+        setbfile(to_filepath, to_board, "");
+        if (GET_POSTFILENAME(to->tmpl->filename, to_filepath) != 0) {
+            free(to->tmpl); to->tmpl = NULL;
+            free(to->cont); to->cont = NULL;
+            return -2;
+        }
+
+        modify_user_mode(uinfo.mode);
+
+        setbfile(to_filepath, to_board, to->tmpl->filename);
+        setbfile(from_filepath, from_board, from->tmpl->filename);
+        if (f_cp(from_filepath, to_filepath, 0)) {
+            free(to->tmpl); to->tmpl = NULL;
+            free(to->cont); to->cont = NULL;
+            return -3;
+        }
+    }
+
+    return 0;
+}
+
+/* completely destroy a template, caller guarantees permission */
+static void deepfree(struct a_template *ptemp, const char *board)
+{
+    char filepath[STRLEN];
+
+    if (ptemp->tmpl->filename[0]) {
+        setbfile(filepath, board, ptemp->tmpl->filename);
+        if (dashf(filepath))
+            my_unlink(filepath);
+    }
+
+    if (ptemp->tmpl) {
+        free(ptemp->tmpl);
+        ptemp->tmpl = NULL;
+    }
+    if (ptemp->cont) {
+        free(ptemp->cont);
+        ptemp->cont = NULL;
+    }
+}
+
+static struct a_template * get_slot(struct a_template **pptemp, int pos) {
+    /* Note: orig_tmpl_init() has malloced MAX_TEMPLATE slots */
+    return *pptemp + pos - 1;
+}
+
+/* copy template from current board to some board, append it at the end
+ * @board - the destination board
+ * @pptemp - template array of destination board
+ * @temp_size - array size
+ * @pos - which template to copy, conf->pos
+ * @return - 0 on success, -1 otherwise
+ *
+ * Warning: caller should check permission before this call.
+ **/
+int tmpl_copy_to_board(const char *board, struct a_template **pptemp, int *temp_size, int pos)
+{
+    if (!board || !pptemp || !*pptemp
+            || !temp_size || *temp_size < 0 || *temp_size >= MAX_TEMPLATE
+            || pos < 1 || pos > template_num)
+        return -1;
+
+    struct a_template *f = get_slot(&ptemplate, pos);
+    struct a_template *t = get_slot(pptemp, *temp_size + 1);
+
+    if (!deepcopy(t, board, f, currboard->filename)) {
+        if (!orig_tmpl_save(*pptemp, *temp_size + 1, (char*)board)) {
+            (*temp_size)++;
+            return 0;
+        }
+
+        deepfree(t, board);
+    }
+    return -1;
+}
+
+/* copy template within current board */
+#define tmpl_copy(pos) tmpl_copy_to_board(currboard->filename, &ptemplate, &template_num, (pos))
 
 int tmpl_add()
 {
@@ -151,7 +277,7 @@ static int tmpl_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[版面模板设置]",
-               "添加[\x1b[1;32ma\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m 改名[\033[1;32mt\033[0;37m] \033[1;33m查看\033[m 标题[\033[1;32mx\033[m] 正文[\033[1;32ms\033[m] \033[1;33m修改\033[m 标题[\033[1;32mi\033[0;37m] 正文[\033[1;32mf\033[0;37m]");
+               "添加[\x1b[1;32ma\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m 复制[\x1b[1;32mc\x1b[0;37m] 改名[\033[1;32mt\033[0;37m] \033[1;33m查看\033[m 标题[\033[1;32mx\033[m] 正文[\033[1;32ms\033[m] \033[1;33m修改\033[m 标题[\033[1;32mi\033[0;37m] 正文[\033[1;32mf\033[0;37m]");
     move(2, 0);
     prints("\033[0;1;37;44m %4s %-60s %8s", "序号", "模板名称","问题个数");
     clrtoeol();
@@ -329,20 +455,55 @@ static int content_key(struct _select_def *conf, int key)
     return SHOW_CONTINUE;
 }
 
+#define _prompt(message) \
+    do { \
+        char ans[STRLEN]; \
+        move(t_lines - 1, 0); \
+        clrtoeol(); \
+        a_prompt(-1, (message), ans); \
+        move(t_lines - 1, 0); \
+        clrtoeol(); \
+    } while (0)
+
+#define tmpl_check_limit(templ_num) \
+    do { \
+        if (templ_num >= MAX_TEMPLATE) { \
+            _prompt("模板已满，按回车继续 << "); \
+            return SHOW_DIRCHANGE; \
+        } \
+    } while (0)
+
+#define tmpl_check_BM(bname) \
+    do { \
+        int tcB_ret; \
+        if (!strcmp(bname, currboard->filename)) \
+            tcB_ret = chk_currBM(currBM, getCurrentUser()); \
+        else \
+            tcB_ret = chk_BM(bname, getCurrentUser()); \
+        if (!tcB_ret) { \
+            _prompt("权限不够，按回车继续 << "); \
+            return SHOW_DIRCHANGE; \
+        } \
+    } while (0)
+
+#define tmplcp_sorry() \
+    do { \
+        _prompt("复制失败，按回车继续 << "); \
+        return SHOW_DIRCHANGE; \
+    } while (0)
+
+#define tmplcp_success() \
+    do { \
+        _prompt("复制成功！按回车继续 ..."); \
+        return SHOW_DIRCHANGE; \
+    } while (0)
+
 static int tmpl_key(struct _select_def *conf, int key)
 {
     int oldmode;
     switch (key) {
         case 'a' :
-            if (template_num >= MAX_TEMPLATE) {
-                char ans[STRLEN];
-                move(t_lines - 1, 0);
-                clrtoeol();
-                a_prompt(-1, "模板已满，按回车继续 << ", ans);
-                move(t_lines - 1, 0);
-                clrtoeol();
-                return SHOW_CONTINUE;
-            }
+            tmpl_check_limit(template_num);
             tmpl_add();
             return SHOW_DIRCHANGE;
             break;
@@ -352,24 +513,15 @@ static int tmpl_key(struct _select_def *conf, int key)
             getdata(t_lines - 1, 0, "确实要删除吗(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
             if (ans[0] == 'Y' || ans[0] == 'y') {
                 int i;
-                char filepath[STRLEN];
 
-                if (ptemplate[conf->pos-1].tmpl->filename[0]) {
-                    setbfile(filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
-                    if (dashf(filepath))
-                        my_unlink(filepath);
-                }
-
-                if (ptemplate[conf->pos-1].tmpl != NULL)
-                    free(ptemplate[conf->pos-1].tmpl);
-                if (ptemplate[conf->pos-1].cont != NULL)
-                    free(ptemplate[conf->pos-1].cont);
+                deepfree(ptemplate + conf->pos - 1, currboard->filename);
 
                 template_num--;
                 for (i=conf->pos-1;i<template_num;i++)
                     memcpy(ptemplate+i, ptemplate+i+1, sizeof(struct a_template));
                 ptemplate[template_num].tmpl = NULL;
                 ptemplate[template_num].cont = NULL;
+
 
                 tmpl_save();
             }
@@ -379,7 +531,54 @@ static int tmpl_key(struct _select_def *conf, int key)
                 return SHOW_QUIT;
         }
         break;
-        /* etnlegend, 2006.05.19, move templates... */
+        case 'c':
+            do {
+                extern bool in_do_sendmsg;
+                extern int super_select_board(char *bname);
+
+                int ret;
+                char bname[STRLEN] = "";
+
+                move(0,0);clrtoeol();
+                prints("%s","复制到讨论区 [ \033[1;32m#\033[m - \033[1;31m版面名称/关键字搜索\033[m, "
+                       "\033[1;32mSPACE/TAB\033[m - 自动补全, \033[1;32mESC\033[m - 退出 ]");
+                move(1,0);clrtoeol();
+                prints("请输入讨论区名称 [\033[1;32m%s\033[m]: ",currboard->filename);
+
+                make_blist(0, 3);
+                in_do_sendmsg=1;
+                if ((ret=namecomplete(NULL,bname))=='#') {
+                    super_select_board(bname);
+                }
+                in_do_sendmsg=0;
+                CreateNameList();   /*  free list memory. */
+
+                if (ret == KEY_ESC) {
+                    /* noop */
+                } else if (!*bname || !strcmp(bname, currboard->filename)) {
+                    /* copy to current board */
+                    tmpl_check_BM(bname); /* sanity check, how about stick here when deposing? */
+                    tmpl_check_limit(template_num);
+                    if (tmpl_copy(conf->pos))
+                        tmplcp_sorry();
+                    else
+                        tmplcp_success();
+                } else { /* copy to another board */
+                    struct a_template *ptemp;
+                    int temp_num = tmpl_init_ex(0, bname, &ptemp);
+                    if (temp_num >= 0) {
+                        tmpl_check_BM(bname); /* sanity check */
+                        tmpl_check_limit(temp_num);
+                        if (tmpl_copy_to_board(bname, &ptemp, &temp_num, conf->pos))
+                            tmplcp_sorry();
+                        else
+                            tmplcp_success();
+                        tmpl_free_ex(&ptemp, temp_num);
+                    }
+                }
+            } while (0);
+            return SHOW_DIRCHANGE;
+            /* etnlegend, 2006.05.19, move templates... */
         case 'm':
             do {
                 struct a_template temp;

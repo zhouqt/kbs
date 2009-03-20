@@ -1155,6 +1155,22 @@ int chk_currBM(const char *BMstr, const struct userec *user)
     return chk_BM_instr(BMstr, user->userid);
 }
 
+/* check if the given user is BM of specified board.
+ * @bname - board name.
+ * @user  - userec struct.
+ * @return - true if is BM, false otherwise.
+ */
+int chk_BM(const char *bname, const struct userec *user)
+{
+    char BM[BM_LEN];
+    const struct boardheader *pbh;
+    if (getbid(bname, &pbh) > 0)
+        memcpy(BM, pbh->BM, BM_LEN);
+    else
+        return false;
+
+    return chk_currBM(BM, user);
+}
 
 /*stephen : check whether current useris in the list of "jury" 2001.11.1*/
 static int isJury(const struct userec *user, const struct boardheader *board)

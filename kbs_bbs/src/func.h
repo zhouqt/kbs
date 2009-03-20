@@ -395,6 +395,7 @@ while(0)
 #endif /* NEWSMTH */
     int chk_BM_instr(const char *BMstr, const char *bmname);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char *BMstr, const struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
+    int chk_BM(const char *bname, const struct userec *user); /* 根据版面名称判断 user 是否有版主权限 ... */
     int check_board_delete_read_perm(const struct userec *user,const struct boardheader *board, int jury);
     int check_board_junk_read_perm(const struct userec *user,const struct boardheader *bh);
     int deldeny(struct userec *user, char *board, char *uident, int notice_only, int dobmlog, session_t* session);       /* 删除 禁止POST用户 */
