@@ -127,6 +127,9 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
                 --with-apxs2=$(WWWHOME)/bin/apxs
     [补充] php5 不默认编译 mysql 支持，所以如果需要 mysql 支持的话，应该
            在 php 的 configure 命令中加入 --with-mysql
+    [补充] 在64位下编译的时候有时候会碰到找不到64位库的问题。
+           在 php 的 configure 命令中加入 --with-libdir=lib64 强制它在链接lib64
+           目录下的库
 
 2.5 安装 kbsbbs
     同样切换到 $(SRCDIR) 目录，进入 kbsbbs 的源代码目录。
