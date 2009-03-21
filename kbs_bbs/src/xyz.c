@@ -256,7 +256,7 @@ int confirm_delete_id(void)
 int x_mj(void)
 {
     myexec_cmd(BBSNET,"bin/qkmj",NULL);
-    clear();
+    redoscr();
     pressreturn();
     clear();
     return 0;
