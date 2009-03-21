@@ -554,7 +554,7 @@ static int tmpl_key(struct _select_def *conf, int key)
                     /* noop */
                 } else if (!*bname || !strcmp(bname, currboard->filename)) {
                     /* copy to current board */
-                    tmpl_check_BM(bname); /* sanity check, how about stick here when deposing? */
+                    tmpl_check_BM(currboard->filename); /* sanity check, how about stick here when deposing? */
                     tmpl_check_limit(template_num);
                     if (tmpl_copy(conf->pos))
                         tmplcp_sorry();
