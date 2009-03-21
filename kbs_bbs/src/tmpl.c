@@ -540,16 +540,13 @@ static int tmpl_key(struct _select_def *conf, int key)
                 char bname[STRLEN] = "";
 
                 move(0,0);clrtoeol();
-                prints("%s","复制到讨论区 [ \033[1;32m#\033[m - \033[1;31m版面名称/关键字搜索\033[m, "
-                       "\033[1;32mSPACE/TAB\033[m - 自动补全, \033[1;32mESC\033[m - 退出 ]");
+                prints("%s","复制到讨论区 [ \033[1;32mSPACE/TAB\033[m - 自动补全, \033[1;32mESC\033[m - 退出 ]");
                 move(1,0);clrtoeol();
                 prints("请输入讨论区名称 [\033[1;32m%s\033[m]: ",currboard->filename);
 
                 make_blist(0, 3);
                 in_do_sendmsg=1;
-                if ((ret=namecomplete(NULL,bname))=='#') {
-                    super_select_board(bname);
-                }
+                ret = namecomplete(NULL, bname);
                 in_do_sendmsg=0;
                 CreateNameList();   /*  free list memory. */
 
