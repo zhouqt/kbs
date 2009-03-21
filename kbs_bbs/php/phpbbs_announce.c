@@ -1048,7 +1048,7 @@ PHP_FUNCTION(bbs_ann_editfile)
     }
     fclose(fin);
     fclose(fout);
-    f_cp(tmpfpath, fpath, O_TRUNC);
+    f_cp(tmpfpath, fpath, 0);
     unlink(tmpfpath);
 
     if (strcmp(fname, newfname)) {
@@ -1270,8 +1270,11 @@ PHP_FUNCTION(bbs_ann_paste)
                         continue;
                     if (delsource)
                         f_mv(sfpath, dfpath);
-                    else
-                        f_cp(sfpath, dfpath, O_TRUNC);
+                    else if (dashd(sfpath)) {
+                        sprintf(buf, "/bin/cp -pr %s %s", sfpath, dfpath);
+                        system(buf);
+                    } else
+                        f_cp(sfpath, dfpath, 0);
                     find = false;
                     for (i=0; i<sme.num; i++) {
                         if (strcmp(fname, M_ITEM(&sme,i)->fname) == 0) {
@@ -1317,7 +1320,7 @@ PHP_FUNCTION(bbs_ann_paste)
                     strcpy(fh.filename, fname);
                     ann_get_postfilename(newfname, &fh, &dme);
                     snprintf(dfpath, PATHLEN, "%s/%s", dpath, newfname);
-                    f_cp(sfpath, dfpath, O_TRUNC);
+                    f_cp(sfpath, dfpath, 0);
                     a_additem(&dme, title, newfname, NULL, 0, 0);
                 }
             }
