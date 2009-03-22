@@ -62,7 +62,7 @@ page_header("编辑文件", "精华区操作");
 		<div class="inputs">
 			<div style="color:#FF0000"><?php echo $text; ?></div>
 			<label>文件名：</label><input type="text" maxlength="38" size="15" name="filename" value="<?php echo htmlspecialchars($newfname); ?>"><br>
-			<label>标　题：</label><input type="text" maxlength="38" size="38" name="title" value="<?php echo htmlspecialchars($newtitle); ?>"><br>
+			<label>标　题：</label><input type="text" maxlength="38" size="38" name="title" value="<?php echo trim(htmlspecialchars($newtitle)); ?> "><br>
 			<textarea name="content"><?php echo htmlspecialchars($newcontent); ?></textarea>
 		</div>
 	</fieldset>
