@@ -28,7 +28,7 @@ CREATE TABLE `help` (
   `content` text,
   PRIMARY KEY  (`id`),
   KEY `modeid` (`modeid`)
-) ENGINE=MyISAM AUTO_INCREMENT=297 DEFAULT CHARSET=latin1 COMMENT='?????;
+) ENGINE=MyISAM AUTO_INCREMENT=297 DEFAULT CHARSET=latin1 COMMENT='newhelp';
 
 --
 -- Dumping data for table `help`
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-03-24 16:05:28
+-- Dump completed on 2009-03-24 16:13:40
