@@ -241,7 +241,7 @@ int add_help(int mode, int num)
     multi_getdata(5, 0, 79, NULL, ans, 500, 15, false, 0);
 
     if (add_new_help(mode, &pn, ans, num) == 0) {
-        prints("\n增加成功\n");
+        prints("\n%s成功\n", (num == -1) ? "增加" : "修改");
         pressanykey();
         return 0;
     } else
