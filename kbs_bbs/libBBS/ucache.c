@@ -215,7 +215,7 @@ unsigned int ucache_hash(const char *userid)
         n2 += (n - 47) * len;
         len--;
     }
-    n1 = (n1 + n2 % UCACHE_HASHBSIZE) % UCACHE_HASHSIZE + 1;
+    n1 = (n1 - 1 + n2 % UCACHE_HASHBSIZE) % UCACHE_HASHSIZE + 1;
     return n1;
 }
 
