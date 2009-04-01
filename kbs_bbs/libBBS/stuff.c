@@ -1357,7 +1357,7 @@ static int check_IP_core(const char *file, const char *IP, char *reason, bool ha
         if ((p = strchr(q, ' '))) //split IP from reason
             *p++ = 0;
         if (IPmatch(IP, q)) {
-            if (p && *p)
+            if (reason && p && *p)
                 strcpy(reason, p);
             return 1;
         }
