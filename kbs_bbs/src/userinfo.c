@@ -1171,7 +1171,7 @@ int modify_userinfo(int uid,int mode)
     while(0)
     static const char *prefix[MU_ITEM]={
         "用户名称","用户密码","用户昵称","真实姓名","用户性别",
-        "出生日期","通信地址","电子邮件","联系电话","用户身份",
+        "出生日期","目前住址","电子邮件","联系电话","用户身份",
         "注册资料","注册时间","最近访问","登录来源","登录统计",
         "发文统计","在线统计","积分统计","用户权限","结束操作"
     };
@@ -1475,7 +1475,7 @@ int modify_userinfo(int uid,int mode)
 #endif /* HAVE_BIRTHDAY */
                 case MOD_ADDRESS:
                     MU_SHOW_HINT(i);
-                    MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的通信地址..."));
+                    MU_PUT(MU_CURR_ROW,MU_MSG(Y,"请输入新的住址..."));
                     MU_GET(MU_CURR_ROW,MU_MSG(Y,": "),buf,64);
                     MU_BREAK_TRIM(buf);
                     snprintf(ndata.address,STRLEN,"%s",buf);
