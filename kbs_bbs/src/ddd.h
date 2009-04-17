@@ -35,6 +35,7 @@ int ddd_entry();
 int ddd_read_loop();
 int ddd_header();
 int ddd_read_all();
+int ddd_read_new();
 int ddd_read_unknown();
 
 #endif /* DDD_ACTIVE */

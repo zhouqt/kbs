@@ -53,6 +53,10 @@ int ddd_entry()
             DDD_GS_CURR.type = GS_ALL;
             DDD_GS_CURR.sec = (int)ans[0];
             DDD_GS_CURR.pos = 1;
+        } else if ((ans[0] == 'x') || (ans[0] == 'X')) {
+            DDD_GS_CURR.type = GS_NEW;
+            DDD_GS_CURR.favid = 0;
+            DDD_GS_CURR.pos = 1;
         } else if (ans[0] == 0)
             break;
         ddd_read_loop();
@@ -72,6 +76,10 @@ int ddd_read_loop()
 
             case GS_ALL:
                 ddd_read_all();
+                break;
+
+            case GS_NEW:
+                ddd_read_new();
                 break;
 
             default:
@@ -196,39 +204,46 @@ static int check_newpost(struct newpostdata *ptr)
 }
 
 
-// type=GS_ALL的阅读函数:
+// 版面列表状态共用函数
 
 // select的参数
-struct ddd_read_all_arg {
+struct ddd_read_list_arg {
     struct newpostdata *boardlist;
 };
 
 // select回调函数 读取版面列表
-static int ddd_read_all_getdata(struct _select_def* conf, int pos, int len)
+static int ddd_read_list_getdata(struct _select_def* conf, int pos, int len)
 {
-    struct ddd_read_all_arg *arg;
+    struct ddd_read_list_arg *arg;
     char *prefix, buf[STRLEN];
 
-    arg = (struct ddd_read_all_arg *)(conf->arg);
-    // 全部版面
-    if (DDD_GS_CURR.sec == 0)
-        prefix = NULL;
-    // 分类讨论区的某一区
-    else {
-        sprintf(buf, "EGROUP%c", (char)(DDD_GS_CURR.sec));
-        prefix = sysconf_str(buf);
+    arg = (struct ddd_read_list_arg *)(conf->arg);
+    // 读取全部或分区版面列表
+    if (DDD_GS_CURR.type == GS_ALL) {
+        // 全部版面
+        if (DDD_GS_CURR.sec == 0)
+            prefix = NULL;
+        // 分类讨论区的某一区
+        else {
+            sprintf(buf, "EGROUP%c", (char)(DDD_GS_CURR.sec));
+            prefix = (char *)sysconf_str(buf);
+        }
+        conf->item_count = load_boards(arg->boardlist, prefix, 0, pos, len, 0, 0, NULL, getSession());
     }
-    conf->item_count = load_boards(arg->boardlist, prefix, 0, pos, len, 0, 0, NULL, getSession());
+    // 读取新分类讨论区
+    else if (DDD_GS_CURR.type == GS_NEW) {
+        conf->item_count = fav_loaddata(arg->boardlist, DDD_GS_CURR.favid, pos, len, 0, NULL, getSession());
+    }
     return SHOW_CONTINUE;
 }
 
 // select回调函数 选择了某一个版面
-static int ddd_read_all_onselect(struct _select_def* conf)
+static int ddd_read_list_onselect(struct _select_def* conf)
 {
-    struct ddd_read_all_arg *arg;
+    struct ddd_read_list_arg *arg;
     struct newpostdata *ptr;
 
-    arg = (struct ddd_read_all_arg *)(conf->arg);
+    arg = (struct ddd_read_list_arg *)(conf->arg);
     ptr = &(arg->boardlist[conf->pos - conf->page_pos]);
     // 如果是目录版面
     if (ptr->flag & BOARD_GROUP) {
@@ -249,13 +264,13 @@ static int ddd_read_all_onselect(struct _select_def* conf)
 }
 
 // select回调函数 显示版面信息
-static int ddd_read_all_showdata(struct _select_def* conf, int pos)
+static int ddd_read_list_showdata(struct _select_def* conf, int pos)
 {
-    struct ddd_read_all_arg *arg;
+    struct ddd_read_list_arg *arg;
     struct newpostdata *ptr;
     char flag[20], f, onlines[20], tmpBM[BM_LEN + 1];
 
-    arg = (struct ddd_read_all_arg *)(conf->arg);
+    arg = (struct ddd_read_list_arg *)(conf->arg);
     ptr = &(arg->boardlist[pos - conf->page_pos]);
 
     // 目录版面包含的版面数
@@ -269,44 +284,50 @@ static int ddd_read_all_showdata(struct _select_def* conf, int pos)
         prints(" %4d%s%s ", ptr->total, (ptr->total > 99999) ? "" : ((ptr->total > 9999) ? " " : "  "), ptr->unread ? "◆" : "◇");
         sprintf(onlines, "%4d", (ptr->currentusers > 9999) ? 9999 : ptr->currentusers);
     }
-    // 俱乐部标记
-    if ((ptr->flag & BOARD_CLUB_READ) && (ptr->flag & BOARD_CLUB_WRITE))
-        f = 'A';
-    else if (ptr->flag & BOARD_CLUB_READ)
-        f = 'c';
-    else if (ptr->flag & BOARD_CLUB_WRITE)
-        f = 'p';
-    else
-        f = ' ';
-    sprintf(flag, "\033[1;3%cm%c", (ptr->flag & BOARD_CLUB_HIDE) ? '1' : '3', f);
-    // 版面英文名和投票标记
-    prints(" %-16s%s%s", ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "\033[1;31mV" : " ", flag);
-    // 只读标记和中文叙述
-    if (checkreadonly(ptr->name))
-        prints("\033[1;32m[只读]\033[m%-32s", ptr->title + 7);
-    else
-        prints("\033[m%-32s", ptr->title + 1);
-    // 在线人数和版大
-    strncpy(tmpBM, ptr->BM, BM_LEN);
-    tmpBM[BM_LEN] = 0;
-    prints(" %s %-12s", onlines, (ptr->BM[0] <= ' ') ? "诚征版主中" : strtok(tmpBM, " "));
+    // 是新分类讨论区或个人定制区的目录
+    if(ptr->dir >= 1) {
+        prints(" %s", ptr->title);
+    // 是一般的版面或目录版面
+    } else {
+        // 俱乐部标记
+        if ((ptr->flag & BOARD_CLUB_READ) && (ptr->flag & BOARD_CLUB_WRITE))
+            f = 'A';
+        else if (ptr->flag & BOARD_CLUB_READ)
+            f = 'c';
+        else if (ptr->flag & BOARD_CLUB_WRITE)
+            f = 'p';
+        else
+            f = ' ';
+        sprintf(flag, "\033[1;3%cm%c", (ptr->flag & BOARD_CLUB_HIDE) ? '1' : '3', f);
+        // 版面英文名和投票标记
+        prints(" %-16s%s%s", ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "\033[1;31mV" : " ", flag);
+        // 只读标记和中文叙述
+        if (checkreadonly(ptr->name))
+            prints("\033[1;32m[只读]\033[m%-32s", ptr->title + 7);
+        else
+            prints("\033[m%-32s", ptr->title + 1);
+        // 在线人数和版大
+        strncpy(tmpBM, ptr->BM, BM_LEN);
+        tmpBM[BM_LEN] = 0;
+        prints(" %s %-12s", onlines, (ptr->BM[0] <= ' ') ? "诚征版主中" : strtok(tmpBM, " "));
+    }
     return SHOW_CONTINUE;
 }
 
 // select回调函数 预处理按键
-static int ddd_read_all_prekeycommand(struct _select_def* conf, int* command)
+static int ddd_read_list_prekeycommand(struct _select_def* conf, int* command)
 {
     return SHOW_CONTINUE;
 }
 
 // select回调函数 处理按键
-static int ddd_read_all_keycommand(struct _select_def* conf, int command)
+static int ddd_read_list_keycommand(struct _select_def* conf, int command)
 {
     return SHOW_CONTINUE;
 }
 
 // select回调函数 显示标题
-static int ddd_read_all_showtitle(struct _select_def* conf)
+static int ddd_read_list_showtitle(struct _select_def* conf)
 {
     clear();
     ddd_header();
@@ -318,11 +339,11 @@ static int ddd_read_all_showtitle(struct _select_def* conf)
     return SHOW_CONTINUE;
 }
 
-// type=GS_ALL的入口
-int ddd_read_all()
+// 版面列表状态的入口
+int ddd_read_list()
 {
     struct _select_def conf;
-    struct ddd_read_all_arg arg;
+    struct ddd_read_list_arg arg;
     POINT *pts;
     int i, ret;
 
@@ -334,7 +355,7 @@ int ddd_read_all()
     }
 
     bzero((char *)&conf, sizeof(struct _select_def));
-    bzero((char *)&arg, sizeof(struct ddd_read_all_arg));
+    bzero((char *)&arg, sizeof(struct ddd_read_list_arg));
     arg.boardlist = (struct newpostdata *)malloc(BBS_PAGESIZE * sizeof(struct newpostdata));
 
     conf.item_per_page = BBS_PAGESIZE;
@@ -344,12 +365,12 @@ int ddd_read_all()
     conf.arg = &arg;
     conf.pos = DDD_GS_CURR.pos;
     conf.page_pos = ((conf.pos - 1) / BBS_PAGESIZE) * BBS_PAGESIZE + 1;
-    conf.get_data = ddd_read_all_getdata;
-    conf.on_select = ddd_read_all_onselect;
-    conf.show_data = ddd_read_all_showdata;
-    conf.pre_key_command = ddd_read_all_prekeycommand;
-    conf.key_command = ddd_read_all_keycommand;
-    conf.show_title = ddd_read_all_showtitle;
+    conf.get_data = ddd_read_list_getdata;
+    conf.on_select = ddd_read_list_onselect;
+    conf.show_data = ddd_read_list_showdata;
+    conf.pre_key_command = ddd_read_list_prekeycommand;
+    conf.key_command = ddd_read_list_keycommand;
+    conf.show_title = ddd_read_list_showtitle;
 
     ret = list_select_loop(&conf);
 
@@ -365,7 +386,20 @@ int ddd_read_all()
 }
 
 
-// type=?搞不清楚的时候就显示这个
+// GS_ALL的入口 所有版面列表或者分区版面列表
+int ddd_read_all() {
+    return ddd_read_list();
+}
+
+
+// GS_NEW的入口 新分类讨论区
+int ddd_read_new() {
+    load_favboard(2, getSession());
+    return ddd_read_list();
+}
+
+
+// 搞不清楚的时候就显示这个
 int ddd_read_unknown()
 {
     clear();
