@@ -57,6 +57,10 @@ int ddd_entry()
             DDD_GS_CURR.type = GS_NEW;
             DDD_GS_CURR.favid = 0;
             DDD_GS_CURR.pos = 1;
+        } else if ((ans[0] == 'f') || (ans[0] == 'F')) {
+            DDD_GS_CURR.type = GS_FAV;
+            DDD_GS_CURR.favid = 0;
+            DDD_GS_CURR.pos = 1;
         } else if (ans[0] == 0)
             break;
         ddd_read_loop();
@@ -74,12 +78,19 @@ int ddd_read_loop()
         // 根据当前状态的类型进入不同的阅读函数
         switch (DDD_GS_CURR.type) {
 
+            case GS_NONE:
+                break;
+
             case GS_ALL:
                 ddd_read_all();
                 break;
 
             case GS_NEW:
                 ddd_read_new();
+                break;
+
+            case GS_FAV:
+                ddd_read_fav();
                 break;
 
             default:
@@ -89,6 +100,7 @@ int ddd_read_loop()
         // 如果新状态需要递归
         if (DDD_GS_NEW.recur) {
             // 记录此层状态
+            DDD_GS_NEW.recur = 0;
             memcpy(&gs_this_level, &DDD_GS_CURR, sizeof(struct ddd_global_status));
             memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
             // 递归进去
@@ -216,8 +228,10 @@ static int ddd_read_list_getdata(struct _select_def* conf, int pos, int len)
 {
     struct ddd_read_list_arg *arg;
     char *prefix, buf[STRLEN];
+    int sort;
 
     arg = (struct ddd_read_list_arg *)(conf->arg);
+    sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ((getCurrentUser()->flags & BRDSORT1_FLAG) + 1) : 0;
     // 读取全部或分区版面列表
     if (DDD_GS_CURR.type == GS_ALL) {
         // 全部版面
@@ -228,11 +242,11 @@ static int ddd_read_list_getdata(struct _select_def* conf, int pos, int len)
             sprintf(buf, "EGROUP%c", (char)(DDD_GS_CURR.sec));
             prefix = (char *)sysconf_str(buf);
         }
-        conf->item_count = load_boards(arg->boardlist, prefix, 0, pos, len, 0, 0, NULL, getSession());
+        conf->item_count = load_boards(arg->boardlist, prefix, 0, pos, len, sort, 0, NULL, getSession());
     }
-    // 读取新分类讨论区
-    else if (DDD_GS_CURR.type == GS_NEW) {
-        conf->item_count = fav_loaddata(arg->boardlist, DDD_GS_CURR.favid, pos, len, 0, NULL, getSession());
+    // 读取新分类讨论区或个人定制区
+    else if ((DDD_GS_CURR.type == GS_NEW) || (DDD_GS_CURR.type == GS_FAV)) {
+        conf->item_count = fav_loaddata(arg->boardlist, DDD_GS_CURR.favid, pos, len, sort, NULL, getSession());
     }
     return SHOW_CONTINUE;
 }
@@ -245,8 +259,15 @@ static int ddd_read_list_onselect(struct _select_def* conf)
 
     arg = (struct ddd_read_list_arg *)(conf->arg);
     ptr = &(arg->boardlist[conf->pos - conf->page_pos]);
+    // 如果是新分类讨论区或个人收藏夹的目录
+    if(ptr->dir >= 1) {
+        DDD_GS_NEW.type = DDD_GS_CURR.type;
+        DDD_GS_NEW.favid = ptr->tag;
+        DDD_GS_NEW.pos = 1;
+        DDD_GS_NEW.recur = 1;
+    }
     // 如果是目录版面
-    if (ptr->flag & BOARD_GROUP) {
+    else if (ptr->flag & BOARD_GROUP) {
         DDD_GS_NEW.type = GS_GROUP;
         DDD_GS_NEW.bid = getboardnum(ptr->name, NULL);
         DDD_GS_NEW.recur = 1;
@@ -329,10 +350,12 @@ static int ddd_read_list_keycommand(struct _select_def* conf, int command)
 // select回调函数 显示标题
 static int ddd_read_list_showtitle(struct _select_def* conf)
 {
+    int sort;
+    sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ((getCurrentUser()->flags & BRDSORT1_FLAG) + 1) : 0;
     clear();
     ddd_header();
     move(2, 0);
-    prints("\033[1;37;44m  全部 未读 讨论区名称       V 类别 转信  中  文  叙  述       在线 版  主");
+    prints("\033[1;37;44m  全部 未读 %s讨论区名称\033[1;37;44m       V 类别 转信  中  文  叙  述       %s在线\033[1;37;44m 版  主", (sort == 1) ? "\033[1;36;44m" : "", (sort & BRDSORT1_FLAG) ? "\033[1;36;44m" : "");
     clrtoeol();
     prints("\033[m");
     update_endline();
@@ -395,6 +418,13 @@ int ddd_read_all() {
 // GS_NEW的入口 新分类讨论区
 int ddd_read_new() {
     load_favboard(2, getSession());
+    return ddd_read_list();
+}
+
+
+// GS_FAV的入口 个人定制区
+int ddd_read_fav() {
+    load_favboard(1, getSession());
     return ddd_read_list();
 }
 
