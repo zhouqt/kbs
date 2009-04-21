@@ -239,7 +239,6 @@ void check_register_info()
     const char *newregfile;
     //int perm;
     char buf[STRLEN];
-    int convey = 0;
 #ifndef NEWSMTH
     /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
     char career[STRLEN];
@@ -287,7 +286,6 @@ void check_register_info()
     /* 加入转让ID后的代码   by binxun 2003-5-23 */
     sethomefile(buf,getCurrentUser()->userid,"conveyID");
     if (dashf(buf)) {
-        convey = 1;
 #ifndef NEWSMTH
         /* fancyrabbit Oct 20 2007, 转让 ID 后需正常填写注册单 ... */
         move(6,0);
@@ -368,7 +366,7 @@ void check_register_info()
     }
 #endif
 #ifdef NEW_COMERS
-    if (!convey) {
+    if (getCurrentUser()->numlogins == 1) {
         FILE *fout;
         char buf2[STRLEN];
 
