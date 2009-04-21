@@ -37,7 +37,9 @@ int ddd_header();
 int ddd_read_all();
 int ddd_read_new();
 int ddd_read_fav();
+int ddd_read_group();
 int ddd_read_unknown();
+int ddd_choose_board();
 
 #endif /* DDD_ACTIVE */
 

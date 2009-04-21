@@ -58,6 +58,15 @@ int ddd_entry()
             DDD_GS_CURR.type = GS_FAV;
             DDD_GS_CURR.favid = 0;
             DDD_GS_CURR.pos = 1;
+        } else if ((ans[0] == 's') || (ans[0] == 'S')) {
+            int bid, type;
+            if(ddd_choose_board(&bid, &type)) {
+                DDD_GS_CURR.type = type;
+                DDD_GS_CURR.bid = bid;
+                DDD_GS_CURR.pos = 1;
+            }
+            else
+                DDD_GS_CURR.type = GS_NONE;
         } else if (ans[0] == 0)
             break;
         ddd_read_loop();
@@ -88,6 +97,10 @@ int ddd_read_loop()
 
             case GS_FAV:
                 ddd_read_fav();
+                break;
+
+            case GS_GROUP:
+                ddd_read_group();
                 break;
 
             default:
@@ -180,7 +193,6 @@ int ddd_header()
     return 0;
 }
 
-
 // 搞不清楚的时候就显示这个
 int ddd_read_unknown()
 {
@@ -193,5 +205,34 @@ int ddd_read_unknown()
     DDD_GS_NEW.type = GS_NONE;
     DDD_GS_NEW.recur = 0;
     return 0;
+}
+
+// 让用户选择版面
+int ddd_choose_board(int* bid, int* type) {
+    char bname[STRLEN];
+    int ret;
+    struct boardheader *bh;
+    // 提示选择讨论区
+    move(1, 0);
+    clrtoeol();
+    prints("选择讨论区: ");
+    make_blist(0, 1);
+    // 运行自动补齐
+    ret = namecomplete(NULL, bname);
+    // 如果没选择
+    if(bname[0] == 0)
+        return 0;
+    *bid = getbnum_safe(bname, getSession(), 1);
+    if(*bid == 0) {
+        move(2, 0);
+        prints("错误的讨论区。");
+        return 0;
+    }
+    bh = getboard(*bid);
+    if(bh->flag & BOARD_GROUP)
+        *type = GS_GROUP;
+    else
+        *type = GS_BOARD;
+    return 1;
 }
 

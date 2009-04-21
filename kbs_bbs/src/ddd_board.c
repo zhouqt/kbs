@@ -36,18 +36,18 @@ static int check_newpost(struct newpostdata *ptr)
 // 版面列表状态共用函数
 
 // select的参数
-struct ddd_read_list_arg {
+struct ddd_read_boards_arg {
     struct newpostdata *boardlist;
 };
 
 // select回调函数 读取版面列表
-static int ddd_read_list_getdata(struct _select_def* conf, int pos, int len)
+static int ddd_read_boards_getdata(struct _select_def* conf, int pos, int len)
 {
-    struct ddd_read_list_arg *arg;
+    struct ddd_read_boards_arg *arg;
     char *prefix, buf[STRLEN];
     int sort;
 
-    arg = (struct ddd_read_list_arg *)(conf->arg);
+    arg = (struct ddd_read_boards_arg *)(conf->arg);
     sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ((getCurrentUser()->flags & BRDSORT1_FLAG) + 1) : 0;
     // 读取全部或分区版面列表
     if (DDD_GS_CURR.type == GS_ALL) {
@@ -65,16 +65,20 @@ static int ddd_read_list_getdata(struct _select_def* conf, int pos, int len)
     else if ((DDD_GS_CURR.type == GS_NEW) || (DDD_GS_CURR.type == GS_FAV)) {
         conf->item_count = fav_loaddata(arg->boardlist, DDD_GS_CURR.favid, pos, len, sort, NULL, getSession());
     }
+    // 读取目录版面
+    else if (DDD_GS_CURR.type == GS_GROUP) {
+        conf->item_count = load_boards(arg->boardlist, NULL, DDD_GS_CURR.bid, pos, len, sort, 0, NULL, getSession());
+    }
     return SHOW_CONTINUE;
 }
 
 // select回调函数 选择了某一个版面
-static int ddd_read_list_onselect(struct _select_def* conf)
+static int ddd_read_boards_onselect(struct _select_def* conf)
 {
-    struct ddd_read_list_arg *arg;
+    struct ddd_read_boards_arg *arg;
     struct newpostdata *ptr;
 
-    arg = (struct ddd_read_list_arg *)(conf->arg);
+    arg = (struct ddd_read_boards_arg *)(conf->arg);
     ptr = &(arg->boardlist[conf->pos - conf->page_pos]);
     // 如果是新分类讨论区或个人收藏夹的目录
     if(ptr->dir >= 1) {
@@ -102,13 +106,13 @@ static int ddd_read_list_onselect(struct _select_def* conf)
 }
 
 // select回调函数 显示版面信息
-static int ddd_read_list_showdata(struct _select_def* conf, int pos)
+static int ddd_read_boards_showdata(struct _select_def* conf, int pos)
 {
-    struct ddd_read_list_arg *arg;
+    struct ddd_read_boards_arg *arg;
     struct newpostdata *ptr;
     char flag[20], f, onlines[20], tmpBM[BM_LEN + 1];
 
-    arg = (struct ddd_read_list_arg *)(conf->arg);
+    arg = (struct ddd_read_boards_arg *)(conf->arg);
     ptr = &(arg->boardlist[pos - conf->page_pos]);
 
     // 目录版面包含的版面数
@@ -153,19 +157,19 @@ static int ddd_read_list_showdata(struct _select_def* conf, int pos)
 }
 
 // select回调函数 预处理按键
-static int ddd_read_list_prekeycommand(struct _select_def* conf, int* command)
+static int ddd_read_boards_prekeycommand(struct _select_def* conf, int* command)
 {
     return SHOW_CONTINUE;
 }
 
 // select回调函数 处理按键
-static int ddd_read_list_keycommand(struct _select_def* conf, int command)
+static int ddd_read_boards_keycommand(struct _select_def* conf, int command)
 {
     return SHOW_CONTINUE;
 }
 
 // select回调函数 显示标题
-static int ddd_read_list_showtitle(struct _select_def* conf)
+static int ddd_read_boards_showtitle(struct _select_def* conf)
 {
     int sort;
     sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ((getCurrentUser()->flags & BRDSORT1_FLAG) + 1) : 0;
@@ -180,10 +184,10 @@ static int ddd_read_list_showtitle(struct _select_def* conf)
 }
 
 // 版面列表状态的入口
-int ddd_read_list()
+int ddd_read_boards()
 {
     struct _select_def conf;
-    struct ddd_read_list_arg arg;
+    struct ddd_read_boards_arg arg;
     POINT *pts;
     int i, ret;
 
@@ -195,7 +199,7 @@ int ddd_read_list()
     }
 
     bzero((char *)&conf, sizeof(struct _select_def));
-    bzero((char *)&arg, sizeof(struct ddd_read_list_arg));
+    bzero((char *)&arg, sizeof(struct ddd_read_boards_arg));
     arg.boardlist = (struct newpostdata *)malloc(BBS_PAGESIZE * sizeof(struct newpostdata));
 
     conf.item_per_page = BBS_PAGESIZE;
@@ -205,12 +209,12 @@ int ddd_read_list()
     conf.arg = &arg;
     conf.pos = DDD_GS_CURR.pos;
     conf.page_pos = ((conf.pos - 1) / BBS_PAGESIZE) * BBS_PAGESIZE + 1;
-    conf.get_data = ddd_read_list_getdata;
-    conf.on_select = ddd_read_list_onselect;
-    conf.show_data = ddd_read_list_showdata;
-    conf.pre_key_command = ddd_read_list_prekeycommand;
-    conf.key_command = ddd_read_list_keycommand;
-    conf.show_title = ddd_read_list_showtitle;
+    conf.get_data = ddd_read_boards_getdata;
+    conf.on_select = ddd_read_boards_onselect;
+    conf.show_data = ddd_read_boards_showdata;
+    conf.pre_key_command = ddd_read_boards_prekeycommand;
+    conf.key_command = ddd_read_boards_keycommand;
+    conf.show_title = ddd_read_boards_showtitle;
 
     ret = list_select_loop(&conf);
 
@@ -225,23 +229,25 @@ int ddd_read_list()
     return 0;
 }
 
-
 // GS_ALL的入口 所有版面列表或者分区版面列表
 int ddd_read_all() {
-    return ddd_read_list();
+    return ddd_read_boards();
 }
-
 
 // GS_NEW的入口 新分类讨论区
 int ddd_read_new() {
     load_favboard(2, getSession());
-    return ddd_read_list();
+    return ddd_read_boards();
 }
-
 
 // GS_FAV的入口 个人定制区
 int ddd_read_fav() {
     load_favboard(1, getSession());
-    return ddd_read_list();
+    return ddd_read_boards();
+}
+
+// GS_GROUP的入口 目录版面
+int ddd_read_group() {
+    return ddd_read_boards();
 }
 
