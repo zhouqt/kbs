@@ -2,7 +2,7 @@
 
 #include "bbs.h"
 
-#define MAXFILE 20000
+#define MAXFILE 200000
 #define MINAGE 50000  //at least 50000 sec old
 #ifdef NUMBUFFER
 #undef NUMBUFFER
@@ -40,7 +40,7 @@ int
 ispostfilename(char *file)
 {
     if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2)
-            &&strncmp(file, "D.", 2) && strncmp(file, "J.", 2) && strncmp(file, "Z.", 2))
+            &&strncmp(file, "D.", 2) && strncmp(file, "J.", 2) && strncmp(file, "Z.", 2) && strncmp(file, "Y.", 2))
         return 0;
     if (!isdigit(file[3]))
         return 0;
