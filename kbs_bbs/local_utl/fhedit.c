@@ -600,16 +600,18 @@ int main(int argc, char* argv[])
         printf("  --binary          read binary data from stdin or write data to stdout.\n");
         printf("  --simple          display only numbers when listing.\n");
         printf("\nOperations:\n");
-        printf("  --size            display article numbers.\n");
+        printf("  --size            display article numbers, this only show total article\n");
+        printf("                    numbers, ignoring specified properties.\n");
         printf("  --list            display brief list of articles.\n");
-        printf("  --view            display detail information of an article.\n");
+        printf("  --view            display detail information of one article.\n");
         printf("  --modify          substitute records under binary mode, or change\n");
         printf("                    properties of an article under non-binary mode.\n");
         printf("  --append          append records to board under binary mode, or append\n");
         printf("                    one new record of article under non-binary mode.\n");
         printf("  --insert          insert records to board under binary mode, or insert\n");
         printf("                    one new record of article under non-binary mode.\n");
-        printf("  --remove          remove records from board.\n");
+        printf("  --remove          remove records from board, only doing range delete,\n");
+        printf("                    ignoring specified properties.\n");
         printf("  --recovertitle    recover the original article title as undo-delete.\n");
         printf("\nParameters:\n");
         printf("  --board           specify the board name in order to modify board dir.\n");
@@ -633,7 +635,7 @@ int main(int argc, char* argv[])
         printf("  --title           specify title to search for or modify to.\n");
         printf("  --accessedN       specify accessed to search for or modify to, N shall\n");
         printf("                    be replaced by a number between 0 and 3.\n");
-        printf("  --accessed9       use æ≈ÃÏÀ„≥ﬂ to modify accessed.\n");
+        printf("  --accessed9       use Nine-Skies-Calculation-Ruler to modify accessed.\n");
         return 1;
     }
 
