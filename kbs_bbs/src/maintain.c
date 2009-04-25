@@ -2080,7 +2080,7 @@ static const char *reason[] = {
     "请输入真实姓名(国外可用拼音).", "请详填学校科系或工作单位.",
     "请填写完整的住址资料.", "请详填联络电话.",
     "请确实而详细的填写注册申请表.", "请用中文填写申请单.",
-    "不允许从穿梭注册", "同一个用户注册了过多ID",
+    "不允许从穿梭注册", "同一个用户注册了过多ID","IP与住址资料不符",
     NULL
 };
 
@@ -2468,6 +2468,9 @@ char *logfile, *regfile;
                                 case '7':
                                     mail_file(sender, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                                     break;
+				case '8':
+				    mail_file(sender, "etc/f_fill.ip", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+				    break;
                                 default:
                                     mail_file(sender, "etc/f_fill", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                                     break;
