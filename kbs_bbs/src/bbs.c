@@ -621,7 +621,6 @@ int do_remote_cross(struct fileheader* fh, int inmail)
     struct curl_slist *header=NULL;
     struct rc_res res;
     CURL *handle;
-    FILE *fin, *fout;
 
     clear();
     move(3, 0);
@@ -645,24 +644,7 @@ int do_remote_cross(struct fileheader* fh, int inmail)
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "site", CURLFORM_COPYCONTENTS, BBS_FULL_NAME, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "fromboard", CURLFORM_COPYCONTENTS, currboard->filename, CURLFORM_END);
     curl_formadd(&post, &last, CURLFORM_COPYNAME, "title", CURLFORM_COPYCONTENTS, title, CURLFORM_END);
-
-    fin = fopen(fname, "r");
-    sprintf(fname, "tmp/remotecross_%ld_%d", time(0), getpid());
-    fout = fopen(fname, "w");
-    if (!fin || !fout) {
-        move(6, 0);
-        prints("\033[1;31m读取文件出错。\033[m");
-        curl_easy_cleanup(handle);
-        curl_formfree(post);
-        WAIT_RETURN;
-        return FULLUPDATE;
-    }
-    while (skip_attach_fgets(buf, 1024, fin) > 0)
-        fprintf(fout, "%s", buf);
-    fclose(fin);
-    fclose(fout);
-
-    curl_formadd(&post, &last, CURLFORM_COPYNAME, "content", CURLFORM_FILECONTENT, fname, CURLFORM_END);
+    curl_formadd(&post, &last, CURLFORM_COPYNAME, "content", CURLFORM_FILE, fname, CURLFORM_END);
     res.length = 0;
     header = curl_slist_append(header, "User-Agent: kbsbbs-2.0");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, header);
@@ -675,7 +657,6 @@ int do_remote_cross(struct fileheader* fh, int inmail)
     curl_formfree(post);
     curl_slist_free_all(header);
 
-    unlink(fname);
     sprintf(buf, "transferred '%s' on '%s' to '%s'@2", fh->title, currboard->filename, bname);
     newbbslog(BBSLOG_USER, "%s", buf);
 

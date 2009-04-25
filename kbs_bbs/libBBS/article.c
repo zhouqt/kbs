@@ -1067,6 +1067,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
     int brc_save;
 #endif
     time_t now;
+    size_t size;
     if ((!(mode & 0x01) && !user) || !to_board || !title)
         return 7;
     bzero(&fh, sizeof(struct fileheader));
@@ -1111,11 +1112,15 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
     }
     if (conf_cross)
         fprintf(fp_out, "【 以下文字转载自 %s 讨论区 】\n", from_board);
-    while (fgets(bufcp, READ_BUFFER_SIZE, fp_in))
-        fputs(bufcp, fp_out);
+    while(true) {
+        size = fread(bufcp, 1, READ_BUFFER_SIZE, fp_in);
+        if(size == 0)
+            break;
+        fwrite(bufcp, size, 1, fp_out);
+    }
     fclose(fp_in);
     fclose(fp_out);
-    fh.eff_size = get_effsize_attach(buf, NULL);
+    fh.eff_size = get_effsize_attach(buf, &fh.attachment);
 #ifdef HAVE_BRC_CONTROL
     brc_save = getSession()->brc_currcache;
     getSession() -> brc_currcache = -1;
