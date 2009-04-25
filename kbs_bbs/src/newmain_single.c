@@ -593,7 +593,7 @@ void login_query()
                 prints("\033[32m密码输入错误...\033[m\n");
                 continue;
             }
-            if (permbuf[0]=='\0' || XPERMSTR[4]!=permbuf[4]) {
+            if (permbuf[0]=='\0' || permbuf[0] == '+' || XPERMSTR[4]!=permbuf[4]) {
                 prints("\033[32m您无权进入本站,请和主站管理员联系\033[m\n");
                 continue;
             }

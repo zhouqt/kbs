@@ -61,6 +61,13 @@ int do_auth(int fd)
         if (!(u->userlevel & (1 << num)))
             buf[4+num] = '-';
     }
+#ifdef NEWSMTH
+    /* fancy Apr 25 2009, 主站无限期封禁登录者不能登录二站 */
+    int s[GIVEUPINFO_PERM_COUNT];
+    get_giveupinfo(u, s);
+    if (!HAS_PERM(u, PERM_BASIC) && !s[0])
+        buf[4]='+';
+#endif
     write(fd, buf, strlen(buf));
     sprintf(buf, "FL:%ld\n", u->firstlogin);
     write(fd, buf, strlen(buf));
