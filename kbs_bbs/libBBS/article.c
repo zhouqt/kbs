@@ -1049,7 +1049,7 @@ int post_file(struct userec *user, const char *fromboard, const char *filename, 
 /* 支持带标记的 post_file ... 重新造个轮子吧
  * 修改自 etnlegend 的 post_announce(), 感谢之 ...
  * caller 须保证发帖的合法性 ...
- * 不统计 owner 的 bmlog(文) ... 暂不支持匿名发文/带附件文/过滤 ...
+ * 不统计 owner 的 bmlog(文) ... 暂不支持匿名发文/过滤 ...
  * mode: 0x01 deliver 发文
  *       0x02 转信
  *       0x04 调用 write_header, 同时指定 0x01 时写入 deliver header ...
@@ -1068,11 +1068,12 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
 #endif
     time_t now;
     size_t size;
+    struct boardheader bh;
     if ((!(mode & 0x01) && !user) || !to_board || !title)
         return 7;
     bzero(&fh, sizeof(struct fileheader));
     conf_cross = (from_board && (*from_board));
-    if (!getboardnum(to_board, NULL))
+    if (!getboardnum(to_board, &bh))
         return 1;
     setbpath(buf, to_board);
     if (GET_POSTFILENAME(fh.filename, buf))
@@ -1112,11 +1113,16 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
     }
     if (conf_cross)
         fprintf(fp_out, "【 以下文字转载自 %s 讨论区 】\n", from_board);
-    while(true) {
-        size = fread(bufcp, 1, READ_BUFFER_SIZE, fp_in);
-        if(size == 0)
-            break;
-        fwrite(bufcp, size, 1, fp_out);
+    if (bh.flag & BOARD_ATTACH) {
+        while (true) {
+            size = fread(bufcp, 1, READ_BUFFER_SIZE, fp_in);
+            if (size == 0)
+                break;
+            fwrite(bufcp, size, 1, fp_out);
+        }
+    } else {
+        while (skip_attach_fgets(bufcp, READ_BUFFER_SIZE, fp_in))
+            fputs(bufcp, fp_out);
     }
     fclose(fp_in);
     fclose(fp_out);
