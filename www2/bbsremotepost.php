@@ -10,7 +10,7 @@
 	if($rpid == "")
 		exit;
 
-    // check user exists
+	// check user exists
 	$userid = $_POST["user"];
 	$uarr = array();
 	if(($userid == "") || (bbs_getuser($userid, $uarr) == 0)) {
@@ -57,27 +57,24 @@
 		print("没有文章标题。");
 		exit;
 	}
-	$content = $_POST["content"];
-	if($content == "") {
-		print("没有文章内容");
-		exit;
-	}
 
-	// write content into file
+	// get content
+	$fname_origin = "tmp/remotepost_{$rpid}_origin";
 	$fname = "tmp/remotepost_{$rpid}";
-	$fp = fopen($fname, "w");
-	if(!$fp) {
-		print("无法写入文件。");
-		exit;
-	}
-    $inmail = $_POST["inmail"];
-    if($inmail)
-        fwrite($fp, "\033[1;37m【 以下文字转载自 {$fromsite}\033[32m {$userid} \033[37m的信箱 】\033[m\n");
-    else
-	    fwrite($fp, "【 以下文字转载自 {$fromsite} 的 {$fromboard} 讨论区 】\n");
+	move_uploaded_file($_FILES["content"]["tmp_name"], $fname_origin);
+	$fp_origin = fopen($fname_origin, "rb");
+	$fp = fopen($fname, "wb");
+	$inmail = $_POST["inmail"];
+	if($inmail)
+		fwrite($fp, "\033[1;37m【 以下文字转载自 {$fromsite}\033[32m {$userid} \033[37m的信箱 】\033[m\n");
+	else
+		fwrite($fp, "【 以下文字转载自 {$fromsite} 的 {$fromboard} 讨论区 】\n");
+	$content = fread($fp_origin, filesize($fname_origin));
+	fclose($fp_origin);
 	fwrite($fp, $content);
 	fclose($fp);
-	$ret = bbs_post_file_alt($fname, $userid, $title, $bname, NULL, 0x04, 0, 0);
+	$ret = bbs_post_file_alt($fname_origin, $userid, $title, $bname, NULL, 0x04, 0, 0);
+	unlink($fname_origin);
 	unlink($fname);
 	if($ret == 0) {
 		print("转载成功。");
