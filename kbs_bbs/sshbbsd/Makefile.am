@@ -54,7 +54,7 @@ if SITETERM
 nodist_sshbbsd_SOURCES = $(top_builddir)/../src/site-term.c
 endif
 
-sshbbsd_LDADD = ../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
+sshbbsd_LDADD = ../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS) -lcurl
 #sshbbsd_DEPENDENCIES = @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
 AM_CFLAGS=-I. -I$(top_srcdir)/../src -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
 sshbbsd_LDFLAGS=-export-dynamic
