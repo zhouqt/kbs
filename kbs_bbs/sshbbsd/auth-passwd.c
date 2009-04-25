@@ -94,7 +94,7 @@ int auth_password(const char *server_user, const char *password)
             if(remote_auth(password, useridbuf, permstr) <= 0) {
                 return 0;
             }
-            if(permstr[0] == '\0' || XPERMSTR[4] != permstr[4]) {
+            if(permstr[0] == '\0' || permstr[0] == '+' || XPERMSTR[4] != permstr[4]) {
                 return 0;
             }
             if(!dosearchuser(useridbuf))
