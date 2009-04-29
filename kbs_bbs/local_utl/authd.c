@@ -16,41 +16,76 @@ int do_auth(int fd)
     int num;
 
     if (sock_readline(fd, buf, 255) < 4) return 0;
-    if (strncmp(buf, "USR:", 4)) return 0;
-    strncpy(userid, buf+4, 16);
-    userid[15]='\0';
-
-    if (sock_readline(fd, buf, 255) < 4) return 0;
-    if (strncmp(buf, "PWD:", 4)) return 0;
-    strncpy(passwd, buf+4, PASSLEN);
-    passwd[PASSLEN]='\0';
-
-    if (sock_readline(fd, buf, 255) < 4) return 0;
-    if (strncmp(buf, "FRM:", 4)) return 0;
-    strncpy(from, buf+4, 16);
-    from[15]='\0';
-
-    while (sock_readline(fd, buf, 255) > 0);
-
-    buf[0]='\0';
-    if ((uid=getuser(userid, &u)) <=0) {
-        strcpy(buf, "ERR: No such user\n");
-    } else if (check_ip_acl(u->userid, from)) {
-        strcpy(buf, "ERR: Ip not allowed\n");
-    } else if (!strcmp(userid, "guest")) {
-    } else if (!checkpasswd2(passwd, u)) {
-        logattempt(u->userid, from, "authd");
-        strcpy(buf, "ERR: passwd error\n");
+    if (strncmp(buf, "USR:", 4) == 0) {
+        strncpy(userid, buf+4, 16);
+        userid[15]='\0';
+    
+        if (sock_readline(fd, buf, 255) < 4) return 0;
+        if (strncmp(buf, "PWD:", 4)) return 0;
+        strncpy(passwd, buf+4, PASSLEN);
+        passwd[PASSLEN]='\0';
+    
+        if (sock_readline(fd, buf, 255) < 4) return 0;
+        if (strncmp(buf, "FRM:", 4)) return 0;
+        strncpy(from, buf+4, 16);
+        from[15]='\0';
+    
+        while (sock_readline(fd, buf, 255) > 0);
+    
+        buf[0]='\0';
+        if ((uid=getuser(userid, &u)) <=0) {
+            strcpy(buf, "ERR: No such user\n");
+        } else if (check_ip_acl(u->userid, from)) {
+            strcpy(buf, "ERR: Ip not allowed\n");
+        } else if (!strcmp(userid, "guest")) {
+        } else if (!checkpasswd2(passwd, u)) {
+            logattempt(u->userid, from, "authd");
+            strcpy(buf, "ERR: passwd error\n");
 #ifndef SOLEE
-    } else if (!(u->flags & ACTIVATED_FLAG)) {
-        strcpy(buf, "ERR: not activated\n");
+        } else if (!(u->flags & ACTIVATED_FLAG)) {
+            strcpy(buf, "ERR: not activated\n");
 #endif
-    }
+            }
+    
+        if (buf[0]) {
+            write(fd, buf, strlen(buf));
+            return 0;
+        }
+    } else if (strncmp(buf, "UTMPNUM:", 8) == 0) {
+        int utmpnum, utmpkey;
+		struct user_info *utmp;
+		
+		utmpnum = atoi(buf+8);
+		if (utmpnum >= USHM_SIZE) {
+			sprintf(buf, "ERR: invalid utmpnum %d of %d\n", utmpnum, USHM_SIZE);
+			write(fd, buf, strlen(buf));
+			return 0;
+		}
+		utmp = get_utmpent(utmpnum);
 
-    if (buf[0]) {
-        write(fd, buf, strlen(buf));
-        return 0;
-    }
+		if (sock_readline(fd, buf, 255) < 8) return 0;
+		if (strncmp(buf, "UTMPKEY:", 8)) return 0;
+		utmpkey = atoi(buf+8);
+		if (utmpkey != utmp->utmpkey) {
+			strcpy(buf, "ERR: utmpkey does not match\n");
+			write(fd, buf, strlen(buf));
+			return 0;
+		}
+
+		uid = utmp->uid;
+		u = getuserbynum(uid);
+		if (!u) {
+			strcpy(buf, "ERR: invalid uid\n");
+			write(fd, buf, strlen(buf));
+			return 0;
+		}
+		if (u->userid[0] == 0) {
+			strcpy(buf, "ERR: no such user\n");
+			write(fd, buf, strlen(buf));
+			return 0;
+		}
+    } else
+		return 0;
 
     sprintf(buf, "OK:%s\n", u->userid);
     write(fd, buf, strlen(buf));
