@@ -57,7 +57,7 @@ int do_auth(int fd)
 		
 		utmpnum = atoi(buf+8);
 		if (utmpnum >= USHM_SIZE) {
-			sprintf(buf, "ERR: invalid utmpnum %d of %d\n", utmpnum, USHM_SIZE);
+			sprintf(buf, "ERR: invalid utmpnum\n");
 			write(fd, buf, strlen(buf));
 			return 0;
 		}
@@ -132,6 +132,10 @@ int main(int argc, char **argv)
     chdir(BBSHOME);
     resolve_ucache();
     resolve_utmp();
+
+	if(dodaemon("authd", true, true)) {
+		printf("can not be daemonized, maybe another authd is already running.\n");
+	}
 
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
