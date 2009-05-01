@@ -2,7 +2,7 @@
 #include "bbs.h"
 
 // 初始化状态结构体
-int ddd_gs_init(struct ddd_global_status* gs)
+int grl_gs_init(struct grl_global_status* gs)
 {
     gs->type = GS_NONE;
     gs->sec = 0;
@@ -16,16 +16,16 @@ int ddd_gs_init(struct ddd_global_status* gs)
 }
 
 // 测试入口
-int ddd_entry()
+int grl_entry()
 {
     char ans[2];
 
-    ddd_gs_init(&DDD_GS_CURR);
-    ddd_gs_init(&DDD_GS_NEW);
+    grl_gs_init(&GRL_GS_CURR);
+    grl_gs_init(&GRL_GS_NEW);
 
     while (true) {
         clear();
-        ddd_header();
+        grl_header();
         move(3, 3);
         prints("大打倒测试主菜单");
         move(5, 3);
@@ -43,92 +43,93 @@ int ddd_entry()
         update_endline();
         getdata(12, 3, "请选择: ", ans, 2, DOECHO, NULL, true);
         if ((ans[0] == 'b') || (ans[0] == 'B')) {
-            DDD_GS_CURR.type = GS_ALL;
-            DDD_GS_CURR.sec = 0;
-            DDD_GS_CURR.pos = 1;
+            GRL_GS_CURR.type = GS_ALL;
+            GRL_GS_CURR.sec = 0;
+            GRL_GS_CURR.pos = 1;
         } else if ((ans[0] >= '0') && (ans[0] <= '9')) {
-            DDD_GS_CURR.type = GS_ALL;
-            DDD_GS_CURR.sec = (int)ans[0];
-            DDD_GS_CURR.pos = 1;
+            GRL_GS_CURR.type = GS_ALL;
+            GRL_GS_CURR.sec = (int)ans[0];
+            GRL_GS_CURR.pos = 1;
         } else if ((ans[0] == 'x') || (ans[0] == 'X')) {
-            DDD_GS_CURR.type = GS_NEW;
-            DDD_GS_CURR.favid = 0;
-            DDD_GS_CURR.pos = 1;
+            GRL_GS_CURR.type = GS_NEW;
+            GRL_GS_CURR.favid = 0;
+            GRL_GS_CURR.pos = 1;
         } else if ((ans[0] == 'f') || (ans[0] == 'F')) {
-            DDD_GS_CURR.type = GS_FAV;
-            DDD_GS_CURR.favid = 0;
-            DDD_GS_CURR.pos = 1;
+            GRL_GS_CURR.type = GS_FAV;
+            GRL_GS_CURR.favid = 0;
+            GRL_GS_CURR.pos = 1;
         } else if ((ans[0] == 's') || (ans[0] == 'S')) {
             int bid, type;
-            if(ddd_choose_board(&bid, &type)) {
-                DDD_GS_CURR.type = type;
-                DDD_GS_CURR.bid = bid;
-                DDD_GS_CURR.pos = 1;
+            if(grl_choose_board(&bid, &type)) {
+                GRL_GS_CURR.type = type;
+                GRL_GS_CURR.bid = bid;
+                GRL_GS_CURR.mode = DIR_MODE_NORMAL;
+                GRL_GS_CURR.pos = 1;
             }
             else
-                DDD_GS_CURR.type = GS_NONE;
+                GRL_GS_CURR.type = GS_NONE;
         } else if (ans[0] == 0)
             break;
-        ddd_read_loop();
+        grl_read_loop();
     }
 
     return 0;
 }
 
 // 主循环
-int ddd_read_loop()
+int grl_read_loop()
 {
-    struct ddd_global_status gs_this_level;
+    struct grl_global_status gs_this_level;
     while (true) {
-        memcpy(&DDD_GS_NEW, &DDD_GS_CURR, sizeof(struct ddd_global_status));
+        memcpy(&GRL_GS_NEW, &GRL_GS_CURR, sizeof(struct grl_global_status));
         // 根据当前状态的类型进入不同的阅读函数
-        switch (DDD_GS_CURR.type) {
+        switch (GRL_GS_CURR.type) {
 
             case GS_NONE:
                 break;
 
             case GS_ALL:
-                ddd_read_all();
+                grl_read_all();
                 break;
 
             case GS_NEW:
-                ddd_read_new();
+                grl_read_new();
                 break;
 
             case GS_FAV:
-                ddd_read_fav();
+                grl_read_fav();
                 break;
 
             case GS_GROUP:
-                ddd_read_group();
+                grl_read_group();
                 break;
 
             default:
-                ddd_read_unknown();
+                grl_read_unknown();
                 break;
         }
         // 如果新状态需要递归
-        if (DDD_GS_NEW.recur) {
+        if (GRL_GS_NEW.recur) {
             // 记录此层状态
-            DDD_GS_NEW.recur = 0;
-            memcpy(&gs_this_level, &DDD_GS_CURR, sizeof(struct ddd_global_status));
-            memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
+            GRL_GS_NEW.recur = 0;
+            memcpy(&gs_this_level, &GRL_GS_CURR, sizeof(struct grl_global_status));
+            memcpy(&GRL_GS_CURR, &GRL_GS_NEW, sizeof(struct grl_global_status));
             // 递归进去
-            ddd_read_loop();
+            grl_read_loop();
             // 恢复此层状态
-            memcpy(&DDD_GS_CURR, &gs_this_level, sizeof(struct ddd_global_status));
+            memcpy(&GRL_GS_CURR, &gs_this_level, sizeof(struct grl_global_status));
         }
         // 如果新状态不需要递归
         else
-            memcpy(&DDD_GS_CURR, &DDD_GS_NEW, sizeof(struct ddd_global_status));
-        if (DDD_GS_CURR.type == GS_NONE)
+            memcpy(&GRL_GS_CURR, &GRL_GS_NEW, sizeof(struct grl_global_status));
+        if (GRL_GS_CURR.type == GS_NONE)
             break;
     }
     return 0;
 }
 
 // 显示站点标题
-int ddd_header()
+int grl_header()
 {
     int colour, centerpos, rightpos, l1, l2;
     char lefttxt[STRLEN], righttxt[STRLEN];
@@ -144,13 +145,13 @@ int ddd_header()
 
     move(0, 0);
     setbcolor(colour);
-    switch (DDD_GS_CURR.type) {
+    switch (GRL_GS_CURR.type) {
         case GS_ALL:
             strcpy(lefttxt, "[讨论区列表]");
-            if (DDD_GS_CURR.sec == 0)
+            if (GRL_GS_CURR.sec == 0)
                 strcpy(righttxt, "所有版面");
             else
-                sprintf(righttxt, "第%c区", (char)(DDD_GS_CURR.sec));
+                sprintf(righttxt, "第%c区", (char)(GRL_GS_CURR.sec));
             break;
         case GS_NEW:
             strcpy(lefttxt, "[讨论区列表]");
@@ -162,11 +163,11 @@ int ddd_header()
             break;
         case GS_GROUP:
             strcpy(lefttxt, "[讨论区列表]");
-            sprintf(righttxt, "目录[%d]", DDD_GS_CURR.bid);
+            sprintf(righttxt, "目录[%d]", GRL_GS_CURR.bid);
             break;
         case GS_BOARD:
             strcpy(lefttxt, "版主:");
-            sprintf(righttxt, "版面[%d]", DDD_GS_CURR.bid);
+            sprintf(righttxt, "版面[%d]", GRL_GS_CURR.bid);
             break;
         case GS_MAIL:
             strcpy(lefttxt, "[信箱]");
@@ -189,26 +190,26 @@ int ddd_header()
     move(0, rightpos);
     prints("\033[1;33m%s", righttxt);
     prints("\033[m\n");
-    prints(" \033[1;32m大打倒全局状态\033[m  type=%d  sec=%d  favid=%d  bid=%d  mode=%d  filter=%d", DDD_GS_CURR.type, DDD_GS_CURR.sec, DDD_GS_CURR.favid, DDD_GS_CURR.bid, DDD_GS_CURR.mode, DDD_GS_CURR.filter);
+    prints(" \033[1;32m大打倒全局状态\033[m  type=%d  sec=%d  favid=%d  bid=%d  mode=%d  filter=%d", GRL_GS_CURR.type, GRL_GS_CURR.sec, GRL_GS_CURR.favid, GRL_GS_CURR.bid, GRL_GS_CURR.mode, GRL_GS_CURR.filter);
     return 0;
 }
 
 // 搞不清楚的时候就显示这个
-int ddd_read_unknown()
+int grl_read_unknown()
 {
     clear();
-    ddd_header();
+    grl_header();
     move(3, 3);
     prints("未知阅读状态。");
     update_endline();
     WAIT_RETURN;
-    DDD_GS_NEW.type = GS_NONE;
-    DDD_GS_NEW.recur = 0;
+    GRL_GS_NEW.type = GS_NONE;
+    GRL_GS_NEW.recur = 0;
     return 0;
 }
 
 // 让用户选择版面
-int ddd_choose_board(int* bid, int* type) {
+int grl_choose_board(int* bid, int* type) {
     char bname[STRLEN];
     int ret;
     struct boardheader *bh;

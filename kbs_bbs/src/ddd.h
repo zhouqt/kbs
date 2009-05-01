@@ -1,21 +1,21 @@
-#ifndef __DDD_H__
-#define __DDD_H__
+#ifndef __GRL_H__
+#define __GRL_H__
 
-#ifdef DDD_ACTIVE
+#ifdef GRL_ACTIVE
 
 // 全局阅读状态
-struct ddd_global_status {
+struct grl_global_status {
     int type;  // 类型
     int sec;  // 分类讨论区号码
     int favid;  // 新分类讨论区或个人定制区位置
     int bid;  // 版面序号
-    int mode;  // 阅读模式
+    enum BBS_DIR_MODE mode;  // 阅读模式
     int pos;  // 位置
     int filter;  // 超级版面选择
     int recur;  // 递归标记
 };
 
-// ddd_global_status.type 的取值
+// grl_global_status.type 的取值
 #define GS_NONE 0 // 不在阅读状态
 #define GS_ALL 1 // 所有版面列表或者分类讨论区
 #define GS_NEW 2 // 新分类讨论区
@@ -25,22 +25,22 @@ struct ddd_global_status {
 #define GS_MAIL 6 // 信箱
 
 // 当前状态
-#define DDD_GS_CURR (getSession()->gs_curr)
+#define GRL_GS_CURR (getSession()->gs_curr)
 // 即将变换到的新状态
-#define DDD_GS_NEW (getSession()->gs_new)
+#define GRL_GS_NEW (getSession()->gs_new)
 
 
-int ddd_gs_init(struct ddd_global_status* gs);
-int ddd_entry();
-int ddd_read_loop();
-int ddd_header();
-int ddd_read_all();
-int ddd_read_new();
-int ddd_read_fav();
-int ddd_read_group();
-int ddd_read_unknown();
-int ddd_choose_board();
+int grl_gs_init(struct grl_global_status* gs);
+int grl_entry();
+int grl_read_loop();
+int grl_header();
+int grl_read_all();
+int grl_read_new();
+int grl_read_fav();
+int grl_read_group();
+int grl_read_unknown();
+int grl_choose_board();
 
-#endif /* DDD_ACTIVE */
+#endif /* GRL_ACTIVE */
 
-#endif /* __DDD_H__ */
+#endif /* __GRL_H__ */

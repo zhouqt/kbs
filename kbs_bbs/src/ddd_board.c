@@ -36,83 +36,83 @@ static int check_newpost(struct newpostdata *ptr)
 // 版面列表状态共用函数
 
 // select的参数
-struct ddd_read_boards_arg {
+struct grl_read_boards_arg {
     struct newpostdata *boardlist;
 };
 
 // select回调函数 读取版面列表
-static int ddd_read_boards_getdata(struct _select_def* conf, int pos, int len)
+static int grl_read_boards_getdata(struct _select_def* conf, int pos, int len)
 {
-    struct ddd_read_boards_arg *arg;
+    struct grl_read_boards_arg *arg;
     char *prefix, buf[STRLEN];
     int sort;
 
-    arg = (struct ddd_read_boards_arg *)(conf->arg);
+    arg = (struct grl_read_boards_arg *)(conf->arg);
     sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ((getCurrentUser()->flags & BRDSORT1_FLAG) + 1) : 0;
     // 读取全部或分区版面列表
-    if (DDD_GS_CURR.type == GS_ALL) {
+    if (GRL_GS_CURR.type == GS_ALL) {
         // 全部版面
-        if (DDD_GS_CURR.sec == 0)
+        if (GRL_GS_CURR.sec == 0)
             prefix = NULL;
         // 分类讨论区的某一区
         else {
-            sprintf(buf, "EGROUP%c", (char)(DDD_GS_CURR.sec));
+            sprintf(buf, "EGROUP%c", (char)(GRL_GS_CURR.sec));
             prefix = (char *)sysconf_str(buf);
         }
         conf->item_count = load_boards(arg->boardlist, prefix, 0, pos, len, sort, 0, NULL, getSession());
     }
     // 读取新分类讨论区或个人定制区
-    else if ((DDD_GS_CURR.type == GS_NEW) || (DDD_GS_CURR.type == GS_FAV)) {
-        conf->item_count = fav_loaddata(arg->boardlist, DDD_GS_CURR.favid, pos, len, sort, NULL, getSession());
+    else if ((GRL_GS_CURR.type == GS_NEW) || (GRL_GS_CURR.type == GS_FAV)) {
+        conf->item_count = fav_loaddata(arg->boardlist, GRL_GS_CURR.favid, pos, len, sort, NULL, getSession());
     }
     // 读取目录版面
-    else if (DDD_GS_CURR.type == GS_GROUP) {
-        conf->item_count = load_boards(arg->boardlist, NULL, DDD_GS_CURR.bid, pos, len, sort, 0, NULL, getSession());
+    else if (GRL_GS_CURR.type == GS_GROUP) {
+        conf->item_count = load_boards(arg->boardlist, NULL, GRL_GS_CURR.bid, pos, len, sort, 0, NULL, getSession());
     }
     return SHOW_CONTINUE;
 }
 
 // select回调函数 选择了某一个版面
-static int ddd_read_boards_onselect(struct _select_def* conf)
+static int grl_read_boards_onselect(struct _select_def* conf)
 {
-    struct ddd_read_boards_arg *arg;
+    struct grl_read_boards_arg *arg;
     struct newpostdata *ptr;
 
-    arg = (struct ddd_read_boards_arg *)(conf->arg);
+    arg = (struct grl_read_boards_arg *)(conf->arg);
     ptr = &(arg->boardlist[conf->pos - conf->page_pos]);
     // 如果是新分类讨论区或个人收藏夹的目录
     if(ptr->dir >= 1) {
-        DDD_GS_NEW.type = DDD_GS_CURR.type;
-        DDD_GS_NEW.favid = ptr->tag;
-        DDD_GS_NEW.pos = 1;
-        DDD_GS_NEW.recur = 1;
+        GRL_GS_NEW.type = GRL_GS_CURR.type;
+        GRL_GS_NEW.favid = ptr->tag;
+        GRL_GS_NEW.pos = 1;
+        GRL_GS_NEW.recur = 1;
     }
     // 如果是目录版面
     else if (ptr->flag & BOARD_GROUP) {
-        DDD_GS_NEW.type = GS_GROUP;
-        DDD_GS_NEW.bid = getboardnum(ptr->name, NULL);
-        DDD_GS_NEW.recur = 1;
+        GRL_GS_NEW.type = GS_GROUP;
+        GRL_GS_NEW.bid = getboardnum(ptr->name, NULL);
+        GRL_GS_NEW.recur = 1;
     }
     // 如果是普通版面
     else {
-        DDD_GS_NEW.type = GS_BOARD;
-        DDD_GS_NEW.bid = getboardnum(ptr->name, NULL);
-        DDD_GS_NEW.mode = DIR_MODE_NORMAL;
-        DDD_GS_NEW.pos = 1;
-        DDD_GS_NEW.recur = 1;
+        GRL_GS_NEW.type = GS_BOARD;
+        GRL_GS_NEW.bid = getboardnum(ptr->name, NULL);
+        GRL_GS_NEW.mode = DIR_MODE_NORMAL;
+        GRL_GS_NEW.pos = 1;
+        GRL_GS_NEW.recur = 1;
     }
 
     return SHOW_SELECT;
 }
 
 // select回调函数 显示版面信息
-static int ddd_read_boards_showdata(struct _select_def* conf, int pos)
+static int grl_read_boards_showdata(struct _select_def* conf, int pos)
 {
-    struct ddd_read_boards_arg *arg;
+    struct grl_read_boards_arg *arg;
     struct newpostdata *ptr;
     char flag[20], f, onlines[20], tmpBM[BM_LEN + 1];
 
-    arg = (struct ddd_read_boards_arg *)(conf->arg);
+    arg = (struct grl_read_boards_arg *)(conf->arg);
     ptr = &(arg->boardlist[pos - conf->page_pos]);
 
     // 目录版面包含的版面数
@@ -157,24 +157,24 @@ static int ddd_read_boards_showdata(struct _select_def* conf, int pos)
 }
 
 // select回调函数 预处理按键
-static int ddd_read_boards_prekeycommand(struct _select_def* conf, int* command)
+static int grl_read_boards_prekeycommand(struct _select_def* conf, int* command)
 {
     return SHOW_CONTINUE;
 }
 
 // select回调函数 处理按键
-static int ddd_read_boards_keycommand(struct _select_def* conf, int command)
+static int grl_read_boards_keycommand(struct _select_def* conf, int command)
 {
     return SHOW_CONTINUE;
 }
 
 // select回调函数 显示标题
-static int ddd_read_boards_showtitle(struct _select_def* conf)
+static int grl_read_boards_showtitle(struct _select_def* conf)
 {
     int sort;
     sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ((getCurrentUser()->flags & BRDSORT1_FLAG) + 1) : 0;
     clear();
-    ddd_header();
+    grl_header();
     move(2, 0);
     prints("\033[1;37;44m  全部 未读 %s讨论区名称\033[1;37;44m       V 类别 转信  中  文  叙  述       %s在线\033[1;37;44m 版  主", (sort == 1) ? "\033[1;36;44m" : "", (sort & BRDSORT1_FLAG) ? "\033[1;36;44m" : "");
     clrtoeol();
@@ -184,10 +184,10 @@ static int ddd_read_boards_showtitle(struct _select_def* conf)
 }
 
 // 版面列表状态的入口
-int ddd_read_boards()
+int grl_read_boards()
 {
     struct _select_def conf;
-    struct ddd_read_boards_arg arg;
+    struct grl_read_boards_arg arg;
     POINT *pts;
     int i, ret;
 
@@ -199,7 +199,7 @@ int ddd_read_boards()
     }
 
     bzero((char *)&conf, sizeof(struct _select_def));
-    bzero((char *)&arg, sizeof(struct ddd_read_boards_arg));
+    bzero((char *)&arg, sizeof(struct grl_read_boards_arg));
     arg.boardlist = (struct newpostdata *)malloc(BBS_PAGESIZE * sizeof(struct newpostdata));
 
     conf.item_per_page = BBS_PAGESIZE;
@@ -207,20 +207,20 @@ int ddd_read_boards()
     conf.prompt = ">";
     conf.item_pos = pts;
     conf.arg = &arg;
-    conf.pos = DDD_GS_CURR.pos;
+    conf.pos = GRL_GS_CURR.pos;
     conf.page_pos = ((conf.pos - 1) / BBS_PAGESIZE) * BBS_PAGESIZE + 1;
-    conf.get_data = ddd_read_boards_getdata;
-    conf.on_select = ddd_read_boards_onselect;
-    conf.show_data = ddd_read_boards_showdata;
-    conf.pre_key_command = ddd_read_boards_prekeycommand;
-    conf.key_command = ddd_read_boards_keycommand;
-    conf.show_title = ddd_read_boards_showtitle;
+    conf.get_data = grl_read_boards_getdata;
+    conf.on_select = grl_read_boards_onselect;
+    conf.show_data = grl_read_boards_showdata;
+    conf.pre_key_command = grl_read_boards_prekeycommand;
+    conf.key_command = grl_read_boards_keycommand;
+    conf.show_title = grl_read_boards_showtitle;
 
     ret = list_select_loop(&conf);
 
     switch (ret) {
         case SHOW_QUIT:
-            DDD_GS_NEW.type = GS_NONE;
+            GRL_GS_NEW.type = GS_NONE;
             break;
     }
 
@@ -230,24 +230,24 @@ int ddd_read_boards()
 }
 
 // GS_ALL的入口 所有版面列表或者分区版面列表
-int ddd_read_all() {
-    return ddd_read_boards();
+int grl_read_all() {
+    return grl_read_boards();
 }
 
 // GS_NEW的入口 新分类讨论区
-int ddd_read_new() {
+int grl_read_new() {
     load_favboard(2, getSession());
-    return ddd_read_boards();
+    return grl_read_boards();
 }
 
 // GS_FAV的入口 个人定制区
-int ddd_read_fav() {
+int grl_read_fav() {
     load_favboard(1, getSession());
-    return ddd_read_boards();
+    return grl_read_boards();
 }
 
 // GS_GROUP的入口 目录版面
-int ddd_read_group() {
-    return ddd_read_boards();
+int grl_read_group() {
+    return grl_read_boards();
 }
 
