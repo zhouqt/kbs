@@ -2033,7 +2033,7 @@ int WwwBoard(void)
 
 
 
-
+#ifdef GRL_ACTIVE
 
 // GRL
 
@@ -2271,4 +2271,6 @@ int grl_read_group()
 {
     return grl_read_boards();
 }
+
+#endif /* GRL_ACTIVE */
 
