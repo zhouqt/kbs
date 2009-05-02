@@ -2527,9 +2527,18 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
 
                 if (bid) {
                     *((int *)extraarg) = bid;
+#ifdef GRL_ACTIVE
+                    if (GRL_GS_CURR.type != GS_NONE) {
+                        GRL_GS_NEW.type = GS_NEW;
+                        GRL_GS_NEW.favid = bid - 1;
+                        GRL_GS_NEW.pos = 1;
+                        GRL_GS_NEW.recur = 0;
+                    }
+#else
                     board_setcurrentuser(uinfo.currentboard, -1);
                     uinfo.currentboard = 0;
                     UPDATE_UTMP(currentboard,uinfo);
+#endif
                     return CHANGEMODE;
                 } else
                     *((int *)extraarg) = 0;
@@ -2612,6 +2621,14 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
                 if (!((bid=select_top())>0))
                     break;
                 /* 进入十大话题所在的版面... */
+#ifdef GRL_ACTIVE
+                if (GRL_GS_CURR.type != GS_NONE) {
+                    GRL_GS_NEW.type = GS_BOARD;
+                    GRL_GS_NEW.bid = bid;
+                    GRL_GS_NEW.pos = 1;
+                    GRL_GS_NEW.recur = 0;
+                }
+#else /* GRL_ACTIVE */
                 if (!(bh=getboard(bid))||!check_read_perm(getCurrentUser(),bh))
                     break;
                 currboardent=bid;
@@ -2625,6 +2642,7 @@ int read_hot_info(struct _select_def* conf,struct fileheader *fileinfo,void* ext
                 board_setcurrentuser(uinfo.currentboard,1);
                 if (extraarg)
                     *((int *)extraarg) = 0;
+#endif /* GRL_ACTIVE */
                 return CHANGEMODE;
             } while (0);
 #else /* USE_PRIMORDIAL_TOP10 */
