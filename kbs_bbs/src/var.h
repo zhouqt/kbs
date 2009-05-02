@@ -1,8 +1,8 @@
 #ifndef GLOBAL_VAR_H
 #define GLOBAL_VAR_H
 
-#ifdef DDD_ACTIVE
-#include "ddd.h"
+#ifdef GRL_ACTIVE
+#include "grl.h"
 #endif
 
 struct UTMPHEAD {
@@ -123,8 +123,8 @@ typedef struct {
 #ifdef NEWSMTH
     char passwd[40];
 #endif
-#ifdef DDD_ACTIVE
-    struct ddd_global_status gs_curr, gs_new;
+#ifdef GRL_ACTIVE
+    struct grl_global_status gs_curr, gs_new;
 #endif
 } session_t;
 
