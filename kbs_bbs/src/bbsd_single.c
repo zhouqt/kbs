@@ -493,11 +493,7 @@ static int bbs_main(char *argv)
 
 #ifdef SECONDSITE
 #define deg(x...)
-#ifdef CELESTIS
-    if (!strncmp(getSession()->fromhost, "127.", 4)) {
-#else
     if (!strncmp(getSession()->fromhost, "10.", 3)) {
-#endif
         char ipbuf[16];
         int len=0;
         while ((ipbuf[len] = igetkey()) != '\n') {
