@@ -850,14 +850,18 @@ static int getcross(const char *filepath,const char *quote_file,struct userec *u
         write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
     } else if (mode==3) {
         write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
-        if ((!skip_attach_fgets(buf,256,fin)||strncmp(buf,"发信人: ",8))
-                ||(!skip_attach_fgets(buf,256,fin)||strncmp(buf,"标  题: ",8))
-                ||(!skip_attach_fgets(buf,256,fin)||strncmp(buf,"发信站: ",8))) {
+        if (!skip_attach_fgets(buf,256,fin)||strncmp(buf,"发信人: ",8)) {
             fseek(fin,0,SEEK_SET);
         } else {
+            fprintf(fout,"\033[0;33m[ 用户 %s 在转载时选择了隐藏内部转载来源 ]\033[m\n",user->userid);
+            char *pos;
+            if (((pos = strrchr(buf, ':')) != NULL) && (pos - buf < 255) && !strncmp(pos-4, "信区", 4)) {
+                *(pos+1) = '\0';
+                fprintf(fout, "%s\n", buf);
+            }
             while (skip_attach_fgets(buf,256,fin)&&buf[0]!='\n')
-                continue;
-            fprintf(fout,"\033[0;33m[ 用户 %s 在转载时选择了隐藏内部转载来源 ]\033[m\n\n",user->userid);
+                fprintf(fout, "%s", buf);
+            fprintf(fout, "\n");
         }
     } else if (mode==4) {
         write_header(fout,user,in_mail,toboard->filename,title,Anony,(local_article?1:2),session);
