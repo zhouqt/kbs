@@ -157,6 +157,11 @@ int main(int argc, char **argv)
     int val;
     int csock;
 
+    setuid(BBSUID);
+    setreuid(BBSUID, BBSUID);
+    setgid(BBSGID);
+    setregid(BBSGID, BBSGID);
+
     init_all();
 
     if (dodaemon("scored", true, true)) {

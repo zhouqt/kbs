@@ -130,6 +130,11 @@ int main(int argc, char **argv)
     int csock;
 
     chdir(BBSHOME);
+    setuid(BBSUID);
+    setreuid(BBSUID, BBSUID);
+    setgid(BBSGID);
+    setregid(BBSGID, BBSGID);
+
     resolve_ucache();
     resolve_utmp();
     if (dodaemon("authd", true, true)) {
