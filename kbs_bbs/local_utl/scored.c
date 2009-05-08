@@ -176,6 +176,11 @@ int main(int argc, char **argv)
     }
 
     val = sizeof(sin);
+
+    if (dodaemon("authd", true, true)) {
+	printf("can not be daemonized, maybe another authd is already running.\n");
+    }
+
     while (1) {
         pthread_t pt;
         csock = accept(sockfd, (struct sockaddr *) &sin, (socklen_t *) & val);

@@ -133,16 +133,12 @@ int main(int argc, char **argv)
     resolve_ucache();
     resolve_utmp();
 
-	if(dodaemon("authd", true, true)) {
-		printf("can not be daemonized, maybe another authd is already running.\n");
-	}
-
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
     sin.sin_port = htons(1123);
     sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0) {
-        //printf("error listen to port 1123\n");
+        printf("error listen to port 1123\n");
         exit(0);
     }
 
@@ -154,6 +150,12 @@ int main(int argc, char **argv)
     }
 
     val = sizeof(sin);
+
+
+    if (dodaemon("authd", true, true)) {
+        printf("can not be daemonized, maybe another authd is already running.\n");
+    }
+
     while (1) {
         pthread_t pt;
         csock = accept(sockfd, (struct sockaddr *) &sin, (socklen_t *) & val);
