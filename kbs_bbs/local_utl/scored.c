@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 
     val = sizeof(sin);
 
-    if (dodaemon("authd", true, true)) {
+    if (dodaemon("scored", true, true)) {
 	printf("can not be daemonized, maybe another authd is already running.\n");
     }
 
