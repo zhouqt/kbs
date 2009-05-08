@@ -44,7 +44,7 @@ extern int convcode;            /* KCN,99.09.05 */
 void new_register()
 {
     struct userec newuser;
-    int allocid, do_try, flag, usernum;
+    int allocid, do_try, flag;
     char buf[STRLEN];
 
     /* temp !!!!!*/
@@ -85,9 +85,13 @@ void new_register()
         if (flag) {
             if (strlen(newuser.userid) < 2) {
                 prints("代号至少需有两个英文字母!\n");
+            } else if ((strcasecmp(newuser.userid, "SYSOP") == 0) && (strcmp(newuser.userid, "SYSOP") != 0) && searchuser("SYSOP") == 0) {
+                prints("抱歉，本站只允许注册*全部*大写的SYSOP用户ID。\n");
+	    } else if (!strcasecmp(newuser.userid, "guest") && strcmp(newuser.userid, "guest") && !searchuser("guest")) {
+		prints("抱歉，本站只允许注册*全部*小写的guest用户ID。\n");
             } else if ((*newuser.userid == '\0') || bad_user_id(newuser.userid) || (strcasecmp(newuser.userid, "SYSOPS") == 0) || (strcasecmp(newuser.userid, "BMS") == 0)) {
                 prints("抱歉，本站暂不提供此帐号注册。\n");
-            } else if ((usernum = searchuser(newuser.userid)) != 0) {   /*( dosearchuser( newuser.userid ) ) midified by dong , 1998.12.2, change getuser -> searchuser , 1999.10.26 */
+            } else if (searchuser(newuser.userid) != 0) {   /*( dosearchuser( newuser.userid ) ) midified by dong , 1998.12.2, change getuser -> searchuser , 1999.10.26 */
                 prints("此帐号已经有人使用\n");
             } else {
                 /*--- ---*/
