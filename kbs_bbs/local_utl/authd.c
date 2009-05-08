@@ -132,6 +132,9 @@ int main(int argc, char **argv)
     chdir(BBSHOME);
     resolve_ucache();
     resolve_utmp();
+    if (dodaemon("authd", true, true)) {
+        printf("can not be daemonized, maybe another authd is already running.\n");
+    } 
 
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -150,11 +153,6 @@ int main(int argc, char **argv)
     }
 
     val = sizeof(sin);
-
-
-    if (dodaemon("authd", true, true)) {
-        printf("can not be daemonized, maybe another authd is already running.\n");
-    }
 
     while (1) {
         pthread_t pt;
