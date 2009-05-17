@@ -1538,6 +1538,7 @@ void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos
         ann_get_current_url(buf, buf_len, ext, len, arg, 1);
         sprintf(bap, "&ap=%ld", attachpos);
         strcat(buf, bap);
+        strcat(buf, ext);
     } else {
         ann_get_current_url(buf, buf_len, ext, len, arg, 0);
     }
