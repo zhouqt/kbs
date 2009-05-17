@@ -915,6 +915,7 @@ PHP_FUNCTION(bbs_doforward)
  *         -8:不能在板内转载
  *         -9:目标版面不支持附件
  *         -10:system error
+ *         -11:filtered
  * @author: windinsn
  */
 PHP_FUNCTION(bbs_docross)
@@ -927,6 +928,7 @@ PHP_FUNCTION(bbs_docross)
     struct fileheader f;
     int  ent;
     int  fd;
+	int ret;
     struct userec *u = NULL;
     char path[256],ispost[10];
 
@@ -1002,12 +1004,26 @@ PHP_FUNCTION(bbs_docross)
             RETURN_LONG(-9);
 
         setbfile(path, board, f.filename);
-        if (post_cross(u, dst_bp, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
-            RETURN_LONG(-10);
+        ret = post_cross(u, dst_bp, board, f.title, path, 0, 0, ispost[0], 0, getSession());
+        switch (ret) {
+            case -1:
+                RETURN_LONG(-10);
+                break;
+            case -2:
+                RETURN_LONG(-11);
+                break;
+        }
     } else if (ac == 6) {
         setmailfile(path, getCurrentUser()->userid, filename);
-        if (post_cross(u, dst_bp, target, title, path, 0, 1, ispost[0], 0, getSession()) == -1)
-            RETURN_LONG(-10);
+        ret = post_cross(u, dst_bp, target, title, path, 0, 1, ispost[0], 0, getSession());
+        switch (ret) {
+            case -1:
+                RETURN_LONG(-10);
+                break;
+            case -2:
+                RETURN_LONG(-11);
+                break;
+        }
     }
     RETURN_LONG(0);
 }

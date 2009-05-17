@@ -73,6 +73,15 @@ if (isset($_GET['do'])) {
 		case -9:
 			html_error_quit($target." 讨论区不能上传附件");
 			break;
+		case -11:
+			$prompt = "转贴成功！<br/><br/>但是很抱歉，本文可能含有不当内容，需经审核方可发表。<br/><br/>" .
+            	      "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
+                	  "站务人员的审核，不要多次尝试发表此文章。<br/><br/>" .
+            		  "如有疑问，请致信 SYSOP 咨询。";
+			html_success_quit($prompt,
+				array("<a href='bbsdoc.php?board=" . $target . "'>进入 " . $target . " 讨论区</a>",
+				"<a href='bbsdoc.php?board=" . $brd_encode . "'>返回 " . $brdarr['DESC'] . "</a>"));
+			break;
 		case -21:
 			html_error_quit("您的积分不符合 ".$target." 讨论区的设定, 暂时无法发表文章...");
 			break;
