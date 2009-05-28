@@ -46,8 +46,12 @@ int auth_password(const char *server_user, const char *password)
 #ifdef SECONDSITE
     if (*server_user == '\0')
         return 0;
-    if(password[0] == '\0')
-        return (!strcasecmp(useridbuf, "guest"));
+    if (password[0] == '\0') {
+        if (!strcasecmp(useridbuf, "guest")) {
+            dosearchuser(useridbuf);
+            return 1;
+        }
+        return 0;
 #else /* SECONDSITE */
     if (*server_user == '\0' || !dosearchuser(useridbuf))
         return 0;
