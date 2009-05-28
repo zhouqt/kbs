@@ -87,7 +87,8 @@ int fillbcache(const struct boardheader *fptr,int idx,void* arg)
 {
     if (numboards >= MAXBOARD)
         return 0;
-    if (!check_see_perm(NULL,fptr)||!*(fptr->filename))
+    //if (!check_see_perm(NULL,fptr)||!*(fptr->filename))
+    if (!*(fptr->filename) || !public_board(fptr))
         return 0;
     if (fptr->flag & BOARD_GROUP)
         return 0;
