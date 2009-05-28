@@ -86,7 +86,7 @@ static void writelog(logconfig * pconf, const char *from, int prio, const char *
         }
     }
 
-    readw_lock(pconf->fd, 0, SEEK_SET, 0);
+    writew_lock(pconf->fd, 0, SEEK_SET, 0);
     lseek(pconf->fd, 0, SEEK_END);
 
     if (pconf->buf && pconf->bufptr) {
@@ -240,7 +240,7 @@ int bmlog(const char *id, const char *boardname, int type, int value)
     sprintf(direct, "boards/%s/.bm.%s", boardname, id);
     if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
         return 0;
-    ldata.l_type = F_RDLCK;
+    ldata.l_type = F_WRLCK;
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
