@@ -52,6 +52,7 @@ int auth_password(const char *server_user, const char *password)
             return 1;
         }
         return 0;
+    }
 #else /* SECONDSITE */
     if (*server_user == '\0' || !dosearchuser(useridbuf))
         return 0;
