@@ -864,7 +864,7 @@ int query_super_filter_mmap(struct fileheader *allfh, int start, int total, int 
 
 int query_super_filter(int fd, struct super_filter_query_arg *q_arg)
 {
-    struct flock ldata2;
+    //struct flock ldata2;
     int fd2, total, i, count;
     char direct[PATHLEN];
     char *ptr;
@@ -903,6 +903,7 @@ int query_super_filter(int fd, struct super_filter_query_arg *q_arg)
         }
         count = query_super_filter_mmap((struct fileheader *) ptr, 0, total, true, q_arg);
     } BBS_CATCH {
+        count = -SUPER_FILTER_ERROR_GENERAL;
     } BBS_END;
 
     end_mmapfile((void *) ptr, buf.st_size, -1);
