@@ -47,7 +47,7 @@ int auth_password(const char *server_user, const char *password)
     if (*server_user == '\0')
         return 0;
     if(password[0] == '\0')
-        return 0;
+        return (!strcasecmp(useridbuf, "guest"));
 #else /* SECONDSITE */
     if (*server_user == '\0' || !dosearchuser(useridbuf))
         return 0;
