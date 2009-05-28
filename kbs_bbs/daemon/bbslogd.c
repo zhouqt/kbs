@@ -218,7 +218,7 @@ static void writelog(struct bbs_msgbuf *msg)
     	}
 
 /*目前log还是分散的，就先lock,seek吧*/
-        readw_lock(pconf->fd, 0, SEEK_SET, 0);
+        writew_lock(pconf->fd, 0, SEEK_SET, 0);
     	lseek(pconf->fd, 0, SEEK_END);
 
     	if (pconf->buf && pconf->bufptr) {
@@ -251,7 +251,7 @@ static void writelog(struct bbs_msgbuf *msg)
     }
 
 /*目前log还是分散的，就先lock,seek吧*/
-    readw_lock(pconf->fd, 0, SEEK_SET, 0);
+    writew_lock(pconf->fd, 0, SEEK_SET, 0);
     lseek(pconf->fd, 0, SEEK_END);
 
     if (pconf->buf && pconf->bufptr) {
@@ -269,7 +269,7 @@ static void flushlog(int signo)
 
         pconf = &logconfig[i];
         if (pconf->fd>=0 && pconf->buf && pconf->bufptr) {
-            readw_lock(pconf->fd, 0, SEEK_SET, 0);
+            writew_lock(pconf->fd, 0, SEEK_SET, 0);
             lseek(pconf->fd, 0, SEEK_END);
             write(pconf->fd, pconf->buf, pconf->bufptr);
             pconf->bufptr = 0;
