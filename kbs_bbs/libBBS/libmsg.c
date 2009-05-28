@@ -412,7 +412,7 @@ int get_unreadmsg(char *uident)
         bbslog("user", "%s", "msgopen err");
         return -1;              /* 创建文件发生错误*/
     }
-    ldata.l_type = F_RDLCK;
+    ldata.l_type = F_WRLCK;
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;

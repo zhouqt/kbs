@@ -940,7 +940,7 @@ void init_cachedata(const char* userid,int unum)
 
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
-        ldata.l_type = F_RDLCK;
+        ldata.l_type = F_WRLCK;
         ldata.l_whence = 0;
         ldata.l_len = 0;
         ldata.l_start = 0;
@@ -956,6 +956,14 @@ void init_cachedata(const char* userid,int unum)
         if ((fd = open(path1, O_WRONLY|O_CREAT, 0664)) != -1) {
             logincount=0;
         } else {
+            bbslog("3error", "%s", "create logincount err");
+            return;              /* open error*/
+        }
+        ldata.l_type = F_WRLCK;
+        ldata.l_whence = 0;
+        ldata.l_len = 0;
+        ldata.l_start = 0;
+        if (fcntl(fd, F_SETLKW, &ldata) == -1) {
             bbslog("3error", "%s", "write logincount err");
             return;              /* lock error*/
         }
@@ -964,6 +972,8 @@ void init_cachedata(const char* userid,int unum)
     lseek(fd,0,SEEK_SET);
     sprintf(path2,"%d",logincount);
     write(fd,path2,strlen(path2));
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
     close(fd);
 }
 void flush_cachedata(const char* userid)
@@ -986,7 +996,7 @@ int clean_cachedata(const char* userid,int unum)
     //todo: check the dir
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
-        ldata.l_type = F_RDLCK;
+        ldata.l_type = F_WRLCK;
         ldata.l_whence = 0;
         ldata.l_len = 0;
         ldata.l_start = 0;
@@ -1002,6 +1012,8 @@ int clean_cachedata(const char* userid,int unum)
         lseek(fd,0,SEEK_SET);
         sprintf(path2,"%d",logincount);
         write(fd,path2,strlen(path2));
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
         close(fd);
     } else logincount=0;
     if (logincount==0) {
