@@ -880,34 +880,35 @@ int query_super_filter(int fd, struct super_filter_query_arg *q_arg)
             bbslog("user", "%s", "recopen err");
             return -SUPER_FILTER_ERROR_GENERAL;
         }
-        ldata2.l_type = F_RDLCK;
+        /*ldata2.l_type = F_RDLCK;
         ldata2.l_whence = 0;
         ldata2.l_len = 0;
         ldata2.l_start = 0;
-        fcntl(fd2, F_SETLKW, &ldata2);
+        fcntl(fd2, F_SETLKW, &ldata2);*/
     } else {
         fd2 = fd;
     }
     fstat(fd2, &buf);
     total = buf.st_size / sizeof(struct fileheader);
-
-    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        if (fd == -1) {
-            ldata2.l_type = F_UNLCK;
-            fcntl(fd2, F_SETLKW, &ldata2);
-            close(fd2);
+    BBS_TRY {
+        if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_PRIVATE, &ptr, &buf.st_size)) != 1) {
+            /*if (i == 2)
+                end_mmapfile((void *) ptr, buf.st_size, -1);*/
+            if (fd == -1) {
+                /*ldata2.l_type = F_UNLCK;
+                fcntl(fd2, F_SETLKW, &ldata2);*/
+                close(fd2);
+            }
+            BBS_RETURN(-SUPER_FILTER_ERROR_GENERAL);
         }
-        return -SUPER_FILTER_ERROR_GENERAL;
-    }
-
-    count = query_super_filter_mmap((struct fileheader *) ptr, 0, total, true, q_arg);
+        count = query_super_filter_mmap((struct fileheader *) ptr, 0, total, true, q_arg);
+    } BBS_CATCH {
+    } BBS_END;
 
     end_mmapfile((void *) ptr, buf.st_size, -1);
     if (fd == -1) {
-        ldata2.l_type = F_UNLCK;
-        fcntl(fd2, F_SETLKW, &ldata2);
+        /*ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);*/
         close(fd2);
     }
     return count;
