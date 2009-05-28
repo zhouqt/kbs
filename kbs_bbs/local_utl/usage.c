@@ -88,7 +88,7 @@ int fillbcache(const struct boardheader *fptr,int idx,void* arg)
     if (numboards >= MAXBOARD)
         return 0;
 #ifdef SECONDSITE
-    if (!*(fptr->filename) || !public_board(fptr))
+    if (!check_see_perm(NULL,fptr)&&!public_board(fptr)||!*(fptr->filename))
 #else
     if (!check_see_perm(NULL,fptr)||!*(fptr->filename))
 #endif
