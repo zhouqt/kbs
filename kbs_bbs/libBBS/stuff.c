@@ -1362,6 +1362,7 @@ static int check_IP_core(const char *file, const char *IP, char *reason, bool ha
             return 1;
         }
     }
+    fclose(fp);
     return 0;
 }
 
