@@ -29,9 +29,9 @@ int show(int k,int i)
     else
         printf("版面名称: %-10s  版主: %-15s  停留时间: %d 秒\n", lib[i].boardname, lib[i].id, lib[i].data[0]);
     printf("   进版次数: %-4d    版内发文: %-4d    收入文摘: %-4d    去掉文摘: %-4d\n", lib[i].data[1], lib[i].data[2], lib[i].data[3], lib[i].data[4]);
-    printf("   区段次数: %-4d    标记文章: %-4d    去掉标记: %-4d    删除文章: %-4d\n", lib[i].data[5], lib[i].data[6], lib[i].data[7], lib[i].data[8]);
+    printf("   区段次数: %-4d    标记   m: %-4d    去掉   m: %-4d    删除文章: %-4d\n", lib[i].data[5], lib[i].data[7], lib[i].data[6], lib[i].data[8]);
     printf("   恢复删除: %-4d    封禁人数: %-4d    解封人数: %-4d    收入精华: %-4d\n", lib[i].data[9], lib[i].data[10], lib[i].data[11], lib[i].data[12]);
-    printf("   整理精华: %-4d    相同主题: %-4d\n", lib[i].data[13], lib[i].data[14]);
+    printf("   整理精华: %-4d    相同主题: %-4d    标记 #/%%: %-4d    去掉 #/%%: %-4d\n", lib[i].data[13], lib[i].data[14], lib[i].data[15], lib[i].data[16]);
     printf("\n");
     return 0;
 }
