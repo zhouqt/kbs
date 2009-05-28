@@ -1276,7 +1276,7 @@ static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long atta
     if (attachpos!=-1) {
         char ktype = 's';
         //if (!public_board(currboard) || bali->ftype == DIR_MODE_DELETED || bali->ftype == DIR_MODE_JUNK) {
-        if (!check_see_perm(NULL, currboard) || bali->ftype == DIR_MODE_DELETED || bali->ftype == DIR_MODE_JUNK) {
+        if (!check_read_perm(NULL, currboard) || bali->ftype == DIR_MODE_DELETED || bali->ftype == DIR_MODE_JUNK) {
 #ifndef DISABLE_INTERNAL_BOARD_PPMM_VIEWING
             MD5_CTX md5;
             char info[128], base64_info[128];
