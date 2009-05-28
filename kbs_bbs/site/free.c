@@ -603,13 +603,13 @@ int check_read_perm(const struct userec *user, const struct boardheader *board)
     } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
         return 0;
 
-    if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
+    if (board->level & PERM_POSTMASK || (!user && !board->level) || (user && HAS_PERM(user, board->level)) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*¾ãÀÖ²¿ */
-            if (HAS_PERM(user, PERM_OBOARDS) && HAS_PERM(user, PERM_SYSOP))
+            if (user && HAS_PERM(user, PERM_OBOARDS) && HAS_PERM(user, PERM_SYSOP))
                 return 1;
             if (board->clubnum <= 0 || board->clubnum > MAXCLUB)
                 return 0;
-            if (user->club_read_rights[(board->clubnum - 1) >> 5] & (1 << ((board->clubnum - 1) & 0x1f)))
+            if (user && user->club_read_rights[(board->clubnum - 1) >> 5] & (1 << ((board->clubnum - 1) & 0x1f)))
                 return 1;
             else
                 return 0;
