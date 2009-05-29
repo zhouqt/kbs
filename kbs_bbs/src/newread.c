@@ -1281,7 +1281,7 @@ int thread_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
         case SR_FIRSTNEW:
             apply_thread(conf,fh,fileheader_thread_read,false,false,(void*)mode);
             if (conf->new_pos==0) {
-                apply_thread(conf,fh,fileheader_thread_read,false,true,(void*)SR_FIRSTNEWDOWNSEARCH);
+                apply_thread(conf,fh,fileheader_thread_read,true,true,(void*)SR_FIRSTNEWDOWNSEARCH);
             }
             break;
     }
