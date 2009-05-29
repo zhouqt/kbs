@@ -509,7 +509,7 @@ int check_read_perm(const struct userec *user, const struct boardheader *board)
                 return 1;
             if (board->clubnum <= 0 || board->clubnum > MAXCLUB)
                 return 0;
-            if (user && ser->club_read_rights[(board->clubnum - 1) >> 5] & (1 << ((board->clubnum - 1) & 0x1f)))
+            if (user && user->club_read_rights[(board->clubnum - 1) >> 5] & (1 << ((board->clubnum - 1) & 0x1f)))
                 return 1;
             else
                 return 0;
