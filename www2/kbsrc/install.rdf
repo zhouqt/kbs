@@ -2,10 +2,14 @@
 <RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
          xmlns:NC="http://home.netscape.com/NC-rdf#"
          xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <RDF:Description RDF:about="urn:mozilla:extension:file:kbsrc.jar"
+                   em:package="content/"
+                   em:locale="locale/en-US/"
+                   em:skin="skin/" />
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
                    em:name="KBS Reading Record"
-                   em:version="0.9.9"
+                   em:version="1.0.0"
                    em:description="Process and view reading record at client side for KBS web."
                    em:creator="atppp"
                    em:homepageURL="http://www.newsmth.net/kbsrc/index.html"
@@ -18,12 +22,8 @@
     <em:file RDF:resource="urn:mozilla:extension:file:kbsrc.jar"/>
     <em:targetApplication RDF:resource="rdf:#$QRYuV"/>
   </RDF:Description>
-  <RDF:Description RDF:about="urn:mozilla:extension:file:kbsrc.jar"
-                   em:package="content/"
-                   em:locale="locale/en-US/"
-                   em:skin="skin/" />
   <RDF:Description RDF:about="rdf:#$QRYuV"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.0"
-                   em:maxVersion="3.1" />
+                   em:maxVersion="3.5" />
 </RDF:RDF>

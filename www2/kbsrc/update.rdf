@@ -2,25 +2,25 @@
 <RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
          xmlns:NC="http://home.netscape.com/NC-rdf#"
          xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.9"
-                   em:version="0.9.9"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAK2KdaToSJbIQkM2lGcASm31tzlUxxR+q4kt3PLU+WVaZ09bt3sGMGSFU0jql1+iafyvtnnBRrYgzZbXyn77Fk8CEd1/9gbBxpHUHRp5KxSmXMJQUtPkLBTKe/X9n4Ic/ZqD+ZjofqLK1iIXKgYF+Q9HeSUgq6AlZcV61OxfuwAD">
+  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:1.0.0"
+                   em:version="1.0.0"
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAEplf8o3k0z/wH2jmL7IUYPulQwNqLH3MTlKIRfrski/ZbkN9JeSNDWZaF25JKx407nSulrGOtC3b5pG5u6k9M3fB22Y/kQRLgQrphS44AF6RnAZYkFaa5QZUXxzOqI9K/02hdDrrK3Xvgv5wxh0Pjj85hevhPkzzPbMQx4Oj5XQ">
     <em:targetApplication RDF:resource="rdf:#$8FpFR2"/>
   </RDF:Description>
   <RDF:Seq RDF:about="rdf:#$2FpFR2">
-    <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:0.9.9"/>
+    <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:1.0.0"/>
   </RDF:Seq>
   <Description RDF:about="rdf:#$8FpFR2"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.0"
-                   em:maxVersion="3.1"
+                   em:maxVersion="3.5"
                    em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
                    em:updateHash="sha1:dabe6924c291200fbc7b8e65988ffc848fef92cb" />
   <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
-                   em:version="0.9.9"
+                   em:version="1.0.0"
                    em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
                    em:updateHash="sha1:dabe6924c291200fbc7b8e65988ffc848fef92cb"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAFlnDQbieeIjowSObO3Qk7GifGZUkfxTEDkhc55DKNZcI2RrLhCNzYQD9Jf6O+9F/r9jSMQzKG5HN9jrUBs+RC+Y8q2HbYqVX/iQ8UKpooWth30j+xbaMuF3AiGJ1UhKJC26XODz50eyl+DqvWkhk17mowm3HRELLW1IqBOYar0A">
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAI3ApEBLSq53tnOKYkgZV4tgaA73yKkeIC2xp7bebbAylr6+3jnU5Nv2+bSVnW9iw04UhA0etaB0Q7QyY5cyJt2ttwJ1aeF/e5lQCHpLNuTC/5XWPUcFHKpSk/lhlKQ5MmsiFsbRoZbbcsaTEeGHKG3wlRE1BKLkv2RmonOUdST6">
     <em:updates RDF:resource="rdf:#$2FpFR2"/>
   </RDF:Description>
 </RDF:RDF>
