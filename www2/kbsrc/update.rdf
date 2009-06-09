@@ -7,18 +7,20 @@
                    em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAES4DHWYqdXPIfHbjak3YS+QmMioOVyS0LKTqFSogvxtHeASNAo0tlQoQPovaxGh3UiQoTup/D6fUHVgzSIwh9v8xDrMlXIm7WYHqM+BfPfoXzOoCJ0mXgKAbuvrxJb1G4YDClZogoIG1UW4p1rSru3FCv9BzyZ2taYoSQPH0QSX">
     <em:targetApplication RDF:resource="rdf:#$8FpFR2"/>
   </RDF:Description>
-  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
-                   em:version="1.0.0"
-                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBACDPTnqa8dP/bRbUmH70BmaUoZuQ0Mu2lhOhaeW6cdebHZO72eKoR1DW93e4NWK0y7d01Ic7E+o7XwoVK6TzvyHuY8lnXnCmta4wJaDG849991ztGBXa4+q78wEKEOAedNIHubwxHiw//ObtSeLihSd6cXJW9axUxbJWRKGFS8xc">
-    <em:updates RDF:resource="rdf:#$2FpFR2"/>
-  </RDF:Description>
   <RDF:Seq RDF:about="rdf:#$2FpFR2">
     <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:1.0.0"/>
   </RDF:Seq>
+  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
+                   em:version="1.0.0"
+                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
+                   em:updateHash="sha1:9b1d11b90bc33d13c9ee19435506a689119ff883"
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBACDPTnqa8dP/bRbUmH70BmaUoZuQ0Mu2lhOhaeW6cdebHZO72eKoR1DW93e4NWK0y7d01Ic7E+o7XwoVK6TzvyHuY8lnXnCmta4wJaDG849991ztGBXa4+q78wEKEOAedNIHubwxHiw//ObtSeLihSd6cXJW9axUxbJWRKGFS8xc">
+    <em:updates RDF:resource="rdf:#$2FpFR2"/>
+  </RDF:Description>
   <Description RDF:about="rdf:#$8FpFR2"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.0"
                    em:maxVersion="3.5"
-                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi" />
+                   em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
+                   em:updatehash="sha1:9b1d11b90bc33d13c9ee19435506a689119ff883" />
 </RDF:RDF>
