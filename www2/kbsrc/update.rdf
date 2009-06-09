@@ -22,5 +22,5 @@
                    em:minVersion="1.0"
                    em:maxVersion="3.5"
                    em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
-                   em:updatehash="sha1:9b1d11b90bc33d13c9ee19435506a689119ff883" />
+                   em:updateHash="sha1:9b1d11b90bc33d13c9ee19435506a689119ff883" />
 </RDF:RDF>
