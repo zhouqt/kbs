@@ -59,6 +59,9 @@ int bbs_auth(struct bbsauth *a, const char *userid, const char *passwd, char *fr
             strncpy(a->perm, buf+4, 32);
             a->perm[32]='\0';
         }
+        if (!strncmp(buf, "FL:", 3)) {
+            a->firstlogin = atol(buf+3);
+        }
     }
     close(sockfd);
     return uid;

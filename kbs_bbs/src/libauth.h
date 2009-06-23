@@ -5,6 +5,7 @@
 struct bbsauth {
     char userid[16];
     char perm[33];
+    time_t firstlogin;
 };
 
 #ifdef __cplusplus
