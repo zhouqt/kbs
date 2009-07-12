@@ -631,8 +631,11 @@ int ConveyID(void)
         }
         getCurrentUser()->signature = 0;
         getCurrentUser()->usedspace = 0;
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
         getCurrentUser() -> score_user = 0;
+#endif
+#ifdef NEWSMTH
+        getCurrentUser()->score_manager = 0;
 #endif
 
         //clear 用户信息

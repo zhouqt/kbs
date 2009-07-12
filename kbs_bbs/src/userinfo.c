@@ -1278,19 +1278,21 @@ int modify_userinfo(int uid,int mode)
     else
         snprintf(buf,MU_LENGTH,"%ld 分钟",(nuser.stay/60));
     MU_MENUFORM(MOD_STAY,N,"%s",buf);
-#ifndef NEWSMTH
+#ifndef HAVE_USERSCORE
     MU_MENUFORM(MOD_SCORE,N,"%s",invalid);
-#else /* NEWSMTH */
+#else /* HAVE_USERSCORE */
     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
 #ifdef SECONDSITE
     snprintf(buf,MU_LENGTH,"用户: %d  管理: %d",nuser.score_user,nuser.score_manager);
-#else /* SECONDSITE */
+#elif defined(NEWSMTH)
     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
                             "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+#else /* !SECONDSITE && !NEWSMTH */
+    snprintf(buf,MU_LENGTH,nuser.score_user);
 #endif
     MU_MENUFORM(MOD_SCORE,N,"%s",buf);
-#endif /* ! NEWSMTH */
+#endif /* !HAVE_USERSCORE */
     MU_MENUFORM(MOD_USERLEVEL,N,"<%s>",gen_permstr(nuser.userlevel,buf));
     memcpy(omenu,menu,(MU_ITEM*MU_LENGTH*sizeof(char)));
     arg.type=MU_MENU_INIT;
@@ -1625,18 +1627,22 @@ int modify_userinfo(int uid,int mode)
                                  "\033[1;31m%2d\033[1;33m 分钟...\033[m",(j/60),(j%60));
                     MU_PUT(MU_CURR_ROW,buf);
                     break;
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
                 case MOD_SCORE:
                     MU_SHOW_HINT(i);
+#ifdef NEWSMTH
                     MU_GET(MU_CURR_ROW, MU_MSG(Y, "请选择要修改的积分种类{U(用户)|M(管理)}: "), buf, 2);
                     if (!((k = (toupper(buf[0]) == 'U')) || (toupper(buf[0]) == 'M'))) {
                         MU_PUT(MU_CURR_ROW, MU_MSG(C, "选择的积分种类不合法..."));
                         break;
                     }
                     if (k)
+#endif /* NEWSMTH */
                         MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的用户积分数量{<=N>|<+N>|<-N>}: "),buf,9);
+#ifdef NEWSMTH
                     else
                         MU_GET(MU_CURR_ROW,MU_MSG(Y,"请输入新的管理积分数量{<=N>|<+N>|<-N>}: "),buf,9);
+#endif /* NEWSMTH */
                     MU_TRIM_BREAK(buf);
                     if (buf[0]=='+'||buf[0]=='-') {
                         if (!mu_digit_string(&buf[1])) {
@@ -1644,50 +1650,61 @@ int modify_userinfo(int uid,int mode)
                             break;
                         }
                         j=atoi(buf);
-#ifndef NEGATIVE_SCORE
-                        /* fancyrabbit Aug 30 2007, 积分不能给扣负了 ... */
-                        /*if((nuser.score_user+j)<0)
-                            nuser.score_user=0;*/
-#endif /* NEGATIVE_SCORE */
+#ifdef NEWSMTH
                         if (k) {
+#endif /* NEWSMTH */
                             if ((nuser.score_user += j) > INT_MAX)
                                 nuser.score_user = 0;
+#ifdef NEWSMTH
                         } else if ((nuser.score_manager += j) > INT_MAX)
                             nuser.score_manager = 0;
+#endif /* NEWSMTH */
                     } else if (buf[0] == '=') {
+#ifdef NEWSMTH
                         if (k) {
+#endif /* NEWSMTH */
                             nuser.score_user = atoi(buf+1);
                             if (nuser.score_user > INT_MAX)
                                 nuser.score_user = 0;
+#ifdef NEWSMTH
                         } else {
                             nuser.score_manager=atoi(buf+1);
                             if (nuser.score_manager > INT_MAX)
                                 nuser.score_manager = 0;
                         }
+#endif /* NEWSMTH */
                     } else {
                         if (!mu_digit_string(buf)) {
                             MU_PUT(MU_CURR_ROW, MU_MSG(C, "输入的数字形式不合法..."));
                             break;
                         }
+#ifdef NEWSMTH
                         if (k)
+#endif /* NEWSMTH */
                             nuser.score_user = atoi(buf);
+#ifdef NEWSMTH
                         else
                             nuser.score_manager=atoi(buf);
+#endif /* NEWSMTH */
                     }
                     /*snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"%d <RANKING %.2lf%%>":
                         "%d <RANKING %.1lf%%>"),nuser.score_user,(100*us_ranking(nuser.score_user)));*/
 #ifdef SECONDSITE
                     snprintf(buf,MU_LENGTH,"用户: %d  管理: %d",nuser.score_user,nuser.score_manager);
-#else
+#elif defined(NEWSMTH)
                     snprintf(buf,MU_LENGTH,((nuser.score_user>publicshm->us_sample[1])?"用户: %d <RANKING %.2lf%%>  管理: %d":
                                             "用户: %d <RANKING %.1lf%%>  管理: %d"),nuser.score_user,(100*us_ranking(nuser.score_user)),nuser.score_manager);
+#else /* !SECONDSITE && !NEWSMTH */
+                    snprintf(buf,MU_LENGTH,"%d", nuser.score_user);
 #endif
                     MU_SET(i,user,score_user,val,"%s",buf);
+#ifdef NEWSMTH
                     if (change & (1 << i))
                         break;
                     MU_SET(i, user, score_manager, val, "%s", buf);
-                    break;
 #endif /* NEWSMTH */
+                    break;
+#endif /* HAVE_USERSCORE */
                 case MOD_USERLEVEL:
                     MU_SHOW_HINT(i);
                     if (mu_generate_level(MU_CURR_ROW,15,&level,nuser.userlevel)==-1)
@@ -1776,14 +1793,16 @@ int modify_userinfo(int uid,int mode)
                 case MOD_STAY:
                     MU_RESET(i,user,stay);
                     break;
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
                 case MOD_SCORE:
                     MU_RESET(i,user,score_user);
+#ifdef NEWSMTH
                     /* dirty fix here */
                     change |= (1 << i);
                     MU_RESET(i,user,score_manager);
-                    break;
 #endif /* NEWSMTH */
+                    break;
+#endif /* HAVE_USERSCORE */
                 case MOD_USERLEVEL:
                     MU_RESET(i,user,userlevel);
                     break;
@@ -1828,10 +1847,12 @@ int modify_userinfo(int uid,int mode)
     MU_VERIFY(MOD_NUMLOGINS,user,numlogins,val);
     MU_VERIFY(MOD_NUMPOSTS,user,numposts,val);
     MU_VERIFY(MOD_STAY,user,stay,val);
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     MU_VERIFY(MOD_SCORE,user,score_user,val);
+#ifdef NEWSMTH
     MU_VERIFY(MOD_SCORE,user,score_manager,val);
 #endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
     MU_VERIFY(MOD_USERLEVEL,user,userlevel,val);
     if (verify) {
         MU_GET((MU_ITEM+2),MU_MSG(Y,"部分用户数据已经发生变化, 是否强制修改? [N]: "),buf,1);
@@ -1866,10 +1887,12 @@ int modify_userinfo(int uid,int mode)
     MU_EXEC(MOD_NUMLOGINS,user,numlogins);
     MU_EXEC(MOD_NUMPOSTS,user,numposts);
     MU_EXEC(MOD_STAY,user,stay);
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     MU_EXEC(MOD_SCORE,user,score_user);
+#ifdef NEWSMTH
     MU_EXEC(MOD_SCORE,user,score_manager);
 #endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
     MU_EXEC(MOD_USERLEVEL,user,userlevel);
     if (change&(1<<MOD_USERNAME)) {
         if (mode)

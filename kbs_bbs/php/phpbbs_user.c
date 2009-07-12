@@ -68,7 +68,7 @@ void assign_user(zval * array, struct userec *user, int num)
     add_assoc_string(array,"telephone", ud.telephone,1);
 #endif
 
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     if (MANAGERSHIP(user)) add_assoc_long(array,"score_user",user->score_user);
 #endif
 }

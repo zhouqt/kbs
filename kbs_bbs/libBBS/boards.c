@@ -1118,7 +1118,7 @@ int haspostperm(const struct userec *user,const char *bname)
     //if (bcache[i-1].title_level&&(bcache[i-1].title_level!=user->title)) return 0;
 }
 
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
 int check_score_level(const struct userec *user,const struct boardheader *bh)
 {
     return (chk_currBM(bh->BM,user)||!(user->score_user<bh->score_level));
