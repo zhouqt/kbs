@@ -1270,6 +1270,10 @@ int allnum, pagenum;
         case '@':
             if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
                 return true;
+#ifdef NEWSMTH
+            if (!strcmp(currboard->filename, "sys_discuss"))
+                return true;
+#endif
             clear();
             deal = 1;
             get_record(controlfile, &currvote, sizeof(struct votebal),
