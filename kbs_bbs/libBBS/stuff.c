@@ -1339,7 +1339,7 @@ static int check_IP_core(const char *file, const char *IP, char *reason, bool ha
     char *p, *q;
 
     if (!(fp = fopen(file, "r")))
-        return -1;
+        return 0;
     while (fgets(buf, STRLEN, fp)) {
         if (!*buf || *buf == '#') //comment
             continue;
