@@ -62,7 +62,7 @@
 		if (cache_header("public",@filemtime($dotdirname),300))
 			return;
 	}
-	page_header("同主题阅读", "<a href=\"bbsdoc.php?board=".$brd_encode."\">".htmlspecialchars($brdarr["DESC"])."</a>");
+	page_header("同主题-" . htmlspecialchars($brdarr["DESC"]). "-" .htmlspecialchars($articles[0]["TITLE"]), "<a href=\"bbsdoc.php?board=".$brd_encode."\">".htmlspecialchars($brdarr["DESC"])."</a>");
 ?>
 <a name="top"></a>
 <h1 class="ttit">同主题阅读：<?php echo htmlspecialchars($articles[0]["TITLE"]); ?> </h1>
