@@ -227,6 +227,11 @@ root 身份启动。
 
     bbs 用户还需要一个 crontab 以便完成一些日常事务，请参考 doc/README.SYSOP。
 
+    某些系统默认共享内存太小（比如 Ubuntu），会导致启动 miscd 时 Bus Error，用
+下面的办法调大（用 root 执行）：
+    $ echo 268435456 > /proc/sys/kernel/shmmax
+    $ echo "kernel.shmmax = 268435456" >> /etc/sysctl.conf
+
 6. 出现故障
     下面的方法可用来检查 kbsbbs 的 phpbbslib extension 是否起作用。
 
