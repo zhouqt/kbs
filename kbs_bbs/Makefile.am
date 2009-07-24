@@ -16,4 +16,4 @@ dist-hook:
 #       -exec $(srcdir)/filter.sh {} \;
 
 install-home:
-	sh makedist.sh ${prefix}
+	sh domakedist.sh ${prefix}

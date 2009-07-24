@@ -238,6 +238,10 @@ AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
 		default.h:$SITEDIR/default.h
 		)
 
+AC_CONFIG_LINKS(bbshome-src:$srcdir/bbshome
+                domakedist.sh:$srcdir/makedist.sh
+               )
+
 ORIGIN_LIBTOOL=$LIBTOOL
 AC_SUBST(ORIGIN_LIBTOOL)
 AC_SUBST(SED)
