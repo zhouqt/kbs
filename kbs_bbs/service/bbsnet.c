@@ -88,6 +88,7 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
     fprintf(fp, "    该用户从 \033[1;31m%s\033[m 登录本站.\n", getSession()->fromhost);
     fclose(fp);
 
+    fh.eff_size = get_effsize_attach(fname, &fh.attachment);
     return after_post(NULL, &fh, BBSNET_LOG_BOARD, NULL, 0, getSession());
 }
 
