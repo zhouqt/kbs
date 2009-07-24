@@ -18,7 +18,9 @@ case $ans in
     [Yy]) echo "Installing new bbs to $1" ;;
     *) echo "Abort ..." ; exit ;;
 esac
-cd bbshome-src
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
+cd $bin/bbshome
 for i in `find . -type d`; do
 md $1 $i
 done
