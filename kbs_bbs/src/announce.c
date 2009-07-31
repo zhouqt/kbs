@@ -1807,13 +1807,13 @@ EXPRESS:                 /* Leeward 98.09.13 */
                             WAIT_RETURN;
                             break;
                         }
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
                         if (!check_score_level(getCurrentUser(),bh)) {
                             prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m","您的积分不符合目的讨论区的设定, 暂时无法向目的讨论区转载文章...");
                             WAIT_RETURN;
                             break;
                         }
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
                         if (!HAS_PERM(getCurrentUser(),PERM_SYSOP)&&deny_me(getCurrentUser()->userid,bname)) {
                             prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m","您已被管理人员取消在目的版面的发文权限...");
                             WAIT_RETURN;

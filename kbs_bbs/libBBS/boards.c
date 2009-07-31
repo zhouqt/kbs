@@ -1123,7 +1123,7 @@ int check_score_level(const struct userec *user,const struct boardheader *bh)
 {
     return (chk_currBM(bh->BM,user)||!(user->score_user<bh->score_level));
 }
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
 
 int chk_BM_instr(const char *BMstr, const char *bmname)
 {

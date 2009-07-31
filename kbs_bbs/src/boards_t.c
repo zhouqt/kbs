@@ -271,14 +271,14 @@ int show_boardinfo(const char *bname)
 
     move(2,0);
     prints("\033[1;33m版面名称\033[m: %s %s\n", bp->filename, bp->title+1);
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     if (bp->score_level)
         prints("\033[1;33m积分限制\033[m: 发表限制 <%d>\n",bp->score_level);
     else
         prints("\n");
-#else /* NEWSMTH */
+#else /* HAVE_USERSCORE */
     prints("\n");
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
     prints("\033[1;33m版面版主\033[m: %s \n", bp->BM);
 #ifdef NEWSMTH
     prints("\033[1;31m版面web地址\033[m: http://%s.board.newsmth.net/ \n", bp->filename);
@@ -304,9 +304,9 @@ int show_boardinfo(const char *bname)
                        gen_permstr(bp->level,genbuf));
         prints("\033[1;33m身份限制\033[m: %s <%d>\n",bp->title_level?get_user_title(bp->title_level):"无限制",
                (unsigned char)bp->title_level);
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
         prints("\033[1;33m积分限制\033[m: %s <%d>\n",bp->score_level?"发表限制":"无限制",bp->score_level);
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
         prints("\033[1;33m版面序号\033[m: %d\n",bid);
     }
     /* END -- etnlegend, 查询版面限制属性显示 ... */

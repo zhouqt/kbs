@@ -721,7 +721,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
         WAIT_RETURN;
         return FULLUPDATE;
     }
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     /* 积分限制 */
     if (!check_score_level(getCurrentUser(),bh)) {
         move(3,0);clrtobot();
@@ -3093,7 +3093,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         pressreturn();
         clear();
         return FULLUPDATE;
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     } else if (!check_score_level(getCurrentUser(),currboard)) {
         move(3,0);
         clrtobot();

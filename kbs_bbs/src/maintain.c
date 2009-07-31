@@ -941,11 +941,11 @@ int modify_board(int bid)
             bh.title_level?get_user_title(bh.title_level):"无限制",(unsigned char)bh.title_level);
     /*积分限制*/
     sel[22].hotkey='N';
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     sprintf(menustr[22],"%-15s%s <%d>",menuldr[22],(bh.score_level?"发表限制":"无限制"),bh.score_level);
-#else /* NEWSMTH */
+#else /* HAVE_USERSCORE */
     sprintf(menustr[22],"%-15s%s <%d>",menuldr[22],"无效选项",bh.score_level);
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
     /*退出*/
     sel[MB_ITEMS-1].hotkey='Q';
     sprintf(menustr[MB_ITEMS-1],"%-15s%s",menuldr[MB_ITEMS-1],change?"\033[1;31m已修改\033[m":"未修改");
@@ -1053,11 +1053,11 @@ int modify_board(int bid)
                         break;
                         /*积分限制*/
                     case 22:
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
                         newbh.score_level=bh.score_level;
                         sprintf(menustr[22],"%s",orig[22]);
                         change&=~(1<<22);
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
                         break;
                         /*全部重置*/
                     case MB_ITEMS-1:
@@ -1569,7 +1569,7 @@ int modify_board(int bid)
                 break;
                 /*积分限制*/
             case 22:
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
                 move(17,42);clrtoeol();getdata(17,42,"请输入积分限制: ",buf,8,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
@@ -1596,7 +1596,7 @@ int modify_board(int bid)
                     sprintf(menustr[22],"%s",orig[22]);
                     change&=~(1<<22);
                 }
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
                 break;
                 /*退出*/
             case MB_ITEMS-1:

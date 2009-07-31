@@ -375,11 +375,11 @@ PHP_FUNCTION(bbs_postarticle)
     if (true == checkreadonly(board) || !haspostperm(getCurrentUser(), board))
         RETURN_LONG(-4); //此讨论区是唯读的, 或是您尚无权限在此发表文章.
 
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     if (!check_score_level(getCurrentUser(),brd)) {
         RETURN_LONG(-21);
     }
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
 
     if (deny_me(getCurrentUser()->userid, board) && !NBUser)
         RETURN_LONG(-5); //很抱歉, 你被版务人员停止了本版的post权利.
@@ -975,11 +975,11 @@ PHP_FUNCTION(bbs_docross)
             RETURN_LONG(-5);
     }
 
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     if (!check_score_level(getCurrentUser(),dst_bp)) {
         RETURN_LONG(-21);
     }
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
 
     if (check_last_post_time(getSession()->currentuinfo)) {
         RETURN_LONG(-10);

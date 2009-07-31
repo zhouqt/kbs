@@ -1012,9 +1012,9 @@ int user_vote(int num)
     int aborted = false, pos;
 
     if (!haspostperm(getCurrentUser(),currboard->filename)
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
             ||!check_score_level(getCurrentUser(),currboard)
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
        )
         return -1;
     move(t_lines - 2, 0);
