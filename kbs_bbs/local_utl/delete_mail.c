@@ -87,7 +87,7 @@ int main(int argc, char **argv)
         sprintf(mdir_new, "%s.NEW", mdir);
         if ((fd = open(mdir_new, O_RDWR | O_CREAT, 0644)) > 0) {
             delete_all_mail(fd, touser, mdir, sizeof(struct fileheader),
-                            cmpauthor, argv[1]);
+                            cmpauthor, (void *)argv[1]);
             close(fd);
             f_mv(mdir_new, mdir);
         }
