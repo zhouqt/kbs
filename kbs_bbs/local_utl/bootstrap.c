@@ -44,9 +44,9 @@ void end_bootstrap(void)
     struct passwd *pw;
     if (!(pw = getpwuid(BBSUID)))
         error("%s", strerror(errno));
-    sprintf(cmd, "ipcs -m|awk '$0~/%s/{system(sprintf(\"ipcrm shm %%s\",$2));}'", pw->pw_name);
+    sprintf(cmd, "ipcs -m|awk '$0~/%s/{system(sprintf(\"ipcrm -m %%s\",$2));}'", pw->pw_name);
     system(cmd);
-    sprintf(cmd, "ipcs -q|awk '$0~/%s/{system(sprintf(\"ipcrm shm %%s\",$2));}'", pw->pw_name);
+    sprintf(cmd, "ipcs -q|awk '$0~/%s/{system(sprintf(\"ipcrm -q %%s\",$2));}'", pw->pw_name);
     system(cmd);
 }
 
