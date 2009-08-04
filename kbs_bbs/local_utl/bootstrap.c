@@ -159,9 +159,7 @@ void do_makeboard(enum board_t type, char *name)
 
     /* 默认权限为: 读限制为PERM_SYSOP */
     newboard.level = PERM_SYSOP;
-#if 0
-    //下面是为各个版设定访问权限的代码
-    //本程序将它们注释掉，默认各版只对PERM_SYSOP开放访问权限
+    //下面是为各个版设定访问权限的代码, 参见doc/README.SYSOP的推荐设置
     //use it at your own risk
 
     if (type == X)
@@ -169,9 +167,8 @@ void do_makeboard(enum board_t type, char *name)
         newboard.level |= PERM_POSTMASK;
     else if (type == o)
         /* 读限制为PERM_BASIC */
-        newboard.level |= PERM_BASIC;
-#endif
-/* fancy Aug 4 2009, 上面这段代码很囧, 没 PERM_BASIC 上不了站啊-_- */
+        newboard.level = 0;
+
     if (add_board(&newboard) == -1) {
         end_bootstrap();
         error("%s: add_board error", newboard.filename);
