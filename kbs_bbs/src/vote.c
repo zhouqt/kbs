@@ -1271,7 +1271,7 @@ int allnum, pagenum;
             if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
                 return true;
 #ifdef NEWSMTH
-            if (!strcmp(currboard->filename, "sys_discuss"))
+            if (!strcmp(currboard->filename, DISCUSS_BOARD))
                 return true;
 #endif
             clear();
