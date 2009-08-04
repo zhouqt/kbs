@@ -302,6 +302,7 @@ void bootstrap(void)
     printf("Type `Go ahead!' exactly without quotes and press ENTER to continue\n");
     printf("Are you ready? ");
     fgets(buf, STRLEN, stdin);
+    trimstr(buf);
     if (!strcmp("Go ahead!", buf))
         do_bootstrap();
     else
