@@ -1,6 +1,5 @@
 #include <pwd.h>
 #include "bbs.h"
-#include "system.h"
 
 /* ∞Ê√Ê Ù–‘£¨º˚doc/README.SYSOP 1.2 */
 enum board_t {
