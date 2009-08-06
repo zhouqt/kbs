@@ -224,7 +224,7 @@ int exec_mbem(const char *command)
     void *dll;
     if (HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&!HAS_PERM(getCurrentUser(),(PERM_SYSOP|PERM_ADMIN))
 #ifdef NEWSMTH
-            && !strstr(command, "@mod:admin/")
+            && !strstr(command, "@mod:admin/") && !strstr(command, "@mod:service/libsecond.so")
 #endif
        )
         EM_QUIT("您目前不具有休闲娱乐权限, 无法执行此项操作...");
