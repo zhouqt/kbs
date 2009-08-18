@@ -294,11 +294,15 @@ void do_bootstrap(void)
 void bootstrap(void) 
 {
     char buf[STRLEN];
+    int len;
+
     printf("Danger! This may destroy ALL OF YOUR USER AND BOARD DATA!\n");
     printf("Type `Go ahead!' exactly without quotes and press ENTER to continue\n");
     printf("Are you ready? ");
     fgets(buf, STRLEN, stdin);
-    trimstr(buf);
+    len = strlen(buf);
+    if (buf[len-1] == '\n' || buf[len-1] == '\r')
+        buf[len-1] = '\0';
     if (!strcmp("Go ahead!", buf))
         do_bootstrap();
     else
