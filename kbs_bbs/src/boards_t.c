@@ -1577,6 +1577,80 @@ static int fav_key(struct _select_def *conf, int command)
                 }
             }
             break;
+        case '>':
+            if (arg->yank_flag == BOARD_FAV) {
+
+                if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(getCurrentUser(),PERM_SYSOP))
+                    return SHOW_REFRESH;
+
+                if (getCurrentUser()->flags & BRDSORT_FLAG) {
+                    move(0, 0);
+                    prints("排序模式下不能移动，请用'S'键切换!");
+                    pressreturn();
+                } else {
+                    if (conf->item_count == 1) {
+                        return SHOW_REFRESH;
+                    }
+
+                    int p, q;
+
+                    if (ptr->dir)
+                        p=ptr->pos;
+                    else
+                        p=ptr->tag;
+
+                    q = p + 1;
+                    if (q < 0 || q >= conf->item_count) {
+                        return SHOW_REFRESH;
+                    } else {
+                        arg->father=MoveFavBoard(p, q, getSession());
+                        save_favboard(arg->favmode, getSession());
+                        arg->reloaddata=true;
+                        move(q, 0);
+                        list_select(conf, KEY_DOWN);
+                        return SHOW_DIRCHANGE;
+                    }
+                }
+                return SHOW_REFRESH;
+            }
+            break;
+        case '<':
+            if (arg->yank_flag == BOARD_FAV) {
+
+                if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(getCurrentUser(),PERM_SYSOP))
+                    return SHOW_REFRESH;
+
+                if (getCurrentUser()->flags & BRDSORT_FLAG) {
+                    move(0, 0);
+                    prints("排序模式下不能移动，请用'S'键切换!");
+                    pressreturn();
+                } else {
+                    if (conf->item_count == 1) {
+                        return SHOW_REFRESH;
+                    }
+
+                    int p, q;
+
+                    if (ptr->dir)
+                        p=ptr->pos;
+                    else
+                        p=ptr->tag;
+
+                    q = p - 1;
+                    if (q < 0 || q >= conf->item_count) {
+                        return SHOW_REFRESH;
+                    } else {
+                        arg->father=MoveFavBoard(p, q, getSession());
+                        save_favboard(arg->favmode, getSession());
+                        arg->reloaddata=true;
+                        move(q-1, 0);
+                        list_select(conf, KEY_UP);
+                        return SHOW_DIRCHANGE;
+                    }
+                }
+                return SHOW_REFRESH;
+            }
+            break;
         case 'm':
             if (arg->yank_flag == BOARD_FAV) {
 
@@ -1588,6 +1662,10 @@ static int fav_key(struct _select_def *conf, int command)
                     prints("排序模式下不能移动，请用'S'键切换!");
                     pressreturn();
                 } else {
+                    if (conf->item_count == 1) {
+                        return SHOW_REFRESH;
+                    }
+
                     int p, q;
                     char ans[5];
                     int gdataret;
