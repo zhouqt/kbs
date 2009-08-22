@@ -4,6 +4,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 static void bcache_setreadonly(int readonly);
+void fixFavBoard(session_t *);
 #ifndef USE_SEM_LOCK
 static int bcache_lock()
 {
@@ -415,6 +416,10 @@ int delete_board(int bid, session_t* session)
     snprintf(bcache[bid-1].title, STRLEN, " << '%s'被 %s 删除 >>", bcache[bid-1].filename, session->currentuser->userid);
     bcache[bid-1].level = PERM_SYSOP;
     brdshm->bstatus[bid-1].toptitle = 0;
+
+    /* 上面锁住了，不需要单独为它设个锁了 */
+    fixFavBoard(NULL);
+
     bcache_unlock(fd);
     return 0;
 }

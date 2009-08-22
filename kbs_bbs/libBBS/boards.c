@@ -414,6 +414,33 @@ void addFavBoard(int i,session_t* session, int favmode, int favnow)
     return;
 }
 
+void fixFavBoard(session_t *session)
+{
+    int i, j, fn, count;
+    struct favbrd_struct *top;
+    struct boardheader *bptr;
+
+    if (session == NULL) {
+        count = bdirshm->allbrd_list_t;
+        top = bdirshm->allbrd_list;
+    } else {
+        count = session->mybrd_list_t;
+        top = session->mybrd_list;
+    }
+
+    for (fn=0; fn<count; ++fn)
+        for (i=0; i<top[fn].bnum; ++i)
+            if (top[fn].bid[i] >= 0) {
+                bptr = (struct boardheader *) getboard(top[fn].bid[i] + 1);
+                if ((session && bptr && *bptr->filename && check_see_perm(session->currentuser,bptr))
+                        || (!session && *bptr->filename))
+                    continue;
+                for (j=i; j<top[fn].bnum-1; ++j)
+                    top[fn].bid[i] = top[fn].bid[i+1];
+                top[fn].bnum--;
+            }
+}
+
 /*
 void addMyFavBoard(int idx,session_t* session, int favnow)
 {
@@ -1377,12 +1404,15 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,int sort,c
     for (n = 0; n < session->favbrd_list[favnow].bnum; n++) {
         if (session->favbrd_list[favnow].bid[n] >=0) {
             bptr = (struct boardheader *) getboard(session->favbrd_list[favnow].bid[n] + 1);
-            if (!bptr)
+            if (bptr && *bptr->filename && check_see_perm(session->currentuser,bptr))
+                ;       /* OK, 可以继续 */
+            else {
+                if (session->nowfavmode == 1){  /* 只对个人定制区做处理 */
+                    fixFavBoard(session);
+                    n = -1;                     /* 从头开始循环 */
+                }
                 continue;
-            if (!*bptr->filename)
-                continue;
-            if (!check_see_perm(session->currentuser,bptr))
-                continue;
+            }
         } else {
             if (favnow<0) continue;
             if (!HAS_PERM(session->currentuser,session->favbrd_list[0-session->favbrd_list[favnow].bid[n]].level))
