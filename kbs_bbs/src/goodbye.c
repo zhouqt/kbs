@@ -20,7 +20,7 @@ void user_display(char *filename, int number, int mode)
     int count = 1;
 
     clear();
-    move(1, 0);
+    move(0, 0);
     if ((fp = fopen(filename, "r")) == NULL)
         return;
     while (fgets(buf, 255, fp) != NULL) {
