@@ -1176,9 +1176,9 @@ int modify_userinfo(int uid,int mode)
         "发文统计","在线统计","积分统计","用户权限","结束操作"
     };
     static const char *title="\033[1;32m[设定用户资料]\033[m";
-#if !defined(HAVE_BIRTHDAY)||!defined(NEWSMTH)
+#if !defined(HAVE_BIRTHDAY)||!defined(HAVE_USERSCORE)
     static const char *invalid="\033[0;33m<当前站点设定不支持该项功能>\033[m";
-#endif /* !HAVE_BIRTHDAY||!NEWSMTH */
+#endif /* !HAVE_BIRTHDAY||!HAVE_USERSCORE */
     static const char *md5_mask="<MD5 加密过的密码>";
     FILE *fp;
     struct mu_item item[MU_ITEM+1];
@@ -1209,9 +1209,9 @@ int modify_userinfo(int uid,int mode)
 #ifndef HAVE_BIRTHDAY
     access&=(~((1<<MOD_GENDER) | (1<<MOD_BIRTHDAY)));
 #endif /* ! HAVE_BIRTHDAY */
-#ifndef NEWSMTH
+#ifndef HAVE_USERSCORE
     access&=(~(1<<MOD_SCORE));
-#endif /* ! NEWSMTH */
+#endif /* ! HAVE_USERSCORE */
     modify_user_mode(!mode?GMENU:ADMIN);
     clear();
     move(0,0);

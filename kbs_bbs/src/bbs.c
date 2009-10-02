@@ -3101,7 +3101,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                "您的积分不符合当前讨论区的设定, 暂时无法在当前讨论区发表文章...");
         WAIT_RETURN;
         return FULLUPDATE;
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
     } else if (deny_me(getCurrentUser()->userid, currboard->filename)) { /* 版主禁止POST 检查 */
         if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
             move(3, 0);

@@ -390,9 +390,9 @@ while(0)
     int checkreadonly(const char *board);     /* 判断是不是只读版面 */
     int deny_me(const char *user,const char *board);       /* 判断用户 是否被禁止在当前版发文章 */
     int haspostperm(const struct userec *user,const char *bname);  /* 判断在 bname版 是否有post权 */
-#ifdef NEWSMTH
+#ifdef HAVE_USERSCORE
     int check_score_level(const struct userec *user,const struct boardheader *bh);
-#endif /* NEWSMTH */
+#endif /* HAVE_USERSCORE */
     int chk_BM_instr(const char *BMstr, const char *bmname);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char *BMstr, const struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int chk_BM(const char *bname, const struct userec *user); /* 根据版面名称判断 user 是否有版主权限 ... */
@@ -510,7 +510,7 @@ while(0)
     int cmpname(struct fileheader *fhdr, char name[STRLEN]);
     /* Haohmaru.99.3.30.比较 某文件名是否和 当前文件 相同 */
 
-    void addsignature(FILE * fp, struct userec *user, int sig); /*增加User的签名挡 */
+    void addsignature(FILE * fp, struct userec *user, int sig); /*增加User的签名档 */
 
     /*添加  POST 最后一行 的来源*/
     void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony, session_t* session);
