@@ -267,10 +267,6 @@ int deny_modify_article(const struct boardheader *bh, const struct fileheader *f
         return -1;
     }
 
-    if (deny_me(session->currentuser->userid, bh->filename) && (!HAS_PERM(session->currentuser, PERM_SYSOP))) {
-        return -2;
-    }
-
     if (!strcmp(bh->filename, "syssecurity")) {
         return -3;
     }
@@ -289,6 +285,11 @@ int deny_modify_article(const struct boardheader *bh, const struct fileheader *f
             && !isowner(session->currentuser, fileinfo)) {
         return -6;
     }
+
+    if (deny_me(session->currentuser->userid, bh->filename) && (!HAS_PERM(session->currentuser, PERM_SYSOP))) {
+        return -2;
+    }
+
     return 0;
 }
 
