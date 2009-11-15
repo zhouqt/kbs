@@ -1677,6 +1677,7 @@ reget:
                 else
                     prints("\x1b[44m\x1b[31m[同作者阅读] \x1b[33m 回信 R │ 结束 Q,← │上一封 ↑│下一封 <Space>,↓");
                 clrtoeol();
+                resetcolor();
                 arg->readmode=READ_AUTHOR;
                 arg->oldpos=0;
                 goto reget;
@@ -1689,6 +1690,7 @@ reget:
                 else
                     prints("\x1b[44m\x1b[31m[同作者阅读] \x1b[33m 回信 R │ 结束 Q,← │上一封 ↑│下一封 <Space>,↓");
                 clrtoeol();
+                resetcolor();
                 arg->readmode=READ_AUTHOR;
                 arg->oldpos=conf->pos;
                 goto reget;
@@ -1705,6 +1707,7 @@ reget:
                 else
                     prints("\x1b[44m\x1b[31m[主题阅读] \x1b[33m 回信 R │ 结束 Q,← │上一封 ↑│下一封 <Space>,↓");
                 clrtoeol();
+                resetcolor();
                 arg->readmode=READ_THREAD;
                 arg->oldpos=0;
                 goto reget;
@@ -1718,6 +1721,7 @@ reget:
                 else
                     prints("\x1b[44m\x1b[31m[主题阅读] \x1b[33m 回信 R │ 结束 Q,← │上一封 ↑│下一封 <Space>,↓");
                 clrtoeol();
+                resetcolor();
                 arg->readmode=READ_THREAD;
                 arg->oldpos=conf->pos;
                 goto reget;
