@@ -494,7 +494,7 @@ void login_query()
 #endif
 
     curr_login_num = get_utmp_number();;
-    if (curr_login_num >= MAXACTIVE) {
+    if (curr_login_num >= MAXACTIVE + SYSOP_EXTRA_USHM) {
         ansimore("etc/loginfull", false);
         oflush();
         Net_Sleep(20);
@@ -612,7 +612,7 @@ void login_query()
             }
         }
 
-        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && (curr_login_num >= MAXACTIVE + SYSOP_EXTRA_USHM)) {
+        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && (curr_login_num >= MAXACTIVE)) {
             ansimore("etc/loginfull", false);
             oflush();
             sleep(1);
@@ -806,7 +806,7 @@ void login_query()
             prints("\033[32m" MSG_ERR_USERID "\033[m\n");
         } else
             /* Add by KCN for let sysop can use extra 10 UTMP */
-            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && (curr_login_num >= MAXACTIVE + SYSOP_EXTRA_USHM)) {
+            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && (curr_login_num >= MAXACTIVE)) {
                 ansimore("etc/loginfull", false);
                 oflush();
                 sleep(1);
