@@ -1780,11 +1780,15 @@ int searchtrace(void)
             return -1;
         }
 #endif
+        move(3, 0);
+        prints("\033[1;36m正在查询，可能需要耗费较长时间，请耐心等待 ...\033[m");
+        refresh();
         sprintf(buf,
                 "grep -aw '^\\[.*\\] %s ENTER' usies > %s",
                 user->userid, fn_buf);
         system(buf);
         sprintf(buf, "查询用户 %s 近期登录记录", user->userid);
+        move(3, 0); clrtoeol();
     } else {
         move(3,0);prints("取消...");
         WAIT_RETURN;clear();
