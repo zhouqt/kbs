@@ -1712,7 +1712,7 @@ int searchtrace(void)
         return -1;
     }
     sprintf(fn_buf,"tmp/searchtrace_%ld_%d",time(NULL), (int)getpid());
-    sprintf(buf,"查询 %s 发文(P)/发信(M)记录 [P]: ",user->userid);
+    sprintf(buf,"查询 %s 发文(P)/发信(M)/登录(L)记录 [P]: ",user->userid);
     move(2,0);clrtobot();
     if (getdata(2,0,buf,ans,2,DOECHO,NULL,true)==-1) {
         clear();
@@ -1770,6 +1770,21 @@ int searchtrace(void)
                 user->userid,user->userid,user->userid,fn_buf);
         system(buf);
         sprintf(buf,"查询用户 %s 近期发信记录",user->userid);
+    } else if (ans[0] == 'l' || ans[0] == 'L') {
+#ifdef NEWSMTH
+        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+            move(3, 0);
+            prints("当前用户不具有查询用户近期登录记录的权限...\033[0;33m<Enter>\033[m");
+            WAIT_RETURN;
+            clear();
+            return -1;
+        }
+#endif
+        sprintf(buf,
+                "grep -awE '^\\[.*\\] %s ENTER' usies > %s",
+                user->userid, fn_buf);
+        system(buf);
+        sprintf(buf, "查询用户 %s 近期登录记录", user->userid);
     } else {
         move(3,0);prints("取消...");
         WAIT_RETURN;clear();
