@@ -1796,7 +1796,7 @@ int searchtrace(void)
     }
     mail_file(getCurrentUser()->userid,fn_buf,getCurrentUser()->userid,&buf[4],BBSPOST_MOVE,NULL);
     securityreport(buf,user,NULL, getSession());
-    newbbslog(BBSLOG_USER,"query_user_log: <%c> %s",(toupper(ans[0])=='M'?'M':'P'),user->userid);
+    newbbslog(BBSLOG_USER,"query_user_log: <%c> %s",(toupper(ans[0])=='M'?'M':toupper(ans[0])=='L'?'L':'P'),user->userid);
     move(3,0);prints("\033[1;36m%s 已回寄, 请检查信件...\033[m",&buf[4]);
     WAIT_RETURN;clear();
     return 0;
