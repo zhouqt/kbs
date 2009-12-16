@@ -182,7 +182,7 @@ static void writelog(struct bbs_msgbuf *msg)
 
 		mysql_escape_string(newtitle, ppl->title, strlen(ppl->title));
 
-		sprintf(sqlbuf, "INSERT INTO postlog VALUES (NULL, '%s', '%s', '%s', '%s', '%d');", msg->userid, ppl->boardname, newtitle, tt2timestamp(msg->msgtime, newts), ppl->threadid );
+		sprintf(sqlbuf, "INSERT INTO postlog VALUES (NULL, '%s', '%s', '%s', '%s', '%d', '%d');", msg->userid, ppl->boardname, newtitle, tt2timestamp(msg->msgtime, newts), ppl->threadid, ppl->articleid );
 
 		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
 			mysql_fail ++;

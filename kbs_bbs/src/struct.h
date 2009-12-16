@@ -307,6 +307,7 @@ struct _new_postlog {
     char boardname[BOARDNAMELEN];
     char title[81];
     int threadid;
+    int articleid;
 };
 #endif
 

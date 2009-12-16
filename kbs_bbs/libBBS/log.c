@@ -313,7 +313,7 @@ void newbbslog(int type, const char *fmt, ...)
 }
 
 #ifdef NEWPOSTLOG
-void newpostlog(const char *userid, const char *boardname, const char *title, int groupid)
+void newpostlog(const char *userid, const char *boardname, const char *title, int groupid, int id)
 {
     char buf[512];
     struct bbs_msgbuf *msg = (struct bbs_msgbuf *) buf;
@@ -339,6 +339,7 @@ void newpostlog(const char *userid, const char *boardname, const char *title, in
     strncpy(ppostlog->boardname, boardname, BOARDNAMELEN);
     ppostlog->boardname[BOARDNAMELEN-1]='\0';
     ppostlog->threadid = groupid;
+    ppostlog->articleid = id;
     strncpy(ppostlog->title, title, 80);
     ppostlog->title[80]='\0';
 

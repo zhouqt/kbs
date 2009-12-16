@@ -1192,7 +1192,7 @@ int post_file_alt(const char *filename, struct userec *user, const char *title, 
 #endif
 #ifdef NEWPOSTLOG
     if (!(mode & 0x01) && user)
-        newpostlog(user -> userid, to_board, fh.title, fh.groupid);
+        newpostlog(user -> userid, to_board, fh.title, fh.groupid, fh.id);
 #else
     sprintf(buf, "posted '%s' on '%s'", fh.title, to_board); /* deliver 也计我自己的 ... ? 原来貌似是这么做的 ... */
     newbbslog(BBSLOG_USER, "%s", buf);
@@ -1359,7 +1359,7 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
 #endif
 #ifdef NEWPOSTLOG
     if (user)
-        newpostlog(user->userid, boardname, fh->title, fh->groupid);
+        newpostlog(user->userid, boardname, fh->title, fh->groupid, fh->id);
 #else
     newbbslog(BBSLOG_USER, "%s", buf);
 #endif
