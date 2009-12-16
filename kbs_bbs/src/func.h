@@ -110,7 +110,7 @@ extern "C"
     */
     int bbslog(const char *from, const char *fmt, ...);
 #ifdef NEWPOSTLOG
-    void newpostlog(const char *userid, const char *boardname, const char *title, int groupid);
+    void newpostlog(const char *userid, const char *boardname, const char *title, int groupid, int id);
 #endif
 #ifdef NEWBMLOG
     int newbmlog(const char *userid, const char *boardname, int type, int value);
