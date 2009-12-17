@@ -41,6 +41,7 @@ INSTALL只写了bbsd等主要程序的安装方法
 		 `title` char(81) NOT NULL default '',
 		 `time` timestamp NOT NULL,
 		 `threadid` int unsigned NOT NULL default '0',
+		 `articleid` int unsigned NOT NULL default '0',
 		 PRIMARY KEY (`id`),
 		 KEY userid (`userid`),
 		 KEY bname(`bname`, `threadid`),
