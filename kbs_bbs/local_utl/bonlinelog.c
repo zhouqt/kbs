@@ -36,8 +36,14 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     struct BoardStatus * bs;
     char sql[500];
 
+#ifdef NEWSMTH
+    if (!check_see_perm(NULL, fptr) && !public_board(fptr) || !*(fptr->filename))
+#else
     if (check_see_perm(NULL, fptr)==0 || strlen(fptr->filename) == 0)
+#endif
+    {
         return 0;
+    }
 
     bnum = getbid(fptr->filename,NULL);
     bs = getbstatus(bnum);
