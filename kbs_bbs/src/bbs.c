@@ -373,7 +373,7 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
         return DONOTHING;
 
 #ifdef NEWSMTH
-    if (flag==FILE_FEN_FLAG && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
+    if (flag==FILE_FEN_FLAG && (!HAS_PERM(getCurrentUser(), PERM_SYSOP) || fileinfo->id != fileinfo->groupid))
         return DONOTHING;
 #endif /* NEWSMTH */
 
