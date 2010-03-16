@@ -264,7 +264,7 @@ char* gen_permstr(unsigned int level,char* buf)
     int i;
     /*参数buf应该具有足够的大小*/
     sprintf(buf,"%s",XPERMSTR);
-    for (i=0;i<NUMPERMS;i++)
+    for (i=0; i<NUMPERMS; i++)
         if (!(level&(1<<i)))
             buf[i]='-';
     return buf;
@@ -291,7 +291,7 @@ static int editbrd_key(struct _select_def *conf,int key)
     lastkey=key;
     if (key==KEY_ESC||key==KEY_CANCEL)
         return SHOW_QUIT;
-    for (i=0;i<conf->item_count;i++)
+    for (i=0; i<conf->item_count; i++)
         if (toupper(key)==toupper(arg->items[i].hotkey)) {
             conf->new_pos=i+1;
             return SHOW_SELCHANGE;
@@ -301,7 +301,7 @@ static int editbrd_key(struct _select_def *conf,int key)
 static int editbrd_refresh(struct _select_def *conf)
 {
     struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
-    move(arg->items[0].y,0);clrtobot();
+    move(arg->items[0].y,0); clrtobot();
     return SHOW_CONTINUE;
 }
 /*选择讨论区分区或精华区分区*/
@@ -315,7 +315,7 @@ int select_group(int pos,int force)
     char menustr[SECNUM][64];
     int i;
     /*构造菜单显示*/
-    for (i=0;i<SECNUM;i++) {
+    for (i=0; i<SECNUM; i++) {
         sel[i].x=4;
         sel[i].y=i+4;
         sel[i].hotkey=((i<10)?('0'+i):('A'+i-10));
@@ -325,7 +325,7 @@ int select_group(int pos,int force)
         pts[i].x=sel[i].x;
         pts[i].y=sel[i].y;
     }
-    sel[i].x=-1;sel[i].y=-1;sel[i].hotkey=-1;sel[i].type=0;sel[i].data=NULL;
+    sel[i].x=-1; sel[i].y=-1; sel[i].hotkey=-1; sel[i].type=0; sel[i].data=NULL;
     /*特殊显示当前分区*/
     if (!(pos<0)&&pos<SECNUM)
         sprintf(menustr[pos],"\033[1;36m[%c] %-24s%-24s\033[m",sel[pos].hotkey,secname[pos][0],groups[pos]);
@@ -348,8 +348,8 @@ int select_group(int pos,int force)
     conf.key_command=editbrd_key;
     conf.show_title=editbrd_refresh;
     /*选择分区*/
-    move(1,0);clrtobot();
-    move(2,4);prints("\033[1;33m请选择精华区所在分区\033[m，按\033[1;32mESC\033[0m取消");
+    move(1,0); clrtobot();
+    move(2,4); prints("\033[1;33m请选择精华区所在分区\033[m，按\033[1;32mESC\033[0m取消");
     do
         i=list_select_loop(&conf);
     while (force&&i!=SHOW_SELECT);
@@ -366,10 +366,10 @@ int select_user_title(const char *name)
     int i,pos;
     /*构造菜单显示*/
     pos=0;
-    sel[pos].x=4;sel[pos].y=4;sel[pos].hotkey=-1;sel[pos].type=SIT_SELECT;sel[pos].data=menustr[pos];
-    sprintf(menustr[pos],"[ %3d ] 无身份定义",pos);title_buf[pos]=0;
-    pts[pos].x=sel[pos].x;pts[pos].y=sel[pos].y;
-    for (pos++,i=0;i<255;i++) {
+    sel[pos].x=4; sel[pos].y=4; sel[pos].hotkey=-1; sel[pos].type=SIT_SELECT; sel[pos].data=menustr[pos];
+    sprintf(menustr[pos],"[ %3d ] 无身份定义",pos); title_buf[pos]=0;
+    pts[pos].x=sel[pos].x; pts[pos].y=sel[pos].y;
+    for (pos++,i=0; i<255; i++) {
         user_title=get_user_title(i+1);
         if (!*user_title)
             continue;
@@ -386,7 +386,7 @@ int select_user_title(const char *name)
         pts[pos].y=sel[pos].y;
         pos++;
     }
-    sel[pos].x=-1;sel[pos].y=-1;sel[pos].hotkey=-1;sel[pos].type=0;sel[pos].data=NULL;
+    sel[pos].x=-1; sel[pos].y=-1; sel[pos].hotkey=-1; sel[pos].type=0; sel[pos].data=NULL;
     /*构造select结构*/
     arg.items=sel;
     arg.flag=SIF_SINGLE;
@@ -406,8 +406,8 @@ int select_user_title(const char *name)
     conf.key_command=editbrd_key;
     conf.show_title=editbrd_refresh;
     /*选择用户身份*/
-    move(1,0);clrtobot();
-    move(2,4);prints("\033[1;33m请选择用户身份\033[m，按\033[1;32mESC\033[0m取消");
+    move(1,0); clrtobot();
+    move(2,4); prints("\033[1;33m请选择用户身份\033[m，按\033[1;32mESC\033[0m取消");
     return (list_select_loop(&conf)==SHOW_SELECT?title_buf[conf.pos-1]:-1);
 }
 static char* strip_first(char *str)
@@ -430,13 +430,13 @@ static char* restrict_bm(char *retBM)
     if (!*retBM)
         return retBM;
     snprintf(BM,BM_LEN,"%s",retBM);
-    for (buf[0]=0,index=0,s=buf,p=strtok(BM," ");p;p=strtok(NULL," ")) {
-        for (n=(index-1);!(n<0);n--)
+    for (buf[0]=0,index=0,s=buf,p=strtok(BM," "); p; p=strtok(NULL," ")) {
+        for (n=(index-1); !(n<0); n--)
             if (!strcmp(p,tab[n]))
                 break;
         if (!(n<0))
             continue;
-        for (*s++=' ',tab[index++]=p;*p;*s++=*p++)
+        for (*s++=' ',tab[index++]=p; *p; *s++=*p++)
             continue;
     }
     *s++=0;
@@ -468,7 +468,7 @@ static int del_bm_from_BM_by_index(char *retBM,int index)
         return 1;
     snprintf(BM,BM_LEN,"%s",retBM);
     memcpy(buf,BM,BM_LEN*sizeof(char));
-    for (p=strtok(BM," "),n=1;p&&(n<index);p=strtok(NULL," "),n++)
+    for (p=strtok(BM," "),n=1; p&&(n<index); p=strtok(NULL," "),n++)
         continue;
     if (!p)
         return 2;
@@ -489,10 +489,10 @@ static int del_bm_from_BM_by_name(char *retBM,const char *name)
         return 1;
     snprintf(BM,BM_LEN,"%s",retBM);
     memcpy(buf,BM,BM_LEN*sizeof(char));
-    for (index=0,p=strtok(BM," ");p;p=strtok(NULL," "))
+    for (index=0,p=strtok(BM," "); p; p=strtok(NULL," "))
         if (!strcasecmp(p,name))
             tab[index++]=p;
-    for (n=(index-1);!(n<0);n--) {
+    for (n=(index-1); !(n<0); n--) {
         l=strlen(tab[n]);
         p=buf+(tab[n]-BM);
         if (!*(p+l))
@@ -509,7 +509,7 @@ static int spmo_on_select(struct _select_def *conf)
     char ans[4];
     int i,new_index;
     void *p;
-    move(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x);clrtoeol();
+    move(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x); clrtoeol();
     getdata(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x,
             "\033[1;33m请输入顺序号: \033[m",ans,3,DOECHO,NULL,true);
     strip_first(ans);
@@ -522,10 +522,10 @@ static int spmo_on_select(struct _select_def *conf)
     if (new_index!=conf->pos) {
         p=arg->items[conf->pos-1].data;
         if (new_index<conf->pos)
-            for (i=conf->pos;i>new_index;i--)
+            for (i=conf->pos; i>new_index; i--)
                 arg->items[i-1].data=arg->items[i-2].data;
         else
-            for (p=arg->items[conf->pos-1].data,i=conf->pos;i<new_index;i++)
+            for (p=arg->items[conf->pos-1].data,i=conf->pos; i<new_index; i++)
                 arg->items[i-1].data=arg->items[i].data;
         arg->items[i-1].data=p;
         conf->pos=new_index;
@@ -572,7 +572,7 @@ static int spmo_key(struct _select_def *conf,int key)
             break;
         case '*':
             if (conf->pos!=1) {
-                for (p=arg->items[conf->pos-1].data,i=conf->pos;i>1;i--)
+                for (p=arg->items[conf->pos-1].data,i=conf->pos; i>1; i--)
                     arg->items[i-1].data=arg->items[i-2].data;
                 arg->items[0].data=p;
                 conf->pos=1;
@@ -581,7 +581,7 @@ static int spmo_key(struct _select_def *conf,int key)
             break;
         case '/':
             if (conf->pos!=conf->item_count) {
-                for (p=arg->items[conf->pos-1].data,i=conf->pos;i<conf->item_count;i++)
+                for (p=arg->items[conf->pos-1].data,i=conf->pos; i<conf->item_count; i++)
                     arg->items[i-1].data=arg->items[i].data;
                 arg->items[conf->item_count-1].data=p;
                 conf->pos=conf->item_count;
@@ -602,11 +602,11 @@ int select_process_bm_order(char *retBM)
     char BM[BM_LEN],buf[EB_BUF_LEN],*p,*s,*id[BM_LEN/2];
     int n,count;
     snprintf(BM,BM_LEN,"%s",retBM);
-    for (count=0,p=strtok(BM," ");p;p=strtok(NULL," "))
+    for (count=0,p=strtok(BM," "); p; p=strtok(NULL," "))
         id[count++]=p;
     if (!count)
         return 1;
-    for (n=0;n<count;n++) {
+    for (n=0; n<count; n++) {
         sel[n].x=8;
         sel[n].y=n%12+11;
         sel[n].hotkey=-1;
@@ -615,7 +615,7 @@ int select_process_bm_order(char *retBM)
         pts[n].x=sel[n].x;
         pts[n].y=sel[n].y;
     }
-    sel[n].x=-1;sel[n].y=-1;sel[n].hotkey=-1;sel[n].type=0;sel[n].data=NULL;
+    sel[n].x=-1; sel[n].y=-1; sel[n].hotkey=-1; sel[n].type=0; sel[n].data=NULL;
     arg.items=sel;
     arg.flag=SIF_SINGLE;
     memset(&conf,0,sizeof(struct _select_def));
@@ -633,8 +633,8 @@ int select_process_bm_order(char *retBM)
     conf.key_command=spmo_key;
     conf.show_title=editbrd_refresh;
     list_select_loop(&conf);
-    for (n=0,p=buf;n<count;n++)
-        for (*p++=' ',s=sel[n].data;*s;*p++=*s++)
+    for (n=0,p=buf; n<count; n++)
+        for (*p++=' ',s=sel[n].data; *s; *p++=*s++)
             continue;
     *p++=0;
     snprintf(retBM,BM_LEN,"%s",&buf[1]);
@@ -649,20 +649,20 @@ int select_process_bm_list(char *retBM)
     char BM[BM_LEN],ans[BM_LEN];
     int no_save;
     snprintf(BM,BM_LEN,"%s",retBM);
-    sel[0].x=4;sel[0].y=6;sel[0].hotkey='O';sel[0].type=SIT_SELECT;
+    sel[0].x=4; sel[0].y=6; sel[0].hotkey='O'; sel[0].type=SIT_SELECT;
     sel[0].data="\033[1;37m[\033[1;31mO\033[1;37m] 修改讨论区管理人员列表顺序 "
                 " \033[0;33m<Enter> \033[1;37m[[\033[1;32m+\033[1;37m][\033[1;32m-\033[1;37m]"
                 "[\033[1;32m*\033[1;37m][\033[1;32m/\033[1;37m][\033[1;32mEnter\033[1;37m]]\033[m";
-    sel[1].x=4;sel[1].y=7;sel[1].hotkey='R';sel[1].type=SIT_SELECT;
+    sel[1].x=4; sel[1].y=7; sel[1].hotkey='R'; sel[1].type=SIT_SELECT;
     sel[1].data="\033[1;37m[\033[1;31mR\033[1;37m] 修改讨论区管理人员列表内容 "
                 " \033[0;33m<Enter> \033[1;37m[[\033[1;32m+\033[1;37m][\033[1;32m-\033[1;37m]"
                 "[\033[1;32m/\033[1;37m][\033[1;32m...\033[1;37m]]\033[m";
-    sel[2].x=4;sel[2].y=8;sel[2].hotkey='Z';sel[2].type=SIT_SELECT;
+    sel[2].x=4; sel[2].y=8; sel[2].hotkey='Z'; sel[2].type=SIT_SELECT;
     sel[2].data="\033[1;37m[\033[1;31mZ\033[1;37m] 规整讨论区管理人员列表内容  \033[0;33m<Enter>\033[1;37m []\033[m";
-    sel[3].x=-1;sel[3].y=-1;sel[3].hotkey=-1;sel[3].type=0;sel[3].data=NULL;
-    pts[0].x=sel[0].x;pts[0].y=sel[0].y;
-    pts[1].x=sel[1].x;pts[1].y=sel[1].y;
-    pts[2].x=sel[2].x;pts[2].y=sel[2].y;
+    sel[3].x=-1; sel[3].y=-1; sel[3].hotkey=-1; sel[3].type=0; sel[3].data=NULL;
+    pts[0].x=sel[0].x; pts[0].y=sel[0].y;
+    pts[1].x=sel[1].x; pts[1].y=sel[1].y;
+    pts[2].x=sel[2].x; pts[2].y=sel[2].y;
     arg.items=sel;
     arg.flag=SIF_SINGLE;
     memset(&conf,0,sizeof(struct _select_def));
@@ -680,10 +680,10 @@ int select_process_bm_list(char *retBM)
     conf.show_title=editbrd_refresh;
     no_save=0;
     while (1) {
-        move(1,0);clrtobot();
-        move(2,4);outs("\033[1;33m请选择操作类型\033[1;37m [按 \033[1;32mESC\033[1;37m 键保存修改返回, "
-                       "按 \033[1;32m~\033[1;37m 键撤销修改返回]\033[m");
-        move(4,4);prints("\033[1;37m当前列表: [\033[1;32m%s\033[1;37m]\033[m",BM);
+        move(1,0); clrtobot();
+        move(2,4); outs("\033[1;33m请选择操作类型\033[1;37m [按 \033[1;32mESC\033[1;37m 键保存修改返回, "
+                        "按 \033[1;32m~\033[1;37m 键撤销修改返回]\033[m");
+        move(4,4); prints("\033[1;37m当前列表: [\033[1;32m%s\033[1;37m]\033[m",BM);
         conf.flag=LF_LOOP;
         if (list_select_loop(&conf)==SHOW_QUIT) {
             no_save=(lastkey==KEY_CANCEL);
@@ -692,7 +692,7 @@ int select_process_bm_list(char *retBM)
         if (conf.pos==1)
             select_process_bm_order(BM);
         else if (conf.pos==2) {
-            move(sel[1].y,0);clrtoeol();
+            move(sel[1].y,0); clrtoeol();
             if (getdata(sel[1].y,4,"\033[1;33m输入列表: \033[m",ans,BM_LEN,DOECHO,NULL,true)==-1)
                 continue;
             switch (ans[0]) {
@@ -739,8 +739,8 @@ int m_editbrd(void)
         return -1;
     modify_user_mode(ADMIN);
     clear();
-    move(0,0);prints("\033[1;32m修改讨论区说明与设定\033[m");
-    move(1,0);clrtobot();
+    move(0,0); prints("\033[1;32m修改讨论区说明与设定\033[m");
+    move(1,0); clrtobot();
     make_blist(0, 1);
 
     in_do_sendmsg=1;
@@ -748,8 +748,8 @@ int m_editbrd(void)
     in_do_sendmsg=0;
     if (i=='#') {
         if (!HAS_PERM(getCurrentUser(),PERM_ADMIN)) {
-            move(2,0);prints("使用救援模式修改讨论区属性需要ADMIN权限...");
-            WAIT_RETURN;clear();
+            move(2,0); prints("使用救援模式修改讨论区属性需要ADMIN权限...");
+            WAIT_RETURN; clear();
             return -1;
         }
         /*救援模式*/
@@ -758,35 +758,35 @@ int m_editbrd(void)
         if (!pos) {
             getdata(3,0,"请输入完整的讨论区名称: ",buf,128,DOECHO,NULL,true);
             if (!*buf) {
-                move(4,0);prints("取消...");
-                WAIT_RETURN;clear();
+                move(4,0); prints("取消...");
+                WAIT_RETURN; clear();
                 return -1;
             }
             pos=getbid(buf,NULL);
             if (!pos) {
-                move(4,0);prints("错误的讨论区名称!");
-                WAIT_RETURN;clear();
+                move(4,0); prints("错误的讨论区名称!");
+                WAIT_RETURN; clear();
                 return -1;
             }
         } else {
             bhptr=getboard(pos);
             if (!(bhptr&&bhptr->filename[0])) {
-                move(3,0);prints("错误的讨论区顺序号!");
-                WAIT_RETURN;clear();
+                move(3,0); prints("错误的讨论区顺序号!");
+                WAIT_RETURN; clear();
                 return -1;
             }
         }
     } else {
         /*常规模式*/
         if (!*buf) {
-            move(2,0);prints("取消...");
-            WAIT_RETURN;clear();
+            move(2,0); prints("取消...");
+            WAIT_RETURN; clear();
             return -1;
         }
         pos = getbnum_safe(buf,getSession(), 1);
         if (!pos) {
-            move(2,0);prints("错误的讨论区名称!");
-            WAIT_RETURN;clear();
+            move(2,0); prints("错误的讨论区名称!");
+            WAIT_RETURN; clear();
             return -1;
         }
     }
@@ -812,29 +812,29 @@ int modify_board(int bid)
         "[G]不可回复  :","[H]读限制Club:","[I]写限制Club:","[J]隐藏Club  :","[K]精华区位置:",
         "[L]权限限制  :","[M]身份限制  :","[N]积分限制  :","[Q][退出]    :"
     };
-    change=0;loop=1;
+    change=0; loop=1;
     /*选择讨论区*/
     clear();
-    move(0,0);prints("\033[1;32m修改讨论区说明与设定\033[m");
-    move(1,0);clrtobot();
+    move(0,0); prints("\033[1;32m修改讨论区说明与设定\033[m");
+    move(1,0); clrtobot();
 
     bhptr = getboard(bid);
     if (!bhptr) {
-        move(2,0);prints("错误的讨论区名称!");
-        WAIT_RETURN;clear();
+        move(2,0); prints("错误的讨论区名称!");
+        WAIT_RETURN; clear();
         return -1;
     }
     memcpy(&bh,bhptr,sizeof(struct boardheader));
     sprintf(buf,"\033[1;33m讨论区序号: %-4.4d\033[m",bid);
-    move(0,40);prints(buf);
+    move(0,40); prints(buf);
     if (bh.clubnum) {
         sprintf(buf,"\033[1;33m俱乐部序号: %-3.3d\033[m",bh.clubnum);
-        move(0,60);prints(buf);
+        move(0,60); prints(buf);
     }
     /*获取讨论区数据并构造菜单显式*/
     memcpy(&newbh,&bh,sizeof(struct boardheader));
     /*菜单定位*/
-    for (i=0;i<MB_ITEMS;i++) {
+    for (i=0; i<MB_ITEMS; i++) {
         if (i<13) {
             sel[i].x=2;
             sel[i].y=i+2;
@@ -878,7 +878,7 @@ int modify_board(int bid)
     /*讨论区描述*/
     sel[6].hotkey='7';
     sprintf(buf,"%s",bh.des);
-    for (ptr=&buf[0];*ptr;ptr++)
+    for (ptr=&buf[0]; *ptr; ptr++)
         if (*ptr==10)
             *ptr=32;
     sprintf(menustr[6],"%-15s%s",menuldr[6],buf[0]?buf:"<无>");
@@ -949,7 +949,7 @@ int modify_board(int bid)
     /*退出*/
     sel[MB_ITEMS-1].hotkey='Q';
     sprintf(menustr[MB_ITEMS-1],"%-15s%s",menuldr[MB_ITEMS-1],change?"\033[1;31m已修改\033[m":"未修改");
-    sel[MB_ITEMS].x=-1;sel[MB_ITEMS].y=-1;sel[MB_ITEMS].type=0;sel[MB_ITEMS].hotkey=-1;sel[MB_ITEMS].data=NULL;
+    sel[MB_ITEMS].x=-1; sel[MB_ITEMS].y=-1; sel[MB_ITEMS].type=0; sel[MB_ITEMS].hotkey=-1; sel[MB_ITEMS].data=NULL;
     /*备份*/
     memcpy(orig,menustr,MB_ITEMS*EB_BUF_LEN*sizeof(char));
     currpos=MB_ITEMS;
@@ -1073,7 +1073,7 @@ int modify_board(int bid)
             /*放弃修改退出*/
             if (lastkey==KEY_ESC) {
                 if (change) {
-                    move(20,0);clrtoeol();
+                    move(20,0); clrtoeol();
                     getdata(20,2,"\033[1;31m放弃修改退出? [N]: \033[m",buf,2,DOECHO,NULL,true);
                     if (buf[0]!='y'&&buf[0]!='Y')
                         continue;
@@ -1086,18 +1086,18 @@ int modify_board(int bid)
         switch (currpos-1) {
                 /*讨论区名称*/
             case 0:
-                move(2,0);clrtoeol();getdata(2,2,"请输入讨论区名称: ",buf,BOARDNAMELEN,DOECHO,NULL,true);
+                move(2,0); clrtoeol(); getdata(2,2,"请输入讨论区名称: ",buf,BOARDNAMELEN,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf||!strcmp(buf,newbh.filename))
                     break;
                 /*目的讨论区已经存在*/
                 if (strcasecmp(buf,bh.filename)&&getbid(buf,NULL)>0) {
-                    move(2,0);clrtoeol();getdata(2,2,"\033[1;31m错误: 此讨论区已经存在!\033[m",buf,1,NOECHO,NULL,true);
+                    move(2,0); clrtoeol(); getdata(2,2,"\033[1;31m错误: 此讨论区已经存在!\033[m",buf,1,NOECHO,NULL,true);
                     break;
                 }
                 /*输入讨论区名称含有非法字符*/
                 if (strchr(buf,'/')||strchr(buf,' ')) {
-                    move(2,0);clrtoeol();getdata(2,2,"\033[1;31m错误: 讨论区名称中含有非法字符!\033[m",buf,1,NOECHO,NULL,true);
+                    move(2,0); clrtoeol(); getdata(2,2,"\033[1;31m错误: 讨论区名称中含有非法字符!\033[m",buf,1,NOECHO,NULL,true);
                     break;
                 }
                 sprintf(newbh.filename,"%s",buf);
@@ -1141,7 +1141,7 @@ int modify_board(int bid)
                 break;
                 /*讨论区说明*/
             case 2:
-                move(4,0);clrtoeol();getdata(4,2,"请输入讨论区说明: ",buf,48,DOECHO,NULL,true);
+                move(4,0); clrtoeol(); getdata(4,2,"请输入讨论区说明: ",buf,48,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
                     break;
@@ -1160,7 +1160,7 @@ int modify_board(int bid)
                 break;
                 /*讨论区分区*/
             case 3:
-                move(5,0);clrtoeol();getdata(5,2,"请输入讨论区分区(1字符长度): ",buf,2,DOECHO,NULL,true);
+                move(5,0); clrtoeol(); getdata(5,2,"请输入讨论区分区(1字符长度): ",buf,2,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
                     break;
@@ -1176,7 +1176,7 @@ int modify_board(int bid)
                 break;
                 /*讨论区分类*/
             case 4:
-                move(6,0);clrtoeol();getdata(6,2,"请输入讨论区分类(4字符长度): ",buf,5,DOECHO,NULL,true);
+                move(6,0); clrtoeol(); getdata(6,2,"请输入讨论区分类(4字符长度): ",buf,5,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
                     break;
@@ -1184,7 +1184,7 @@ int modify_board(int bid)
                 if ((i=strlen(buf))<4)
                     while (i!=4)
                         buf[i++]=' ';
-                newbh.title[1]='[';newbh.title[6]=']';memcpy(&newbh.title[2],buf,4);
+                newbh.title[1]='['; newbh.title[6]=']'; memcpy(&newbh.title[2],buf,4);
                 /*标记修改状态*/
                 if (strncmp(&bh.title[1],&newbh.title[1],6)) {
                     sprintf(menustr[4],"%-15s\033[1;32m<%-6.6s>\033[m",menuldr[4],&newbh.title[1]);
@@ -1196,7 +1196,7 @@ int modify_board(int bid)
                 break;
                 /*转信标签*/
             case 5:
-                move(7,0);clrtoeol();getdata(7,2,"请输入转信标签(6字符长度;<#1>双向转信,<#2>单向转信): ",buf,7,DOECHO,NULL,true);
+                move(7,0); clrtoeol(); getdata(7,2,"请输入转信标签(6字符长度;<#1>双向转信,<#2>单向转信): ",buf,7,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
                     break;
@@ -1233,7 +1233,7 @@ int modify_board(int bid)
                 break;
                 /*讨论区描述*/
             case 6:
-                move(1,0);clrtobot();sprintf(buf,"%s",newbh.des);
+                move(1,0); clrtobot(); sprintf(buf,"%s",newbh.des);
                 /*多行输入*/
                 multi_getdata(8,0,72,"请输入讨论区描述: \n",buf,195,8,false,0);
                 /*取消修改*/
@@ -1242,7 +1242,7 @@ int modify_board(int bid)
                 if (*buf==' ')
                     buf[0]=0;
                 else
-                    for (ptr=&buf[0];*ptr;ptr++)
+                    for (ptr=&buf[0]; *ptr; ptr++)
                         if (*ptr==10)
                             *ptr=32;
                 sprintf(newbh.des,"%s",buf);
@@ -1307,7 +1307,7 @@ int modify_board(int bid)
                 break;
                 /*所属目录*/
             case 11:
-                move(13,0);clrtoeol();getdata(13,2,"请输入所属目录: ",buf,BOARDNAMELEN,DOECHO,NULL,true);
+                move(13,0); clrtoeol(); getdata(13,2,"请输入所属目录: ",buf,BOARDNAMELEN,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
                     break;
@@ -1316,10 +1316,10 @@ int modify_board(int bid)
                 else {
                     i=getbnum_safe(buf,getSession(), 1);
                     if (!i) {
-                        move(13,0);clrtoeol();getdata(13,2,"\033[1;31m错误: 输入的讨论区不存在!\033[m",buf,1,NOECHO,NULL,true);
+                        move(13,0); clrtoeol(); getdata(13,2,"\033[1;31m错误: 输入的讨论区不存在!\033[m",buf,1,NOECHO,NULL,true);
                         break;
                     } else if (!(getboard(i)->flag&BOARD_GROUP)) {
-                        move(13,0);clrtoeol();getdata(13,2,"\033[1;31m错误: 输入的讨论区不是目录!\033[m",buf,1,NOECHO,NULL,true);
+                        move(13,0); clrtoeol(); getdata(13,2,"\033[1;31m错误: 输入的讨论区不是目录!\033[m",buf,1,NOECHO,NULL,true);
                         break;
                     } else
                         newbh.group=i;
@@ -1470,7 +1470,7 @@ int modify_board(int bid)
                 break;
                 /*权限限制*/
             case 20:
-                move(16,0);clrtoeol();getdata(16,2,"设定{读取(R)|发表(P)}权限限制或放弃设定(C): ",buf,2,DOECHO,NULL,true);
+                move(16,0); clrtoeol(); getdata(16,2,"设定{读取(R)|发表(P)}权限限制或放弃设定(C): ",buf,2,DOECHO,NULL,true);
                 i=0;
                 switch (buf[0]) {
                     case 'r':
@@ -1516,7 +1516,7 @@ int modify_board(int bid)
                 break;
                 /*身份限制*/
             case 21:
-                move(17,0);clrtoeol();getdata(17,2,"设定身份限制{(职务)|(#序号)|(@)}: ",buf,USER_TITLE_LEN,DOECHO,NULL,true);
+                move(17,0); clrtoeol(); getdata(17,2,"设定身份限制{(职务)|(#序号)|(@)}: ",buf,USER_TITLE_LEN,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
                     break;
@@ -1524,11 +1524,11 @@ int modify_board(int bid)
                     i=atoi(&buf[1]);
                     sprintf(&buf[128],"%d",i);
                     if (i>255||strcmp(&buf[1],&buf[128])) {
-                        move(17,0);clrtoeol();getdata(17,2,"\033[1;31m错误: 输入序号越界或非法!\033[m",buf,1,NOECHO,NULL,true);
+                        move(17,0); clrtoeol(); getdata(17,2,"\033[1;31m错误: 输入序号越界或非法!\033[m",buf,1,NOECHO,NULL,true);
                         break;
                     }
                     if (i&&!*get_user_title(i)) {
-                        move(17,0);clrtoeol();
+                        move(17,0); clrtoeol();
                         getdata(17,2,"\033[1;33m提示: 目前输入序号所对应的用户身份不存在,{确认(Y)|取消(N)}? [N]: \033[m",
                                 buf,2,DOECHO,NULL,true);
                         if (buf[0]!='y'&&buf[0]!='Y')
@@ -1543,12 +1543,12 @@ int modify_board(int bid)
                         i=0;
                     else {
                         unsigned char count,first;
-                        for (count=0,first=0,i=0;i<255;i++)
+                        for (count=0,first=0,i=0; i<255; i++)
                             if (!strcmp(get_user_title(i+1),buf)&&!count++)
                                 first=i+1;
                         if (!count) {
-                            move(17,0);clrtoeol();getdata(17,2,"\033[1;31m错误: 目前尚未定制此用户身份!\033[m",
-                                                          buf,1,NOECHO,NULL,true);
+                            move(17,0); clrtoeol(); getdata(17,2,"\033[1;31m错误: 目前尚未定制此用户身份!\033[m",
+                                                            buf,1,NOECHO,NULL,true);
                             break;
                         }
                         i=(count==1?first:select_user_title(buf));
@@ -1570,7 +1570,7 @@ int modify_board(int bid)
                 /*积分限制*/
             case 22:
 #ifdef HAVE_USERSCORE
-                move(17,42);clrtoeol();getdata(17,42,"请输入积分限制: ",buf,8,DOECHO,NULL,true);
+                move(17,42); clrtoeol(); getdata(17,42,"请输入积分限制: ",buf,8,DOECHO,NULL,true);
                 /*取消修改*/
                 if (!*buf)
                     break;
@@ -1578,11 +1578,11 @@ int modify_board(int bid)
                 if (!buf[0]) {
                     newbh.score_level=0;
                 } else {
-                    for (i=0;buf[i];i++)
+                    for (i=0; buf[i]; i++)
                         if (!isdigit(buf[i]))
                             break;
                     if (buf[i]) {
-                        move(17,42);clrtoeol();getdata(17,42,"\033[1;31m错误: 非法的积分值!\033[m",buf,1,DOECHO,NULL,true);
+                        move(17,42); clrtoeol(); getdata(17,42,"\033[1;31m错误: 非法的积分值!\033[m",buf,1,DOECHO,NULL,true);
                         break;
                     }
                     newbh.score_level=atoi(buf);
@@ -1606,13 +1606,13 @@ int modify_board(int bid)
                         sprintf(src,"boards/%s",bh.filename);
                         sprintf(dst,"boards/%s",newbh.filename);
                         if (!dashd(src)) {
-                            move(20,0);clrtoeol();
+                            move(20,0); clrtoeol();
                             getdata(20,2,"\033[1;36m确认: 源讨论区目录不存在,是否创建? [Y]: \033[m",buf,2,DOECHO,NULL,true);
                             if (buf[0]=='n'||buf[0]=='N')
                                 break;
                         }
                         if (dashd(dst)) {
-                            move(20,0);clrtoeol();
+                            move(20,0); clrtoeol();
                             getdata(20,2,"\033[1;36m确认: 目的讨论区目录已存在,是否覆盖? [Y]: \033[m",buf,2,DOECHO,NULL,true);
                             if (buf[0]=='n'||buf[0]=='N')
                                 break;
@@ -1621,13 +1621,13 @@ int modify_board(int bid)
                     if (change&(1<<19)) {
                         sprintf(dst,"0Announce/groups/%s",newbh.ann_path);
                         if (dashd(dst)) {
-                            move(20,0);clrtoeol();
+                            move(20,0); clrtoeol();
                             getdata(20,2,"\033[1;36m确认: 目的精华区目录已存在,是否覆盖? [Y]: \033[m",buf,2,DOECHO,NULL,true);
                             if (buf[0]=='n'||buf[0]=='N')
                                 break;
                         }
                     }
-                    move(20,0);clrtoeol();
+                    move(20,0); clrtoeol();
                     getdata(20,2,"\033[1;31m确认修改讨论区属性? [N]: \033[m",buf,2,DOECHO,NULL,true);
                     if (buf[0]!='y'&&buf[0]!='Y')
                         break;
@@ -1672,7 +1672,7 @@ int modify_board(int bid)
         sprintf(buf,"修改讨论区属性: %s%c-> %s",bh.filename,(change&(1<<0))?32:0,newbh.filename);
         write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
         fprintf(fp,"\033[1;33m[讨论区 <id=%d> 属性修改明细]\033[m\n\n",bid);
-        for (i=0;i<MB_ITEMS-1;i++) {
+        for (i=0; i<MB_ITEMS-1; i++) {
             if (change&(1<<i))
                 fprintf(fp,"  %s\n  \033[1;32m%s\033[m\n\n",orig[i],menustr[i]);
         }
@@ -1681,9 +1681,9 @@ int modify_board(int bid)
         unlink(src);
     }
     newbbslog(BBSLOG_USER,"edit_board: %s <%4.4d,%#6.6x>",bh.filename,bid,change);
-    move(20,0);clrtoeol();
-    move(20,2);prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
-    WAIT_RETURN;clear();
+    move(20,0); clrtoeol();
+    move(20,2); prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
+    WAIT_RETURN; clear();
     return 0;
 #undef MB_ITEMS
 }
@@ -1698,22 +1698,22 @@ int searchtrace(void)
     char buf[256],fn_buf[256],ans[4];
     if (!check_systempasswd())
         return -1;
-    clear();move(0,0);prints("\033[1;32m查询系统记录\033[m");
+    clear(); move(0,0); prints("\033[1;32m查询系统记录\033[m");
     modify_user_mode(ADMIN);
-    move(1,0);usercomplete("查询用户: ",buf);
+    move(1,0); usercomplete("查询用户: ",buf);
     if (!buf[0]) {
-        move(2,0);prints("取消...");
-        WAIT_RETURN;clear();
+        move(2,0); prints("取消...");
+        WAIT_RETURN; clear();
         return -1;
     }
     if (!getuser(buf,&user)) {
-        move(2,0);prints("非法用户...");
-        WAIT_RETURN;clear();
+        move(2,0); prints("非法用户...");
+        WAIT_RETURN; clear();
         return -1;
     }
     sprintf(fn_buf,"tmp/searchtrace_%ld_%d",time(NULL), (int)getpid());
     sprintf(buf,"查询 %s 发文(P)/发信(M)/登录(L)记录 [P]: ",user->userid);
-    move(2,0);clrtobot();
+    move(2,0); clrtobot();
     if (getdata(2,0,buf,ans,2,DOECHO,NULL,true)==-1) {
         clear();
         return -1;
@@ -1726,22 +1726,22 @@ int searchtrace(void)
             MYSQL_RES *res;
             MYSQL_ROW row;
             if (!(fp=fopen(fn_buf,"w"))) {
-                move(3,0);prints("创建临时文件错误...");
-                WAIT_RETURN;clear();
+                move(3,0); prints("创建临时文件错误...");
+                WAIT_RETURN; clear();
                 return -1;
             }
             mysql_init(&s);
             if (!my_connect_mysql(&s)) {
-                fclose(fp);unlink(fn_buf);
-                move(3,0);prints("MySQL 错误: %s",mysql_error(&s));
-                WAIT_RETURN;clear();
+                fclose(fp); unlink(fn_buf);
+                move(3,0); prints("MySQL 错误: %s",mysql_error(&s));
+                WAIT_RETURN; clear();
                 return -1;
             }
             sprintf(buf,"SELECT * FROM postlog WHERE userid='%s' ORDER BY time;",user->userid);
             if (mysql_real_query(&s,buf,strlen(buf))) {
-                fclose(fp);unlink(fn_buf);mysql_close(&s);
-                move(3,0);prints("MySQL 错误: %s",mysql_error(&s));
-                WAIT_RETURN;clear();
+                fclose(fp); unlink(fn_buf); mysql_close(&s);
+                move(3,0); prints("MySQL 错误: %s",mysql_error(&s));
+                WAIT_RETURN; clear();
                 return -1;
             }
             fprintf(fp,"\033[1;32m用户 \033[1;33m%s\033[1;32m 近期发文记录\033[m\n",user->userid);
@@ -1760,8 +1760,8 @@ int searchtrace(void)
     } else if (ans[0]=='m'||ans[0]=='M') {
 #ifdef NEWSMTH
         if (!HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
-            move(3,0);prints("当前用户不具有查询用户近期发信记录的权限...\033[0;33m<Enter>\033[m");
-            WAIT_RETURN;clear();
+            move(3,0); prints("当前用户不具有查询用户近期发信记录的权限...\033[0;33m<Enter>\033[m");
+            WAIT_RETURN; clear();
             return -1;
         }
 #endif
@@ -1790,15 +1790,15 @@ int searchtrace(void)
         sprintf(buf, "查询用户 %s 近期登录记录", user->userid);
         move(3, 0); clrtoeol();
     } else {
-        move(3,0);prints("取消...");
-        WAIT_RETURN;clear();
+        move(3,0); prints("取消...");
+        WAIT_RETURN; clear();
         return -1;
     }
     mail_file(getCurrentUser()->userid,fn_buf,getCurrentUser()->userid,&buf[4],BBSPOST_MOVE,NULL);
     securityreport(buf,user,NULL, getSession());
     newbbslog(BBSLOG_USER,"query_user_log: <%c> %s",(toupper(ans[0])=='M'?'M':toupper(ans[0])=='L'?'L':'P'),user->userid);
-    move(3,0);prints("\033[1;36m%s 已回寄, 请检查信件...\033[m",&buf[4]);
-    WAIT_RETURN;clear();
+    move(3,0); prints("\033[1;36m%s 已回寄, 请检查信件...\033[m",&buf[4]);
+    WAIT_RETURN; clear();
     return 0;
 }
 
@@ -2487,9 +2487,9 @@ char *logfile, *regfile;
                                 case '7':
                                     mail_file(sender, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                                     break;
-				case '8':
-				    mail_file(sender, "etc/f_fill.ip", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
-				    break;
+                                case '8':
+                                    mail_file(sender, "etc/f_fill.ip", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                                    break;
                                 default:
                                     mail_file(sender, "etc/f_fill", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                                     break;
@@ -2836,7 +2836,7 @@ int x_deny(void)
             continue;
         }
         get_giveupinfo(lookupuser,s);
-        for (basicperm=0,i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+        for (basicperm=0,i=0; i<GIVEUPINFO_PERM_COUNT; i++)
             if (s[i]>0)
                 basicperm|=GIVEUP_PERM[i];
         move(3, 0);
@@ -2955,7 +2955,7 @@ int set_BM(void)
                 if (!*p)
                     flag=0;
                 if (n>1&&flag)
-                    for (n--;n;n--,p++) {
+                    for (n--; n; n--,p++) {
                         p=strchr(p,' ');
                         if (!p) {
                             flag=0;
@@ -2980,13 +2980,13 @@ int set_BM(void)
                             snprintf(title,80,"清理 %s 版非法版主 %s",bh.filename,genbuf);
                             securityreport(title,NULL,NULL, getSession());
                         } else {
-                            clrtoeol();pressreturn();clear();
+                            clrtoeol(); pressreturn(); clear();
                         }
                         flag=0;
                     }
                 } else {
                     prints("\n\033[1;31m未找到相应序号的版主!\033[m");
-                    clrtoeol();pressreturn();clear();
+                    clrtoeol(); pressreturn(); clear();
                 }
             } else if (!(id=getuser(genbuf,&user))) {
                 prints("\n\033[1;31m非法ID!\033[m");
@@ -2996,11 +2996,11 @@ int set_BM(void)
                 flag = 0;
             } else if (flag==1&&chk_BM_instr(bh.BM,user->userid)) {
                 prints("\033[1;31m错误:\033[m\n%s 已经是该版版主,无法增加!",user->userid);
-                clrtoeol();pressreturn();clear();
+                clrtoeol(); pressreturn(); clear();
                 flag=0;
             } else if (flag==2&&!chk_BM_instr(bh.BM,user->userid)) {
                 prints("\033[1;31m错误:\033[m\n%s 不是该版版主,无法删除!",user->userid);
-                clrtoeol();pressreturn();clear();
+                clrtoeol(); pressreturn(); clear();
                 flag=0;
             }
             if (flag>0) {
@@ -3008,18 +3008,18 @@ int set_BM(void)
                 disply_userinfo(&uinfo,1);
                 brd_num=0;
                 if (!(user->userlevel&PERM_BOARDS)) {
-                    move(22,0);clrtoeol();//诡异啊,这个应该是在"您的注册程序已经完成"下面隔一行的位置,怎么会覆盖呢...
+                    move(22,0); clrtoeol();//诡异啊,这个应该是在"您的注册程序已经完成"下面隔一行的位置,怎么会覆盖呢...
                     prints("\033[1;33m用户 \033[1;32m%s\033[1;33m 不是版主!\033[m",user->userid);
                 } else {
                     const struct boardheader *bptr;
-                    for (n=0;n<get_boardcount();n++) {
+                    for (n=0; n<get_boardcount(); n++) {
                         bptr=getboard(n+1);
                         if (chk_BM_instr(bptr->BM,user->userid)) {
                             move(++brd_num,56);
                             prints("* %-32s",bptr->filename);
                         }
                     }
-                    move(22,0);clrtoeol();
+                    move(22,0); clrtoeol();
                     prints("\033[1;33m用户 \033[1;32m%s\033[1;33m 为右侧 \033[1;32m%d\033[1;33m 个版面的版主:\033[m",
                            user->userid,brd_num);
                 }
@@ -3027,9 +3027,9 @@ int set_BM(void)
                 if (*genbuf=='y'||*genbuf=='Y') {
                     if (flag==1) {
                         if (add_bm(user,&bh,pos,-1)==2) {
-                            clear();move(3,0);
+                            clear(); move(3,0);
                             prints("\033[1;31m错误:\033[m\n无法任命 %s ,版主字符串溢出!",user->userid);
-                            pressreturn();clear();
+                            pressreturn(); clear();
                             continue;
                         }
                         sprintf(genbuf,"任命 %s 的版主 %s ",bh.filename,user->userid);
@@ -3132,7 +3132,7 @@ int edit_board_delete_read_perm(void)
             close(fd);
             if (p==MAP_FAILED)
                 continue;
-            for (off=0,count=0,i=0;i<MAXBOARD;i++) {
+            for (off=0,count=0,i=0; i<MAXBOARD; i++) {
                 if (!((i>>3)<st.st_size))
                     break;
                 if (((unsigned char*)p)[i>>3]&(1<<(i&0x07))) {
@@ -3210,7 +3210,7 @@ int edit_board_delete_read_perm(void)
             }
             sprintf(buf,"删除 %s 访问特定版面回收站列表",user->userid);
             fprintf(fp,"%s","\033[1;33m[原访问权限列表]\033[m\n\n");
-            for (i=0;i<MAXBOARD;i++) {
+            for (i=0; i<MAXBOARD; i++) {
                 if (!((i>>3)<st.st_size))
                     break;
                 if (((unsigned char*)p)[i>>3]&(1<<(i&0x07))) {
@@ -3259,7 +3259,7 @@ int edit_board_delete_read_perm(void)
                     munmap(p,st.st_size);
                     continue;
                 }
-                for (i=0;i<MAXBOARD;i++) {
+                for (i=0; i<MAXBOARD; i++) {
                     if (!((i>>3)<st.st_size))
                         break;
                     if (((unsigned char*)p)[i>>3]&(1<<(i&0x07))) {
@@ -3320,7 +3320,7 @@ int edit_board_delete_read_perm(void)
                 free(p);
                 continue;
             }
-            for (ret=0,ptr=p,off=((MAXBOARD>>3)+1)*sizeof(unsigned char);off>0&&ret!=-1;ptr=(char *)ptr + ret,off-=ret)
+            for (ret=0,ptr=p,off=((MAXBOARD>>3)+1)*sizeof(unsigned char); off>0&&ret!=-1; ptr=(char *)ptr + ret,off-=ret)
                 ret=write(fd,ptr,off);
             lc.l_type=F_UNLCK;
             lc.l_whence=SEEK_SET;
@@ -3336,7 +3336,7 @@ int edit_board_delete_read_perm(void)
             }
             sprintf(buf,"修改 %s 访问特定版面回收站列表",user->userid);
             fprintf(fp,"%s","\033[1;33m[新访问权限列表]\033[m\n\n");
-            for (mtime=time(NULL),i=0;i<MAXBOARD;i++) {
+            for (mtime=time(NULL),i=0; i<MAXBOARD; i++) {
                 if (((unsigned char*)p)[i>>3]&(1<<(i&0x07))) {
                     if (!(board=getboard(i+1))||!(board->filename[0])||mtime<board->createtime)
                         continue;
