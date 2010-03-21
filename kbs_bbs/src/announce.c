@@ -1844,7 +1844,7 @@ EXPRESS:                 /* Leeward 98.09.13 */
                         }
                         ret = post_cross(getCurrentUser(),bh,"",M_ITEM(&me, me.now)->title,fname,0,false,ans[0],5,getSession());
                         switch (ret) {
-                            case 0 :
+                            case 1 :
                                 prints("\033[1;32m%s\033[0;33m<Enter>\033[m","×ªÔØÍê³É!");
                                 break;
                             case -1:
