@@ -777,10 +777,10 @@ MENU *pm;
 
     tmp=M_ITEM(pm,pm->now);
     if (num>pm->now) {
-        for (n=pm->now;n<num;n++)
+        for (n=pm->now; n<num; n++)
             M_ITEM(pm,n)=M_ITEM(pm,n+1);
     } else {
-        for (n=pm->now;n>num;n--)
+        for (n=pm->now; n>num; n--)
             M_ITEM(pm,n)=M_ITEM(pm,n-1);
     }
     M_ITEM(pm,num)=tmp;
@@ -800,7 +800,8 @@ MENU *pm;
 }
 
 /* etnlegend, 2006.04.29, [精华区] 剪切/复制/粘贴操作 */
-void a_copypaste(MENU *pm,int mode) {
+void a_copypaste(MENU *pm,int mode)
+{
     MENU menu;
     ITEM *item;
     FILE *fp;
@@ -811,7 +812,7 @@ void a_copypaste(MENU *pm,int mode) {
     size_t len;
     enum {PASTE_ERROR,PASTE_CUT,PASTE_COPY} type;
 #define ACP_ANY_RETURN(msg) do{prints("\033[1;37m%s\033[0;33m<Any>\033[m",(msg));igetkey();pm->page=9999;return;}while(0)
-    move(t_lines-1,0);clrtoeol();
+    move(t_lines-1,0); clrtoeol();
     sethomefile(genbuf,getCurrentUser()->userid,".CP");
     if (!(fp=fopen(genbuf,(!(mode==0||mode==1)?"r":"w"))))
         ACP_ANY_RETURN("使用粘贴命令前应先使用剪切或复制命令...");
@@ -874,8 +875,8 @@ void a_copypaste(MENU *pm,int mode) {
     else
         snprintf(genbuf,STRLEN,"剪切方式粘贴%s %.38s, 确认? (Y/N) [N]: ",S_ISDIR(st.st_mode)?"目录":"文件",filename);
     getdata(t_lines-1,0,genbuf,ans,2,DOECHO,NULL,true);
-    move(t_lines-1,0);clrtoeol();
-    ans[0]=toupper(ans[0]);copy=0;
+    move(t_lines-1,0); clrtoeol();
+    ans[0]=toupper(ans[0]); copy=0;
     if (ans[0]=='Y'||(type==PASTE_COPY&&ans[0]=='C')) {
         a_additem(pm,title,filename,NULL,0,ap);
         if (a_savenames(pm)) {
@@ -936,7 +937,7 @@ void a_copypaste(MENU *pm,int mode) {
         memset(&menu,0,sizeof(MENU));
         menu.path=path;
         a_loadnames(&menu,getSession());
-        for (i=0;i<menu.num;i++)
+        for (i=0; i<menu.num; i++)
             if (!strcmp(M_ITEM(&menu,i)->fname,filename))
                 a_delitem(&menu,i--);
         ret=a_savenames(&menu);
@@ -950,11 +951,12 @@ void a_copypaste(MENU *pm,int mode) {
 }
 
 /* etnlegend, 2006.04.29, [精华区] 删除操作 */
-void a_delete(MENU *pm) {
+void a_delete(MENU *pm)
+{
     struct stat st;
     char path[PATHLEN],ans[4];
     sprintf(genbuf,"%5d  %s",(pm->now+1),M_ITEM(pm,pm->now)->title);
-    move(t_lines-2,0);clrtobot();
+    move(t_lines-2,0); clrtobot();
     prints("\033[1;37m%s\033[m",genbuf);
     snprintf(path,PATHLEN,"%s/%s",pm->path,M_ITEM(pm,pm->now)->fname);
     if (!lstat(path,&st)&&(S_ISDIR(st.st_mode)||S_ISREG(st.st_mode)||S_ISLNK(st.st_mode))) {
@@ -1020,7 +1022,8 @@ MENU *pm;
 
 /* add by stiger */
 /* 寻找丢失条目 */
-int a_repair(MENU *pm) {
+int a_repair(MENU *pm)
+{
     DIR *dirp;
     struct dirent *direntp;
     int i,changed;
@@ -1059,7 +1062,8 @@ int a_repair(MENU *pm) {
 /* add end */
 
 #ifdef ANN_CTRLK
-static int a_control_user(char *fpath) {
+static int a_control_user(char *fpath)
+{
     char buf[PATHLEN+20];
     int count;
     char ans[20];
@@ -1111,7 +1115,8 @@ static int a_control_user(char *fpath) {
 }
 #endif
 
-static int admin_utils_announce(MENU *menu,ITEM *item,void *varg) {
+static int admin_utils_announce(MENU *menu,ITEM *item,void *varg)
+{
 #define AU_LIBRARY  "admin/libadmin_utils.so"
 #define AU_FUNCTION "process_key_announce"
     typedef int (*FUNC_ADMIN)(MENU*,ITEM*,void*);
@@ -1132,7 +1137,8 @@ static int admin_utils_announce(MENU *menu,ITEM *item,void *varg) {
 #undef AU_FUNCTION
 }
 
-void a_manager(MENU *pm,int ch) {
+void a_manager(MENU *pm,int ch)
+{
     char uident[STRLEN];
     ITEM *item=NULL;
     char fpath[PATHLEN], changed_T[STRLEN], ans[STRLEN];
@@ -1299,7 +1305,7 @@ void a_manager(MENU *pm,int ch) {
                 strnzhcpy(genbuf,item->title,39);
                 do {
                     char *p,*q;
-                    for (q=NULL,p=&genbuf[0];*p;p++)
+                    for (q=NULL,p=&genbuf[0]; *p; p++)
                         if (*p!=' ')
                             q=p;
                     if (q)
@@ -1411,7 +1417,7 @@ void a_manager(MENU *pm,int ch) {
                                 saveitem=*item;
                                 /* retry */
                                 a_loadnames(pm, getSession());
-                                for (i=0;i<pm->num;i++) {
+                                for (i=0; i<pm->num; i++) {
                                     if (!strcmp(M_ITEM(pm,i)->fname,saveitem.fname))
                                         M_ITEM(pm,i)->attachpos=attachpos;
                                 }
@@ -1456,7 +1462,8 @@ void a_manager(MENU *pm,int ch) {
         }
 }
 
-static void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg, int domainflag) {
+static void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* arg, int domainflag)
+{
     char board[STRLEN], path[MAXPATH], phpname[20];
     MENU *m=(MENU *)arg;
     MENU *tmp;
@@ -1518,7 +1525,8 @@ static void ann_get_current_url(char* buf,int buf_len,char *ext, int len,void* a
 }
 
 /* Show file info in announce, pig2532 */
-void ann_showinfo(MENU *m) {
+void ann_showinfo(MENU *m)
+{
     char url[STRLEN];
 
     ann_get_current_url(url, STRLEN, NULL, 0, m, 0);
@@ -1531,7 +1539,8 @@ void ann_showinfo(MENU *m) {
     pressanykey();
 }
 
-void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos,void* arg) {
+void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos,void* arg)
+{
     char bap[PATHLEN];
 
     if (attachpos != -1) {
@@ -1544,7 +1553,8 @@ void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos
     }
 }
 
-void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg) {
+void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
+{
     char *fname=(char *)arg;
     /*
      *if (normal_board(currboard->filename)) {
@@ -1555,7 +1565,8 @@ void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg) {
 }
 
 #ifdef FB2KPC
-int AddPCorpus(void) {
+int AddPCorpus(void)
+{
     FILE *fn;
     char    personalpath[PATHLEN], title[200];
     struct userec *lookupuser;
@@ -1704,7 +1715,7 @@ MENU *father;
                     move(BBS_PAGESIZE / 2+3, 0);
                     sprintf(buf, "\x1b[44m%-80.80s\033[m\n", "这是一个目录");
                     prints(buf);
-                    for (i=BBS_PAGESIZE / 2+4;i<t_lines-1;i++) {
+                    for (i=BBS_PAGESIZE / 2+4; i<t_lines-1; i++) {
                         move(i,0);
                         clrtoeol();
                     }
@@ -2028,14 +2039,16 @@ EXPRESS:                 /* Leeward 98.09.13 */
 #endif
 }
 
-int Announce(void) {
+int Announce(void)
+{
     sprintf(genbuf,"%s 精华区公布栏",BBS_FULL_NAME);
     a_menu(genbuf,"0Announce",(HAS_PERM(getCurrentUser(),PERM_ANNOUNCE)?PERM_BOARDS:0),0,NULL);
     clear();
     return 0;
 }
 
-int set_import_path(char* path) {
+int set_import_path(char* path)
+{
     int i;
     i = a_select_path(true);
     if (i == 0)
