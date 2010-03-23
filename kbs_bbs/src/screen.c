@@ -186,7 +186,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if (new_ln == was_ln && new_col>=was_col+1&&new_col<=was_col+5) {
         int p=1, q=(new_ln+roll)%scr_lns;
-        for (i=was_col;i<new_col;i++)
+        for (i=was_col; i<new_col; i++)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if (p) {
             output((char *)(bp[q].data+was_col), new_col-was_col);
@@ -239,7 +239,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if (new_ln == was_ln+1 && new_col<=5) {
         int p=1, q=(new_ln+roll)%scr_lns;
-        for (i=0;i<new_col;i++)
+        for (i=0; i<new_col; i++)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if (p) {
             ochar('\n');
@@ -371,10 +371,10 @@ void refresh()
                     sprintf(buf, "\x1b[");
                     p=buf+2;
                     if (stackt!=1||stack[0]!=0)
-                        for (ii=0;ii<stackt;ii++) {
+                        for (ii=0; ii<stackt; ii++) {
                             pos++;
                             if (ii==0) sprintf(p, "%d", stack[ii]);
-                            else {sprintf(p, ";%d", stack[ii]);pos++;}
+                            else {sprintf(p, ";%d", stack[ii]); pos++;}
                             if (stack[ii]>9) pos++;
                             p=buf+pos;
                         }
@@ -669,7 +669,7 @@ void outns(const char*str, int n)
                 continue;
             } else if (*(str+i)=='M') {
                 k=1;
-                for (j=2;j<i;j++) k=k&&(*(str+j)>='0'&&*(str+j)<='9');
+                for (j=2; j<i; j++) k=k&&(*(str+j)>='0'&&*(str+j)<='9');
                 if (DEFINE(getCurrentUser(), DEF_COLOR))
                     if (!disable_move)
                         if (k) {
@@ -697,7 +697,7 @@ void outns(const char*str, int n)
         if (*str==9) { //´¦Àítab
             ch=32;
             j=(cur_col/8+1)*8-cur_col;
-            for (i=0;i<j;i++) {
+            for (i=0; i<j; i++) {
                 if (cur_col<scr_cols) {
                     slp->data[cur_col]=ch;
                     slp->mode[cur_col]=cur_mode;
@@ -920,9 +920,9 @@ void noscroll()
 {
     int i;
     struct screenline bp[LINEHEIGHT];
-    for (i=0;i<scr_lns;i++)
+    for (i=0; i<scr_lns; i++)
         memcpy(bp+i,big_picture+(i+roll)%scr_lns,sizeof(struct screenline));
-    for (i=0;i<scr_lns;i++)
+    for (i=0; i<scr_lns; i++)
         memcpy(big_picture+i,bp+i,sizeof(struct screenline));
     roll = 0;
 }
@@ -948,12 +948,12 @@ void auto_chinese()
     struct screenline *bp = big_picture;
     int i,j,k,l;
     int a[LINELEN],b[LINELEN];
-    for (i=0;i<scr_lns;i++) {
+    for (i=0; i<scr_lns; i++) {
         j = (i + roll)%scr_lns;
         a[0]=0; b[0]=0;
         a[1]=check_ch(bp[j].data[0],bp[j].data[1]);
         if (a[1]) b[1]=1; else b[1]=0;
-        for (k=2;k<scr_cols;k++) {
+        for (k=2; k<scr_cols; k++) {
             l = check_ch(bp[j].data[k-1],bp[j].data[k]);
             if (l&&l+a[k-2]>a[k-1]) {
                 a[k]=l+a[k-2];
@@ -1099,7 +1099,7 @@ void mailscr()
                 if (stackt>0) {
                     fprintf(fp, "\x1b[");
                     if (stackt!=1||stack[0]!=0)
-                        for (ii=0;ii<stackt;ii++) {
+                        for (ii=0; ii<stackt; ii++) {
                             if (ii==0) fprintf(fp, "%d", stack[ii]);
                             else {fprintf(fp, ";%d", stack[ii]);}
                         }

@@ -328,7 +328,7 @@ static int content_key(struct _select_def *conf, int key)
                 int i;
                 struct s_content sc;
                 memcpy(&sc, &ptemplate[t_now].cont[conf->pos-1], sizeof(struct s_content));
-                for (i=conf->pos;i<newm;i++)
+                for (i=conf->pos; i<newm; i++)
                     memcpy(& ptemplate[t_now].cont[i-1], & ptemplate[t_now].cont[i], sizeof(struct s_content));
                 memcpy(&ptemplate[t_now].cont[newm-1], &sc, sizeof(struct s_content));
 
@@ -339,7 +339,7 @@ static int content_key(struct _select_def *conf, int key)
                 int i;
                 struct s_content sc;
                 memcpy(&sc, &ptemplate[t_now].cont[conf->pos-1], sizeof(struct s_content));
-                for (i=conf->pos;i>newm;i--)
+                for (i=conf->pos; i>newm; i--)
                     memcpy(& ptemplate[t_now].cont[i-1], & ptemplate[t_now].cont[i-2], sizeof(struct s_content));
                 memcpy(&ptemplate[t_now].cont[newm-1], &sc, sizeof(struct s_content));
 
@@ -381,8 +381,8 @@ static int content_key(struct _select_def *conf, int key)
 
                 ct = (struct s_content *) malloc(sizeof(struct s_content) * (ptemplate[t_now].tmpl->content_num-1));
 
-                memcpy(ct+i,&(ptemplate[t_now].cont[i]),sizeof(struct s_content) * (conf->pos-1));
-                for (i=conf->pos-1;i<ptemplate[t_now].tmpl->content_num-1;i++)
+                memcpy(ct+i,&(ptemplate[t_now].cont[i]),sizeof(struct s_content) *(conf->pos-1));
+                for (i=conf->pos-1; i<ptemplate[t_now].tmpl->content_num-1; i++)
                     memcpy(ct+i, &(ptemplate[t_now].cont[i+1]), sizeof(struct s_content));
 
                 free(ptemplate[t_now].cont);
@@ -517,7 +517,7 @@ static int tmpl_key(struct _select_def *conf, int key)
                 deepfree(ptemplate + conf->pos - 1, currboard->filename);
 
                 template_num--;
-                for (i=conf->pos-1;i<template_num;i++)
+                for (i=conf->pos-1; i<template_num; i++)
                     memcpy(ptemplate+i, ptemplate+i+1, sizeof(struct a_template));
                 ptemplate[template_num].tmpl = NULL;
                 ptemplate[template_num].cont = NULL;
@@ -539,9 +539,9 @@ static int tmpl_key(struct _select_def *conf, int key)
                 int ret;
                 char bname[STRLEN] = "";
 
-                move(0,0);clrtoeol();
+                move(0,0); clrtoeol();
                 prints("%s","复制到讨论区 [ \033[1;32mSPACE/TAB\033[m - 自动补全, \033[1;32mESC\033[m - 退出 ]");
-                move(1,0);clrtoeol();
+                move(1,0); clrtoeol();
                 prints("请输入讨论区名称 [\033[1;32m%s\033[m]: ",currboard->filename);
 
                 make_blist(0, 3);
@@ -591,10 +591,10 @@ static int tmpl_key(struct _select_def *conf, int key)
                     break;
                 memcpy(&temp,&ptemplate[conf->pos-1],sizeof(struct a_template));
                 if (pos>conf->pos) {
-                    for (i=(conf->pos-1);i<(pos-1);i++)
+                    for (i=(conf->pos-1); i<(pos-1); i++)
                         memcpy(&ptemplate[i],&ptemplate[i+1],sizeof(struct a_template));
                 } else {
-                    for (i=(conf->pos-1);i>(pos-1);i--)
+                    for (i=(conf->pos-1); i>(pos-1); i--)
                         memcpy(&ptemplate[i],&ptemplate[i-1],sizeof(struct a_template));
                 }
                 memcpy(&ptemplate[pos-1],&temp,sizeof(struct a_template));
@@ -1103,7 +1103,7 @@ static int choose_tmpl_key(struct _select_def *conf, int key)
                 prints("斑竹还没有设置问题，本模板暂不可用\n");
             } else {
                 int i;
-                for (i=0;i<ptemplate[conf->pos-1].tmpl->content_num;i++) {
+                for (i=0; i<ptemplate[conf->pos-1].tmpl->content_num; i++) {
                     move(i+2,0);
                     prints("\033[1;32m问题 %d\033[m:%s  \033[1;32m最长回答\033[m%d\033[1;32m字节\033[m", i+1, ptemplate[conf->pos-1].cont[i].text, ptemplate[conf->pos-1].cont[i].length);
                 }

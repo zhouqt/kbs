@@ -212,14 +212,14 @@ int giveupnet(void)
     }
 
     if (get_giveupinfo(getCurrentUser(),s)) {
-        for (i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+        for (i=0; i<GIVEUPINFO_PERM_COUNT; i++)
             if (s[i])
                 break;
         if (i<GIVEUPINFO_PERM_COUNT) {
             clear();
             move(0,0);
             prints("\033[1;33m[当前戒网及有期封禁状态]\033[m\n\n");
-            for (i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+            for (i=0; i<GIVEUPINFO_PERM_COUNT; i++)
                 if (!s[i])
                     continue;
                 else {

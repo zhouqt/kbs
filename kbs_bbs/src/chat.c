@@ -519,7 +519,7 @@ static int ent_chat(int chatnum)
 #ifdef CHINESE_CHARACTER
                 if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                     int i,j=0;
-                    for (i=0;i<currchar;i++)
+                    for (i=0; i<currchar; i++)
                         if (j) j=0;
                         else if (inbuf[i]<0) j=1;
                     if (j) {
@@ -534,7 +534,7 @@ static int ent_chat(int chatnum)
 #ifdef CHINESE_CHARACTER
                 if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                     int i,j=0;
-                    for (i=0;i<currchar;i++)
+                    for (i=0; i<currchar; i++)
                         if (j) j=0;
                         else if (inbuf[i]<0) j=1;
                     if (j) {
@@ -640,7 +640,7 @@ static int ent_chat(int chatnum)
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for (i=0;i<currchar;i++)
+                for (i=0; i<currchar; i++)
                     if (j) j=0;
                     else if (inbuf[i]<0) j=1;
                 if (j) {
@@ -1398,7 +1398,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     //sprintf(fname, "tmp/%s.msg", getCurrentUser()->userid);
     fp = fopen(fname, "w");
     count = get_msgcount(0, getCurrentUser()->userid);
-    for (i=0;i<count;i++)
+    for (i=0; i<count; i++)
         if (i>=count-line) {
             j++;
             load_msghead(0, getCurrentUser()->userid, i, &head);

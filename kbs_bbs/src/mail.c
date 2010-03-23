@@ -1510,7 +1510,7 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     sel[2].hotkey='J';
     sel[2].type=SIT_SELECT;
     sel[2].data=menu_char[2];//垃圾箱
-    for (i=0;i<((user_mail_list.mail_list_t>12)?(user_mail_list.mail_list_t-1)/2:user_mail_list.mail_list_t);i++) {//分栏判断
+    for (i=0; i<((user_mail_list.mail_list_t>12)?(user_mail_list.mail_list_t-1)/2:user_mail_list.mail_list_t); i++) {//分栏判断
         sel[i+3].x=4;
         sel[i+3].y=i+8;
         sel[i+3].hotkey=user_mail_list.mail_list[i][0];
@@ -1518,7 +1518,7 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
         sel[i+3].data=(void*)user_mail_list.mail_list[i];//自定义邮箱
     }
     if (i!=user_mail_list.mail_list_t)//需要分栏
-        for (;i<user_mail_list.mail_list_t;i++) {
+        for (; i<user_mail_list.mail_list_t; i++) {
             sel[i+3].x=44;
             sel[i+3].y=5+(i-(user_mail_list.mail_list_t-1)/2);
             sel[i+3].hotkey=user_mail_list.mail_list[i][0];
@@ -1538,9 +1538,9 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     i=simple_select_loop(sel,SIF_NUMBERKEY|SIF_SINGLE|SIF_ESCQUIT,0,6,NULL)-1;
     if (!(i<0)&&i<user_mail_list.mail_list_t+3) {
         switch (i) {
-            case 0:setmailfile(buf,getCurrentUser()->userid,".DIR");break;
-            case 1:setmailfile(buf,getCurrentUser()->userid,".SENT");break;
-            case 2:setmailfile(buf,getCurrentUser()->userid,".DELETED");break;
+            case 0:setmailfile(buf,getCurrentUser()->userid,".DIR"); break;
+            case 1:setmailfile(buf,getCurrentUser()->userid,".SENT"); break;
+            case 2:setmailfile(buf,getCurrentUser()->userid,".DELETED"); break;
             default:
                 setmailpath(buf,getCurrentUser()->userid);
                 strcat(strcat(buf,"/."),user_mail_list.mail_list[i-3]+30);
@@ -1573,12 +1573,12 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg)
         return DONOTHING;
     getyx(&y,&x);
     saveline(t_lines-2,0,linebuf);
-    move(t_lines-2,0);clrtoeol();
+    move(t_lines-2,0); clrtoeol();
     sprintf(buf,"\033[1;32m添加用户 %s 到黑名单 [y/N]: \033[m",fh->owner);
     getdata(t_lines-2,0,buf,ans,2,DOECHO,NULL,true);
     if (!(ans[0]=='y'||ans[0]=='Y'))
         MAIL_ADD_IGNORE_RETURN;
-    move(t_lines-2,0);clrtoeol();
+    move(t_lines-2,0); clrtoeol();
     sethomefile(buf,getCurrentUser()->userid,"ignores");
     if (!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size) {
         if (!((ret=st.st_size/MAIL_ADD_IGNORE_ITEMSZ)<MAX_IGNORE)) {
@@ -1593,7 +1593,7 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg)
         close(fd);
         if (map==MAP_FAILED)
             MAIL_ADD_IGNORE_RETURN;
-        for (p=map;ret>0;vpm(p,MAIL_ADD_IGNORE_ITEMSZ),ret--)
+        for (p=map; ret>0; vpm(p,MAIL_ADD_IGNORE_ITEMSZ),ret--)
             if (!strcmp(p,fh->owner))
                 break;
         munmap(map,st.st_size);
@@ -2553,7 +2553,7 @@ static int maillist_refresh(struct _select_def *conf)
 
     move(2, 0);
     prints("%s", "\x1b[1;44;37m──功能选单─────────────┬────自定义邮箱───────");
-    for (i=0;i<scr_cols/2-36;i++)
+    for (i=0; i<scr_cols/2-36; i++)
         prints("─");
     for (i = 3; i < scr_lns - 1; i++) {
         move(i, 38);

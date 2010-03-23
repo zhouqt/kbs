@@ -72,7 +72,7 @@ static int del_clock_data(int num)
 
     if (num >= clock_total) return 0;
 
-    for (i=num;i<clock_total-1;i++) {
+    for (i=num; i<clock_total-1; i++) {
         memcpy(clock_data+i,clock_data+i+1,sizeof(struct clock_struct));
     }
     clock_total --;
@@ -211,7 +211,7 @@ time_t calc_calltime(int mode)
 
     init_clock_data();
 
-    for (i=0;i<clock_total;i++) {
+    for (i=0; i<clock_total; i++) {
         time_t realcalltime;
 
         realcalltime = get_realcalltime(clock_data + i);

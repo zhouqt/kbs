@@ -350,7 +350,7 @@ int t_query(char* q_id)
 #if defined(FREE) || defined(ZIXIA)
         move(0, 0);
 #else
-        move(1, 0);
+    move(1, 0);
 #endif
         clrtobot();
         setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
@@ -378,7 +378,7 @@ int t_query(char* q_id)
 
         }
 #else
-        prints("%s (%s) 共上站 %d 次，发表过 %d 篇文章", lookupuser->userid, lookupuser->username, lookupuser->numlogins, lookupuser->numposts);
+    prints("%s (%s) 共上站 %d 次，发表过 %d 篇文章", lookupuser->userid, lookupuser->username, lookupuser->numlogins, lookupuser->numposts);
 #endif
         {
             struct _tag_printstatus tp;
@@ -402,15 +402,15 @@ int t_query(char* q_id)
 #ifdef FREE
                 strcpy(exittime, "       正在线上       ");
 #else
-            strcpy(exittime, "因在线上或非常断线不详");
+    strcpy(exittime, "因在线上或非常断线不详");
 #endif
         }
 #if defined(FREE)
         prints("\n上 次 在: [\033[1;32m%s\033[m] 从 [\033[1;32m%s\033[m] 到本站一游。\n", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ((!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost))));
         prints("离站时间: [\033[1;32m%s\033[m] ", exittime);
 #else
-        prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ((!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost))),       /*Haohmaru.99.12.18. hide ip */
-               exittime);
+    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ((!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost))),       /*Haohmaru.99.12.18. hide ip */
+           exittime);
 #endif
 
 #if defined(FREE)
@@ -420,16 +420,16 @@ int t_query(char* q_id)
                lookupuser->numposts,lookupuser->money, lookupuser->score,
                compute_user_value(lookupuser));
 #elif defined(ZIXIA)
-        uleveltochar(permstr, lookupuser);
-        prints(" 信箱：[\033[5m%2s\033[m]  生命力：[%d] \n",
-               (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser));
-        prints("修炼道行[\033[1;32m%d点\033[m]    身份: [\033[1;32m%s\033[m]%s\n",
-               //(lookupuser->userlevel & (PERM_OBOARDS | PERM_SYSOP | PERM_ADMIN))? 9999 : lookupuser->altar,
-               lookupuser->altar,permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
+    uleveltochar(permstr, lookupuser);
+    prints(" 信箱：[\033[5m%2s\033[m]  生命力：[%d] \n",
+           (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser));
+    prints("修炼道行[\033[1;32m%d点\033[m]    身份: [\033[1;32m%s\033[m]%s\n",
+           //(lookupuser->userlevel & (PERM_OBOARDS | PERM_SYSOP | PERM_ADMIN))? 9999 : lookupuser->altar,
+           lookupuser->altar,permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #else
-        uleveltochar(permstr, lookupuser);
-        prints("信箱：[\033[5m%2s\033[m] 生命力：[%d] 身份: [%s]%s\n",
-               (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
+    uleveltochar(permstr, lookupuser);
+    prints("信箱：[\033[5m%2s\033[m] 生命力：[%d] 身份: [%s]%s\n",
+           (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #endif
 
         if (seecount) {
@@ -1543,28 +1543,23 @@ int t_monitor(void)
         i = igetkey();
         if (i==KEY_REFRESH)
             do_list("探视民情");
-        else
-            if (Ctrl('Z') == i)
-                r_lastmsg();        /* Leeward 98.07.30 support msgX */
+        else if (Ctrl('Z') == i)
+            r_lastmsg();        /* Leeward 98.07.30 support msgX */
+        else if (i == 'f' || i == 'F') {
+            if (friendmode == true)
+                friendmode = false;
             else
-                if (i == 'f' || i == 'F') {
-                    if (friendmode == true)
-                        friendmode = false;
-                    else
-                        friendmode = true;
-                    fill_userlist();
-                    do_list("探视民情");
-                } else
-                    if (i == KEY_DOWN) {
-                        ulistpage++;
-                        do_list("探视民情");
-                    } else
-                        if (i == KEY_UP) {
-                            ulistpage--;
-                            do_list("探视民情");
-                        } else
-                            if (i == Ctrl('D') || i == Ctrl('C') || i == KEY_LEFT)
-                                break;
+                friendmode = true;
+            fill_userlist();
+            do_list("探视民情");
+        } else if (i == KEY_DOWN) {
+            ulistpage++;
+            do_list("探视民情");
+        } else if (i == KEY_UP) {
+            ulistpage--;
+            do_list("探视民情");
+        } else if (i == Ctrl('D') || i == Ctrl('C') || i == KEY_LEFT)
+            break;
         /*
          * else if (i == -1) {
          * if (errno != EINTR) { perror("read"); exit(1); }
@@ -2038,7 +2033,7 @@ int pagecnt;
     int i = 0;
 
     /* initialize flags */
-    for (i=ADD;i<=QUITS;i++) {
+    for (i=ADD; i<=QUITS; i++) {
         flag[i] = 1;
     }
 
@@ -2064,7 +2059,7 @@ int pagecnt;
     }
 
     /* put menu items together */
-    for (i=ADD;i<=QUITS;i++) {
+    for (i=ADD; i<=QUITS; i++) {
         if (flag[i] == 1) {
             strcat(buf, item[i]);
         }

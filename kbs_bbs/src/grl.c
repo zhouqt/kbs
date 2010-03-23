@@ -60,13 +60,12 @@ int grl_entry()
             GRL_GS_CURR.pos = 1;
         } else if ((ans[0] == 's') || (ans[0] == 'S')) {
             int bid, type;
-            if(grl_choose_board(&bid, &type)) {
+            if (grl_choose_board(&bid, &type)) {
                 GRL_GS_CURR.type = type;
                 GRL_GS_CURR.bid = bid;
                 GRL_GS_CURR.mode = DIR_MODE_NORMAL;
                 GRL_GS_CURR.pos = 1;
-            }
-            else
+            } else
                 GRL_GS_CURR.type = GS_NONE;
         } else if (ans[0] == 0)
             break;
@@ -209,7 +208,8 @@ int grl_read_unknown()
 }
 
 // 让用户选择版面
-int grl_choose_board(int* bid, int* type) {
+int grl_choose_board(int* bid, int* type)
+{
     char bname[STRLEN];
     int ret;
     struct boardheader *bh;
@@ -221,16 +221,16 @@ int grl_choose_board(int* bid, int* type) {
     // 运行自动补齐
     ret = namecomplete(NULL, bname);
     // 如果没选择
-    if(bname[0] == 0)
+    if (bname[0] == 0)
         return 0;
     *bid = getbnum_safe(bname, getSession(), 1);
-    if(*bid == 0) {
+    if (*bid == 0) {
         move(2, 0);
         prints("错误的讨论区。");
         return 0;
     }
     bh = getboard(*bid);
-    if(bh->flag & BOARD_GROUP)
+    if (bh->flag & BOARD_GROUP)
         *type = GS_GROUP;
     else
         *type = GS_BOARD;

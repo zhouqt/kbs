@@ -233,7 +233,7 @@ usertitle:
                         if (ititle > 0) {
                             newinfo.title = ititle;
                         } else {
-                            ititle=0;tflag=0;
+                            ititle=0; tflag=0;
                             do {
                                 ititle++;
                                 if (!strcmp(buf,get_user_title(ititle))) {
@@ -894,7 +894,7 @@ int mu_generate_level(int row,int col,unsigned int *level,unsigned int init)
     *level=(perm=init);
     move(row,col);
     prints(MU_GL_B,'[');
-    for (i=0,mask=0x01;i<NUMPERMS;i++,mask<<=1)
+    for (i=0,mask=0x01; i<NUMPERMS; i++,mask<<=1)
         prints(((perm&mask)?MU_GL_N:MU_GL_U),XPERMSTR[i]);
     prints(MU_GL_B,']');
     next=0;
@@ -938,11 +938,11 @@ int mu_generate_level(int row,int col,unsigned int *level,unsigned int init)
                         continue;
                     break;
                 default:
-                    for (next=(NUMPERMS-1);!(next<0);next--)
+                    for (next=(NUMPERMS-1); !(next<0); next--)
                         if (key==XPERMSTR[next])
                             break;
                     if (next==-1&&isalpha(key)) {
-                        for (next=(NUMPERMS-1);!(next<0);next--)
+                        for (next=(NUMPERMS-1); !(next<0); next--)
                             if (toupper(key)==toupper(XPERMSTR[next]))
                                 break;
                     }
@@ -1059,7 +1059,7 @@ static int mu_menu_key(struct _select_def *conf,int key)
         arg->type=MU_MENU_RESET;
         return SHOW_QUIT;
     }
-    for (value=toupper(key),index=0;index<MU_ITEM;index++)
+    for (value=toupper(key),index=0; index<MU_ITEM; index++)
         if (item[index].access&&item[index].key==value) {
             conf->new_pos=(index+1);
             return SHOW_SELCHANGE;
@@ -1231,7 +1231,7 @@ int modify_userinfo(int uid,int mode)
     }
     memcpy(&nuser,&ouser,sizeof(struct userec));
     memcpy(&ndata,&odata,sizeof(struct userdata));
-    for (i=0;i<MU_ITEM;i++) {
+    for (i=0; i<MU_ITEM; i++) {
         loc[i].x=2;
         loc[i].y=(2+i);
         item[i].x=loc[i].x;
@@ -1518,7 +1518,7 @@ int modify_userinfo(int uid,int mode)
                                 break;
                         }
                     } else {
-                        for (uc=0,uf=0,j=1;j<256;j++)
+                        for (uc=0,uf=0,j=1; j<256; j++)
                             if (!strcmp(get_user_title(j),buf)&&!uc++)
                                 uf=j;
                         if (!uc) {
@@ -1910,7 +1910,7 @@ int modify_userinfo(int uid,int mode)
                 i=2;
                 break;
             }
-            for (j=0;(k=kick_user_utmp(uid,NULL,0))==10;j+=k)
+            for (j=0; (k=kick_user_utmp(uid,NULL,0))==10; j+=k)
                 continue;
             if (j+=k)
                 newbbslog(BBSLOG_USER,"modify_userinfo_kick: %s <%d> [ %d logins ]",urec->userid,uid,j);
@@ -1958,7 +1958,7 @@ int modify_userinfo(int uid,int mode)
             fprintf(fp,"  \033[1;33m原用户权限状态: \033[0;33m<%s>\033[m\n",gen_permstr(ouser.userlevel,buf));
             fprintf(fp,"  \033[1;33m现用户权限状态: \033[1;32m<%s>\033[m\n\n",gen_permstr(vuser.userlevel,buf));
             fprintf(fp,"\033[1;37m[%s]\033[m\n\n","涉及修改的权限位说明");
-            for (level=(ouser.userlevel^vuser.userlevel),j=0;j<NUMPERMS;j++)
+            for (level=(ouser.userlevel^vuser.userlevel),j=0; j<NUMPERMS; j++)
                 if (level&(1<<j))
                     fprintf(fp,"  %s<%c> \033[1;33m%s\033[m\n",((vuser.userlevel&(1<<j))?"\033[1;32m+":"\033[1;31m-"),
                             XPERMSTR[j],permstrings[j]);
@@ -1980,7 +1980,7 @@ int modify_userinfo(int uid,int mode)
             sprintf(buf,"设定用户数据: %s%c-> %s",ouser.userid,((change&0x01)?' ':0),nuser.userid);
             write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
             fprintf(fp,"\033[1;37m[用户 <uid=\033[1;31m%d\033[1;37m> 数据修改明细]\033[m\n\n",uid);
-            for (j=0;j<(MU_ITEM-1);j++) {
+            for (j=0; j<(MU_ITEM-1); j++) {
                 if (change&(1<<j))
                     fprintf(fp," \033[1;33m[%-8.8s]: \033[0;33m%s\033[m\n%-13.13s\033[1;32m%s\033[m\n\n",prefix[j],omenu[j],"",menu[j]);
             }

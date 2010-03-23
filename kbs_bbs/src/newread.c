@@ -13,7 +13,7 @@ struct _read_pos {
     char* key;
     int pos;
     struct _read_pos* next;
-}static *read_pos_head=NULL;
+} static *read_pos_head=NULL;
 
 static int read_getdata(struct _select_def *conf, int pos, int len);
 /* 获得上一次阅读的位置
@@ -107,7 +107,7 @@ int find_nextnew(struct _select_def* conf,int begin)
             pFh = (struct fileheader*)data;
             nowFh=pFh+begin-1;
             found=false;
-            for (i=begin-1;i<size/sizeof(struct fileheader);i++,nowFh++) {
+            for (i=begin-1; i<size/sizeof(struct fileheader); i++,nowFh++) {
                 if (brc_unread(nowFh->id, getSession())) {
                     found=true;
                     break;
@@ -154,9 +154,8 @@ int fileheader_thread_read(struct _select_def* conf, struct fileheader* fh,int e
             /* readed */
             if (mode==SR_FIRSTNEW)
                 return APPLY_CONTINUE;
-            else
-                if (mode==SR_FIRSTNEWDOWNSEARCH)
-                    return APPLY_CONTINUE;
+            else if (mode==SR_FIRSTNEWDOWNSEARCH)
+                return APPLY_CONTINUE;
             break;
 #endif
         case SR_FIRST:
@@ -414,7 +413,7 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
             return SHOW_SELCHANGE;
         }
         if ((pos!=-1)&&(pos<=count)) {
-            if (lseek(arg->fd, arg->ssize * (pos - 1), SEEK_SET) != -1) {
+            if (lseek(arg->fd, arg->ssize *(pos - 1), SEEK_SET) != -1) {
                 if ((n = read(arg->fd, arg->data, arg->ssize * len)) != -1) {
                     entry=(n / arg->ssize);
                 }

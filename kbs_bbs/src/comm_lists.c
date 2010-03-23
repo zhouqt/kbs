@@ -175,7 +175,7 @@ static int decode_string(const char *s)
     register int i,j;
     char buf[4096];
     int val,count;
-    for (i=0,j=0;(buf[i]=s[j]);j++) {
+    for (i=0,j=0; (buf[i]=s[j]); j++) {
         if (buf[i]!='\001') {
             i++;
             continue;
@@ -264,7 +264,7 @@ int exec_mbem(const char *command)
         snprintf(token_buffer,PATHLEN,"%s/%s",BBSHOME,p);
         record=so_name;
         *record++='/';
-        for (token=strtok(token_buffer,EM_TOKEN);token;token=strtok(NULL,EM_TOKEN)) {
+        for (token=strtok(token_buffer,EM_TOKEN); token; token=strtok(NULL,EM_TOKEN)) {
             if (token[0]=='.'&&token[1]=='.'&&!token[2]) {
                 EM_QUIT("模块位置与当前安全原则不符, 操作终止...");
             } else {
@@ -302,7 +302,7 @@ static int domenu_screen(const struct smenuitem *pm,const char *prompt)
     const char *name,*desc,*str;
     int row,col,count,n;
     clear();
-    row=3;col=0;count=0;
+    row=3; col=0; count=0;
     while (1) {
         n=(pm-menuitem);
         switch (pm->level) {
@@ -340,14 +340,14 @@ static int domenu_screen(const struct smenuitem *pm,const char *prompt)
                 }
                 break;
         }
-        pm++;count++;
+        pm++; count++;
     }
 }
 
 static int dump_menu_pos(void)
 {
     register int i;
-    for (i=0;i<sysconf_menu;i++) {
+    for (i=0; i<sysconf_menu; i++) {
         menu[i].row=menuitem[i].line;
         menu[i].col=menuitem[i].col;
         menu[i].func=search_func(sysconf_relocate(menuitem[i].func_name),&(menu[i].type));
@@ -374,9 +374,9 @@ int domenu(const char *name)
     }
     pm=sysconf_getmenu(name);
     size=domenu_screen(pm,prompt);
-    n=(pm-menuitem);now=0;
+    n=(pm-menuitem); now=0;
     if (!strcmp(name,"TOPMENU")&&chkmail()) {
-        for (i=0;i<size;i++) {
+        for (i=0; i<size; i++) {
             if ((menu[n+i].row>0)&&(*sysconf_relocate(pm[i].name)=='M'))
                 now=i;
         }
@@ -427,7 +427,7 @@ int domenu(const char *name)
                 r_lastmsg();
                 break;
             case KEY_RIGHT:
-                for (i=0;i<size;i++) {
+                for (i=0; i<size; i++) {
                     if ((menu[n+i].row==menu[n+now].row)&&!(pm[i].level<0)&&(menu[n+i].col>menu[n+now].col)
                             &&HAS_PERM(getCurrentUser(),pm[i].level))
                         break;
@@ -460,7 +460,7 @@ int domenu(const char *name)
                 }
                 break;
             case KEY_LEFT:
-                for (i=0;i<size;i++) {
+                for (i=0; i<size; i++) {
                     if ((menu[n+i].row==menu[n+now].row)&&!(pm[i].level<0)&&(menu[n+i].col<menu[n+now].col)
                             &&HAS_PERM(getCurrentUser(),pm[i].level))
                         break;
@@ -500,7 +500,7 @@ int domenu(const char *name)
                 now=0;
                 break;
             default:
-                for (i=0;i<size;i++) {
+                for (i=0; i<size; i++) {
                     if ((menu[n+i].row>0)&&(*sysconf_relocate(pm[i].name)==toupper(key))
                             &&HAS_PERM(getCurrentUser(),pm[i].level)) {
                         now=i;

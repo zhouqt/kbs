@@ -297,7 +297,7 @@ static int set_al_getdata(struct _select_def *conf,int pos,int len)
 {
     int i;
 
-    for (i=0;i<al_num;i++) {
+    for (i=0; i<al_num; i++) {
         if (a_l[i].memo) free(a_l[i].memo);
     }
     bzero(a_l, sizeof(struct addresslist) * BBS_PAGESIZE);
@@ -576,7 +576,7 @@ int al_read(void)
     clear();
     list_select_loop(&group_conf);
 
-    for (i=0;i<al_num;i++) {
+    for (i=0; i<al_num; i++) {
         if (a_l[i].memo) free(a_l[i].memo);
     }
 

@@ -152,9 +152,9 @@ int NNread_init()
 #if MAXnettyLN > 5
     if ((fffd = fopen("etc/movie7", "r")) == NULL)
 #else
-        if ((fffd = fopen("etc/movie", "r")) == NULL)
+    if ((fffd = fopen("etc/movie", "r")) == NULL)
 #endif
-            return 0;
+        return 0;
     /*--- ---*/
     while ((xxxline < ACBOARD_MAXLINE) && (fgets(buf, ACBOARD_BUFSIZE, fffd) != NULL)) {
         ptr = movieshm->line[xxxline];
@@ -176,7 +176,8 @@ int NNread_init()
     return 1;
 }
 
-int check_calltime() {
+int check_calltime()
+{
 
     if (calltime != 0 && time(0) >= calltime) {
         int line;
@@ -221,7 +222,8 @@ int check_calltime() {
     return 0;
 }
 
-void setcalltime() {
+void setcalltime()
+{
     char ans[6];
     int ttt;
 
@@ -238,7 +240,8 @@ void setcalltime() {
 }
 
 #if 0
-int morekey() {
+int morekey()
+{
     while (1) {
         switch (igetkey()) {
             case Ctrl('Y'):
@@ -293,7 +296,8 @@ int morekey() {
 }
 #endif
 
-int seek_nth_line(int fd, int no, char *more_buf) {
+int seek_nth_line(int fd, int no, char *more_buf)
+{
     int n_read, line_count, viewed;
     char *p, *end;
 
@@ -341,7 +345,8 @@ char *fname;
                             *//*
                             * Rewrite by SmallPig
                             */
-void netty_more() {
+void netty_more()
+{
     char buf[350];
     int ne_row = 1;
     int x, y;
@@ -379,7 +384,8 @@ void netty_more() {
     move(y, x);
 }
 
-void printacbar() {
+void printacbar()
+{
     int x, y;
 
     if (MAXnettyLN > 5) return;
@@ -401,7 +407,8 @@ void printacbar() {
 }
 
 extern int idle_count;
-void R_monitor(void *data) {
+void R_monitor(void *data)
+{
     if (!DEFINE(getCurrentUser(), DEF_ACBOARD))
         return;
 
@@ -439,7 +446,8 @@ struct MemMoreLines {
   oldty是上一行的type
   *ty返回行的type
 */
-int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty) {
+int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
+{
     int i, w, in_esc = 0, db = 0, lastspace = 0, autoline = 1;
     char *p = p0;
     int att_size;
@@ -597,7 +605,8 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty) {
 }
 
 int effectiveline;              /*有效行数, 只计算前面的部分, 头部不含, 空行不含, 签名档不含, 引言不含 */
-void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size) {
+void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
+{
     int i, s, u;
     char *p0, oldty = 0;
 
@@ -635,7 +644,8 @@ void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size) {
     l->currty = l->ty[0];
 }
 
-int next_MemMoreLines(struct MemMoreLines *l) {
+int next_MemMoreLines(struct MemMoreLines *l)
+{
     int n;
     char *p0;
 
@@ -670,7 +680,8 @@ int next_MemMoreLines(struct MemMoreLines *l) {
     return l->curr_line;
 }
 
-int seek_MemMoreLines(struct MemMoreLines *l, int n) {
+int seek_MemMoreLines(struct MemMoreLines *l, int n)
+{
     int i;
 
     if (n < 0) {
@@ -697,7 +708,8 @@ int seek_MemMoreLines(struct MemMoreLines *l, int n) {
 
 #include <sys/mman.h>
 
-int mmap_show(char *fn, int row, int numlines) {
+int mmap_show(char *fn, int row, int numlines)
+{
     char *ptr;
     off_t size;
     int retv=0;
@@ -715,7 +727,8 @@ int mmap_show(char *fn, int row, int numlines) {
     return retv;
 }
 
-int mmap_more(char *fn, int quit, char *keystr, char *title) {
+int mmap_more(char *fn, int quit, char *keystr, char *title)
+{
     char *ptr;
     off_t size;
     int retv=0;
@@ -733,7 +746,8 @@ int mmap_more(char *fn, int quit, char *keystr, char *title) {
     return retv;
 }
 
-void mem_printline(struct MemMoreLines *l, char *fn,char* begin) {
+void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
+{
     char* ptr=l->curr;
     int len=l->currlen;
     int ty=l->currty;
@@ -799,7 +813,8 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin) {
     outns("\n", 1);
 }
 
-static int mem_show(char *ptr, int size, int row, int numlines, char *fn) {
+static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
+{
     extern int t_lines;
     struct MemMoreLines l;
     int i, curr_line;
@@ -817,7 +832,8 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn) {
     return 0;
 }
 
-void mem_printbotline(int l1, int l2, int total, int read, int size) {
+void mem_printbotline(int l1, int l2, int total, int read, int size)
+{
     extern int t_lines;
 
     /* static int n = 0;
@@ -846,7 +862,8 @@ void mem_printbotline(int l1, int l2, int total, int read, int size) {
     resetcolor();
 }
 
-int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title) {
+int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
+{
     extern int t_lines;
     struct MemMoreLines l;
     static char searchstr[30] = "";
@@ -1085,7 +1102,8 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
     }
 }
 
-int ansimore(char *filename, int promptend) {
+int ansimore(char *filename, int promptend)
+{
     int ch;
 
     clear();
@@ -1115,7 +1133,8 @@ int numlines;
     return ch;
 }
 
-int ansimore_withzmodem(char *filename, int promptend, char *title) {
+int ansimore_withzmodem(char *filename, int promptend, char *title)
+{
     int ch;
 
     clear();
@@ -1137,7 +1156,8 @@ int ansimore_withzmodem(char *filename, int promptend, char *title) {
 extern int offsetln;
 extern int minln;
 
-int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh) {
+int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
+{
     struct MemMoreLines l;
     int i, j, curr_line, last_line;
     bool header = true;
@@ -1157,7 +1177,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh) {
     }
     outs(buf);
     prints("\n\033[m");
-    for (i=BBS_PAGESIZE / 2+4;i<t_lines-1;i++) {
+    for (i=BBS_PAGESIZE / 2+4; i<t_lines-1; i++) {
         move(i,0);
         clrtoeol();
     }
@@ -1189,7 +1209,8 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh) {
     return 0;
 }
 
-int draw_content(char *fn, struct fileheader *fh) {
+int draw_content(char *fn, struct fileheader *fh)
+{
     char *ptr;
     off_t size;
     int retv=0;

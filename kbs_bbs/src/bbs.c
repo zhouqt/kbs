@@ -424,24 +424,20 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
                 if (flag==FILE_MARK_FLAG) {
                     if (data.accessed[0] & FILE_MARKED) {
                         lookupuser->numm++;
-                    } else
-                        if (lookupuser->numm>0) lookupuser->numm--;
+                    } else if (lookupuser->numm>0) lookupuser->numm--;
                 } else if (flag == FILE_DIGEST_FLAG) {
                     if (data.accessed[0] & FILE_DIGEST) {
                         lookupuser->numg++;
-                    } else
-                        if (lookupuser->numg>0) lookupuser->numg--;
+                    } else if (lookupuser->numg>0) lookupuser->numg--;
                 } else if (flag == FILE_IMPORT_FLAG) {
                     if (data.accessed[0] & FILE_IMPORTED) {
                         lookupuser->numx++;
-                    } else
-                        if (lookupuser->numx>0) lookupuser->numx--;
+                    } else if (lookupuser->numx>0) lookupuser->numx--;
 #if 0  // pig2532: 加分标记改为不参与十大统计 不再统计numf
                 } else if (flag == FILE_FEN_FLAG) {
                     if (data.accessed[1] & FILE_FEN) {
                         lookupuser->numf++;
-                    } else
-                        if (lookupuser->numf>0) lookupuser->numf--;
+                    } else if (lookupuser->numf>0) lookupuser->numf--;
 #endif
                 }
             }
@@ -681,7 +677,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
     else
         setmailfile(name,getCurrentUser()->userid,info->filename);
     strcpy(quote_title,info->title);
-    clear();move(4,0);
+    clear(); move(4,0);
     prints("%s","\033[1;33m请注意: \033[1;31m本站站规规定, 同样内容的文章严禁在五个(含)以上讨论区内重复发表，\n\n        \033[1;33m对\033[1;31m违反上述规定者\033[1;33m, 管理人员将依据\033[1;31m本站帐号管理办法中相关条款\033[1;33m进行处理!\n\n        请大家共同维护良好的讨论秩序，节约系统资源, 谢谢合作！\033[m");
 #ifdef REMOTE_CROSS
     move(2, 0);
@@ -699,14 +695,14 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
         return FULLUPDATE;
     /* 同版转载 */
     if (!inmail&&!strcmp(board,currboard->filename)) {
-        move(3,0);clrtobot();
+        move(3,0); clrtobot();
         prints("\n\n    %s\033[0;33m<Enter>\033[m","本版的文章无须转载到本版...");
         WAIT_RETURN;
         return FULLUPDATE;
     }
     /* 权限检查 */
     if (!haspostperm(getCurrentUser(),board)) {
-        move(3,0);clrtobot();
+        move(3,0); clrtobot();
         ans[0]=(HAS_PERM(getCurrentUser(),PERM_LOGINOK)?'1':'0');
         ans[1]=(('0'+'1')-ans[0]);
         sprintf(genbuf,"\n\n    您目前无法在该讨论区发表文章!\n\n    导致上述问题的原因可能是\033[%c;33m版面的发文权限制\033[m或者\033[%c;33m您尚未通过注册\033[m,\n    尚未通过注册的用户可在\033[%c;33m个人工具箱\033[m内填写注册资料以完成注册:)\n\n    按回车键继续...\033[0;33m<Enter>\033[m",ans[0],ans[1],ans[1]);
@@ -716,7 +712,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
     }
     /* 只读版面 */
     if (check_readonly(board)) {
-        move(3,0);clrtobot();
+        move(3,0); clrtobot();
         prints("\n\n    %s\033[0;33m<Enter>\033[m","\033[1;33m目的版面目前为\033[1;31m只读\033[1;33m模式, 取消转载操作...\033[m");
         WAIT_RETURN;
         return FULLUPDATE;
@@ -724,7 +720,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
 #ifdef HAVE_USERSCORE
     /* 积分限制 */
     if (!check_score_level(getCurrentUser(),bh)) {
-        move(3,0);clrtobot();
+        move(3,0); clrtobot();
         prints("\n\n    \033[1;33m%s\033[0;33m<Enter>\033[m","您的积分不符合目的讨论区的设定, 暂时无法向目的讨论区转载文章...");
         WAIT_RETURN;
         return FULLUPDATE;
@@ -732,7 +728,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
 #endif
     /* 内部版面 */
     if (!inmail&&public_board(bh)&&!public_board(currboard)) {
-        move(3,0);clrtobot();
+        move(3,0); clrtobot();
         prints("\n\n    \033[1;31m注意:\033[m 您试图将内部版面(%s)的文章转载到公开版面,",currboard->filename);
         getdata(6,4,"这样的做法通常是\033[1;33m不允许\033[m的或\033[1;33m不建议\033[m的, 确认转载操作? [y/N]: ",ans,2,DOECHO,NULL,true);
         if (toupper(ans[0])!='Y')
@@ -740,7 +736,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
     }
     /* 附件文章 */
     if (info->attachment&&!(bh->flag&BOARD_ATTACH)&&!HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
-        move(3,0);clrtobot();
+        move(3,0); clrtobot();
         prints("\n\n    您正在转载的文章带有附件, 但 %s 版目前不允许带附件文章,",board);
         getdata(6,4,"是否丢弃附件继续转载? [y/N]: ",ans,2,DOECHO,NULL,true);
         if (toupper(ans[0])!='Y')
@@ -749,7 +745,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
     }
     /* 已被封禁 */
     if (deny_me(getCurrentUser()->userid,board)) {
-        move(3,0);clrtobot();
+        move(3,0); clrtobot();
         if (HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
             getdata(5,0,"您已被取消在目的版面的发文权限, 是否强制转载? [y/N]: ",ans,2,DOECHO,NULL,true);
             if (toupper(ans[0])!='Y')
@@ -760,7 +756,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
             return FULLUPDATE;
         }
     }
-    clear();move(0,0);
+    clear(); move(0,0);
     sprintf(genbuf,"转载 \033[1;33m%-.45s\033[m 到 \033[1;32m%s\033[m 版",quote_title,board);
     prints("%s",genbuf);
     move(3,0);
@@ -793,7 +789,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
             do {
                 char new_file_name[STRLEN];
                 if (edit_cross_content(name,new_file_name,cut_attach)==-1) {
-                    move(3,0);clrtobot();
+                    move(3,0); clrtobot();
                     prints("\033[1;33m%s\033[0;33m<Enter>\033[m","取消转载操作或转载过程中发生错误...");
                     WAIT_RETURN;
                     return FULLUPDATE;
@@ -803,7 +799,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
             } while (0);
             break;
         default:
-            move(3,0);clrtoeol();
+            move(3,0); clrtoeol();
             prints("\033[1;33m%s\033[0;33m<Enter>\033[m","取消转载操作...");
             WAIT_RETURN;
             return FULLUPDATE;
@@ -811,7 +807,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
     if ((ret = post_cross(getCurrentUser(),bh,currboard->filename,quote_title,name,Anony,inmail,ans[0],mode,getSession()))==-1) {
         if (need_unlink)
             unlink(name);
-        move(3,0);clrtoeol();
+        move(3,0); clrtoeol();
         prints("\033[1;33m%s\033[0;33m<Enter>\033[m","转载过程中发生错误...");
         WAIT_RETURN;
         return FULLUPDATE;
@@ -832,7 +828,7 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
 #endif
     if (need_unlink)
         unlink(name);
-    move(3,0);clrtoeol();
+    move(3,0); clrtoeol();
     prints("\033[1;32m%s\033[0;33m<Enter>\033[m","转载成功!");
     WAIT_RETURN;
     return FULLUPDATE;
@@ -1114,9 +1110,8 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             isreply=1;
             if (readfh&&isThreadTitle(readfh->title, ent->title))
                 isthread=1;
-        } else
-            if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))
-                isthread=1;
+        } else if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))
+            isthread=1;
     }
 
     titlelen = scr_cols > 80 ? scr_cols - 80 + 45 : 45;
@@ -1338,7 +1333,7 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
         if (safe_mmapfile(genbuf, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0) {
             BBS_RETURN(-1);
         }
-        for (p=ptr,left=size;left>0;p++,left--) {
+        for (p=ptr,left=size; left>0; p++,left--) {
             long attach_len;
             char* file,*attach;
             FILE* fp;
@@ -1453,7 +1448,7 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         pFh = (struct fileheader*)data;
         now = arg->filecount = size/sizeof(struct fileheader);
         if (now >= conf->pos) now = conf->pos - 1;
-        for (;now>=1;now--) { /* 顺序找呢，还是 yuhuan mm 的 Search_Bin 呢... */
+        for (; now>=1; now--) { /* 顺序找呢，还是 yuhuan mm 的 Search_Bin 呢... */
             pFh1 = pFh + now - 1;
             if (fileinfo->reid == pFh1->id) break;
             if (fileinfo->reid > pFh1->id) {
@@ -1498,7 +1493,7 @@ static int jump_changed_title(struct _select_def *conf,struct fileheader *fh,voi
                 res=-1;
             else {
                 do {        /* 处理主题链完整的情况 */
-                    for (last=res;!(res<0)&&(map[res].id>map[last].reid);res--)
+                    for (last=res; !(res<0)&&(map[res].id>map[last].reid); res--)
                         continue;
                     if (!(okay=(!(res<0)&&(map[res].id==map[last].reid))))
                         break;
@@ -1509,7 +1504,7 @@ static int jump_changed_title(struct _select_def *conf,struct fileheader *fh,voi
                         break;
                 } while (1);
                 if (!okay) {  /* 处理主题链破损的情况 */
-                    for (res=last;!(res<0)&&!(map[res].id<fh->groupid);res--)
+                    for (res=last; !(res<0)&&!(map[res].id<fh->groupid); res--)
                         if ((map[res].groupid==fh->groupid)
                                 &&((!strncmp(map[res].title,"Re: ",4)
                                     &&!strncmp(&map[res].title[4],&fh->title[4],54))
@@ -1983,10 +1978,10 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     */
 
     /* etnlegend, 2006.04.07, 这地方改改... */
-    move(0,0);clrtoeol();
+    move(0,0); clrtoeol();
     prints("%s","选择讨论区 [ \033[1;32m#\033[m - \033[1;31m版面名称/关键字搜索\033[m, "
            "\033[1;32mSPACE/TAB\033[m - 自动补全, \033[1;32mESC\033[m - 退出 ]");
-    move(1,0);clrtoeol();
+    move(1,0); clrtoeol();
     if (uinfo.mode!=MMENU)
         prints("请输入讨论区名称: ");
     else
@@ -2017,7 +2012,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
     setbpath(bpath,bname);
     if (!dashd(bpath)||!(bid=getbnum_safe(bname,getSession(), 1))) {
-        move(2,0);clrtoeol();
+        move(2,0); clrtoeol();
         prints("\033[1;37m%s\033[0;33m<ENTER>\033[m","错误的讨论区名称...");
         WAIT_RETURN;
         return FULLUPDATE;
@@ -2221,7 +2216,7 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg)
             SM_QUIT("打开文件时发生错误, 按 <Enter> 键继续...");
         ptr=(const struct fileheader*)cptr;
         count=size/sizeof(struct fileheader);
-        for (selected=0,i=0;i<count;i++) {
+        for (selected=0,i=0; i<count; i++) {
             /* fancyrabbit Sep 14 2007, case insensitive ba ... */
             if (isowner(getCurrentUser(), &ptr[i])) {
                 /*if(getCurrentUser()->firstlogin
@@ -2229,10 +2224,10 @@ int self_mode(struct _select_def *conf,struct fileheader *fh,void *varg)
                     &&!strcasecmp(ptr[i].owner,getCurrentUser()->userid)){*/
                 info=ptr[i];
                 strnzhcpy(info.title,ptr[i].title,34);
-                for (p=&info.title[32];p>info.title&&*p==' ';p--)
+                for (p=&info.title[32]; p>info.title&&*p==' '; p--)
                     continue;
                 for (*++p=0,data=&info,length=sizeof(struct fileheader),writen=0;
-                        writen!=-1&&length>0;vpm(data,writen),length-=writen) {
+                        writen!=-1&&length>0; vpm(data,writen),length-=writen) {
                     writen=write(filedes,data,length);
                 }
                 selected++;
@@ -2315,12 +2310,11 @@ int search_x(char * b, char * s)
         const char* error;
         if ((iquery_board = (iquery_board_func)dlsym(hdll,"iquery_board"))!=NULL)
             iquery_board(b, s);
-        else
-            if ((error = dlerror()) != NULL)  {
-                clear();
-                prints("%s\n", error);
-                pressanykey();
-            }
+        else if ((error = dlerror()) != NULL)  {
+            clear();
+            prints("%s\n", error);
+            pressanykey();
+        }
         dlclose(hdll);
     }
     modify_user_mode(oldmode);
@@ -3002,7 +2996,7 @@ int process_upload(int nUpload, int maxShow, char *ans, struct ea_attach_info* a
            ", \033[1;32mU\033[m zmodem 上传"
 #endif
            ")\n");
-    for (i=0;i<nUpload;i++) {
+    for (i=0; i<nUpload; i++) {
         if (i>=nUpload-maxShow) {
             snprintf(buf, sizeof(buf), "[%02d] %-60.60s (%7d 字节)\n", i+1, ai[i].name, ai[i].size);
             prints("%s", buf);
@@ -3648,9 +3642,8 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
                 if (i!=0)
                     substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), ent);
                 board_update_toptitle(arg->bid, true);
-            } else
-                if (i!=0)
-                    substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
+            } else if (i!=0)
+                substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
         }
         if (0 == i)
             return PARTUPDATE;
@@ -4303,7 +4296,7 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     else if (k==7) fflag=FILE_CENSOR_FLAG;
 #endif
     else return FULLUPDATE;
-    for (i=inum1;i<=inum2;i++) {
+    for (i=inum1; i<=inum2; i++) {
         if (i>=1&&i<=total) {
             struct write_dir_arg dirarg;
             struct fileheader data;
@@ -4883,13 +4876,13 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                 gdataret = getdata(0, 0, "请输入IP地址: ", buf, IPLEN+2, 1, 0, 1);
                 if (gdataret == -1) return SHOW_REFRESH;
 #ifndef HAVE_IPV6_SMTH
-                for (i=0;i<strlen(buf);i++) if (buf[i]=='.') k++;
+                for (i=0; i<strlen(buf); i++) if (buf[i]=='.') k++;
                 if (k!=3) err=1;
                 else {
                     if (sscanf(buf, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3])!=4) err=1;
                     else {
                         if (ip[0]==0) err=1;
-                        for (i=0;i<4;i++) if (ip[i]<0||ip[i]>=256) err=1;
+                        for (i=0; i<4; i++) if (ip[i]<0||ip[i]>=256) err=1;
                     }
                 }
 #else
@@ -4946,7 +4939,7 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                 if (ans[0] == 'Y' || ans[0] == 'y') {
                     int i;
                     aclt--;
-                    for (i=conf->pos-1;i<aclt;i++)
+                    for (i=conf->pos-1; i<aclt; i++)
                         memcpy(acl+i, acl+i+1, sizeof(struct acl_struct));
                     bzero(acl+aclt, sizeof(struct acl_struct));
                 }
@@ -4966,10 +4959,10 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                     p = conf->pos-1;
                     memcpy(&temp, acl+p, sizeof(struct acl_struct));
                     if (p>d) {
-                        for (i=p;i>d;i--)
+                        for (i=p; i>d; i--)
                             memcpy(acl+i, acl+i-1, sizeof(struct acl_struct));
                     } else {
-                        for (i=p;i<d;i++)
+                        for (i=p; i<d; i++)
                             memcpy(acl+i, acl+i+1, sizeof(struct acl_struct));
                     }
                     memcpy(acl+d, &temp, sizeof(struct acl_struct));
@@ -5116,7 +5109,7 @@ int set_ip_acl(void)
     modify_user_mode(oldmode);
     fp=fopen(fn, "w");
     if (fp) {
-        for (i=0;i<aclt;i++)
+        for (i=0; i<aclt; i++)
 #ifndef HAVE_IPV6_SMTH
             fprintf(fp, "%d.%d.%d.%d %d %d\n", acl[i].ip>>24, (acl[i].ip>>16)%0x100, (acl[i].ip>>8)%0x100, acl[i].ip%0x100, acl[i].len, acl[i].deny);
 #else
@@ -5469,7 +5462,7 @@ static int split_thread_me(struct _select_def* conf, struct fileheader* fh,int e
         arg->writearg->ent=ent;
     }
     if (func_arg->num >= SPLIT_THREAD_MAXNUM) return ret;
-    for (i=0;i<func_arg->num; i++) {
+    for (i=0; i<func_arg->num; i++) {
         if (fh->reid == func_arg->oldid[i]) {
             break;
         }
@@ -5860,7 +5853,7 @@ static void read_top_title(struct _select_def *conf)
         ) {
             sprintf(header,"%s","版主: ");
             q=&header[strlen(header)];
-            for (online=0,p=strtok(BM," ");p;p=strtok(NULL," ")) {
+            for (online=0,p=strtok(BM," "); p; p=strtok(NULL," ")) {
                 if (apply_utmp(NULL,1,p,NULL)) {
                     if (!online) {
                         sprintf(q,"%s","\033[32m");
@@ -6380,10 +6373,10 @@ static int read_top(int index,int force)
             }
             for (ptr=((const struct fileheader*)vp),
                     count=(st_dir.st_size/sizeof(struct fileheader)),
-                    writen=0,i=0;i<count;i++) {
+                    writen=0,i=0; i<count; i++) {
                 if (ptr[i].groupid==gid) {
                     for (data=&ptr[i],length=sizeof(struct fileheader),writen=0;
-                            writen!=-1&&length>0;vpm(data,writen),length-=writen) {
+                            writen!=-1&&length>0; vpm(data,writen),length-=writen) {
                         writen=write(fd,data,length);
                     }
                     if (writen==-1)

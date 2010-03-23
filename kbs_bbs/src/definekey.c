@@ -50,7 +50,7 @@ void ask_define()
     move(3, 3);
     prints("请选择你习惯的按键模式:");
     sel = (struct _select_item *) malloc(sizeof(struct _select_item) * 5);
-    for (j=0;j<4;j++) {
+    for (j=0; j<4; j++) {
         sel[j].x = 3;
         sel[j].y = 6+j;
         sel[j].hotkey = '0'+j;
@@ -96,7 +96,7 @@ int remove_key(int i)
 {
     int j;
     if (keymem_total<=0) return -1;
-    for (j=i;j<keymem_total-1;j++)
+    for (j=i; j<keymem_total-1; j++)
         memcpy(keymem+j, keymem+j+1, sizeof(struct key_struct));
     keymem_total--;
     return 0;
@@ -262,13 +262,13 @@ int set_modes(int *res)
     n=1; modest=0;
     modes[0][0]=0;
     modes[0][1]=res[0]==0;
-    for (i=0;i<200;i++) {
+    for (i=0; i<200; i++) {
         s=ModeType(i);
         if (s[0]&&!strchr(s,'?')&&!strchr(s,'W')) {
             modes[n][0]=i;
             modes[n][1]=0;
             if (res[0]!=-1)
-                for (j=0;j<10;j++) {
+                for (j=0; j<10; j++) {
                     if (!res[j]) break;
                     if (res[j]==i) {
                         modes[n][1]=1;
@@ -313,7 +313,7 @@ int set_modes(int *res)
     else if (modest==0) res[0]=-1;
     else {
         j=0;
-        for (i=1;i<n;i++)
+        for (i=1; i<n; i++)
             if (modes[i][1]) {
                 res[j]=modes[i][0];
                 j++;
@@ -477,7 +477,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
             clear();
             move(1,0);
             prints("请输入替换序列(最多10个), 按一次ESC结束: ");
-            for (j=0;j<10;j++) {
+            for (j=0; j<10; j++) {
                 do {
                     i=igetkey();
                     get_key_name(i,buf);

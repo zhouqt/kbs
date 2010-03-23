@@ -105,12 +105,12 @@ static inline int local_Net_Sleep(time_t time)
     fd_set fds,efds;
     struct timeval tv;
     char buf[256];
-    FD_ZERO(&fds);FD_ZERO(&efds);
-    FD_SET(0,&fds);FD_SET(0,&efds);
-    for (tv.tv_sec=time,tv.tv_usec=0;select(1,&fds,NULL,&efds,&tv)>0;tv.tv_sec=time,tv.tv_usec=0) {
+    FD_ZERO(&fds); FD_ZERO(&efds);
+    FD_SET(0,&fds); FD_SET(0,&efds);
+    for (tv.tv_sec=time,tv.tv_usec=0; select(1,&fds,NULL,&efds,&tv)>0; tv.tv_sec=time,tv.tv_usec=0) {
         if (FD_ISSET(0,&efds)||!(recv(0,buf,256,0)>0))
             break;
-        FD_SET(0,&fds);FD_SET(0,&efds);
+        FD_SET(0,&fds); FD_SET(0,&efds);
     }
     return 0;
 }
@@ -258,7 +258,7 @@ int check_IP_lists(
 #else /* HAVE_IPV6_SMTH */
     struct in6_addr rip;
 #endif /* ! HAVE_IPV6_SMTH */
-    found=0;min=0;ret=0;
+    found=0; min=0; ret=0;
     if (!initIP) {
         ips=(struct ip_struct*)malloc(MAXLIST*sizeof(struct ip_struct));
         bads=(struct ip_struct*)malloc(MAXLIST*sizeof(struct ip_struct));
@@ -269,7 +269,7 @@ int check_IP_lists(
         if (!ips||!bads||!proxies)
             return -1;
         if ((fp=fopen(".denyIP","r"))) {
-            for (i=0;fgets(buf,1024,fp);i++) {
+            for (i=0; fgets(buf,1024,fp); i++) {
 #ifndef HAVE_IPV6_SMTH
                 if (!(sscanf(buf,"%d.%d.%d.%d",&ip[0],&ip[1],&ip[2],&ip[3])>0))
                     break;
@@ -290,7 +290,7 @@ int check_IP_lists(
             fclose(fp);
         }
         if ((fp=fopen("etc/proxyIP","r"))) {
-            for (i=0;fgets(buf,1024,fp);i++) {
+            for (i=0; fgets(buf,1024,fp); i++) {
 #ifndef HAVE_IPV6_SMTH
                 if (!(sscanf(buf,"%d.%d.%d.%d",&ip[0],&ip[1],&ip[2],&ip[3])>0))
                     break;
@@ -319,21 +319,21 @@ int check_IP_lists(
     ip[1]=((IP2>>8)&0xFF);
     ip[2]=((IP2>>16)&0xFF);
     ip[3]=((IP2>>24)&0xFF);
-    for (i=0;i<MAXLIST;i++) {
+    for (i=0; i<MAXLIST; i++) {
         if (!(bads[i].ip[0]))
             break;
         if ((ip[0]==bads[i].ip[0])&&(ip[1]==bads[i].ip[1])
                 &&(ip[2]==bads[i].ip[2])&&(ip[3]==bads[i].ip[3]))
             return 1;
     }
-    for (i=0;i<MAXLIST;i++) {
+    for (i=0; i<MAXLIST; i++) {
         if (!(proxies[i].ip[0]))
             break;
         if ((ip[0]==proxies[i].ip[0])&&(ip[1]==proxies[i].ip[1])
                 &&(ip[2]==proxies[i].ip[2])&&(ip[3]==proxies[i].ip[3]))
             return 0;
     }
-    for (i=0;i<MAXLIST;i++) {
+    for (i=0; i<MAXLIST; i++) {
         if ((double)(now-ips[i].last)>3600)
             ips[i].ip[0]=0;
         if ((ip[0]==ips[i].ip[0])&&(ip[1]==ips[i].ip[1])
@@ -372,19 +372,19 @@ int check_IP_lists(
     }
 #else /* HAVE_IPV6_SMTH */
     memset(&rip,0,sizeof(struct in6_addr));
-    for (i=0;i<MAXLIST;i++) {
+    for (i=0; i<MAXLIST; i++) {
         if (!ip_cmp(rip,bads[i].ip))
             break;
         if (!ip_cmp(sip,bads[i].ip))
             return 1;
     }
-    for (i=0;i<MAXLIST;i++) {
+    for (i=0; i<MAXLIST; i++) {
         if (!ip_cmp(rip,proxies[i].ip))
             break;
         if (!ip_cmp(sip,proxies[i].ip))
             return 0;
     }
-    for (i=0;i<MAXLIST;i++) {
+    for (i=0; i<MAXLIST; i++) {
         if ((double)(now-ips[i].last)>3600)
             memset(&ips[i].ip,0,sizeof(struct in6_addr));
         if (!ip_cmp(ips[i].ip,sip)) {
@@ -528,7 +528,8 @@ static int bbs_main(char *argv)
 #undef BBS_MAIN_EXIT
 }
 #ifndef SSHBBS
-static int telnet_init(void) {
+static int telnet_init(void)
+{
     send(0,&cmd[0],3*sizeof(unsigned char),0);
     send(0,&cmd[3],6*sizeof(unsigned char),0);
     send(0,&cmd[9],3*sizeof(unsigned char),0);
@@ -538,7 +539,8 @@ static int telnet_init(void) {
     send(0,&cmd[21],3*sizeof(unsigned char),0);
     return 0;
 }
-static int start_daemon(int inetd,int port,const char *addr) {
+static int start_daemon(int inetd,int port,const char *addr)
+{
     static const int optval=1;
     KBS_SOCKADDR_IN sin;
     KBS_IN_ADDR inaddr;
@@ -607,8 +609,8 @@ static int start_daemon(int inetd,int port,const char *addr) {
 #else /* ! NOFILE */
         maxfd=256;
 #endif /* NOFILE */
-        close(0);close(1);close(2);close(3);
-        for (fd=5;fd<maxfd;fd++)
+        close(0); close(1); close(2); close(3);
+        for (fd=5; fd<maxfd; fd++)
             close(fd);
 #define SD_EXIT(_status) do{unlink(pid_file_name);exit(_status);}while(0)
         if ((fd=open("/dev/null",O_RDWR,0660))==-1||dup2(fd,0)==-1||dup2(fd,1)==-1||dup2(fd,2)==-1)
@@ -640,7 +642,8 @@ static int start_daemon(int inetd,int port,const char *addr) {
 #endif
     return 0;
 }
-static int bbs_inet_main(char* argv) {
+static int bbs_inet_main(char* argv)
+{
     KBS_SOCKADDR_IN sin;
     socklen_t sinlen;
     sinlen=sizeof(KBS_SOCKADDR_IN);
@@ -649,7 +652,8 @@ static int bbs_inet_main(char* argv) {
     telnet_init();
     return bbs_main(argv);
 }
-static int bbs_standalone_main(char* argv) {
+static int bbs_standalone_main(char* argv)
+{
     KBS_SOCKADDR_IN sin;
     socklen_t sinlen;
     char addr_buf[IPLEN];
@@ -707,10 +711,11 @@ static int bbs_standalone_main(char* argv) {
     telnet_init();
     return bbs_main(argv);
 }
-int main(int argc,char **argv) {
+int main(int argc,char **argv)
+{
     char addr[STRLEN];
     int ret,inetd,port;
-    addr[0]=0;inetd=0;port=23;
+    addr[0]=0; inetd=0; port=23;
     while ((ret=getopt(argc,argv,"idha:p:"))!=-1) {
         switch (ret) {
             case 'i':
@@ -743,7 +748,8 @@ int main(int argc,char **argv) {
     return (!inetd?bbs_standalone_main(argv[0]):bbs_inet_main(argv[0]));
 }
 #else /* SSHBBS */
-void ssh_exit(void) {
+void ssh_exit(void)
+{
     if (ssh_exiting)
         return;
     ssh_exiting=1;
@@ -751,7 +757,8 @@ void ssh_exit(void) {
     packet_disconnect("sshbbsd exit");
     return;
 }
-int bbs_entry(void) {
+int bbs_entry(void)
+{
     KBS_SOCKADDR_IN sin;
     socklen_t sinlen;
     setuid(BBSUID);

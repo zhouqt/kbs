@@ -325,7 +325,7 @@ static int help_getdata(struct _select_def *conf, int pos, int len)
     int i;
     int mode = *((int *)conf->arg);
 
-    for (i=0;i<help_num;i++) {
+    for (i=0; i<help_num; i++) {
         if (s_help[i].content) free(s_help[i].content);
     }
     bzero(s_help, sizeof(struct helps)*BBS_PAGESIZE);
@@ -488,12 +488,12 @@ int newhelp(int mode)
     int i;
 
     getyx(&save_y, &save_x);
-    for (i=0;i<t_lines;i++)
+    for (i=0; i<t_lines; i++)
         saveline(i, 0, save_scr[i]);
 
     newhelp_loop(mode);
 
-    for (i=0;i<t_lines;i++)
+    for (i=0; i<t_lines; i++)
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
 

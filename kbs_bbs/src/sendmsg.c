@@ -340,7 +340,7 @@ reenter:
                     fd2 = open(fname2, O_WRONLY|O_CREAT|O_TRUNC, 0644);
                     write(fd2, &i, 4);
                     lseek(fd, 4, SEEK_SET);
-                    for (i=0;i<count;i++) {
+                    for (i=0; i<count; i++) {
                         read(fd, &head, sizeof(struct msghead));
                         if (toupper(ch)=='S') load_msgtext(getCurrentUser()->userid, &head, buf);
                         if ((toupper(ch)=='I'&&!strncasecmp(chk, head.id, IDLEN))
@@ -486,7 +486,7 @@ void r_msg()
     set_alarm(0, 0, NULL, NULL);
     RMSG = true;
     RMSGCount++;
-    for (i=0;i<=23;i++)
+    for (i=0; i<=23; i++)
         saveline(i, 0, savebuffer[i]);
 
     hasnewmsg=get_unreadcount(getCurrentUser()->userid);
@@ -656,7 +656,7 @@ void r_msg()
                                 igetkey();
                                 saveline(oy+1, 1, savebuffer[oy+1]);
                             } else {
-                                for (i=0;i<=oy;i++)
+                                for (i=0; i<=oy; i++)
                                     saveline(i, 1, savebuffer[i]);
                                 move(0,0);
                                 clrtoeol();
@@ -672,7 +672,7 @@ void r_msg()
                 }
                 break;
         }
-        for (i=0;i<=oy;i++)
+        for (i=0; i<=oy; i++)
             saveline(i, 1, savebuffer[i]);
         if (ch=='\r'||ch=='\n') {
             // make a tag for msg end
@@ -683,7 +683,7 @@ void r_msg()
 
 
 outhere:
-    for (i=0;i<=23;i++)
+    for (i=0; i<=23; i++)
         saveline(i, 1, savebuffer[i]);
     showansi = tmpansi;
     move(y,x);
@@ -924,7 +924,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     if (isdigit(uident[0])) {
         int i;
         cansend=cansend&&(strlen(uident)==11);
-        for (i=0;i<strlen(uident);i++)
+        for (i=0; i<strlen(uident); i++)
             cansend=cansend&&(isdigit(uident[i]));
         if (cansend)
             strcpy(udata.mobilenumber, uident);
@@ -980,7 +980,7 @@ int do_send_sms_func(char * dest, char * msgstr)
         for (j= i+i1; j>=i1; j--) {
             buf[j] = buf[j-i1];
         }
-        for (j=0;j<i1;j++)
+        for (j=0; j<i1; j++)
             buf[j] = getSession()->currentmemo->ud.smsprefix[j];
         strcat(buf, getSession()->currentmemo->ud.smsend);
 

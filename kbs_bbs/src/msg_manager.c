@@ -148,7 +148,7 @@ static int set_smsg_getdata(struct _select_def *conf,int pos,int len)
 {
     int i;
 
-    for (i=0;i<sm_num;i++) {
+    for (i=0; i<sm_num; i++) {
         if (s_m[i].context) free(s_m[i].context);
     }
     bzero(s_m, sizeof(struct smsmsg) * BBS_PAGESIZE);
@@ -386,7 +386,7 @@ int smsmsg_read(void)
     clear();
     list_select_loop(&group_conf);
 
-    for (i=0;i<sm_num;i++) {
+    for (i=0; i<sm_num; i++) {
         if (s_m[i].context) free(s_m[i].context);
     }
 

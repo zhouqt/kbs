@@ -162,12 +162,11 @@ static int select_change(struct _select_def *conf, int new_pos)
         conf->new_pos = new_pos;
         show_item(conf, old_pos, true);
         show_item(conf, conf->pos, true);
-    } else
-        if (conf->flag & LF_FORCEREFRESHSEL) {
-            conf->new_pos = new_pos;
-            show_item(conf, old_pos, false);
-            show_item(conf, conf->pos, false);
-        }
+    } else if (conf->flag & LF_FORCEREFRESHSEL) {
+        conf->new_pos = new_pos;
+        show_item(conf, old_pos, false);
+        show_item(conf, conf->pos, false);
+    }
     move(conf->item_pos[new_pos-conf->page_pos].y,
          conf->item_pos[new_pos-conf->page_pos].x);
     /*conf->pos = new_pos;*/
@@ -269,11 +268,10 @@ static int do_select_internal(struct _select_def *conf, int key)
             if (conf->flag&LF_MULTIPAGE) {
                 if (conf->pos+conf->item_per_page<=conf->item_count)
                     return select_change(conf, conf->pos + conf->item_per_page);
+                else if (conf->pos==conf->item_count)
+                    return select_change(conf, 1);
                 else
-                    if (conf->pos==conf->item_count)
-                        return select_change(conf, 1);
-                    else
-                        return select_change(conf, conf->item_count);
+                    return select_change(conf, conf->item_count);
             }
             break;
         case Ctrl('B'):
@@ -281,11 +279,10 @@ static int do_select_internal(struct _select_def *conf, int key)
             if (conf->flag&LF_MULTIPAGE) {
                 if (conf->pos-conf->item_per_page>0)
                     return select_change(conf, conf->pos - conf->item_per_page);
+                else if (conf->pos==1)
+                    return select_change(conf, conf->item_count);
                 else
-                    if (conf->pos==1)
-                        return select_change(conf, conf->item_count);
-                    else
-                        return select_change(conf, 1);
+                    return select_change(conf, 1);
             }
             break;
         case KEY_HOME:
@@ -445,9 +442,9 @@ int list_select_add_key(struct _select_def* conf,int key)
     int i,j;
     /*  ‰»Î∫œ≤¢ */
     if ((key==KEY_DIRCHANGE)||(key==KEY_SELCHANGE)||(key==KEY_REFRESH))
-        for (i=0;i<conf->keybuflen;i++) {
+        for (i=0; i<conf->keybuflen; i++) {
             if (conf->keybuf[i]==key) {
-                for (j=i;j<conf->keybuflen-1;j++)
+                for (j=i; j<conf->keybuflen-1; j++)
                     conf->keybuf[j]=conf->keybuf[j+1];
                 conf->keybuf[conf->keybuflen]=0;
                 conf->keybuflen--;
@@ -531,18 +528,17 @@ static int simple_key(struct _select_def *conf, int key)
             conf->new_pos = key-'0';
             return SHOW_SELCHANGE;
         }
-    } else
-        if (arg->flag&SIF_ALPHAKEY) {
-            if (key <= 'z' && key >= 'a')
-                sel = key - 'a';
-            else
-                sel = key - 'A';
-            if (sel >= 0 && sel < (conf->item_count)) {
-                conf->new_pos = sel + 1;
-                return SHOW_SELCHANGE;
-            }
+    } else if (arg->flag&SIF_ALPHAKEY) {
+        if (key <= 'z' && key >= 'a')
+            sel = key - 'a';
+        else
+            sel = key - 'A';
+        if (sel >= 0 && sel < (conf->item_count)) {
+            conf->new_pos = sel + 1;
+            return SHOW_SELCHANGE;
         }
-    for (i=0;i<conf->item_count;i++)
+    }
+    for (i=0; i<conf->item_count; i++)
         if (toupper(key)==toupper(arg->items[i].hotkey)) {
             conf->new_pos = i + 1;
             return SHOW_SELCHANGE;

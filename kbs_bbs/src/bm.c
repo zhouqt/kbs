@@ -616,7 +616,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg)
                 k=MaxLen(curr,t_lines-4);
                 if (!((j+k)<t_columns))
                     break;
-                for (i=3;i<t_lines-1;i++) {
+                for (i=3; i<t_lines-1; i++) {
                     move(i,j);
                     prints("%s",curr->word);
                     if (!(curr=curr->next))
@@ -632,7 +632,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg)
                     sprintf(genbuf,"当前第 %d 页, 为列表的最后一页, 按 <SPACE> 键回到第 1 页 ...",page+1);
             } else
                 sprintf(genbuf,"当前第 %d 页, 按 <SPACE> 键查阅下一页 ...",page+1);
-            for (i=strlen(genbuf);i<t_columns;i++)
+            for (i=strlen(genbuf); i<t_columns; i++)
                 genbuf[i]=32;
             genbuf[i]=0;
             prints("\033[1;32;42m%s\033[m",genbuf);
@@ -960,7 +960,7 @@ static int delete_range_read(char *buf,int len,const char *valid)
     int i,row,col;
     getyx(&row,&col);
     prints(DELETE_RANGE_READ_FORMAT,DELETE_RANGE_READ_BORDER_L);
-    for (i=0;i<len;i++)
+    for (i=0; i<len; i++)
         prints(DELETE_RANGE_READ_FORMAT,KEY_SP);
     prints(DELETE_RANGE_READ_FORMAT,DELETE_RANGE_READ_BORDER_R);
     move(row,col+1);
@@ -987,7 +987,7 @@ static int delete_range_read(char *buf,int len,const char *valid)
                     break;
                 }
                 move(row,col+1);
-                for (i=0;i<len;i++)
+                for (i=0; i<len; i++)
                     prints(DELETE_RANGE_READ_FORMAT,KEY_SP);
                 move(row,col+1);
                 i=0;
@@ -1048,7 +1048,7 @@ static int delete_range_key(struct _select_def *conf,int key)
     int index;
     if (key==KEY_ESC)
         return SHOW_QUIT;
-    for (index=0;index<conf->item_count;index++)
+    for (index=0; index<conf->item_count; index++)
         if (toupper(key)==toupper(arg->items[index].hotkey)) {
             conf->new_pos=(index+1);
             return SHOW_SELCHANGE;
@@ -1064,15 +1064,15 @@ static int delete_range_interface_sub_menu(int mode,int current,int total,struct
     char menustr[4][128],buf[16];
     int safe,fw[2];
     safe=!(mode&(DELETE_RANGE_BASE_MODE_TOKEN|DELETE_RANGE_BASE_MODE_CLEAR));
-    sel[0].x=32;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data=menustr[(safe?0:3)];
-    sel[1].x=32;sel[1].y=3;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data=menustr[1];
-    sel[2].x=32;sel[2].y=4;sel[2].hotkey='2';sel[2].type=SIT_SELECT;sel[2].data=menustr[2];
-    sel[3].x=32;sel[3].y=5;sel[3].hotkey='3';sel[3].type=SIT_SELECT;sel[3].data=menustr[(safe?3:0)];
-    sel[4].x=-1;sel[4].y=-1;sel[4].hotkey=-1;sel[4].type=0;sel[4].data=NULL;
-    pts[0].x=sel[0].x;pts[0].y=sel[0].y;
-    pts[1].x=sel[1].x;pts[1].y=sel[1].y;
-    pts[2].x=sel[2].x;pts[2].y=sel[2].y;
-    pts[3].x=sel[3].x;pts[3].y=sel[3].y;
+    sel[0].x=32; sel[0].y=2; sel[0].hotkey='0'; sel[0].type=SIT_SELECT; sel[0].data=menustr[(safe?0:3)];
+    sel[1].x=32; sel[1].y=3; sel[1].hotkey='1'; sel[1].type=SIT_SELECT; sel[1].data=menustr[1];
+    sel[2].x=32; sel[2].y=4; sel[2].hotkey='2'; sel[2].type=SIT_SELECT; sel[2].data=menustr[2];
+    sel[3].x=32; sel[3].y=5; sel[3].hotkey='3'; sel[3].type=SIT_SELECT; sel[3].data=menustr[(safe?3:0)];
+    sel[4].x=-1; sel[4].y=-1; sel[4].hotkey=-1; sel[4].type=0; sel[4].data=NULL;
+    pts[0].x=sel[0].x; pts[0].y=sel[0].y;
+    pts[1].x=sel[1].x; pts[1].y=sel[1].y;
+    pts[2].x=sel[2].x; pts[2].y=sel[2].y;
+    pts[3].x=sel[3].x; pts[3].y=sel[3].y;
     sprintf(buf,"%d",current);
     fw[0]=strlen(buf);
     sprintf(buf,"%d",total);
@@ -1137,17 +1137,17 @@ static int delete_range_interface_main_menu(void)
     struct delete_range_arg arg;
     POINT pts[5];
     int ret;
-    sel[0].x=4;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data="删除拟删文章";
-    sel[1].x=4;sel[1].y=3;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data="常规区段删除";
-    sel[2].x=4;sel[2].y=4;sel[2].hotkey='2';sel[2].type=SIT_SELECT;sel[2].data="强制区段删除";
-    sel[3].x=4;sel[3].y=5;sel[3].hotkey='3';sel[3].type=SIT_SELECT;sel[3].data="设置拟删标记";
-    sel[4].x=4;sel[4].y=6;sel[4].hotkey='4';sel[4].type=SIT_SELECT;sel[4].data="清除拟删标记";
-    sel[5].x=-1;sel[5].y=-1;sel[5].hotkey=-1;sel[5].type=0;sel[5].data=NULL;
-    pts[0].x=sel[0].x;pts[0].y=sel[0].y;
-    pts[1].x=sel[1].x;pts[1].y=sel[1].y;
-    pts[2].x=sel[2].x;pts[2].y=sel[2].y;
-    pts[3].x=sel[3].x;pts[3].y=sel[3].y;
-    pts[4].x=sel[4].x;pts[4].y=sel[4].y;
+    sel[0].x=4; sel[0].y=2; sel[0].hotkey='0'; sel[0].type=SIT_SELECT; sel[0].data="删除拟删文章";
+    sel[1].x=4; sel[1].y=3; sel[1].hotkey='1'; sel[1].type=SIT_SELECT; sel[1].data="常规区段删除";
+    sel[2].x=4; sel[2].y=4; sel[2].hotkey='2'; sel[2].type=SIT_SELECT; sel[2].data="强制区段删除";
+    sel[3].x=4; sel[3].y=5; sel[3].hotkey='3'; sel[3].type=SIT_SELECT; sel[3].data="设置拟删标记";
+    sel[4].x=4; sel[4].y=6; sel[4].hotkey='4'; sel[4].type=SIT_SELECT; sel[4].data="清除拟删标记";
+    sel[5].x=-1; sel[5].y=-1; sel[5].hotkey=-1; sel[5].type=0; sel[5].data=NULL;
+    pts[0].x=sel[0].x; pts[0].y=sel[0].y;
+    pts[1].x=sel[1].x; pts[1].y=sel[1].y;
+    pts[2].x=sel[2].x; pts[2].y=sel[2].y;
+    pts[3].x=sel[3].x; pts[3].y=sel[3].y;
+    pts[4].x=sel[4].x; pts[4].y=sel[4].y;
     memset(&arg,0,sizeof(struct delete_range_arg));
     arg.items=sel;
     arg.type=menu_main;

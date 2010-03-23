@@ -144,16 +144,16 @@ int raw_read(int fd, char *buf, int len)
 #else
     int i,j,retlen=0;
     retlen = read(fd,buf,len);
-    for (i=0;i<retlen;i++) {
+    for (i=0; i<retlen; i++) {
         if (i>0&&((unsigned char)buf[i-1]==0xff)&&((unsigned char)buf[i]==0xff)) {
             retlen--;
-            for (j=i;j<retlen;j++)
+            for (j=i; j<retlen; j++)
                 buf[j]=buf[j+1];
             continue;
         }
         if (i>0&&buf[i-1]==0x0d&&buf[i]==0x00) {
             retlen--;
-            for (j=i;j<retlen;j++)
+            for (j=i; j<retlen; j++)
                 buf[j]=buf[j+1];
             continue;
         }
@@ -761,7 +761,7 @@ int igetkey()
 
     if (scrint&&keymem_total&&!skip_key&&!ingetdata) {
         int i,j,p;
-        for (i=0;i<keymem_total;i++) {
+        for (i=0; i<keymem_total; i++) {
             p=!keymem[i].status[0];
             if (keymem[i].status[0]==-1) continue;
             j=0;
@@ -847,7 +847,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
         int i;
         move(y, x);
         if (init) prints("\x1b[4m");
-        for (i=0;i<clen;i++)
+        for (i=0; i<clen; i++)
             if (!echo||buf[i]==KEY_ESC||!isprint2(buf[i])) outc('*');
             else outc(buf[i]);
         resetcolor();
@@ -895,7 +895,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for (i=0;i<curr;i++)
+                for (i=0; i<curr; i++)
                     if (j) j=0;
                     else if (buf[i]<0) j=1;
                 if (j) {
@@ -939,7 +939,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for (i=0;i<curr+1;i++)
+                for (i=0; i<curr+1; i++)
                     if (j) j=0;
                     else if (buf[i]<0) j=1;
                 if (j) {
@@ -962,7 +962,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for (i=0;i<curr;i++)
+                for (i=0; i<curr; i++)
                     if (j) j=0;
                     else if (buf[i]<0) j=1;
                 if (j) curr--;
@@ -993,7 +993,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 #ifdef CHINESE_CHARACTER
             if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
-                for (i=0;i<curr;i++)
+                for (i=0; i<curr; i++)
                     if (j) j=0;
                     else if (buf[i]<0) j=1;
                 if (j) curr++;
@@ -1059,7 +1059,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         prints("%s", prompt);
     getyx(&starty, &startx);
     now = strlen(buf);
-    for (i=0;i<=24;i++)
+    for (i=0; i<=24; i++)
         saveline(i, 0, savebuffer[i]);
     strncpy(tmp, buf, 1024);
     tmp[1023]=0;
@@ -1122,7 +1122,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             if (ch == Ctrl('W'))
                 break;
         }
-        for (i=starty;i<=y;i++)
+        for (i=starty; i<=y; i++)
             saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0])) {
             ingetdata = false;
@@ -1163,7 +1163,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 if (UPDOWN) break;
                 if (y-starty+1<maxline) {
-                    for (i=strlen(buf)+1;i>now;i--)
+                    for (i=strlen(buf)+1; i>now; i--)
                         buf[i]=buf[i-1];
                     buf[now++]='\n';
                 }
@@ -1234,18 +1234,18 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     now=0;
                 }
                 if (now>0) {
-                    for (i=now-1;i<strlen(buf);i++)
+                    for (i=now-1; i<strlen(buf); i++)
                         buf[i]=buf[i+1];
                     now--;
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for (i=0;i<now;i++) {
+                        for (i=0; i<now; i++) {
                             if (chk) chk=0;
                             else if (buf[i]<0) chk=1;
                         }
                         if (chk) {
-                            for (i=now-1;i<strlen(buf);i++)
+                            for (i=now-1; i<strlen(buf); i++)
                                 buf[i]=buf[i+1];
                             now--;
                         }
@@ -1263,16 +1263,16 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for (i=0;i<now+1;i++) {
+                        for (i=0; i<now+1; i++) {
                             if (chk) chk=0;
                             else if (buf[i]<0) chk=1;
                         }
                         if (chk)
-                            for (i=now;i<strlen(buf);i++)
+                            for (i=now; i<strlen(buf); i++)
                                 buf[i]=buf[i+1];
                     }
 #endif
-                    for (i=now;i<strlen(buf);i++)
+                    for (i=now; i<strlen(buf); i++)
                         buf[i]=buf[i+1];
                 }
                 break;
@@ -1283,7 +1283,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for (i=0;i<now;i++) {
+                        for (i=0; i<now; i++) {
                             if (chk) chk=0;
                             else if (buf[i]<0) chk=1;
                         }
@@ -1299,7 +1299,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
-                        for (i=0;i<now;i++) {
+                        for (i=0; i<now; i++) {
                             if (chk) chk=0;
                             else if (buf[i]<0) chk=1;
                         }
@@ -1344,7 +1344,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 if (j>=i0-1) j=i0-1;
                 j=j-i+1;
                 if (j<0) j=0;
-                for (k=0;k<i0-i-j+1;k++)
+                for (k=0; k<i0-i-j+1; k++)
                     buf[i+k]=buf[i+j+k];
 
                 y = starty; x = startx;
@@ -1381,7 +1381,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                         buf[0]=0;
                         now=0;
                     }
-                    for (i=strlen(buf)+1;i>now;i--)
+                    for (i=strlen(buf)+1; i>now; i--)
                         buf[i]=buf[i-1];
                     buf[now++]=ch;
                     y = starty; x = startx;
@@ -1402,7 +1402,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                         }
                     }
                     if (y-starty+1>maxline) {
-                        for (i=now-1;i<strlen(buf);i++)
+                        for (i=now-1; i<strlen(buf); i++)
                             buf[i]=buf[i+1];
                         now--;
                     }

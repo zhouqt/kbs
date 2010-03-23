@@ -288,7 +288,7 @@ void abort_bbs(int signo)
         return;
     in_abort_bbs=true;
 #ifndef SSHBBS
-    output("\x1b[m",3);oflush();
+    output("\x1b[m",3); oflush();
 #endif
     switch (uinfo.mode) {
         case POSTING:
@@ -307,7 +307,7 @@ void abort_bbs(int signo)
                   getSession()->utmpent,getSession()->currentuid);
         u_exit();
     }
-    shutdown(0,2);close(0);exit(0);
+    shutdown(0,2); close(0); exit(0);
 }
 
 struct aol {
@@ -372,7 +372,7 @@ void multi_user_check()
 
             clear();
             prints("你同时上线的窗口数过多，无法再登录。请选择希望踢除的窗口，回车断开本次连接\n");
-            for (i=0;i<a.count;i++) {
+            for (i=0; i<a.count; i++) {
                 move(i+2,0);
                 prints("  %d: ip:%-15s 登录时间:%-24s,  %-12s %s\n",i+1, a.ip[i], a.login[i]?ctime(&a.login[i]):"未知",
                        modestring(buffer,a.mode[i], NULL, 0, NULL) , a.idlemin[i]);
@@ -796,7 +796,7 @@ void login_query()
             prints("本站不允许穿梭注册，请直接连接本站注册新用户。\n");
 #endif
 #else
-            prints("\033[37m本系统目前无法以 new 注册, 请用 guest 进入.\033[m\n");
+        prints("\033[37m本系统目前无法以 new 注册, 请用 guest 进入.\033[m\n");
 #endif
         } else if (*uid == '\0' || !dosearchuser(uid)
 #ifdef FREE
@@ -1184,7 +1184,7 @@ static void check_activation()
         }
         break;
     }
-    for (re=0;re<9;re++) {
+    for (re=0; re<9; re++) {
         move(12,0); clrtobot();
         if (check_proxy_IP(getSession()->fromhost, NULL)) {
             prints("本站不允许穿梭激活，请直接连接本站输入激活码。\n");
@@ -1493,7 +1493,7 @@ void fill_date()
             buf2[29]='\0';
             if (strlen(buf2)<29) {
                 int i;
-                for (i=strlen(buf2);i<29;i++)
+                for (i=strlen(buf2); i<29; i++)
                     buf2[i]=' ';
                 buf2[29]='\0';
             }
@@ -1732,12 +1732,12 @@ void update_endline()
             sprintf(stitle,"\033[1;4%dm\033[33m时间[\033[36m%12.12s\033[33m] 总人数/好友[%3d/%3d][%c：%c] 使用者%s",colour,
                     ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf);
 #else
-            if (DEFINE(getCurrentUser(),DEF_HIGHCOLOR))
-                sprintf(stitle, "\x1b[1;4%dm\x1b[33m时间[\x1b[36m%12.12s\x1b[33m] 总人数 [ %3d ] [%c：%c] 使用者%s", colour,
-                        ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
-            else
-                sprintf(stitle, "\x1b[4%dm\x1b[33m时间[\x1b[36m%12.12s\x1b[33m] 总人数 [ %3d ] [%c：%c] 使用者%s", colour,
-                        ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
+        if (DEFINE(getCurrentUser(),DEF_HIGHCOLOR))
+            sprintf(stitle, "\x1b[1;4%dm\x1b[33m时间[\x1b[36m%12.12s\x1b[33m] 总人数 [ %3d ] [%c：%c] 使用者%s", colour,
+                    ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
+        else
+            sprintf(stitle, "\x1b[4%dm\x1b[33m时间[\x1b[36m%12.12s\x1b[33m] 总人数 [ %3d ] [%c：%c] 使用者%s", colour,
+                    ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
 #endif //HAVE_FRIENDS_NUM
         }
 #endif //FB2KENDLINE

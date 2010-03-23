@@ -26,7 +26,7 @@ int GetNameListCount(void)
 {
     struct word *p;
     int ret;
-    for (ret=0,p=toplev;p;p=p->next)
+    for (ret=0,p=toplev; p; p=p->next)
         ret++;
     return ret;
 }
@@ -37,7 +37,7 @@ static void FreeNameList(void)
      * 不应该在本文件外有对 FreeNameList 的调用...
     */
     struct word *p,*temp;
-    for (p=toplev;p;p=temp) {
+    for (p=toplev; p; p=temp) {
         temp=p->next;
         free(p->word);
         free(p);
@@ -89,10 +89,10 @@ void SortNameList(int case_sensitive)
         return;
     if (!(array=(const char**)malloc(count*sizeof(const char*))))
         return;
-    for (p=toplev,t=array;p;p=p->next,t++)
+    for (p=toplev,t=array; p; p=p->next,t++)
         (*t)=p->word;
     qsort(array,count,sizeof(const char*),(case_sensitive?CompareName:CompareNameCase));
-    for (p=toplev,t=array;p;p=p->next,t++)
+    for (p=toplev,t=array; p; p=p->next,t++)
         p->word=(char*)(*t);
     free(array);
     return;
@@ -115,7 +115,7 @@ void ApplyToNameList(int (*fptr)(char*,void*),void *arg)
 {
     struct word *p;
     if (fptr) {
-        for (p=toplev;p;p=p->next)
+        for (p=toplev; p; p=p->next)
             (*fptr)(p->word,arg);
     }
     return;

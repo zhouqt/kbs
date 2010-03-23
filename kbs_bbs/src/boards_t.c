@@ -136,7 +136,7 @@ static int fsp_key(struct _select_def *conf,int key)
     int index;
     if (key==KEY_ESC||key==KEY_RIGHT)
         return SHOW_QUIT;
-    for (index=0;index<FSP_LINES;index++) {
+    for (index=0; index<FSP_LINES; index++) {
         if (toupper(key)==toupper((((struct _select_item*)(conf->arg))[(conf->page_pos-1)+index]).hotkey)) {
             conf->new_pos=(conf->page_pos+index);
             return SHOW_SELCHANGE;
@@ -187,7 +187,7 @@ static int fav_select_path(void)
     pts=NULL;
     FSP_MALLOC(sel,((getSession()->mybrd_list_t+1)*sizeof(struct _select_item)));
     FSP_MALLOC(pts,(getSession()->mybrd_list_t*sizeof(POINT)));
-    for (index=0;index<getSession()->mybrd_list_t;index++) {
+    for (index=0; index<getSession()->mybrd_list_t; index++) {
         FSP_MALLOC(sel[index].data,FSP_MENUSTR_SIZE);
         sel[index].x=FSP_COL;
         sel[index].y=(FSP_ROW+index);
@@ -412,7 +412,7 @@ static int gen_board_online_list(int bid,struct inc_container *ic)
         return 1;
     if (inc_container_init(ic,sizeof(struct bol_arg)))
         return 2;
-    for (ui_list=get_utmpent(1),i=0;i<USHM_SIZE;i++) {
+    for (ui_list=get_utmpent(1),i=0; i<USHM_SIZE; i++) {
         if (ui_list[i].active&&ui_list[i].currentboard==bid) {
             data.uid=ui_list[i].uid;
             data.mode=ui_list[i].mode;
@@ -425,7 +425,7 @@ static int gen_board_online_list(int bid,struct inc_container *ic)
     }
     if ((uid_guest=searchuser("guest"))) {
         resolve_guest_table();
-        for (i=0;i<MAX_WWW_GUEST;i++) {
+        for (i=0; i<MAX_WWW_GUEST; i++) {
             if ((wwwguest_shm->use_map[(i>>5)]&(1<<(i&0x1F)))&&(wwwguest_shm->guest_entry[i].currentboard==bid)) {
                 data.uid=uid_guest;
                 data.mode=WEBEXPLORE;
@@ -464,7 +464,7 @@ static int show_board_online_list(struct inc_container *ic,int class)
         pos_l=(pos_f+size>ic->curr)?ic->curr:(pos_f+size);
         prints("\033[1;32m[版面在线列表: 共 \033[1;33m%d\033[1;32m 位用户"
                "/当前第 \033[1;33m%d - %d\033[1;32m 位]\033[m",ic->curr,pos_f+(pos_l>pos_f?1:0),pos_l);
-        for (n=pos_f;n<pos_l;n++) {
+        for (n=pos_f; n<pos_l; n++) {
             sprintf(buf,"\033[1;37m%s \033[1;36m<%s>\033[m",
                     (userid=getuserid2(p[n].uid))?userid:"<非法用户>",(!class?ModeType(p[n].mode):p[n].from));
             curr_row=(2+(n-pos_f)%SHOW_ONLINE_LIST_ROWS);
@@ -553,7 +553,7 @@ int query_bm_core(const char *userid,int limited)
     move(1,0);
     prints("\033[1;37m用户 \033[1;33m%s\033[m %s\033[1;37m并出现于下列版面的版主列表中\033[m",
            buf,HAS_PERM(user,PERM_BOARDS)?"\033[1;37m有版主权限":"\033[1;31m无版主权限");
-    for (line=3,count=0,n=0;n<get_boardcount();n++) {
+    for (line=3,count=0,n=0; n<get_boardcount(); n++) {
         if (!(bh=getboard(n+1))||!*(bh->filename))
             continue;
         if (limited&&!check_see_perm(getCurrentUser(),bh))
@@ -1102,7 +1102,7 @@ static int fav_key(struct _select_def *conf, int command)
                     break;
                 if (!strcmp(ptr->name,"syssecurity")||!strcmp(ptr->name,FILTER_BOARD))
                     break;          /* Leeward 98.04.01 */
-                move(t_lines-1,0);clrtoeol();
+                move(t_lines-1,0); clrtoeol();
                 if (checkreadonly(ptr->name)) { /* 判断版面如果是只读就取消, 否则就只读 */
                     sprintf(buf, "取消只读版面 %s, 是否确认",ptr->name);
                     if (!askyn(buf,false))
@@ -1718,7 +1718,7 @@ static int fav_key(struct _select_def *conf, int command)
                     FAV_M_MSG("目标目录为当前目录...");
                 item=getSession()->favbrd_list[getSession()->favnow].bid[(ptr->dir?ptr->pos:ptr->tag)];
                 if (ptr->dir) {
-                    for (favid=path;favid>0;favid=FavGetFather(favid,getSession()))
+                    for (favid=path; favid>0; favid=FavGetFather(favid,getSession()))
                         if (favid==(-item))
                             FAV_M_MSG("目标目录为待移目录或其子目录...");
                     getSession()->favbrd_list[(-item)].father=path;
