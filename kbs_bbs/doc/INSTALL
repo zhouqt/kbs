@@ -174,6 +174,9 @@ make install-home，因为执行的话就会丢失 bbs 数据！
     注：我们不推荐执行步骤 2.6，但在某些系统上 (比如 cygwin)，要把
 phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 就是必须执行的步骤了。
 
+2.7[可选] 初始化 BBS
+    以 $(BBSUID) 或者 root 身份执行 $(BBSHOME)/bin/bootstrap 以初始化 BBS
+    此程序会自动注册 guest 和 SYSOP，并建立 sysop 等系统基本版面
 
 3. 运行之前的配置
     本节主要说明 ssh 方式和 web 方式的配置。
@@ -221,6 +224,7 @@ bbsd (23端口)，sshbbsd (22端口)，apachectl (80端口) 需要用 root 身份来启动。
           ./sshbbsd -p 22
 
     然后 telnet localhost，注册 SYSOP 和 guest 两个帐号。
+    如果执行了步骤 2.7，则可跳过 SYSOP 和 guest 账号的注册。
 
 4.2 运行 apache
           $(WWWHOME)/bin/apachectl start

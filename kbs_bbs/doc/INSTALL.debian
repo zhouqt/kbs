@@ -1,12 +1,16 @@
 $Id$
 
-                  kbsbbs 在 Debian GNU/Linux 4.0 上的安装指南
+                  kbsbbs 在 Debian GNU/Linux 5.x 上的安装指南
 
-    本文介绍了 Debian GNU/Linux 4.0 上 kbsbbs 的编译和安装。
+    本文介绍了 Debian GNU/Linux 5.x 上 kbsbbs 的编译和安装。版本号中的
+"5.x" 代表 Debian 5.0 及随后的 bugfix release.
     与以往安装方法不同的是，本文的方法尽可能使用 Debian 自带的软件，例如 
 apache2 和 libapache2-mod-php5 等。
 
 0. ChangeLog
+2010.03.22
+  skybluee 更新使之成为 Debian GNU/linux 5.x 上 kbsbbs 安装指南
+
 2008.01.13
   fancyrabbit 修改并加入 svn。
 
@@ -34,29 +38,28 @@ libgmp3c2               选择 ssh 方式支持才需要
 libgmp3-dev             选择 ssh 方式支持才需要
 openssl                 选择 pop3d 支持 pop3s 才需要
 
-apache                  选择 web 界面支持才需要
-  或 apache2
-libapache-mod-php4      选择 web 界面支持才需要
-  或 libapache2-mod-php4
+apache2                 选择 web 界面支持才需要
+  或 apache
+libapache2-mod-php5     选择 web 界面支持才需要
   或 libapache-mod-php5
-  或 libapache2-mod-php5
+  或 libapache2-mod-php4
+  或 libapache-mod-php4
 
-php4-dev                选择 web 界面支持才需要（提供 php 的头文件）
-  或 php5-dev
-php4-gd                 选择 web 界面支持才需要（自动安装其它图形库）
-  或 php5-gd
-php4-domxml             选择 web 界面支持才需要
+php5-dev                选择 web 界面支持才需要（提供 php 的头文件）
+  或 php4-dev
+php5-gd                 选择 web 界面支持才需要（自动安装其它图形库）
+  或 php4-gd
 
 bison 或 byacc          有时候编译转信部分需要
 
-libmysqlclient15-dev    选择 Blog 等功能支持才需要
-php4-mysql
-  或 php5-mysql
+libmysqlclient-dev      选择 Blog 等功能支持才需要
+php5-mysql
+  或 php4-mysql
 
 以上软件都可以直接用 apt-get 或 aptitude 安装。
 
 2. 安装
-    本节介绍 kbsbbs 的 telnet/ssh/web 方式在 Debian Linux 4.0 上的安装。注意本
+    本节介绍 kbsbbs 的 telnet/ssh/web 方式在 Debian Linux 5.x 上的安装。注意本
 文后面给出的命令除了特别说明的之外都不需要 root 权限。
 
 2.1 一些约定
@@ -87,9 +90,9 @@ $(BBSHOME) 还是被约定为 /home/bbs，那么“把文件复制到 $(BBSHOME)/bin 目录”
 该手工创建，并设置 bbs 用户为目录属主并可以读写。
 
 2.2 安装 Debian
-    建议使用直连的网络安装，或者使用 debian-40r2-i386-binary-1.iso 安装盘安装。
+    建议使用直连的网络安装，或者使用 debian-50x-i386-CD-1.iso 安装盘安装。
 这样，在基本系统安装完之后，还会自动装上编译器，make 等工具。
-    如使用 debian-40r2-i386-businesscard.iso 或者 debian-40r2-i386-netinst.iso
+    如使用 debian-50x-i386-businesscard.iso 或者 debian-50x-i386-netinst.iso
 请确保安装过程中重启动之后能够连接网络。
 
     exim4 是 Debian 中默认的 MTA，可以伪装成 sendmail 程序运行，并且提供和
@@ -101,10 +104,6 @@ sendmail 兼容的功能，因此不需要再安装 sendmail 。
     zlib1g-dev 库可以使用
         aptitude install zlib1g-dev
     命令安装。
-
-    注意 php4-dev/php5-dev 自动安装的 automake 包是 1.4 版，在安装转信部分时会
-产生错误的 Makefile。安装 automake1.7 或以上版本之后要用 update-alternative 命
-令将默认的 automake 设置为高版本的。
 
 2.3 下载 kbsbbs 代码包
     下载 kbsbbs 的源代码有两种方法，一种是通过 SVN 方式获取，另一种是下载每日
@@ -163,6 +162,10 @@ $(BBSHOME) 下去，创建必要的子目录并确保设置正确的权限。以后更改源代码的话，只
           --enable-customizing    设置运行期更改系统设置的功能。这样站名可以统
                                   一在 sysconf.ini 中设置；否则需要修改 site.h
 
+2.6[可选] 初始化 BBS
+    以 $(BBSUID) 或者 root 身份执行 $(BBSHOME)/bin/bootstrap 以初始化 BBS
+    此程序会自动注册 guest 和 SYSOP，并建立 sysop 等系统基本版面
+
 3. 运行之前的配置
     本节主要说明 ssh 方式和 web 方式的配置。
     下面这些步骤有些需要 root 权限，为方便起见，直接切换到 root 用户。
@@ -212,6 +215,7 @@ root 身份启动。
           ./sshbbsd -p 22
 
     然后 telnet localhost，注册 SYSOP 和 guest 两个帐号。
+    如果执行了步骤 2.6，则可跳过 SYSOP 和 guest 账号的注册。
 
 4.2 运行 apache2
           /etc/init.d/apache2 restart
