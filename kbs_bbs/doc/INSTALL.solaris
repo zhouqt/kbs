@@ -1,0 +1,78 @@
+INSTALL.SOLARIS
+本文由OSQDU::Alex维护，介绍kbs bbs在Solaris以及OpenSolaris系统上的编译和安装。
+
+0. Changelog
+2010.03.26
+    OSQDU::Alex 初始的版本
+    
+1. 本文要求的用户UNIX基础：
+对于Solaris管理员，至少有SCSA相当的技术水平。UNIX的文件操作、C语言的知识都将被要求在安装过程中。
+1. 需要自行安装的软件包
+在默认安装的OpenSolaris上需要以下软件包：
+SUNWaconf                                     2.63-0.127      installed  u----
+SUNWapch22                                    2.2.14-0.127    installed  u----
+SUNWautogen                                   5.9-0.127       installed  u----
+SUNWgm4                                       1.4.12-0.127    installed  u----
+SUNWgnu-automake-110                          1.10-0.127      installed  u----
+SUNWgnu-automake-19                           1.9.6-0.127     installed  u----
+SUNWlibtool                                   1.5.22-0.127    installed  u----
+SUNWphp52                                     5.2.11-0.127    installed  u----
+注意，上面提到的软件只是可能需要的软件。
+
+2. 下载和编译
+本节介绍KBS系统的 telnet 方式在Solaris上的安装。其他问题参见INSTALL
+
+2.0 如何下载和解包KBS系统
+建议通过svn的方式进行下载（参考README.svn）。替代的方法是
+wget http://dev.kcn.cn/src/kbsbbs-snapshot.tar.gz
+进行下载。可以通过gtar zxvf kbsbbs-snapshot.tar.gz的方法解包
+
+2.1 对于刚刚从svn签出的代码，需要执行以下脚本：
+#!/bin/sh
+mkdir -p admin; touch admin/Makefile.in;
+aclocal-1.9
+libtoolize -c --force
+autoheader
+automake-1.9 -a
+autoconf
+
+2.2 对系统进行必要的设置
+本节操作需要系统管理员的权限。请使用有特权角色的用户执行
+pfexec useradd bbs
+如果你的系统中root不是角色而是用户帐户，请用root执行
+useradd bbs
+命令。
+在执行后，执行
+pfexec grep "^bbs:" /etc/passwd
+命令查看bbs用户的UID。如果你看不懂，请参阅docs.sun.com中的相关内容。
+用你喜欢的文本编辑器，例如vi，打开site/fb2k-v2.h，对其中定义的BBSUID
+和BBSGID进行修改。一般bbs用户属于other组，gid=1(other)。
+
+2.3 一点路径的说明
+Solaris和Linux不是一样的操作系统，默认路径中找不到php。如果安装的是SUNWphp52包，
+它的$PHPHOME应该是/usr/php。因此--with-php=/usr/php应该是需要的选项。
+
+2.4 个性化
+用你喜爱的文本编辑器打开site/fb2k-v2.c进行各项自定义。如果你没有支持gb2312的
+终端仿真器，用screen命令也可以完成编码转换，但是在中文输入上可能遇到这样或者
+那样的问题。建议的方法是用cde在zh_CN.GB18030的locale下使用dtterm进行修改。
+
+2.4 编译过程
+osol# ./configure --prefix=/usr/osqdu/bbshome --enable-site=fb2k-v2 \
+    --with-php=/usr/php --without-mysql --enable-customizing
+make
+make install
+注意，如果是第一次安装，还要执行
+make install-home
+否则，一定不要install-home，这回毁掉整个系统。
+某些系统上，可能需要用gmake代替make。如果被make的错误刷屏，说明你应该使用gmake。
+make的时间因系统而异。在一台古老的Sun Enterprise 250上，编译时间可能长达几十分钟。
+编辑/etc/php/5.2/php.ini，加入extension=libphpbbslib.so一行。
+修改/etc/apache2/2.2/httpd.conf中的DocumentRoot，指向你的Web路径。
+修改Directory一行到<Directory "/usr/osqdu/bbshome/wForum">
+执行svcadm restart http重启httpd
+
+2.7[可选] 初始化 BBS
+以 bbs 或者 root 角色执行 bin/bootstrap 以初始化 BBS
+此程序会自动注册 guest 和 SYSOP，并建立 sysop 等系统基本版面
+
