@@ -5,22 +5,22 @@
   <Description RDF:about="rdf:#$8FpFR2"
                    em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
                    em:minVersion="1.0"
-                   em:maxVersion="3.6"
+                   em:maxVersion="4.0"
                    em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
-                   em:updateHash="sha1:d69c8a18c773c88c47a86d948fb12a4dd7e9f031" />
-  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:1.0.1"
-                   em:version="1.0.1"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBABI7feVogXz0qlZSvnsTLs6FoOfim7XkxAbH2bxsyaYQje+X6kPG+Fwr4S36zL6Xrv0213jQ7emSh6vG/4aNPRWFCPLcgyGl5CmRwvMWmE9ulTqMYzqcLV/Qs6NNQXjPm9mTKB4S2d7s18NKrL5gJb7fjknjvdo1KMjFhCrsVQYT">
-    <em:targetApplication RDF:resource="rdf:#$8FpFR2"/>
-  </RDF:Description>
+                   em:updateHash="sha1:a33d852900f73f114e29cc0727dd0bf8722ae49d" />
   <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}"
-                   em:version="1.0.1"
+                   em:version="1.0.2"
                    em:updateLink="http://www.newsmth.net/kbsrc/kbsrc.xpi"
-                   em:updateHash="sha1:d69c8a18c773c88c47a86d948fb12a4dd7e9f031"
-                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAHpI5TMixhNZOvn9VrTsPLUVYpcRm2CjKUMXVXc9PhVd4bDpoYXCL5TEauL5vAOHg5ytrMF8XoYySx39sEN2Urnv1KXsSuC5T/64YY+RcpQx7qIqHAcO/nfK26JQ96xPhJf2l8wkVir8z+2tszQsGwq+g+DsBlfug3giCTZm/HaS">
+                   em:updateHash="sha1:a33d852900f73f114e29cc0727dd0bf8722ae49d"
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBABkb9iWmXnUCP0pywtenyZc7iO0gMcUsSNJI7DGGy7q1bNB00TqIUjFMHriPu0dCZrNLubBxM9dmXW8gRQ7quUeV0IGjYM7fMWdKb4JcJvnYunZAX3f00rhpe+fRgOIT932szPtJV+VGxktcG9S4tfn9wB3bezCUkEMiLK+mbvCn">
     <em:updates RDF:resource="rdf:#$2FpFR2"/>
   </RDF:Description>
+  <RDF:Description RDF:about="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:1.0.2"
+                   em:version="1.0.2"
+                   em:signature="MIGTMA0GCSqGSIb3DQEBDQUAA4GBAF/t77UA7/MgsPR6KYtKyhZHyAkFhWtDRL8JQtf3QTsTuPWbbtuZgByzKJI2nNGPxjAQleLafBADeiCQyjdNAR0raBr26oQVTP9svR3OZgFRqNA/iDPN8BhOY/lP2VVVasbwKuz9blB8tLLQsGcLXe5N/euWvV9Ux1HjxBdTMT4I">
+    <em:targetApplication RDF:resource="rdf:#$8FpFR2"/>
+  </RDF:Description>
   <RDF:Seq RDF:about="rdf:#$2FpFR2">
-    <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:1.0.1"/>
+    <RDF:li RDF:resource="urn:mozilla:extension:{dd4e0497-21b0-4866-9b5f-77bfee85e79e}:1.0.2"/>
   </RDF:Seq>
 </RDF:RDF>
