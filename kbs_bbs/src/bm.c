@@ -1344,4 +1344,330 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg)
 #undef DELETE_RANGE_ALLOWED_INTERVAL
 #undef DELETE_RANGE_QUIT
 }
+#ifdef BATCHRECOVERY
 
+/*--------------------------------------区段恢复接口-------------------------------------*/
+
+/* 参考delete_range系列相关函数。 benogy@bupt     20080807 */
+
+struct undelete_range_arg{
+   struct _select_item *items;
+   enum undelete_range_type{main_menu,sub_menu} type;
+   int fw;
+   int id_from;
+   int id_to;
+};
+
+
+static int undelete_range_select(struct _select_def *conf)
+{
+   struct undelete_range_arg *arg=(struct undelete_range_arg*)conf->arg;
+   char buf[16];
+
+   if((arg->type==sub_menu) && (conf->pos==1)){
+
+      move(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x);
+      clrtoeol();
+      delete_range_read(buf,arg->fw,"0123456789");
+      if(!buf[0])
+         return SHOW_REFRESH;
+      arg->id_from=atoi(buf);
+
+      move(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x+(arg->fw+3));
+      prints("\033[1;37m%s \033[m","→");
+      delete_range_read(buf,arg->fw,"0123456789");
+      if(!buf[0])
+         return SHOW_REFRESH;
+      arg->id_to=atoi(buf);
+   }
+   return SHOW_SELECT;
+}
+
+
+static int undelete_range_key(struct _select_def *conf,int key)
+{
+   struct undelete_range_arg *arg=(struct undelete_range_arg*)conf->arg;
+   int index;
+
+   if(key==KEY_ESC)
+      return SHOW_QUIT;
+
+   for(index=0;index<conf->item_count;index++)
+      if(toupper(key)==toupper(arg->items[index].hotkey)){
+         conf->new_pos=(index+1);
+         return SHOW_SELCHANGE;
+      }
+
+   return SHOW_CONTINUE;
+}
+
+
+static int undelete_range_show(struct _select_def *conf,int index){
+   struct _select_item *item=&(((struct undelete_range_arg*)conf->arg)->items[index-1]);
+   move(item->y,item->x);
+   prints("\033[1;37m[\033[1;36m%c\033[1;37m] %s\033[m",item->hotkey,item->data);
+   return SHOW_CONTINUE;
+}
+
+
+static int undelete_range_interface_main_menu(void)
+{
+   struct _select_item sel[3];
+   struct _select_def conf;
+   struct undelete_range_arg arg;
+   POINT pts[2];
+   int ret;
+
+   sel[0].x=4;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data="常规区段恢复(不包含被标记为删除的文章)";
+   sel[1].x=4;sel[1].y=3;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data="强制区段恢复(所选范围内的所有文章)";
+   sel[2].x=-1;sel[2].y=-1;sel[2].hotkey=-1;sel[2].type=0;sel[2].data=NULL;
+
+   pts[0].x=sel[0].x;pts[0].y=sel[0].y;
+   pts[1].x=sel[1].x;pts[1].y=sel[1].y;
+
+   memset(&arg,0,sizeof(struct undelete_range_arg));
+   arg.items=sel;
+   arg.type=main_menu;
+
+   memset(&conf,0,sizeof(struct _select_def));
+   conf.item_count=2;
+   conf.item_per_page=conf.item_count;
+   conf.flag=LF_LOOP;
+   conf.prompt="◇";
+   conf.pos=1;
+   conf.item_pos=pts;
+   conf.arg=&arg;
+   conf.title_pos.x=-1;
+   conf.title_pos.y=-1;
+   conf.on_select=undelete_range_select;
+   conf.show_data=undelete_range_show;
+   conf.key_command=undelete_range_key;
+
+   if((ret=list_select_loop(&conf))!=SHOW_SELECT)
+      return -1;
+
+   if(conf.pos==1 || conf.pos==2)
+      return conf.pos;
+   else
+      return -1;
+}
+
+
+static int undelete_range_interface_sub_menu(int current,int total,struct undelete_range_arg *arg)
+{
+   struct _select_item sel[5];
+   struct _select_def conf;
+   POINT pts[4];
+   char menustr[4][128],buf[16];
+   int fw[2];
+
+   sel[0].x=8;sel[0].y=6;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data=menustr[0];
+   sel[1].x=8;sel[1].y=7;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data=menustr[1];
+   sel[2].x=8;sel[2].y=8;sel[2].hotkey='2';sel[2].type=SIT_SELECT;sel[2].data=menustr[2];
+   sel[3].x=8;sel[3].y=9;sel[3].hotkey='3';sel[3].type=SIT_SELECT;sel[3].data=menustr[3];
+   sel[4].x=-1;sel[4].y=-1;sel[4].hotkey=-1;sel[4].type=0;sel[4].data=NULL;
+
+   pts[0].x=sel[0].x;pts[0].y=sel[0].y;
+   pts[1].x=sel[1].x;pts[1].y=sel[1].y;
+   pts[2].x=sel[2].x;pts[2].y=sel[2].y;
+   pts[3].x=sel[3].x;pts[3].y=sel[3].y;
+
+   sprintf(buf,"%d",current);
+   fw[0]=strlen(buf);
+   sprintf(buf,"%d",total);
+   fw[1]=strlen(buf);
+
+   sprintf(menustr[0],"%s","指定恢复区域");
+   sprintf(menustr[1],"\033[1;37m当前位置向前 [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m", fw[0],1,fw[1],current);
+   sprintf(menustr[2],"\033[1;37m当前位置向后 [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m", fw[0],current,fw[1],total);
+   sprintf(menustr[3],"\033[1;37m全部         [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m", fw[0],1,fw[1],total);
+
+   memset(arg,0,sizeof(struct undelete_range_arg));
+   arg->items=sel;
+   arg->type=sub_menu;
+   arg->fw=fw[1];
+
+   memset(&conf,0,sizeof(struct _select_def));
+   conf.item_count=4;
+   conf.item_per_page=conf.item_count;
+   conf.flag=LF_LOOP;
+   conf.prompt="◇";
+   conf.pos=1;
+   conf.item_pos=pts;
+   conf.arg=arg;
+   conf.title_pos.x=-1;
+   conf.title_pos.y=-1;
+   conf.on_select=undelete_range_select;
+   conf.show_data=undelete_range_show;
+   conf.key_command=undelete_range_key;
+
+   if(list_select_loop(&conf)!=SHOW_SELECT)
+      return -1;
+
+   switch(conf.pos){
+      case 1:
+         break;
+      case 2:
+         arg->id_from=1;
+         arg->id_to=current;
+         break;
+      case 3:
+         arg->id_from=current;
+         arg->id_to=total;
+         break;
+      case 4:
+         arg->id_from=1;
+         arg->id_to=total;
+         break;
+      default:
+         return -1;
+   }
+   return 0;
+}
+
+
+int undelete_range(struct _select_def *conf,struct fileheader *fhptr,void *varg)
+{
+#define UNDELETE_RANGE_ALLOWED_INTERVAL   20
+#define UNDELETE_RANGE_QUIT(n,s)   do{move((n),4);prints("\033[1;33m%s\033[0;33m<Enter>\033[m",(s)); WAIT_RETURN; return FULLUPDATE; }while(0)
+   sigset_t mask_set,old_mask_set;
+   struct stat st_src;
+   struct read_arg *rarg;
+   struct undelete_range_arg arg;
+   char buf[256],ans[4];
+   const char *src,*type;
+   int current,total,mode,ret;
+   time_t timestamp;
+
+   rarg=(struct read_arg*)conf->arg;
+   total=rarg->filecount;
+   current=((conf->pos>total)?total:(conf->pos));
+
+   switch(rarg->mode){
+      case DIR_MODE_DELETED:
+         src=".DELETED";
+         break;
+
+      case DIR_MODE_JUNK:
+         src=".JUNK";
+         break;
+
+      default:
+         return DONOTHING;
+   }
+
+   if(deny_del_article(currboard,NULL,getSession()))
+      return DONOTHING;
+
+   timestamp=time(NULL);
+   setbfile(buf,currboard->filename,src);
+
+   if(stat(buf,&st_src)==-1||!S_ISREG(st_src.st_mode))
+      return DONOTHING;
+
+   clear();
+   move(0,0);
+   prints("\033[1;32m%s \033[1;33m%s\033[m","[区段恢复选单]","<Enter>键选择/<Esc>键退出");
+
+   mode=undelete_range_interface_main_menu();
+   switch(mode){
+      case 1:
+         type="常规区段恢复";
+         break;
+      case 2:
+         type="强制区段恢复";
+         break;
+      default:
+         UNDELETE_RANGE_QUIT(7,"操作取消...");
+   }
+
+   if(undelete_range_interface_sub_menu(current,total,&arg)==-1)
+      UNDELETE_RANGE_QUIT(11,"操作取消...");
+
+   move(12,4);
+   sprintf(buf,"\033[1;33m%s \033[1;32m%d \033[1;37m- \033[1;32m%d \033[1;37m确认操作? [y/N] \033[m", type,arg.id_from,arg.id_to);
+   prints("%s",buf);
+   delete_range_read(ans,1,"ynYN");
+   if(ans[0]!='Y' && ans[0]!='y')
+      UNDELETE_RANGE_QUIT(14,"操作取消...");
+
+   move(14,4);
+   prints("\033[1;33m%s\033[m","区段操作可能需要较长时间, 请耐心等候...");
+   refresh();
+   sigemptyset(&mask_set);
+   sigaddset(&mask_set,SIGHUP);
+   sigaddset(&mask_set,SIGBUS);
+   sigaddset(&mask_set,SIGPIPE);
+   sigaddset(&mask_set,SIGTERM);
+   sigprocmask(SIG_SETMASK,NULL,&old_mask_set);
+   sigprocmask(SIG_BLOCK,&mask_set,NULL);
+
+   ret=undelete_range_base(currboard->filename,src,arg.id_from,arg.id_to,mode,&st_src);
+
+   newbbslog(BBSLOG_USER,"delete_range %s %d - %d <%d,%#04x>",currboard->filename,arg.id_from,arg.id_to,mode,ret);
+   sigprocmask(SIG_SETMASK,&old_mask_set,NULL);
+   if(ret==2){
+      move(14,4);
+      clrtoeol();
+      prints("%s","\033[1;37m系统检测到在您操作期间版面文章列表已经发生变化, \033[m");
+      move(15,4);
+      sprintf(buf,"%s","\033[1;33m强制操作\033[1;37m[\033[1;31m严重不建议\033[1;37m]? [y/N] \033[m");
+      prints("%s",buf);
+      delete_range_read(ans,1,"ynYN");
+      if(toupper(ans[0])!='Y')
+         UNDELETE_RANGE_QUIT(17,"操作取消...");
+
+      if((time(NULL)-timestamp)<UNDELETE_RANGE_ALLOWED_INTERVAL){
+         sigprocmask(SIG_BLOCK,&mask_set,NULL);
+
+         ret=undelete_range_base(currboard->filename,src,arg.id_from,arg.id_to,mode,NULL);
+
+         newbbslog(BBSLOG_USER,"delete_range %s %d - %d <%d,%#04x>",currboard->filename,arg.id_from,arg.id_to,mode,ret);
+         sigprocmask(SIG_SETMASK,&old_mask_set,NULL);
+      }
+      else{
+         move(17,4);
+         sprintf(buf,"\033[1;33m强制操作时限为 \033[1;31m%d \033[1;33m秒, "
+               "您此次操作已经超时, 操作取消...\033[0;33m<Enter>\033[m",UNDELETE_RANGE_ALLOWED_INTERVAL);
+         prints("%s",buf);
+         WAIT_RETURN;
+         return FULLUPDATE;
+      }
+   }
+   bmlog(getCurrentUser()->userid,currboard->filename,9,
+         (arg.id_to-arg.id_from)>0?arg.id_to-arg.id_from:0);/* 没有区段恢复这个记录项...... */
+   move(15,4);
+   clrtoeol();
+   move(14,4);
+   clrtoeol();
+   if(ret==0){
+      setboardmark(currboard->filename,1);
+      setboardorigin(currboard->filename,1);
+      updatelastpost(currboard->filename);
+      prints("\033[1;32m%s\033[0;33m<Enter>\033[m","操作完成!");
+      WAIT_RETURN;
+      return DIRCHANGED;
+   }
+
+   switch(ret){
+      case 1:
+         type="打开文件错误！";
+         break;
+      case 2:
+         type="版面记录有变动！";
+         break;
+      case 3:
+         type="发生未知错误！";
+         break;
+   }
+   
+   sprintf(buf,"\033[1;33m%s\033[1;31m<%#04x>\033[0;33m<Enter>\033[m",type,ret);
+   prints("%s",buf);
+   WAIT_RETURN;
+   return FULLUPDATE;
+#undef UNDELETE_RANGE_ALLOWED_INTERVAL
+#undef UNDELETE_RANGE_QUIT
+}
+
+/*--------------------------------end   区段恢复接口-------------------------------------*/
+#endif /*BATCHRECOVERY*/

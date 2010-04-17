@@ -5635,6 +5635,10 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'D',(READ_KEY_FUNC)delete_range,NULL},
     {Ctrl('C'), (READ_KEY_FUNC)do_cross,NULL},
     {'Y', (READ_KEY_FUNC)UndeleteArticle,NULL},     /* Leeward 98.05.18 */
+#ifdef BATCHRECOVERY
+	{Ctrl('t'), (READ_KEY_FUNC)undelete_range,NULL},/* benogy@bupt  Çø¶Î»Ö¸´ 20080807 */
+#endif
+
     {Ctrl('P'), (READ_KEY_FUNC)do_post,NULL},
     {'E', (READ_KEY_FUNC)edit_post,NULL},
     {'T', (READ_KEY_FUNC)edit_title,NULL},

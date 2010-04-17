@@ -298,6 +298,10 @@ int choose_board(int newflag, const char *boardprefix,int group,int yank_flag);
 int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg); /* 禁止POST用户名单 维护主函数 */
 int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int delete_range(struct _select_def*,struct fileheader*,void*);
+#ifdef BATCHRECOVERY
+int undelete_range(struct _select_def*,struct fileheader*,void*);/* 区段恢复 benogy@bupt 20080807 */
+int undelete_range_base(char* board, const char* src,int from,int to,int mode,struct stat *vst_src);
+#endif/*BATCHRECOVERY*/
 
 /* zmodem */
 int read_zsend(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);

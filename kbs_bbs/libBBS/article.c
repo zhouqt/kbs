@@ -438,6 +438,119 @@ int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, sessio
     }
     return 0;   /* success */
 }
+#ifdef BATCHRECOVERY
+
+/*---------------------------------------恢复一篇文章--------------------------------------*/
+
+/* 把文章的标题恢复成原来的标题并改变其属性为版面文章。      benogy@bupt 20080807
+ * 因为区段恢复需要，所以把这个功能从原来的do_undel_post中独立出来
+ * 成功返回0，失败返回-1
+ * */
+int undelete_change_file_attr(char* board,struct fileheader* fhptr)
+{
+   char *p,UTitle[128],buf[128],genbuf[128];
+   FILE* fp;
+   int i;
+
+   sprintf(buf, "boards/%s/%s", board, fhptr->filename);
+   if (!dashf(buf)) {
+      return -1;
+   }
+   fp = fopen(buf, "r");
+   if (!fp)
+      return -1;
+
+   strcpy(UTitle, fhptr->title);
+   if ((p = strrchr(UTitle, '-')) != NULL) {   /* create default article title */
+      *p = 0;
+      for (i = strlen(UTitle) - 1; i >= 0; i--) {
+         if (UTitle[i] != ' ')
+            break;
+         else
+            UTitle[i] = 0;
+      }
+   }
+
+   i = 0;
+   while (!feof(fp) && i < 2) {
+      skip_attach_fgets(buf, 1024, fp);
+      if (feof(fp))
+         break;
+      if (strstr(buf, "发信人: ") && strstr(buf, "), 信区: ")) {
+         i++;
+      } else if (strstr(buf, "标  题: ")) {
+         i++;
+         strncpy(UTitle, buf + 8, sizeof(UTitle));
+         UTitle[sizeof(UTitle)-1] = '\0';
+         if ((p = strchr(UTitle, '\n')) != NULL)
+            *p = 0;
+      }
+   }
+   fclose(fp);
+
+   setbfile(genbuf, board, fhptr->filename);
+   fhptr->accessed[1] &= ~FILE_DEL;
+   if (fhptr->filename[1] == '/')
+      fhptr->filename[2] = 'M';
+   else
+      fhptr->filename[0] = 'M';
+
+   setbfile(buf, board, fhptr->filename);
+   if (dashf(buf))
+      return -1;
+
+   f_mv(genbuf, buf);
+   strnzhcpy(fhptr->title, UTitle, ARTICLE_TITLE_LEN);
+
+   return 0;
+}
+
+
+/* 二分查找插入的位置。确保base按关键字升序排列，key小于base中的最大元素，返回指向插入位置的指针 */
+struct fileheader* undelete_bsearch(struct fileheader* key,struct fileheader* base,int total)
+{
+   int low=0,high=total-1,mid;
+
+   while(low<=high){
+      mid=(low+high)/2;
+
+      if(key->id > base[mid].id)
+         low=mid+1;
+      else
+         high=mid-1;
+   }
+
+   return (base+low);
+}
+
+
+/* 将某篇文章插入到版面的相应位置 */
+void undelete_insert_file(struct fileheader* key,struct fileheader* base,int* total)
+{
+   struct fileheader *p;
+
+   p=base+(*total-1);/* 版面最后一篇文章 */
+
+   if(*total==0)/* 版面没有文章 */
+      *base=*key;
+   else if(key->id > p->id){/* 直接插在最后 */
+      ++p;
+      *p=*key;
+   }
+   else{
+      p=undelete_bsearch(key,base,*total);
+      memmove(p+1,p,(*total-(p-base))*sizeof(struct fileheader));
+      *p=*key;
+   }
+
+   ++(*total);
+}
+
+
+#else
+
+#endif /*BATCHRECOVERY*/
+
 
 int insert_func(int fd, struct fileheader *start, int ent, int total, struct fileheader *data, bool match)
 {
@@ -3493,6 +3606,143 @@ int delete_range_base(
 #undef DRBP_LEN
 
 /* --END--, etnlegend, 2006.04.19, 区段删除核心 */
+
+#ifdef BATCHRECOVERY
+/*-------------------------------------区段恢复-------------------------------------------*/
+
+/* 区段恢复主要操作。  benogy@bupt 20080807 */
+
+/* 部分参数说明：
+ * src:  .DELETED 或 .JUNK  因为区段只有版主或站务才能执行
+ * mode: 恢复模式  1 是常规  2是强制
+ * vst_src: 源文件的状态，用来检验是否有两个或以上的人同时操作，为NULL时不校验
+ * 返回值说明：
+ * 0 成功   1 打开文件失败   2  源文件变动  3 其他错误
+ * */
+
+int undelete_range_base(char* board, const char* src,int from,int to,int mode,struct stat *vst_src)
+{
+#define RELES_FILE  do{fcntl(fd_src,F_SETLKW,&lck_clr);fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_src);close(fd_dst);}while(0)
+
+   static const struct flock lck_set={.l_type=F_WRLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
+   static const struct flock lck_clr={.l_type=F_UNLCK,.l_whence=SEEK_SET,.l_start=0,.l_len=0,.l_pid=0};
+   struct fileheader *fh_src,tmpfile;
+   struct stat st_src,st_dst;
+   char path_src[256],path_dst[256];
+   int fd_src,fd_dst,total_dst,num,i;
+   void *pm_src,*pm_dst;
+
+   if(mode!=1 && mode!=2)
+      return 3;
+
+   sprintf(path_src,"boards/%s/%s",board,src);
+   sprintf(path_dst,"boards/%s/.DIR",board);/* 默认恢复的目的地是.DIR */
+
+   if(stat(path_src,&st_src)==-1 || !S_ISREG(st_src.st_mode) ||
+         stat(path_dst,&st_dst)==-1 || !S_ISREG(st_dst.st_mode))
+      return 1;/* 不存在该文件 */
+
+   if(vst_src!=NULL && st_src.st_mtime > vst_src->st_mtime)
+      return 2;/* 源文件有更新 */
+
+   fd_src=open(path_src,O_RDWR | O_CREAT,0644);
+   fd_dst=open(path_dst,O_RDWR | O_CREAT,0644);
+
+   if(fd_src==-1 || fd_dst==-1)
+      return 1;/* 打开文件失败 */
+
+   total_dst=st_dst.st_size/sizeof(struct fileheader);
+   --from;
+   --to;
+   num=to-from+1;/* 操作文章的数目 */
+
+   if(from<0 || from>to || to>=(st_src.st_size/sizeof(struct fileheader))){
+      close(fd_src);
+      close(fd_dst);
+      return 3;/* 其它错误 */
+   }
+
+   if(fcntl(fd_src,F_SETLKW,&lck_set)==-1){
+      close(fd_src);
+      return 1;
+   }
+   if(fcntl(fd_dst,F_SETLKW,&lck_set)==-1){
+      fcntl(fd_src,F_SETLKW,&lck_clr);
+      close(fd_dst);
+      return 1;
+   }
+
+   if((pm_src=mmap(NULL,st_src.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,fd_src,0))==MAP_FAILED){
+      RELES_FILE;
+      return 3;
+   }
+
+   if(ftruncate(fd_dst,st_dst.st_size+num*sizeof(struct fileheader))==-1){/* .DIR扩容 */
+      munmap(pm_src,st_src.st_size);
+      RELES_FILE;
+      return 3;
+   }
+   stat(path_dst,&st_dst);/* 重新获取信息 */
+   if((pm_dst=mmap(NULL,st_dst.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,fd_dst,0))==MAP_FAILED){
+      ftruncate(fd_dst,st_dst.st_size-num*sizeof(struct fileheader));
+      munmap(pm_src,st_src.st_size);
+      RELES_FILE;
+      return 3;
+   }
+
+   fh_src=(struct fileheader*)pm_src+from;/* 要恢复的第一篇文章 */
+
+   if(mode == 1) /* 常规区段恢复 */
+      for(i=num;i>0;--i,++fh_src){
+         tmpfile=*fh_src;
+         if((!(tmpfile.accessed[1]&FILE_DEL)) && (undelete_change_file_attr(board,&tmpfile)==0)){
+            undelete_insert_file(&tmpfile,(struct fileheader*)pm_dst,&total_dst);
+            fh_src->filename[0]='\0';
+         }
+      }
+
+   else /* 强制区段恢复 */
+      for(i=num;i>0;--i,++fh_src){
+         tmpfile=*fh_src;
+         if(undelete_change_file_attr(board,&tmpfile)==0){
+            undelete_insert_file(&tmpfile,(struct fileheader*)pm_dst,&total_dst);
+            fh_src->filename[0]='\0';
+         }
+      }
+
+   if(ftruncate(fd_dst,total_dst*sizeof(struct fileheader))==-1){
+      munmap(pm_dst,st_dst.st_size);
+      munmap(pm_src,st_src.st_size);
+      RELES_FILE;
+      return 3;
+   }
+   if(msync(pm_dst,total_dst*sizeof(struct fileheader),MS_SYNC)==-1){
+      munmap(pm_dst,st_dst.st_size);
+      munmap(pm_src,st_src.st_size);
+      RELES_FILE;
+      return 3;
+   }
+
+   if(msync(pm_src,st_src.st_size/sizeof(struct fileheader),MS_SYNC)==-1){
+      munmap(pm_src,st_src.st_size);
+      munmap(pm_dst,st_dst.st_size);
+      RELES_FILE;
+      return 3;
+   }
+
+   munmap(pm_src,st_src.st_size);
+   munmap(pm_dst,st_dst.st_size);
+   RELES_FILE;
+
+   return 0;
+
+#undef RELES_FILE
+}
+
+/*----------------------------------------end  区段恢复------------------------------------*/
+
+#endif /*BATCHRECOVERY*/
+/* 主题回复数统计，pig2532 */
 
 
 /* 主题回复数统计，pig2532 */
