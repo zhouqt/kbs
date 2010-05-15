@@ -915,6 +915,16 @@ void login_query()
 #endif
     multi_user_check();
 
+#if defined(NEWSMTH) && !defined(SECONDSITE)
+    unsigned int pls = (unsigned int)sysconf_eval("PROXY_LOGIN_SCORE", 0);
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && getCurrentUser->score_user < pls) {
+        prints("您的用户积分不足 %d，不能穿梭登录本站，请尝试直连 ...");
+        oflush();
+        Net_Sleep(3);
+        abort_bbs(0);
+    }
+#endif
+
     i = read_user_memo(getCurrentUser()->userid, & getSession()->currentmemo) ;
 
     if (i==0) {
