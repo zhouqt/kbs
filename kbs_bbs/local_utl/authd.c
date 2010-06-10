@@ -106,7 +106,9 @@ int do_auth(int fd)
     write(fd, buf, strlen(buf));
     sprintf(buf, "FL:%ld\n", u->firstlogin);
     write(fd, buf, strlen(buf));
-    //u->lastlogin = time(NULL);
+    if (!HAS_PERM(u, PERM_HORNOR) && !HAS_PERM(u, PERM_CHATCLOAK) && !(HAS_PERM(u, PERM_ANNOUNCE) && HAS_PERM(u, PERM_OBOARDS))) {
+        u->lastlogin = time(NULL);
+    }
 
     return 0;
 }
