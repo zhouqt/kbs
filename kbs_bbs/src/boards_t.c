@@ -1256,7 +1256,7 @@ static int fav_key(struct _select_def *conf, int command)
             else {
                 char ans[4];
 #ifdef SECONDSITE
-                ans[0] = "M";
+                ans[0] = 'M';
                 if (HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
 #endif
                     getdata(t_lines-1,0,"\033[1;37m以状态[M]/来源[F]显示 [M]: \033[m",ans,2,DOECHO,NULL,true);
