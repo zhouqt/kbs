@@ -1249,7 +1249,7 @@ static int fav_key(struct _select_def *conf, int command)
         case ':':
             if (!HAS_PERM(getCurrentUser(),PERM_SYSOP)||ptr->dir||(ptr->flag&BOARD_GROUP)
 #ifdef SECONDSITE
-                    || (!strncmp(ptr->name, "P.", 2) && chk_BM(ptr->name, getCurrentUser()))
+                    || !(!strncmp(ptr->name, "P.", 2) && chk_BM(ptr->name, getCurrentUser()))
 #endif
                     )
                 break;
