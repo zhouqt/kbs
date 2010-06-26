@@ -1247,11 +1247,22 @@ static int fav_key(struct _select_def *conf, int command)
             return SHOW_REFRESH;
             /* etnlegend, 2005.10.31, 查询在版用户 */
         case ':':
-            if (!HAS_PERM(getCurrentUser(),PERM_SYSOP)||ptr->dir||(ptr->flag&BOARD_GROUP))
+            if (!HAS_PERM(getCurrentUser(),PERM_SYSOP)||ptr->dir||(ptr->flag&BOARD_GROUP)
+#ifdef SECONDSITE
+                    || (!strncmp(ptr->name, "P.", 2) && chk_BM(ptr->name, getCurrentUser()))
+#endif
+                    )
                 break;
             else {
                 char ans[4];
-                getdata(t_lines-1,0,"\033[1;37m以状态[M]/来源[F]显示 [M]: \033[m",ans,2,DOECHO,NULL,true);
+#ifdef SECONDSITE
+                ans[0] = "M";
+                if (HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+#endif
+                    getdata(t_lines-1,0,"\033[1;37m以状态[M]/来源[F]显示 [M]: \033[m",ans,2,DOECHO,NULL,true);
+#ifdef SECONDSITE
+                }
+#endif
                 func_board_online_list(ptr->name,(toupper(ans[0])=='F'));
             }
             return SHOW_REFRESH;
