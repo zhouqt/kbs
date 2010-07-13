@@ -748,7 +748,9 @@ while(0)
     int orig_tmpl_init(char * board, int mode, struct a_template ** ptemp);
     int orig_tmpl_free(struct a_template ** pptemp, int temp_num);
     int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board);
+#ifdef ENHANCED_TEMPLATE
     int get_parameter_index_len(char *buf, int *index, int *fmtlen, int *def);
+#endif
 
 #define FILENAME2POSTTIME(x) (atoi(((char*)x)+2))
 
