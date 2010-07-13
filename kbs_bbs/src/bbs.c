@@ -3874,7 +3874,8 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         post_file(getCurrentUser(), "", buff, "AnonyDeny", title, 0, 2, getSession());
 #ifdef SECONDSITE
         if (strcmp(currboard->filename, "SecretSky") == 0
-                || strcmp(currboard->filename, "Sex") == 0)
+                || strcmp(currboard->filename, "Sex") == 0
+                || strcmp(currboard->filename, "Confession") == 0)
             getuser("guest", &u_deny);
         else
 #endif /* SECONDSITE */

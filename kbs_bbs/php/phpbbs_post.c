@@ -424,7 +424,7 @@ PHP_FUNCTION(bbs_postarticle)
     if ((!strcmp(board, "Announce") || !strcmp(board, "Penalty")) && (!strcmp(post_file.owner, board)))
         strcpy(post_file.owner, "SYSOP");
 #ifdef SECONDSITE
-    if (anony && ((strcmp(board, "SecretSky") == 0) || (strcmp(board, "Sex") == 0)))
+    if (anony && ((strcmp(board, "SecretSky") == 0) || (strcmp(board, "Sex") == 0) || (strcmp(board, "Confession") == 0)))
         strcpy(post_file.owner, "guest");
 #endif
     fp = fopen(filepath, "w");
