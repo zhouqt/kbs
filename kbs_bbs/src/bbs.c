@@ -3304,8 +3304,12 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     strncpy(post_file.owner, getCurrentUser()->userid, OWNER_LEN);
     if (anonyboard && Anony) {
         if ((strcmp(currboard->filename, "SecretSky") == 0)
-                || (strcmp(currboard->filename, "Sex") == 0))
+                || (strcmp(currboard->filename, "Sex") == 0)
+                || (strcmp(currboard->filename, "Confession") == 0)) {
             strcpy(post_file.owner, "guest");
+        } else {
+            strncpy(post_file.owner, currboard->filename, OWNER_LEN);
+        }
     }
     //strncpy(post_file.owner, (anonyboard && Anony) ? ((strcmp(currboard->filename, "SecretSky") == 0) ? "guest" : currboard->filename) : getCurrentUser()->userid, OWNER_LEN);
 #else
