@@ -105,3 +105,44 @@ int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board)
 
     return 0;
 }
+
+#ifdef ENHANCED_TEMPLATE
+int get_parameter_index_len(char *buf, int *index, int *fmtlen, int *def)
+{
+    int ret=0;
+
+    char *ps = NULL, *pt = NULL;
+    ps = strchr(buf, '#');
+    if(ps != NULL)
+    {
+        if (fmtlen != NULL) {
+            pt=ps+1;
+            if (*pt == '-') {
+                ret = -1;
+                pt++;
+            } else if (*pt == '+') {
+                ret = 1;
+                pt++;
+            } else
+                ret = 0;
+            *fmtlen=atoi(pt);
+        }
+        *ps='\0';
+    }
+    else {
+        if (fmtlen != NULL)
+            *fmtlen=0;
+    }
+
+    if (!strcmp(buf, "USER")
+      ||!strcmp(buf, "BOARD")
+      ||!strcmp(buf, "BNAME")
+      ||!strcmp(buf, "BMS")
+      ||!strcmp(buf, "DATE")) {
+        *def = 1;
+        *index = 1;
+    } else
+        *index = atoi(buf);
+    return ret;
+}
+#endif

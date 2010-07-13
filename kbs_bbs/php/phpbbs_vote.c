@@ -662,6 +662,10 @@ PHP_FUNCTION(bbs_make_tmpl_file)
                     int l;
                     int linex = 0;
                     char *pn,*pe;
+#ifdef ENHANCED_TEMPLATE
+                    int sign, fmtlen, sysdef;
+                    char tmpbuf[STRLEN];
+#endif
 
                     for (pn = buf; *pn!='\0'; pn++) {
                         if (*pn != '[' || *(pn+1)!='$') {
@@ -673,12 +677,64 @@ PHP_FUNCTION(bbs_make_tmpl_file)
                                 fputc(*pn, fp);
                                 continue;
                             }
+#ifdef ENHANCED_TEMPLATE
+                            /* 获得[]中间的内容 */
+                            strncpy(tmpbuf, pn+2, pe-pn-2);
+                            tmpbuf[pe-pn-2]='\0';
+                            sysdef = 0;
+                            sign = get_parameter_index_len(tmpbuf, &l, &fmtlen, &sysdef);
+#else
                             l = atoi(pn+2);
+#endif
                             if (l<=0 || l > ptemp[ent-1].tmpl->content_num || l > 20) {
                                 fputc('[', fp);
                                 continue;
                             }
+#ifdef ENHANCED_TEMPLATE
+                            char *p;
+                            if (sysdef == 0) {
+                                p = malloc(strlen(text[l])+1);
+                                strcpy(p, text[l]);
+                            } else {
+                                p = malloc(STRLEN);
+                                if (!strcmp(tmpbuf, "USER"))
+                                    strcpy(p, getCurrentUser()->userid);
+                                else if (!strcmp(tmpbuf, "BOARD"))
+                                    strcpy(p, bp->filename);
+                                else if (!strcmp(tmpbuf, "BNAME"))
+                                    strcpy(p, bp->title+13);
+                                else if (!strcmp(tmpbuf, "BMS"))
+                                    strcpy(p, bp->BM);
+                                else if (!strcmp(tmpbuf, "DATE")) {
+                                    time_t t=time(0);
+                                    struct tm *mytm;
+                                    mytm = localtime(&t);
+                                    sprintf(p, "%d-%02d-%02d", mytm->tm_year + 1900, mytm->tm_mon+1, mytm->tm_mday);
+                                }
+                                else
+                                    strcpy(p, "未定义");
+                            }
+                            if (fmtlen>0) {
+                                int t1, t2;
+                                t1=strlen(p);
+                                if (t1 >= fmtlen)
+                                    fprintf(fp,"%s",p);
+                                else {
+                                    if (sign == -1) { /* 左对齐 */
+                                        fprintf(fp, "%-*s", fmtlen, p);
+                                    } else if (sign == 1) { /* 右对齐 */
+                                        fprintf(fp, "%*s", fmtlen, p);
+                                    } else { /* 居中对齐 */
+                                        t2 = (fmtlen - t1)/2;
+                                        fprintf(fp,"%*s%*s",t2+t1,p,t2 + t1%2, "");
+                                    }
+                                }
+                            } else
+                                fprintf(fp,"%s",p);
+                            free(p);
+#else
                             fprintf(fp,"%s",text[l]);
+#endif
                             pn = pe;
                             continue;
                         }
@@ -701,6 +757,10 @@ PHP_FUNCTION(bbs_make_tmpl_file)
         char *buf;
         int l;
         int newl = 0;
+#ifdef ENHANCED_TEMPLATE
+        int sysdef;
+        char tmpbuf[STRLEN];
+#endif
 
         newtitle[0]='\0';
         buf = ptemp[ent-1].tmpl->title_tmpl;
@@ -722,7 +782,15 @@ PHP_FUNCTION(bbs_make_tmpl_file)
                     }
                     continue;
                 }
+#ifdef ENHANCED_TEMPLATE
+                /* 获得[]中间的内容 */
+                strncpy(tmpbuf, pn+2, pe-pn-2);
+                tmpbuf[pe-pn-2]='\0';
+                sysdef = 0;
+                get_parameter_index_len(tmpbuf, &l, NULL, &sysdef);
+#else
                 l = atoi(pn+2);
+#endif
                 if (l<0 || l > ptemp[ent-1].tmpl->content_num || l > 20) {
                     if (newl < STRLEN - 1) {
                         newtitle[newl] = *pn ;
@@ -739,10 +807,40 @@ PHP_FUNCTION(bbs_make_tmpl_file)
                     }
                 } else {
                     int ti;
+#ifdef ENHANCED_TEMPLATE
+                    char *p;
+                    if (sysdef == 0) {
+                        p = malloc(strlen(text[l])+1);
+                        strcpy(p, text[l]);
+                    } else {
+                        p = malloc(STRLEN);
+                        if (!strcmp(tmpbuf, "USER"))
+                            strcpy(p, getCurrentUser()->userid);
+                        else if (!strcmp(tmpbuf, "BOARD"))
+                            strcpy(p, bp->filename);
+                        else if (!strcmp(tmpbuf, "BNAME"))
+                            strcpy(p, bp->title+13);
+                        else if (!strcmp(tmpbuf, "BMS"))
+                            strcpy(p, bp->BM);
+                        else if (!strcmp(tmpbuf, "DATE")) {
+                            time_t t=time(0);
+                            struct tm *mytm;
+                            mytm = localtime(&t);
+                            sprintf(p, "%d-%02d-%02d", mytm->tm_year + 1900, mytm->tm_mon+1, mytm->tm_mday);
+                        } else
+                            strcpy(p, "未定义");
+                    }
+                    for (ti=0; p[ti]!='\0' && p[ti]!='\n' && p[ti]!='\r' && newl < STRLEN - 1; ti++, newl++) {
+                        newtitle[newl] = p[ti] ;
+                        newtitle[newl+1]='\0';
+                    }
+                    free(p);
+#else
                     for (ti=0; text[l][ti]!='\0' && ti < t_len[l] && text[l][ti]!='\n' && text[l][ti]!='\r' && newl < STRLEN - 1; ti++, newl++) {
                         newtitle[newl] = text[l][ti] ;
                         newtitle[newl+1]='\0';
                     }
+#endif
                 }
                 pn = pe;
                 continue;
