@@ -285,6 +285,7 @@ div.docTab a, div.docTab b {
 	 * javascript library ... then why not just promote Firefox here...
 	 */
 	-moz-border-radius: 0.5em 0.5em 0 0;
+	-webkit-border-radius: 0.5em 0.5em 0 0;
 }
 div.docTab b {
 	background-color: #718BD6;
