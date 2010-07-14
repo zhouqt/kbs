@@ -78,7 +78,7 @@ function prints(s) {
 		s = s.replace(/\n/g, "<br/>");
 	}
 	if (!gIE5) {
-		var urlmatch = new RegExp("((?:http|https|ftp|mms|rtsp)://(&(?=amp;)|[A-Za-z0-9\./=\?%_~@#:;\+\-])+)", "ig");
+		var urlmatch = new RegExp("((?:http|https|ftp|mms|rtsp)://(&(?=amp;)|[A-Za-z0-9\./=\?%_~@#,:;\+\-])+)", "ig");
 		s = s.replace(urlmatch, "<a target=\"_blank\" href=\"$1\">$1</a>");
 	}
 	strArticle += s;
