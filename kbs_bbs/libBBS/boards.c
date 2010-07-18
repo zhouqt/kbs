@@ -685,7 +685,7 @@ void brc_update(const char *userid,session_t* session)
         gzclose(fd);
     }
 
-    if ((fd = gzopen(dirfile_tmp, "w+b6")) == NULL) {
+    if ((fd = gzopen(dirfile_tmp, "wb6")) == NULL) {
         const char *errstr;
         int gzerrno;
 
@@ -856,7 +856,7 @@ int brc_initial(const char *userid, const char *boardname,session_t* session)
     sethomefile(dirfile, userid, BRCFILE);
 
     if ((brcfile = gzopen(dirfile, "rb6")) == NULL)
-        if ((brcfile = gzopen(dirfile, "w+b6")) == NULL)
+        if ((brcfile = gzopen(dirfile, "wb6")) == NULL)
             return 0;
 
     entry = brc_getcache(userid,session);
