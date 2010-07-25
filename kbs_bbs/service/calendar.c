@@ -159,7 +159,7 @@ int get_day2(int year)
     else return 365;
 }
 
-void Lunar(int day, int * lmonth, int * lday)
+void Lunar(int day, int * lmonth, int * lday, int *leapmonth)
 {
     int i, j, leap=0, temp=0;
     int offset   = 0;
@@ -196,6 +196,8 @@ void Lunar(int day, int * lmonth, int * lday)
 
     *lmonth = i;
     *lday = offset + 1;
+    if (leapmonth!=NULL)
+        *leapmonth = isLeap;
 }
 
 char solarTerm[24][8] = {"小寒","大寒","立春","雨水","惊蛰","春分",
@@ -228,7 +230,7 @@ int get_week(int year, int month, int day)
 
 void draw_main()
 {
-    int i,j,k,x,y,lmonth,lday,i0;
+    int i,j,k,x,y,lmonth,lday,i0,leap;
     char buf[80],buf2[80];
     struct stat st;
     for (i=0;i<t_lines;i++)
@@ -261,7 +263,7 @@ void draw_main()
         k=0;
         for (i=1;i<=get_day(year,month);i++) {
             j=get_week(year,month,i);
-            Lunar(i, &lmonth, &lday);
+            Lunar(i, &lmonth, &lday, NULL);
             y=k*3+6;
             x=j*6+3;
             resetcolor();
@@ -377,7 +379,7 @@ void draw_main()
         k=0;
         for (i=1;i<=get_day(year,month);i++) {
             j=get_week(year,month,i);
-            Lunar(i, &lmonth, &lday);
+            Lunar(i, &lmonth, &lday, NULL);
             y=k*2+2;
             x=j*4+scr_cols-28;
             resetcolor();
@@ -406,7 +408,7 @@ void draw_main()
         }
 
         resetcolor();
-        Lunar(day, &lmonth, &lday);
+        Lunar(day, &lmonth, &lday, &leap);
         if (lday<=10) sprintf(buf2, "初%s", nums[lday]);
         else if (lday<=19) sprintf(buf2, "十%s", nums[lday-10]);
         else if (lday==20) sprintf(buf2, "二十");
@@ -414,7 +416,7 @@ void draw_main()
         else if (lday==30) sprintf(buf2, "三十");
         else if (lday<=39) sprintf(buf2, "卅%s", nums[lday-30]);
         else sprintf(buf2, "□");
-        sprintf(buf, "农历 %s月%s", lmonths[lmonth], buf2);
+        sprintf(buf, "农历 %s%s月%s", leap?"闰":"", lmonths[lmonth], buf2);
         move(12, scr_cols-strlen(buf));
         resetcolor();
         prints(buf);
