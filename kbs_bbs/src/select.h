@@ -62,6 +62,9 @@ struct _select_def {
     char *prompt;               /*选择的item前面的提示字符 */
     POINT cursor_pos;           /*光标位置 */
     int new_pos;                /*当返回SHOW_SELECTCHANGE 的时候，把新的位置放在这里 */
+#ifdef RECALL_POSITION
+    int history_pos[RECALL_POSITION];
+#endif
     struct key_translate *key_table;    /*键定义表 */
     /*
      * 内部使用的变量

@@ -114,6 +114,9 @@ static int select_change(struct _select_def *conf, int new_pos)
 {
     int ret = SHOW_CONTINUE;
     int old_pos;
+#ifdef RECALL_POSITION
+    int rotate=1;
+#endif
 
     if (conf->item_count==0)
         return SHOW_CONTINUE;
@@ -127,6 +130,23 @@ static int select_change(struct _select_def *conf, int new_pos)
             new_pos = conf->item_count;
         } else if ((new_pos == conf->item_count + 1) && (conf->flag & LF_LOOP)) {
             new_pos = 1;
+#ifdef RECALL_POSITION
+        } else if (new_pos == -1) {
+            int count = 0;
+            while ((count < RECALL_POSITION) && (conf->history_pos[count] == 0)) {
+                count ++;
+            }
+            if (count >= RECALL_POSITION)
+                return SHOW_CONTINUE;
+            else if (count > 0) {
+                memmove(conf->history_pos, conf->history_pos + count, (RECALL_POSITION - count) * sizeof(int));
+                memset(conf->history_pos + RECALL_POSITION - count, 0, count * sizeof(int));
+            }
+            new_pos = conf->history_pos[0];
+            memmove(conf->history_pos, conf->history_pos + 1, (RECALL_POSITION-1) * sizeof(int));
+            conf->history_pos[RECALL_POSITION-1] = conf->pos;
+            rotate = 0;
+#endif
         } else {
             select_wrong(conf);
             return SHOW_CONTINUE;
@@ -135,6 +155,12 @@ static int select_change(struct _select_def *conf, int new_pos)
     if (conf->flag & LF_MULTIPAGE) {
         if (new_pos<conf->page_pos || new_pos>=conf->page_pos+conf->item_per_page) { /*需要换页了*/
             conf->page_pos=((new_pos-1)/conf->item_per_page)*conf->item_per_page+1;
+#ifdef RECALL_POSITION
+            if (rotate) {
+                memmove(conf->history_pos + 1, conf->history_pos, (RECALL_POSITION-1) * sizeof(int));
+                conf->history_pos[0] = conf->pos;
+            }
+#endif
             conf->pos = new_pos;
             return SHOW_DIRCHANGE;
         }
@@ -156,6 +182,12 @@ static int select_change(struct _select_def *conf, int new_pos)
     }
     /* 如果是高亮的选择方式，需要清除原来的行*/
     /* 和重绘新行*/
+#ifdef RECALL_POSITION
+    if (rotate) {
+        memmove(conf->history_pos + 1, conf->history_pos, (RECALL_POSITION-1) * sizeof(int));
+        conf->history_pos[0] = conf->pos;
+    }
+#endif
     old_pos=conf->pos;
     conf->pos = new_pos;
     if (conf->flag & LF_HILIGHTSEL) {
@@ -254,6 +286,10 @@ static int do_select_internal(struct _select_def *conf, int key)
             return select_change(conf, conf->pos - 1);
         case KEY_DOWN:
             return select_change(conf, conf->pos + 1);
+#ifdef RECALL_POSITION
+        case '-':
+            return select_change(conf, -1);
+#endif
         case '\n':
         case '\r':
             return SHOW_SELECT;
