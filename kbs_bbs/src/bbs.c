@@ -75,7 +75,12 @@ extern int mainreadhelp(struct _select_def* conf,struct fileheader *fileinfo,voi
 
 int check_readonly(char *checked)
 {                               /* Leeward 98.03.28 */
-    if (checkreadonly(checked)) {       /* Checking if DIR access mode is "555" */
+    if (checkreadonly(checked)
+#ifdef NEWSMTH
+            && !HAS_PERM(getCurrentUser(), PERM_ADMIN)
+#endif
+            )
+    {       /* Checking if DIR access mode is "555" */
         if (!strcmp(currboard->filename,checked)) {
             move(0, 0);
             clrtobot();
