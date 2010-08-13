@@ -1814,9 +1814,21 @@ EXPRESS:                 /* Leeward 98.09.13 */
                             break;
                         }
                         if (checkreadonly(bname)) {
+#ifdef NEWSMTH
+                            if (HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
+                                getdata(4, 5, "\033[1;33m目的版面目前为\033[1;31m只读\033[1;33m模式, 您确定要强制转载? [y/N]: \033[m", ans, 2, DOECHO, NULL, true);
+                                if (toupper(ans[0]) != 'Y') {
+                                    break;
+                                }
+                                move(4, 0); clrtoeol();
+                            } else {
+#endif
                             prints("\n\n    %s\033[0;33m<Enter>\033[m","\033[1;33m目的版面目前为\033[1;31m只读\033[1;33m模式, 取消转载操作...\033[m");
                             WAIT_RETURN;
                             break;
+#ifdef NEWSMTH
+                            }
+#endif
                         }
 #ifdef HAVE_USERSCORE
                         if (!check_score_level(getCurrentUser(),bh)) {

@@ -77,14 +77,32 @@ int check_readonly(char *checked)
 {                               /* Leeward 98.03.28 */
     if (checkreadonly(checked)) {       /* Checking if DIR access mode is "555" */
         if (!strcmp(currboard->filename,checked)) {
+            clear();
+#if 0
             move(0, 0);
             clrtobot();
             move(8, 0);
             prints("                                        "); /* 40 spaces */
+#endif
             move(8, (80 - (24 + strlen(checked))) / 2); /* Set text in center */
+#ifdef NEWSMTH
+            if (HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
+                char ans[2];
+                prints("\033[1m\033[33m很抱歉：\033[31m%s 版目前是只读模式\033[m", checked);
+                getdata(10, 24, "\033[1;33m您确定要强制发表或修改文章? [y/N] \033[m", ans, 2, DOECHO, NULL, true);
+                if (toupper(ans[0]) != 'Y') {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+#endif
             prints("\033[1m\033[33m很抱歉：\033[31m%s 版目前是只读模式\033[33m\n\n                          您不能在该版发表或者修改文章\033[m\n", checked);
             pressreturn();
             clear();
+#ifdef NEWSMTH
+            }
+#endif
         }
         return true;
     } else
@@ -713,9 +731,20 @@ int do_cross(struct _select_def *conf,struct fileheader *info,void *varg)
     /* 只读版面 */
     if (check_readonly(board)) {
         move(3,0); clrtobot();
+#ifdef NEWSMTH
+        if (HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
+            getdata(5, 4, "\033[1;33m目的版面目前为\033[1;31m只读\033[1;33m模式, 您确定要强制转载? [y/N]: \033[m", ans, 2, DOECHO, NULL, true);
+            if (toupper(ans[0]) != 'Y') {
+                return FULLUPDATE;
+            }
+        } else {
+#endif
         prints("\n\n    %s\033[0;33m<Enter>\033[m","\033[1;33m目的版面目前为\033[1;31m只读\033[1;33m模式, 取消转载操作...\033[m");
         WAIT_RETURN;
         return FULLUPDATE;
+#ifdef NEWSMTH
+        }
+#endif
     }
 #ifdef HAVE_USERSCORE
     /* 积分限制 */
@@ -3500,8 +3529,9 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
                 return FULLUPDATE;
                 break;
             case -5:
-                check_readonly(currboard->filename);
-                return FULLUPDATE;
+                if (check_readonly(currboard->filename)) {
+                    return FULLUPDATE;
+                }
                 break;
             default:
                 return DONOTHING;
@@ -3586,8 +3616,9 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
                 return FULLUPDATE;
                 break;
             case -5:
-                check_readonly(currboard->filename);
-                return FULLUPDATE;
+                if (check_readonly(currboard->filename)) {
+                    return FULLUPDATE;
+                }
                 break;
             default:
                 return DONOTHING;
@@ -6164,11 +6195,15 @@ static int read_top_edit_title(struct _select_def *conf,struct fileheader *fh,vo
             prints("\t\t\033[1;33m%s\033[0;33m<Enter>\033[m","您已被管理人员取消在当前版面的发文权限...");
             WAIT_RETURN;
             return FULLUPDATE;
+            break;
         case -5:
-            check_readonly(currboard->filename);
-            return FULLUPDATE;
+            if (check_readonly(currboard->filename)) {
+                return FULLUPDATE;
+            }
+            break;
         default:
             return DONOTHING;
+            break;
     }
     snprintf(buf,STRLEN,"%s",fh->title);
     getdata(t_lines-1,0,"新文章标题: ",buf,78,DOECHO,NULL,false);
