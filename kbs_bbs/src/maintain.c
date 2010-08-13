@@ -2274,7 +2274,7 @@ char *logfile, *regfile;
                         ans[0] = 'D';
                     } else {
 #ifdef AUTO_CHECK_REGISTER_FORM
-                        move(t_lines - 2, 0);
+                        move(t_lines - 2, 0); clrtoeol();
                         /*
                           prints("%s自动检查注册单:%s %s\x1b[m",
                          saveret==0?"\x1b[1;32m":(saveret==2?"\x1b[1;33m":"\x1b[1;31m"),
