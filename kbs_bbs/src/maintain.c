@@ -3092,7 +3092,8 @@ int edit_board_delete_read_perm(void)
         clear();
         return -1;
     }
-    if (!HAS_PERM(user,PERM_BOARDS)||!user->title) {
+    /* fancy Aug 28 2010, 如果没B或没title证明不是助理，没p证明不是实习站务*/
+    if ((!HAS_PERM(user,PERM_BOARDS)||!user->title)&&(!HAS_PERM(user, PERM_BMAMANGER))) {
         sethomefile(datafile, user -> userid, "board_delete_read");
         if (!stat(datafile, &st)) {
             unlink(datafile);
