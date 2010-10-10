@@ -233,11 +233,11 @@ int get_top(int type)
         //sprintf(cmptime,"YEAR(time)=YEAR(CURDATE()) AND MONTH(time)=MONTH(CURDATE()) AND DAYOFMONTH(time)=DAYOFMONTH(CURDATE())");
         sprintf(cmptime,"time>curdate()");
     } else if (type==1) {
-        sprintf(cmptime,"YEAR(date)=YEAR(CURDATE()) AND WEEK(date)=WEEK(CURDATE())");
+        sprintf(cmptime,"YEAR(date)=YEAR(CURDATE()) AND WEEK(date)=WEEK(CURDATE())-1");
     } else if (type==2) {
-        sprintf(cmptime,"YEAR(date)=YEAR(CURDATE()) AND MONTH(date)=MONTH(CURDATE())");
+        sprintf(cmptime,"YEAR(date)=YEAR(CURDATE()) AND MONTH(date)=MONTH(CURDATE())-1");
     } else if (type==3) {
-        sprintf(cmptime,"YEAR(date)=YEAR(CURDATE())");
+        sprintf(cmptime,"YEAR(date)=YEAR(CURDATE())-1");
     }
 
     bzero(top, TOPCOUNT * sizeof(struct postrec));
@@ -662,12 +662,31 @@ int main(int argc, char **argv)
     }
 
     if ((ptime.tm_hour == 0) || force_refresh) {
-        if (ptime.tm_yday == 1)
+        char fname[STRLEN];
+        if (ptime.tm_yday == 1) {
             poststat(3);
-        if (ptime.tm_mday == 1)
+            sprintf(fname, "%d年度百大热门话题", ptime.tm_year + 1900 - 1);
+            post_file(NULL, "", "etc/posts/year", "BBSLists", fname, 0, 1, getSession());
+        }
+        if (ptime.tm_mday == 1) {
+            int year, month;
             poststat(2);
-        if (ptime.tm_wday == 0)
+            if (ptime.tm_mon == 1) {
+                year = ptime.tm_year + 1900 - 1;
+                month = 12;
+            } else {
+                year = ptime.tm_year + 1900;
+                month = ptime.tm_mon + 1 - 1;
+            }
+            sprintf(fname, "%d年%2d月百大热门话题", year, month);
+            post_file(NULL, "", "etc/posts/month", "BBSLists", fname, 0, 1, getSession());
+        }
+        if (ptime.tm_wday == 0) {
             poststat(1);
+            sprintf(fname, "%d年%2d月%2d日上周五十大热门话题", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
+            post_file(NULL, "", "etc/posts/week", "BBSLists", fname, 0, 1, getSession());
+        }
+
     }
 
     poststat(0);
@@ -680,10 +699,12 @@ int main(int argc, char **argv)
         post_file(NULL, "", "etc/posts/day", "BBSLists", fname, 0, 1, getSession());
         sprintf(fname, "%d年%2d月%2d日十大祝福话题", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
         post_file(NULL, "", "etc/posts/bless", "BBSLists", fname, 0, 1, getSession());
+        /*
         if (ptime.tm_wday == 6) {
             sprintf(fname, "%d年%2d月%2d日本周五十大热门话题", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
             post_file(NULL, "", "etc/posts/week", "BBSLists", fname, 0, 1, getSession());
         }
+        */
     }
     return 0;
 }
