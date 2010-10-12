@@ -80,11 +80,10 @@ int gen_commend_xml(void)
                     process_control_chars(buf,"\n");
 
                     len = strlen(buf);
-                    if (!(len<brieflen)) {
+                    if (!(len<brieflen-1)) {
                         strnzhcpy(buf,buf,brieflen);
                         len=brieflen;
                     }
-
                     fprintf(fp, "%s", encode_url(url_buf,encode_xml(xml_buf, buf, sizeof(xml_buf)),sizeof(url_buf)));
                     i++;
 
