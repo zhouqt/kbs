@@ -10,13 +10,15 @@ PHP_FUNCTION(bbs_getfriends)
     struct friends fr;
     int ac = ZEND_NUM_ARGS();
     long start;
+    long num = 0;
     int fd;
     int i=0;
     char fpath[STRLEN];
     zval *element;
 
     if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sl", &userid, &userid_len, &start) == FAILURE) {
-        WRONG_PARAM_COUNT;
+        if (ac != 3 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sll", &userid, &userid_len, &start, &num) == FAILURE) 
+            WRONG_PARAM_COUNT;
     }
     if (userid_len > IDLEN)
         WRONG_PARAM_COUNT;
@@ -24,6 +26,8 @@ PHP_FUNCTION(bbs_getfriends)
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
     }
+    if(num < 1)
+        num = 20;
 
     i=0;
     sethomefile(fpath, userid, "friends");
@@ -42,7 +46,7 @@ PHP_FUNCTION(bbs_getfriends)
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 
         i++;
-        if (i>=20)
+        if (i>=num)
             break;
     }
     close(fd);
