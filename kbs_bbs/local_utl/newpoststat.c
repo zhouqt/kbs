@@ -57,6 +57,7 @@ struct postrec {
     time_t date;                /* last post's date */
     int number;                 /* post number */
     char title[81];
+    char filename[FILENAME_LEN+1];
 };
 
 struct postrec top[TOPCOUNT];
@@ -93,7 +94,7 @@ static char * get_file_name(char *boardname, int threadid, char *fname)
     return fname;
 }
 
-static char * get_file_title(char *boardname, int threadid, char *title, char *userid)
+static char * get_file_info(char *boardname, int threadid, char *title, char *userid, char *filename)
 {
 
     char dirfile[256];
@@ -123,6 +124,9 @@ static char * get_file_title(char *boardname, int threadid, char *title, char *u
 
     strncpy(userid, fh.owner, IDLEN);
     userid[IDLEN]='\0';
+
+    strncpy(filename, fh.filename, FILENAME_LEN);
+    filename[FILENAME_LEN]='\0';
 
     return title;
 }
@@ -212,6 +216,7 @@ int get_top(int type)
     int i,secid;
     int threadid;
     char title[81];
+    char filename[FILENAME_LEN+1];
     char userid[IDLEN+1];
     int m,n;
 #ifdef BLESS_BOARD
@@ -306,7 +311,7 @@ int get_top(int type)
 
             threadid = atoi(row[1]);
             if (type==0 || type==4) {
-                if (get_file_title(row[0], threadid, title, userid) == NULL) {
+                if (get_file_info(row[0], threadid, title, userid, filename) == NULL) {
                     continue;
                 }
             } else {
@@ -346,6 +351,8 @@ int get_top(int type)
                 top[topnum].groupid = threadid;
                 strncpy(top[topnum].title, title, 80);
                 top[topnum].title[80]='\0';
+                strncpy(top[topnum].filename, filename, FILENAME_LEN);
+                top[topnum].filename[FILENAME_LEN]='\0';
                 strncpy(top[topnum].userid, userid, IDLEN);
                 top[topnum].userid[IDLEN]='\0';
                 top[topnum].date = atol(row[2]);
@@ -663,6 +670,17 @@ int main(int argc, char **argv)
 
 
     poststat(0);
+#ifdef NEWSMTH
+    if (ptime.tm_hour == 23) {
+        char title[STRLEN],file[STRLEN];
+        for (i=0;i<topnum;i++) {
+            sprintf(title, "[%s] %s", top[i].board,top[i].title);
+            sprintf(file, "boards/%s/%s", top[i].board,top[i].filename);
+            //printf("%s      %s\n\n", title,file);
+            post_file(NULL, "", file , "ShiDa", title, 0, 1, getSession());
+        }
+    }
+#endif
     poststat(4);
 
     if (ptime.tm_hour == 23) {
