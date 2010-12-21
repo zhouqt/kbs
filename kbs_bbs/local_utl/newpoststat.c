@@ -143,7 +143,7 @@ static int get_seccode_index(char prefix)
     return -1;
 }
 
-/*********记录十大信息到toplog表*********/
+/*********记录十大信息到toplog和toplog_all表*********/
 /*
 create table `toplog` (
  `id` int unsigned NOT NULL auto_increment,
@@ -161,6 +161,22 @@ create table `toplog` (
  KEY date(`date`),
  UNIQUE top (`date`,`topth`)
 ) TYPE=MyISAM COMMENT='toplog';
+
+create table `toplog_all` (
+ `id` int unsigned NOT NULL auto_increment,
+ `userid` char(15) NOT NULL default '',
+ `bname` char(31) NOT NULL default '',
+ `title` char(81) NOT NULL default '',
+ `time` timestamp NOT NULL,
+ `date` date NOT NULL,
+ `topth` int NOT NULL default '1',
+ `count` int NOT NULL default '0',
+ `threadid` int unsigned NOT NULL default '0',
+ PRIMARY KEY (`id`),
+ KEY userid (`userid`),
+ KEY bname(`bname`, `threadid`),
+ KEY date(`date`),
+) TYPE=MyISAM COMMENT='toplog_all';
 */
 int log_top()
 {
@@ -179,6 +195,36 @@ int log_top()
     for (i=0;i<topnum;i++) {
 
         mysql_escape_string(newtitle, top[i].title, strlen(top[i].title));
+
+#ifdef NEWSMTH
+        MYSQL_RES *res;
+        MYSQL_ROW row;
+        sprintf(sqlbuf, "SELECT id FROM toplog_all WHERE date=CURDATE() AND bname='%s' AND threadid=%d; ", top[i].board, top[i].groupid);
+        if (mysql_real_query(&s, sqlbuf, strlen(sqlbuf))) {
+            printf("%s\n", mysql_error(&s));
+        } else {
+            res = mysql_store_result(&s);
+            row = mysql_fetch_row(res);
+            if (row==NULL) {
+                char title[STRLEN],file[STRLEN];
+                // auto post top10 to ShiDa
+                sprintf(title, "[%s] %s", top[i].board,top[i].title);
+                sprintf(file, "boards/%s/%s", top[i].board,top[i].filename);
+                post_file(NULL, "", file , "ShiDa", title, 0, 1, getSession());
+                // insert into toplog_all
+                sprintf(sqlbuf, "INSERT INTO toplog_all VALUES (NULL,'%s','%s','%s','%s',CURDATE(),'%d','%d','%d');",top[i].userid, top[i].board, newtitle, tt2timestamp(top[i].date,newts), i+1, top[i].number, top[i].groupid);
+                if (mysql_real_query(&s, sqlbuf, strlen(sqlbuf))) {
+                    printf("%s\n", mysql_error(&s));
+                }
+            } else {
+                // update toplog_all
+                sprintf(sqlbuf,"UPDATE toplog_all SET userid='%s',bname='%s',title='%s',count='%d',time='%s',threadid='%d' WHERE date=CURDATE() AND bname='%s' AND threadid=%d;;", top[i].userid, top[i].board, newtitle, top[i].number, tt2timestamp(top[i].date,newts), top[i].groupid, top[i].board, top[i].groupid);
+                if (mysql_real_query(&s, sqlbuf, strlen(sqlbuf))) {
+                    printf("%s\n", mysql_error(&s));
+                }
+            }
+        }
+#endif
 
         sprintf(sqlbuf,"UPDATE toplog SET userid='%s',bname='%s',title='%s',count='%d',time='%s',threadid='%d' WHERE date=CURDATE() AND topth='%d';", top[i].userid, top[i].board, newtitle, top[i].number, tt2timestamp(top[i].date,newts), top[i].groupid, i+1);
 
@@ -670,17 +716,6 @@ int main(int argc, char **argv)
 
 
     poststat(0);
-#ifdef NEWSMTH
-    if (ptime.tm_hour == 23) {
-        char title[STRLEN],file[STRLEN];
-        for (i=0;i<topnum;i++) {
-            sprintf(title, "[%s] %s", top[i].board,top[i].title);
-            sprintf(file, "boards/%s/%s", top[i].board,top[i].filename);
-            //printf("%s      %s\n\n", title,file);
-            post_file(NULL, "", file , "ShiDa", title, 0, 1, getSession());
-        }
-    }
-#endif
     poststat(4);
 
     if (ptime.tm_hour == 23) {
