@@ -1130,7 +1130,12 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
             && strstr(title, "修改 ")
             && strstr(title, " 的权限"))
         postfile.accessed[0] |= FILE_MARKED;    /* Leeward 98.03.29 */
-    if (strstr(title, "发文权限") && mode == 2) {
+#ifdef NEWSMTH
+    if (strstr(title, "发文权限") && (mode == 1 || mode == 2))
+#else
+    if (strstr(title, "发文权限") && mode == 2)
+#endif
+    {
         postfile.accessed[1] |= FILE_READ;
     }
     /* fancyrabbit May 28 2007 这个破玩意 U 上置底吧 ...*/
