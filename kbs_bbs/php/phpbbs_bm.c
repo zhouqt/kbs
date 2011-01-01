@@ -385,8 +385,10 @@ PHP_FUNCTION(bbs_denyadd)
         sprintf(buffer, "%s被取消在%s版的发文权限", userid, board);
 
         if ((HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !chk_BM_instr(brd->BM, getCurrentUser()->userid)) {
+            strcpy(getCurrentUser()->userid, "SYSOP");
+            strcpy(getCurrentUser()->username, NAME_SYSOP);
             my_flag = 0;
-            fprintf(fn, "寄信人: SYSOP (System Operator) \n");
+            fprintf(fn, "寄信人: SYSOP (%s) \n", NAME_SYSOP);
             fprintf(fn, "标  题: %s\n", buffer);
             fprintf(fn, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
             fprintf(fn, "来  源: %s\n", NAME_BBS_ENGLISH);
@@ -396,10 +398,8 @@ PHP_FUNCTION(bbs_denyadd)
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
-            fprintf(fn, "                            %s" NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, getCurrentUser()->userid);
+            fprintf(fn, "                            %s" NAME_SYSOP_GROUP DENY_NAME_SYSOP "\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, saveptr->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
-            strcpy(getCurrentUser()->userid, "SYSOP");
-            strcpy(getCurrentUser()->username, NAME_SYSOP);
         } else {
             my_flag = 1;
             fprintf(fn, "寄信人: %s \n", getCurrentUser()->userid);
@@ -412,7 +412,7 @@ PHP_FUNCTION(bbs_denyadd)
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
-            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
+            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", saveptr->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
         }
         fclose(fn);
@@ -422,16 +422,16 @@ PHP_FUNCTION(bbs_denyadd)
         fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%ld\x1b[m 天。\n", denyday);
 
         if (my_flag == 0) {
-            fprintf(fn, "                            %s" NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, saveptr->userid);
+            fprintf(fn, "                            %s" NAME_SYSOP_GROUP DENY_NAME_SYSOP "\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, saveptr->userid);
         } else {
-            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
+            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", saveptr->userid);
         }
         fprintf(fn, "                              %s\n", ctime(&now));
         fclose(fn);
         post_file(getCurrentUser(), "", path, board, buffer, 0, 2, getSession());
         getCurrentUser() = saveptr;
 
-        sprintf(buffer, "%s 被 %s 封禁本版POST权", userid, getCurrentUser()->userid);
+        //sprintf(buffer, "%s 被 %s 封禁本版POST权", userid, getCurrentUser()->userid);
 
         if (PERM_BOARDS & lookupuser->userlevel)
             sprintf(buffer, "%s 封某版" NAME_BM " %s 在 %s", getCurrentUser()->userid, userid, board);
