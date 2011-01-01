@@ -318,7 +318,11 @@ int addtodeny(char *uident)
             fprintf(fn, "                              %s\n", ctime(&now));
         }
         fclose(fn);
+#ifdef NEWSMTH
+        mail_file(DELIVER, filename, uident, buffer, 0, NULL);
+#else
         mail_file(getCurrentUser()->userid, filename, uident, buffer, 0, NULL);
+#endif
         fn = fopen(filename, "w+");
         fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", uident, currboard->filename, denymsg);
         if (denyday)
@@ -335,7 +339,11 @@ int addtodeny(char *uident)
         }
         fprintf(fn, "                              %s\n", ctime(&now));
         fclose(fn);
+#ifdef NEWSMTH
+        post_file(getCurrentUser(), "", filename, currboard->filename, buffer, 0, 1, getSession());
+#else
         post_file(getCurrentUser(), "", filename, currboard->filename, buffer, 0, 2, getSession());
+#endif
         /*
          * unlink(filename);
          */
