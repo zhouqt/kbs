@@ -416,7 +416,11 @@ PHP_FUNCTION(bbs_denyadd)
             fprintf(fn, "                              %s\n", ctime(&now));
         }
         fclose(fn);
+#ifdef NEWSMTH
+        mail_file(DELIVER, path, userid, buffer, 0, NULL);
+#else
         mail_file(getCurrentUser()->userid, path, userid, buffer, 0, NULL);
+#endif
         fn = fopen(path, "w+");
         fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", userid, board, exp);
         fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%ld\x1b[m 天。\n", denyday);
@@ -428,7 +432,11 @@ PHP_FUNCTION(bbs_denyadd)
         }
         fprintf(fn, "                              %s\n", ctime(&now));
         fclose(fn);
+#ifdef NEWSMTH
+        post_file(getCurrentUser(), "", path, board, buffer, 0, 1, getSession());
+#else
         post_file(getCurrentUser(), "", path, board, buffer, 0, 2, getSession());
+#endif
         getCurrentUser() = saveptr;
 
         //sprintf(buffer, "%s 被 %s 封禁本版POST权", userid, getCurrentUser()->userid);
