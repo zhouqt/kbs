@@ -436,7 +436,7 @@ void fixFavBoard(session_t *session)
                         || (!session && *bptr->filename))
                     continue;
                 for (j=i; j<top[fn].bnum-1; ++j)
-                    top[fn].bid[i] = top[fn].bid[i+1];
+                    top[fn].bid[j] = top[fn].bid[j+1];
                 top[fn].bnum--;
             }
 }
