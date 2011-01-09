@@ -802,7 +802,7 @@ return:
 */
 PHP_FUNCTION(bbs_threads_bmfunc)
 {
-#define MAX_THREADS_NUM 512
+#define MAX_THREADS_NUM 5120
     long bid, gid, start, operate;
     const struct boardheader *bp;
     char dirpath[STRLEN];

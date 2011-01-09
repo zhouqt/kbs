@@ -346,7 +346,7 @@ threads_error:
  */
 PHP_FUNCTION(bbs_get_threads_from_gid)
 {
-#define MAX_THREADS_NUM 512
+#define MAX_THREADS_NUM 5120
     long bid;
     long gid;
     long start;
