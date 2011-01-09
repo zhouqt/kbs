@@ -518,7 +518,7 @@ PHP_FUNCTION(bbs_getarticles)
     setbdir(mode, dirpath, bp->filename);
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
-    if (mode == DIR_MODE_NORMAL) {
+    if (mode == DIR_MODE_NORMAL || mode == DIR_MODE_ORIGIN) {
         sprintf(dirpath1,"boards/%s/" DING_DIR,bp->filename);
         total += get_num_records(dirpath1, sizeof(struct fileheader));
     }
