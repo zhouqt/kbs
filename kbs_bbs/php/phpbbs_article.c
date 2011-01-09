@@ -542,7 +542,7 @@ PHP_FUNCTION(bbs_getarticles)
         RETURN_FALSE;
     }
     /* modified by stiger */
-    if (mode == DIR_MODE_NORMAL)
+    if (mode == DIR_MODE_NORMAL || mode == DIR_MODE_ORIGIN)
         rows = read_get_records(dirpath, dirpath1, (char *)articles, sizeof(struct fileheader), start, num);
     else
         rows = get_records(dirpath, articles, sizeof(struct fileheader), start, num);
