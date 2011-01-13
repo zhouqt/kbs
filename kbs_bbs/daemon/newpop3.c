@@ -888,6 +888,11 @@ void User()
         if (check_ip_acl(getCurrentUser()->userid, getSession()->fromhost)) {
             sprintf(genbuf, "-ERR Your IP is not welcomed.");
             outs(genbuf);
+#ifdef NEWSMTH
+        } else if (!DEFINE(getCurrentUser(), DEF_ALLOWPOP3)) {
+            sprintf(genbuf, "-ERR POP3 for this account is disabled.");
+            outs(genbuf);
+#endif
         } else {
             strcpy(LowUserid, getCurrentUser()->userid);
             sprintf(genbuf, "+OK Password required for %s", cmd);
